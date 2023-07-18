@@ -14,7 +14,7 @@ class HTMLGenerator:
     def __init__(self, markdown_file):
         self.markdown_file = markdown_file
         self.html_file = markdown_file.replace(".md", ".html")
-        self.header = open("../sh/header.html", "r").read()
+        self.header = open("header.html", "r").read()
         self.footer = open("../sh/footer.html", "r").read()
         self.div_blocks = []
         self.div_id_counter = 1  # 用于追踪当前的div id，从1开始计数
