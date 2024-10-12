@@ -1,0 +1,664 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+<!-- 修改页面标题 -->
+        <title>DB & DS | HUST</title>
+
+<!-- 修改 content -->
+        <meta name="description" content="数据库与数据结构课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统专业设计. " />
+        <meta name="author" content="xinjiang@hrbust.edu.cn" />
+
+<!-- 引入数学公式 -->
+        <script type="text/javascript">
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              chtml: {
+                scale: 0.95
+              }
+            };
+        </script>
+        <script src="../extras/mathjax/tex-chtml-full.js"></script>
+<!-- 引入完毕 -->
+
+        <link href="../css/impress-course.css" rel="stylesheet" />
+        <link href="../css/impress-common.css" rel="stylesheet" />
+
+        <link rel="shortcut icon" href="../hustlogo72.png" />
+        <link rel="stylesheet" href="../extras/highlight/styles/github.css">
+
+    </head>
+
+    <body class="impress-not-supported">
+
+<!-- 左上角加上 logo -->
+    <div class="logo"></div>
+
+    <div class="fallback-message">
+        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
+        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
+
+    </div>
+
+    <div 
+    id                       = "impress" 
+    data-transition-duration = "1000" 
+    data-width               = "1024" 
+    data-height              = "768" 
+    data-max-scale           = "3" 
+    data-min-scale           = "0" 
+    data-perspective         = "1000" 
+    data-autoplay            = "0">
+
+<!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
+<!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
+<!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
+
+    <div 
+    id         = "overview" 
+    data-x     = "0" 
+    data-y     = "0" 
+    class      = "step" 
+    data-scale = "10">
+
+    </div>
+
+<!-- 修改 id -->
+
+    <div 
+    id         = "c101t"
+    class      = "step"
+    data-x     = "0"
+    data-y     = "0"
+    data-z     = "0"
+    data-scale = "5">
+
+    <!-- 修改标题 -->
+        <h2>10. 树和二叉树</h2>
+        <h3 style="text-align: center">10.1 树的基本概念</h3>
+        <p class="footnote">
+            <inlinecode style="font-size: 16px">
+            Powered by 
+            </inlinecode>
+                <a href="https://github.com/impress/impress.js/">
+                    <inlinecode style="font-size: 16px">
+                    impress.js
+                    </inlinecode>
+                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
+                </a>
+                <br/>
+                <inlinecode style="font-size: 16px">
+                    Ver. 2408
+                </inlinecode>
+            </inlinecode>
+        </p>
+
+    </div>
+        
+    <div 
+    id            = "a1"
+    class         = "step markdown"
+    data-rel-to   = "c101t"
+    data-rel-x    = "-2000"
+    data-rel-y    = "-3000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的定义
+
+- 由 $ n(n \geq 0) $ 个结点组成的有限集合 $ T $
+- 当 $ n = 0 $ 时称为空树
+- 在非空树中有且仅有一个根 (Root) 结点
+- 其余结点可以分为 $ m(m \geq 0) $ 个互不相交的有限集 $ T\_1, T\_2, \cdots, T\_m $
+- 其中每个集合称为根的子树 (SubTree)
+
+    </div>
+
+    <div 
+    id            = "a2"
+    class         = "step markdown"
+    data-rel-to   = "a1"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的特点
+
+- 每个结点有零个或多个后继结点
+- 每个结点有且只有一个前驱结点 (根节点例外)
+- 数据结点按分支关系组织
+- 反映数据元素的层次关系
+- 反映数据元素的一对多关系
+
+    </div>
+
+    <div 
+    id            = "a3"
+    class         = "step markdown"
+    data-rel-to   = "a2"
+    data-rel-x    = "0"
+    data-rel-y    = "1400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的抽象数据类型
+
+    ADT Tree
+    {
+    数据对象
+$ D = \lbrace a\_i | 0 \leq i \leq n - 1, n \geq 0, a\_i 为 E 类型 \rbrace $
+
+    数据关系
+$ r = \lbrace &lt; a\_i, a\_j &gt; | a\_i, a\_j \in D, 0 \leq i, j \leq n - 1 \rbrace $
+
+    基本运算
+        boolean CreateTree()
+        String toString()
+        E GetParent(int i)
+    }
+
+    </div>
+
+    <div 
+    id            = "a4"
+    class         = "step markdown"
+    data-rel-to   = "a3"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的逻辑结构表示方法
+
+- 树形表示法
+- 文氏图表示法
+- 凹入表示法
+- 括号表示法
+
+    </div>
+
+    <div
+    id            = "a5"
+    class         = "step markdown"
+    data-rel-to   = "a4"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Tree](img/c10/tree.png)
+#### Tree
+
+    </div>
+
+    <div 
+    id            = "a6"
+    class         = "step markdown"
+    data-rel-to   = "a5"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的基本术语
+
+- 结点的度 Degree: 某个结点的子树的个数
+- 树的度: 树中结点度的最大值
+- 分支结点 Internal Nodes: 度不为零的结点
+- 终端结点 Leaf Nodes: 度为零的结点
+
+    </div>
+
+    <div 
+    id            = "a7"
+    class         = "step markdown"
+    data-rel-to   = "a6"
+    data-rel-x    = "0"
+    data-rel-y    = "500"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+- 路径 Path: 从任意两个结点 $ a\_i $ 到 $ a\_j $ 的路径是一个结点序列 $ a\_i, a\_{i+1}, a\_{i+2}, \cdots, a\_j $
+- 路径的长度 Length: 路径上的结点数目 $ -1 $
+
+    </div>
+
+    <div 
+    id            = "a8"
+    class         = "step markdown"
+    data-rel-to   = "a7"
+    data-rel-x    = "0"
+    data-rel-y    = "500"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+- 孩子结点 Child: 结点 $ a\_i $ 的后继结点称为 $ a\_i $ 的孩子结点
+- 双亲结点 Parent: 结点 $ a\_i $ 是结点 $ a\_j $ 的孩子结点, 则称 $ a\_j $ 是 $ a\_i $ 的双亲结点
+- 兄弟结点 Siblings: 具有同一双亲结点的结点互称为兄弟结点
+
+    </div>
+
+    <div 
+    id            = "a9"
+    class         = "step markdown"
+    data-rel-to   = "a8"
+    data-rel-x    = "0"
+    data-rel-y    = "490"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+- 结点的层次 Level: 根结点的层次为 $ 1 $, 其余结点的层次等于该结点的双亲结点的层次加 $ 1 $
+- 树的高度 Height: 结点的最大层次
+
+    </div>
+
+    <div 
+    id            = "a10"
+    class         = "step markdown"
+    data-rel-to   = "a9"
+    data-rel-x    = "0"
+    data-rel-y    = "420"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+- 有序树 Ordered Tree: 树中结点的各子树从左到右是有次序的
+- 无序树 Unordered Tree: 树中结点的各子树从左到右是无次序的
+- 森林 Forest: $ m(m \geq 0) $ 棵互不相交的树的集合
+
+    </div>
+
+    <div 
+    id            = "a11"
+    class         = "step markdown"
+    data-rel-to   = "c101t"
+    data-rel-x    = "0"
+    data-rel-y    = "-3250"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的性质 1
+
+- 树中结点的个数等于所有结点的度数加 $ 1 $
+
+    </div>
+
+    <div 
+    id            = "a12"
+    class         = "step markdown"
+    data-rel-to   = "a11"
+    data-rel-x    = "0"
+    data-rel-y    = "600"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的性质 2
+
+- 度为 $ m $ 的树中第 $ i $ 层上最多有 $ m^{i-1} $ 个结点 $ (i \geq 1) $
+
+    </div>
+
+    <div 
+    id            = "a13"
+    class         = "step markdown"
+    data-rel-to   = "a12"
+    data-rel-x    = "0"
+    data-rel-y    = "600"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的性质 3
+
+- 高度为 $ h $ 的 $ m $ 次树最多有 $ \frac{m^h - 1}{m - 1} $ 个结点 $ (h \geq 1, m \geq 2) $
+
+    </div>
+
+    <div 
+    id            = "a14"
+    class         = "step markdown"
+    data-rel-to   = "a13"
+    data-rel-x    = "0"
+    data-rel-y    = "600"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的性质 4
+
+- 具有 $ n $ 个结点的 $ m $ 次树的最小高度为 $ \lceil log_m(n(m - 1) + 1) \rceil $, 其中 $ \lceil x \rceil $ 表示不小于 $ x $ 的最小整数 (Ceiling)
+
+    </div>
+
+    <div 
+    id            = "a15"
+    class         = "step markdown"
+    data-rel-to   = "a14"
+    data-rel-x    = "00"
+    data-rel-y    = "2000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的基本运算
+
+- 查找
+- 插入或删除
+- 遍历
+
+    </div>
+
+    <div 
+    id            = "a16"
+    class         = "step markdown"
+    data-rel-to   = "a15"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 遍历
+
+- 深度优先, DFS, Depth First Search
+- 广度优先, BFS, Breath First Search
+
+    </div>
+
+    <div
+    id            = "a17"
+    class         = "step markdown"
+    data-rel-to   = "a16"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![DFS & BFS](img/c10/dfs-and-bfs.gif)
+#### DFS & BFS
+
+    </div>
+
+    <div 
+    id            = "a18"
+    class         = "step markdown"
+    data-rel-to   = "c101t"
+    data-rel-x    = "2400"
+    data-rel-y    = "-3140"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的遍历
+
+- 先根遍历
+- 后根遍历
+- 层次遍历
+
+    </div>
+
+    <div 
+    id            = "a19"
+    class         = "step markdown"
+    data-rel-to   = "a18"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 先根遍历
+
+- 访问根结点
+- 按照从左到右的顺序先根遍历根的各棵子树
+
+    </div>
+
+    <div
+    id            = "a20"
+    class         = "step markdown"
+    data-rel-to   = "a19"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![PreOrder Traversal](img/c10/preorder.gif)
+#### PreOrder Traversal
+
+    </div>
+
+    <div 
+    id            = "a21"
+    class         = "step markdown"
+    data-rel-to   = "a20"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 后根遍历
+
+- 按照从左到右的顺序后根遍历根的各棵子树
+- 访问根结点
+
+    </div>
+
+    <div
+    id            = "a22"
+    class         = "step markdown"
+    data-rel-to   = "a21"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![PostOrder Traversal](img/c10/postorder.gif)
+#### PostOrder Traversal
+
+    </div>
+
+    <div 
+    id            = "a23"
+    class         = "step markdown"
+    data-rel-to   = "a22"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 层次遍历
+
+- 从根节点开始
+- 从上到下逐层遍历
+
+    </div>
+
+    <div
+    id            = "a24"
+    class         = "step markdown"
+    data-rel-to   = "a23"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Level Order Traversal](img/c10/levelorder.gif)
+#### Level Order Traversal
+
+    </div>
+
+    <div 
+    id            = "a25"
+    class         = "step markdown"
+    data-rel-to   = "a24"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 树的存储结构
+
+- 双亲存储结构
+- 孩子链存储结构
+- 孩子兄弟链存储结构
+
+    </div>
+
+    <div 
+    id            = "a26"
+    class         = "step markdown"
+    data-rel-to   = "a25"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 双亲存储结构
+
+- 顺序存储结构
+- 每个结点都有一个伪指针
+- 指向其双亲结点在数组中的位置
+- 根节点指针为 $ -1 $
+
+    </div>
+
+    <div 
+    id            = "a27"
+    class         = "step markdown"
+    data-rel-to   = "a26"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 孩子链存储结构
+
+- 每个结点包含数据和指针
+- 指针指向所有孩子结点
+
+    </div>
+
+    <div 
+    id            = "a28"
+    class         = "step markdown"
+    data-rel-to   = "a27"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 孩子兄弟链存储结构
+
+- 每个结点包含数据和两个指针
+- 第一个指针指向第一个孩子结点
+- 第二个指针指向下一个兄弟结点
+
+    </div>
+
+    <div
+    id            = "mm101"
+    class         = "step markdown"
+    data-rel-to   = "c101t"
+    data-rel-x    = "0"
+    data-rel-y    = "-2000"
+    data-rotate-y = "0"
+    data-rotate   = "0"
+    data-scale    = "1">
+
+![course 10.1 mindmap](img/c10/mindmap-10-1.png)
+
+    </div>
+
+<!-- 本节问题 -->
+
+    <div
+    id            = "c101q"
+    class         = "step markdown"
+    data-rel-to   = "c101t"
+    data-rel-x    = "0"
+    data-rel-y    = "-800"
+    data-z        = "500"
+    data-rotate-x = "77"
+    data-rotate-y = "0"
+    data-rotate-z = "180"
+    data-scale    = "2">
+
+### 10.1 树的基本概念
+
+- 某个结点的度是 3, 这个结点具有多少个子树?
+- 哪种遍历方法会先访问根结点再递归访问左右子树?
+- 如果一棵树有 7 个结点, 最多可能有几个分支结点?
+- 在树的双亲存储结构中, 根节点的伪指针值是多少?
+- 一棵树所有结点的度数和为 20, 树有多少个结点?
+- 描述孩子兄弟链存储结构中的指针分配.
+
+----
+
+[ 9.7 递归](dbds-9-7.html#/overview)
+[| 练习 |](dbds-exec.html)
+[ 10.2 二叉树](dbds-10-2.html#/overview)
+
+    </div>
+
+    </div>
+
+    <!--
+    <div id="impress-toolbar"></div>
+    <div id="impress-help"></div>
+
+    <script>
+    if ("ontouchstart" in document.documentElement) { 
+        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+    }
+    </script>
+    -->
+
+    <!-- 页面下方显示进度条 -->
+    <div class="impress-progressbar">
+        <div></div>
+    </div>
+
+    <!-- 页面下方显示当前页/总页数 -->
+    <div class="impress-progress"></div>
+
+    <!-- 使用 markdown 写简单页面 -->
+    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
+
+    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
+    <script src="../extras/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- impress.js 需要放在最下面,并且初始化 -->
+    <script src="../js/impress.js"></script>
+    <script>impress().init();</script>
+    </body>
+    </html>
