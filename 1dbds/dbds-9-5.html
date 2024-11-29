@@ -1,0 +1,647 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+<!-- 修改页面标题 -->
+        <title>DB & DS | HUST</title>
+
+<!-- 修改 content -->
+        <meta name="description" content="数据库与数据结构课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统专业设计. " />
+        <meta name="author" content="xinjiang@hrbust.edu.cn" />
+
+<!-- 引入数学公式 -->
+        <script type="text/javascript">
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              chtml: {
+                scale: 0.95
+              }
+            };
+        </script>
+        <script src="../extras/mathjax/tex-chtml-full.js"></script>
+<!-- 引入完毕 -->
+
+        <link href="../css/impress-course.css" rel="stylesheet" />
+        <link href="../css/impress-common.css" rel="stylesheet" />
+
+        <link rel="shortcut icon" href="../hustlogo72.png" />
+        <link rel="stylesheet" href="../extras/highlight/styles/github.css">
+
+    </head>
+
+    <body class="impress-not-supported">
+
+<!-- 左上角加上 logo -->
+    <div class="logo"></div>
+
+    <div class="fallback-message">
+        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
+        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
+
+    </div>
+
+    <div 
+    id                       = "impress" 
+    data-transition-duration = "1000" 
+    data-width               = "1024" 
+    data-height              = "768" 
+    data-max-scale           = "3" 
+    data-min-scale           = "0" 
+    data-perspective         = "1000" 
+    data-autoplay            = "0">
+
+<!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
+<!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
+<!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
+
+    <div 
+    id         = "overview" 
+    data-x     = "0" 
+    data-y     = "0" 
+    class      = "step" 
+    data-scale = "10">
+
+    </div>
+
+<!-- 修改 id -->
+
+    <div 
+    id         = "c95t"
+    class      = "step"
+    data-x     = "0"
+    data-y     = "0"
+    data-z     = "0"
+    data-scale = "5">
+
+    <!-- 修改标题 -->
+        <h2>9. 线性表</h2>
+        <h3 style="text-align: center">9.5 栈</h3>
+        <p class="footnote">
+            <inlinecode style="font-size: 16px">
+            Powered by 
+            </inlinecode>
+                <a href="https://github.com/impress/impress.js/">
+                    <inlinecode style="font-size: 16px">
+                    impress.js
+                    </inlinecode>
+                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
+                </a>
+                <br/>
+                <inlinecode style="font-size: 16px">
+                    Ver. 2408
+                </inlinecode>
+            </inlinecode>
+        </p>
+
+    </div>
+        
+    <div 
+    id            = "a1"
+    class         = "step markdown"
+    data-rel-to   = "c95t"
+    data-rel-x    = "-1200"
+    data-rel-y    = "-1900"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 栈的定义
+
+- 只能在一端进行插入和删除操作的线性表
+- 允许插入和删除的一端称为栈顶 (top)
+- 另一端称为栈底 (bottom)
+- 栈顶的位置是变化的
+- 栈底的位置是固定的
+- 栈的插入操作叫做进栈 (push)
+- 栈的删除操作叫做出栈 (pop)
+
+    </div>
+
+    <div 
+    id            = "a2"
+    class         = "step markdown"
+    data-rel-to   = "a1"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 栈的特点
+
+- 后进先出 (LIFO, Last In First Out)
+- 栈的插入和删除操作只能在栈顶进行
+
+    </div>
+
+    <div 
+    id            = "a3"
+    class         = "step markdown"
+    data-rel-to   = "a2"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 栈的抽象数据类型
+
+    ADT Stack {
+    数据对象
+$ D = \lbrace a\_i | 0 \leq i \leq n-1, n \geq 0, 元素 a\_i 为 E 类型 \rbrace $
+
+    数据关系
+$ r = \lbrace &lt;a\_i, a\_{i+1}&gt; | a\_i, a\_{i+1} \in D, i = 0, \dots, n-2 \rbrace $
+
+    基本运算
+        boolean empty();
+        void push(E e)
+        E pop();
+        E peek() }
+
+    </div>
+
+    <div 
+    id            = "a4"
+    class         = "step markdown"
+    data-rel-to   = "a3"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 栈的顺序存储结构
+
+- 使用 `data&lt;E&gt;` 存放栈中元素
+- 使用 `top` 指示栈顶元素在 data 中的位置
+- 顺序存储的栈称作顺序栈
+- 空栈时 `top = -1`
+
+    </div>
+
+    <div 
+    id            = "a5"
+    class         = "step markdown"
+    data-rel-to   = "a4"
+    data-rel-x    = "-400"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 顺序栈的基本要素
+
+- 栈空的条件是 `top == -1`
+- 栈满的条件是 `top == capacity - 1`
+- 进栈操作是 `top = top + 1; data[top] = e;`
+- 出栈操作是 `e = data[top]; top = top - 1;`
+
+    </div>
+
+    <div 
+    id            = "a6"
+    class         = "step markdown"
+    data-rel-to   = "c95t"
+    data-rel-x    = "100"
+    data-rel-y    = "1500"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### SqStackClass&lt;E&gt;
+
+    public class SqStackClass&lt;E&gt;
+    {
+        final int initcapacity=10;
+        private int capacity;
+        private E[] data;
+        private int top;
+        public SqStackClass()
+        {
+            data = (E[])new Object[initcapacity];
+            capacity=initcapacity;
+            top=-1;
+        }
+    }
+
+    </div>
+
+    <div 
+    id            = "a7"
+    class         = "step markdown"
+    data-rel-to   = "a6"
+    data-rel-x    = "0"
+    data-rel-y    = "1300"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### updatecapacity(int newcapacity)
+
+    private void updatecapacity(int newcapacity)
+    {
+        E[] newdata = (E[])new Object[newcapacity];
+        for (int i=0;i&lt;top;i++)
+            newdata[i]=data[i];
+        capacity=newcapacity;
+        data=newdata;
+    }
+
+    </div>
+
+    <div 
+    id            = "a8"
+    class         = "step markdown"
+    data-rel-to   = "a7"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### empty()
+
+    public boolean empty()
+    {
+        return top==-1;
+    }
+
+    </div>
+
+    <div 
+    id            = "a9"
+    class         = "step markdown"
+    data-rel-to   = "a8"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### push(E e)
+
+    public void push(E e)
+    {
+        if (top==capacity-1)
+            updatecapacity(2*(top+1));
+        top++;
+        data[top]=e;
+    }
+
+    </div>
+
+    <div 
+    id            = "a10"
+    class         = "step markdown"
+    data-rel-to   = "a9"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### pop()
+
+    public E pop()
+    {
+        if (empty())
+            throw new IllegalArgumentException("栈空");
+        E e=(E)data[top];
+        top--;
+        if (top+1&gt;initcapacity && top+1==capacity/4)
+            updatecapacity(capacity/2);
+        return e;
+    }
+
+    </div>
+
+    <div 
+    id            = "a11"
+    class         = "step markdown"
+    data-rel-to   = "a10"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### peek()
+
+    public E peek()
+    {
+        if (empty())
+            throw new IllegalArgumentException("栈空");
+        return (E)data[top];
+    }
+
+    </div>
+
+    <div 
+    id            = "a12"
+    class         = "step markdown"
+    data-rel-to   = "a11"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### toString()
+
+    public String toString()
+    {
+        String ans="";
+        for (int i=0;i&lt;=top;i++)
+            ans+=data[i].toString()+" ";
+        return ans;
+    }
+
+    </div>
+
+    <div 
+    id            = "a13"
+    class         = "step markdown"
+    data-rel-to   = "c95t"
+    data-rel-x    = "1800"
+    data-rel-y    = "-2200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 栈的链式存储结构
+
+- 使用单链表存放栈中元素
+
+    </div>
+
+    <div 
+    id            = "a14"
+    class         = "step markdown"
+    data-rel-to   = "a13"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 链栈的基本要素
+
+- 栈空的条件是 `head.next == null`
+- 通常不考虑溢出
+- 进栈操作是将插入的结点作为首结点
+- 出栈操作是返回首结点值并删除首结点
+
+    </div>
+
+    <div 
+    id            = "a15"
+    class         = "step markdown"
+    data-rel-to   = "a14"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### LinkNode&lt;E&gt;
+
+    class LinkNode&lt;E&gt;
+    {
+        E data;
+        LinkNode&lt;E&gt; next;
+        public LinkNode()
+        {
+            next=null;
+        }
+        public LinkNode(E d)
+        {
+            data=d;
+            next=null;
+        }
+    }
+
+    </div>
+
+    <div 
+    id            = "a16"
+    class         = "step markdown"
+    data-rel-to   = "a15"
+    data-rel-x    = "0"
+    data-rel-y    = "1400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### LinkStackClass&lt;E&gt;
+
+    public class LinkStackClass&lt;E&gt;
+    {
+        LinkNode&lt;E&gt; head;
+        public LinkStackClass()
+        {
+            head=new LinkNode&lt;E&gt;();
+            head.next=null;
+        }
+    }
+
+    </div>
+
+    <div 
+    id            = "a17"
+    class         = "step markdown"
+    data-rel-to   = "a16"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### empty()
+
+    public boolean empty()
+    {
+        return head.next==null;
+    }
+
+    </div>
+
+    <div 
+    id            = "a18"
+    class         = "step markdown"
+    data-rel-to   = "a17"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### push(E e)
+
+    public void push(E e)
+    {
+        LinkNode&lt;E&gt; s=new LinkNode&lt;E&gt;(e);
+        s.next=head.next;
+        head.next=s;
+    }
+
+    </div>
+
+    <div 
+    id            = "a19"
+    class         = "step markdown"
+    data-rel-to   = "a18"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### pop()
+
+    public E pop()
+    {
+        if (empty())
+            throw new IllegalArgumentException("栈空");
+        E e=(E)head.next.data;
+        head.next=head.next.next;
+        return e;
+    }
+
+    </div>
+
+    <div 
+    id            = "a20"
+    class         = "step markdown"
+    data-rel-to   = "a19"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### peek()
+
+    public E peek()
+    {
+        if (empty())
+            throw new IllegalArgumentException("栈空");
+        E e=(E)head.next.data;
+        return e;
+    }
+
+    </div>
+
+    <div 
+    id            = "a21"
+    class         = "step markdown"
+    data-rel-to   = "a20"
+    data-rel-x    = "0"
+    data-rel-y    = "1400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### toString()
+
+    public String toString()
+    {
+        String ans="";
+        if (!empty())
+        {
+            LinkNode&lt;E&gt; p=head.next;
+            while (p!=null)
+            {
+                ans+=p.data+" ";
+                p=p.next;
+            }
+        }
+        return ans;
+    }
+
+    </div>
+
+    <div
+    id            = "mm95"
+    class         = "step markdown"
+    data-rel-to   = "c95t"
+    data-rel-x    = "0"
+    data-rel-y    = "-2000"
+    data-rotate-y = "0"
+    data-rotate   = "0"
+    data-scale    = "1">
+
+![course 9.5 mindmap](img/c09/mindmap-9-5.png)
+
+    </div>
+
+<!-- 本节问题 -->
+
+    <div
+    id            = "c95q"
+    class         = "step markdown"
+    data-rel-to   = "c95t"
+    data-rel-x    = "0"
+    data-rel-y    = "-800"
+    data-z        = "500"
+    data-rotate-x = "77"
+    data-rotate-y = "0"
+    data-rotate-z = "180"
+    data-scale    = "2">
+
+### 9.5 栈
+
+- 栈在数据结构中是如何定义的?
+- 描述栈的后进先出 (LIFO) 特性.
+- 进栈和出栈具体是指什么?
+- 顺序栈和链栈有什么区别?
+- 空栈时, 栈顶指针 top 应该指向什么位置?
+- 在链栈中, 栈空的条件是什么?
+
+----
+
+[ 9.3 线性表的链式存储结构](dbds-9-3.html#/overview)
+[| 练习 |](dbds-exec.html)
+[ 9.6 队列](dbds-9-6.html#/overview)
+
+    </div>
+
+    </div>
+
+    <!--
+    <div id="impress-toolbar"></div>
+    <div id="impress-help"></div>
+
+    <script>
+    if ("ontouchstart" in document.documentElement) { 
+        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+    }
+    </script>
+    -->
+
+    <!-- 页面下方显示进度条 -->
+    <div class="impress-progressbar">
+        <div></div>
+    </div>
+
+    <!-- 页面下方显示当前页/总页数 -->
+    <div class="impress-progress"></div>
+
+    <!-- 使用 markdown 写简单页面 -->
+    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
+
+    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
+    <script src="../extras/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- impress.js 需要放在最下面,并且初始化 -->
+    <script src="../js/impress.js"></script>
+    <script>impress().init();</script>
+    </body>
+    </html>

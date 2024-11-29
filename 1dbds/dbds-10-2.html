@@ -1,0 +1,605 @@
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=1024" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+<!-- 修改页面标题 -->
+        <title>DB & DS | HUST</title>
+
+<!-- 修改 content -->
+        <meta name="description" content="数据库与数据结构课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统专业设计. " />
+        <meta name="author" content="xinjiang@hrbust.edu.cn" />
+
+<!-- 引入数学公式 -->
+        <script type="text/javascript">
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+              },
+              chtml: {
+                scale: 0.95
+              }
+            };
+        </script>
+        <script src="../extras/mathjax/tex-chtml-full.js"></script>
+<!-- 引入完毕 -->
+
+        <link href="../css/impress-course.css" rel="stylesheet" />
+        <link href="../css/impress-common.css" rel="stylesheet" />
+
+        <link rel="shortcut icon" href="../hustlogo72.png" />
+        <link rel="stylesheet" href="../extras/highlight/styles/github.css">
+
+    </head>
+
+    <body class="impress-not-supported">
+
+<!-- 左上角加上 logo -->
+    <div class="logo"></div>
+
+    <div class="fallback-message">
+        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
+        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
+
+    </div>
+
+    <div 
+    id                       = "impress" 
+    data-transition-duration = "1000" 
+    data-width               = "1024" 
+    data-height              = "768" 
+    data-max-scale           = "3" 
+    data-min-scale           = "0" 
+    data-perspective         = "1000" 
+    data-autoplay            = "0">
+
+<!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
+<!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
+<!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
+
+    <div 
+    id         = "overview" 
+    data-x     = "0" 
+    data-y     = "0" 
+    class      = "step" 
+    data-scale = "10">
+
+    </div>
+
+<!-- 修改 id -->
+
+    <div 
+    id         = "c102t"
+    class      = "step"
+    data-x     = "0"
+    data-y     = "0"
+    data-z     = "0"
+    data-scale = "5">
+
+    <!-- 修改标题 -->
+        <h2>10. 树</h2>
+        <h3 style="text-align: center">10.2 二叉树</h3>
+        <p class="footnote">
+            <inlinecode style="font-size: 16px">
+            Powered by 
+            </inlinecode>
+                <a href="https://github.com/impress/impress.js/">
+                    <inlinecode style="font-size: 16px">
+                    impress.js
+                    </inlinecode>
+                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
+                </a>
+                <br/>
+                <inlinecode style="font-size: 16px">
+                    Ver. 2408
+                </inlinecode>
+            </inlinecode>
+        </p>
+
+    </div>
+        
+    <div 
+    id            = "a1"
+    class         = "step markdown"
+    data-rel-to   = "c102t"
+    data-rel-x    = "-200"
+    data-rel-y    = "-450"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树 Binary Tree
+
+- 有限的结点集合
+- 或为空
+- 或由一个根结点和两棵二叉树组成
+- 这两个二叉树称为左子树和右子树
+
+    </div>
+
+    <div
+    id            = "a2"
+    class         = "step markdown"
+    data-rel-to   = "a1"
+    data-rel-x    = "-400"
+    data-rel-y    = "100"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Binary Tree](img/c10/binary-tree.png)
+#### Binary Tree
+
+    </div>
+
+    <div 
+    id            = "a3"
+    class         = "step markdown"
+    data-rel-to   = "a2"
+    data-rel-x    = "0"
+    data-rel-y    = "900"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树和树的区别
+
+- 度为 $ 2 $ 的树至少有一个结点的度为 $ 2 $
+- 度为 $ 2 $ 的树中度为 $ 1 $ 的结点不区分左右
+
+    </div>
+
+    <div 
+    id            = "a4"
+    class         = "step markdown"
+    data-rel-to   = "a3"
+    data-rel-x    = "-1600"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的抽象数据结构
+
+    ADT BTree {
+    数据对象
+$ D = \lbrace a\_i | 0 \leq i \leq n - 1, n \geq 0,  a\_i \in ElemSet \rbrace $
+
+    数据关系
+$ r = \lbrace &lt; a\_i, a\_j &gt; | a\_i, a\_j \in D, 0 \leq i, j \leq n - 1 \rbrace $
+
+    基本运算
+    void CreateBTree(string str)
+    String toString()
+    BTNode FindNode(x)
+    int Height() }
+
+    </div>
+
+    <div 
+    id            = "a5"
+    class         = "step markdown"
+    data-rel-to   = "a4"
+    data-rel-x    = "2400"
+    data-rel-y    = "-400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的类型
+
+- 完满二叉树 Full Binary Tree
+- 退化二叉树 Degenerate Binary Tree
+- 平衡二叉树 Balanced Binary Tree
+- 满二叉树 Perfect Binary Tree
+- 完全二叉树 Complete Binary Tree
+
+    </div>
+
+    <div
+    id            = "a6"
+    class         = "step markdown"
+    data-rel-to   = "a5"
+    data-rel-x    = "0"
+    data-rel-y    = "50"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Full Binary Tree](img/c10/full-binary-tree.png)
+#### Full Binary Tree
+
+    </div>
+
+    <div
+    id            = "a7"
+    class         = "step markdown"
+    data-rel-to   = "a6"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Degenerate Binary Tree](img/c10/degenerate-binary-tree.png)
+#### Degenerate Binary Tree
+
+    </div>
+
+    <div
+    id            = "a8"
+    class         = "step markdown"
+    data-rel-to   = "a7"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Balanced Binary Tree](img/c10/balanced-binary-tree.png)
+#### Balanced Binary Tree
+
+    </div>
+
+    <div
+    id            = "a9"
+    class         = "step markdown"
+    data-rel-to   = "a8"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Perfect Binary Tree](img/c10/perfect-binary-tree.png)
+#### Perfect Binary Tree
+
+    </div>
+
+    <div 
+    id            = "a10"
+    class         = "step markdown"
+    data-rel-to   = "a9"
+    data-rel-x    = "0"
+    data-rel-y    = "1050"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 满二叉树
+
+- 叶子结点都在最下一层
+- 只有度为 $ 0 $ 和 $ 2 $ 的结点
+- 结点数 $ n = 2^h - 1 $, $ h $ 为高度
+- 结点数为 $ n $ 的满二叉树高度为 $ h = \lfloor log\_2(n + 1) \rfloor $
+- 结点数为 $ n $ 的满二叉树叶子结点个数为 $ \lfloor \frac{n}{2} \rfloor + 1 $
+- 结点数为 $ n $ 的满二叉树度为 $ 2 $ 的结点个数为 $ \lfloor \frac{n}{2} \rfloor $
+
+    </div>
+
+    <div
+    id            = "a11"
+    class         = "step markdown"
+    data-rel-to   = "a10"
+    data-rel-x    = "0"
+    data-rel-y    = "100"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Complete Binary Tree](img/c10/complete-binary-tree.png)
+#### Complete Binary Tree
+
+    </div>
+
+    <div 
+    id            = "a12"
+    class         = "step markdown"
+    data-rel-to   = "a11"
+    data-rel-x    = "0"
+    data-rel-y    = "1100"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 完全二叉树
+
+- 叶子结点都在最下一层或倒数第二层
+- 叶子结点都向左靠拢
+- 最多有一个度为 $ 1 $ 的结点
+- 度为 $ 1 $ 的结点最多只有左孩子
+- 按层序编号后, 若出现某结点为叶子结点或只有左孩子, 则其后的结点都为叶子结点
+
+    </div>
+
+    <div 
+    id            = "a13"
+    class         = "step markdown"
+    data-rel-to   = "c102t"
+    data-rel-x    = "2100"
+    data-rel-y    = "-1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的性质 1
+
+- 非空二叉树上叶子结点数等于双分支结点数加 $ 1 $
+
+    </div>
+
+    <div 
+    id            = "a14"
+    class         = "step markdown"
+    data-rel-to   = "a13"
+    data-rel-x    = "0"
+    data-rel-y    = "500"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的性质 2
+
+- 非空二叉树的第 $ i $ 层上至多有 $ 2^{i - 1} $ 个结点
+
+    </div>
+
+    <div 
+    id            = "a15"
+    class         = "step markdown"
+    data-rel-to   = "a14"
+    data-rel-x    = "0"
+    data-rel-y    = "500"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的性质 3
+
+- 高度为 $ h $ 的二叉树至多有 $ 2^h - 1 $ 个结点
+
+    </div>
+
+    <div 
+    id            = "a16"
+    class         = "step markdown"
+    data-rel-to   = "a15"
+    data-rel-x    = "0"
+    data-rel-y    = "840"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的性质 4
+
+- 对完全二叉树中层序编号为 $ i $ 的结点, 有:
+- 若 $ i \leq \lfloor \frac{n}{2} \rfloor $, 则为分支结点, 否则为叶子结点
+- 若 $ n $ 为奇数则每个分支结点都是度为 $ 2 $ 的结点
+- 若 $ n $ 为偶数则编号为 $ \lfloor \frac{n}{2} \rfloor $ 的结点是度为 $ 1 $ 的结点
+- 若 $ i $ 结点有左孩子, 则其左孩子的编号为 $ 2i $
+- 若 $ i $ 结点有右孩子, 则其右孩子的编号为 $ 2i + 1 $
+- 若 $ i = 1 $, 则为根, 否则其双亲为 $ \lfloor \frac{i}{2} \rfloor $
+
+    </div>
+
+    <div 
+    id            = "a17"
+    class         = "step markdown"
+    data-rel-to   = "a16"
+    data-rel-x    = "0"
+    data-rel-y    = "850"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的性质 5
+
+- 具有 $ n $ 个结点的完全二叉树的高度为 $ \lceil log\_2(n + 1) \rceil $ 或 $ \lfloor log\_2(n) \rfloor + 1 $
+
+    </div>
+
+    <div 
+    id            = "a17a"
+    class         = "step markdown"
+    data-rel-to   = "c102t"
+    data-rel-x    = "-2200"
+    data-rel-y    = "-3000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+## 10.3 二叉树的存储结构
+
+    </div>
+
+    <div 
+    id            = "a18"
+    class         = "step markdown"
+    data-rel-to   = "a17a"
+    data-rel-x    = "0"
+    data-rel-y    = "400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的存储结构
+
+- 顺序存储结构
+- 链式存储结构
+
+    </div>
+
+    <div
+    id            = "a19"
+    class         = "step markdown"
+    data-rel-to   = "a18"
+    data-rel-x    = "0"
+    data-rel-y    = "-400"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Sequential Storage](img/c10/btree-sequential.png)
+#### Sequential Storage
+
+    </div>
+
+    <div 
+    id            = "a20"
+    class         = "step markdown"
+    data-rel-to   = "a19"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的顺序存储结构
+
+- 补全成完全二叉树
+- 按层序编号
+- 空结点用特殊值表示
+- 编号为 $ i $ 的结点的双亲编号为 $ \lfloor \frac{i}{2} \rfloor $
+- 编号为 $ i $ 的结点的层次为 $ \lceil log\_2(i + 1) \rceil $
+
+    </div>
+
+    <div
+    id            = "a21"
+    class         = "step markdown"
+    data-rel-to   = "a20"
+    data-rel-x    = "0"
+    data-rel-y    = "0"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+![Linked Storage](img/c10/btree-linked.jpeg)
+#### Linked Storage
+
+    </div>
+
+    <div 
+    id            = "a22"
+    class         = "step markdown"
+    data-rel-to   = "a21"
+    data-rel-x    = "0"
+    data-rel-y    = "1000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 二叉树的链式存储结构
+
+- 数据元素
+- 左孩子结点指针
+- 右孩子结点指针
+
+    </div>
+
+    <div 
+    id            = "a23"
+    class         = "step markdown"
+    data-rel-to   = "a22"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### BTNode &lt;E&gt;
+
+    class BTNode &lt;E&gt;
+    {
+        E data;
+        BTNode lchild;
+        BTNode rchild;
+        public BTNode()
+        {    lchild = rchild = null; }
+        public BTNode(E d)
+        {    data = d;
+             lchild = rchild = null; }
+    }
+
+    </div>
+
+    <div
+    id            = "mm102"
+    class         = "step markdown"
+    data-rel-to   = "c102t"
+    data-rel-x    = "0"
+    data-rel-y    = "-2000"
+    data-rotate-y = "0"
+    data-rotate   = "0"
+    data-scale    = "1">
+
+![course 10.2 mindmap](img/c10/mindmap-10-2.png)
+
+    </div>
+
+<!-- 本节问题 -->
+
+    <div
+    id            = "c102q"
+    class         = "step markdown"
+    data-rel-to   = "c102t"
+    data-rel-x    = "0"
+    data-rel-y    = "-800"
+    data-z        = "500"
+    data-rotate-x = "77"
+    data-rotate-y = "0"
+    data-rotate-z = "180"
+    data-scale    = "2">
+
+### 10.2 二叉树
+
+- 有三个结点的二叉树至少有几个叶子结点?
+- 满二叉树与完全二叉树有何区别?
+- 在完全二叉树中, 如何找到一个结点的父结点?
+- 在二叉树的顺序存储结构中, 如何标识空结点?
+- 二叉链中某结点的左孩子指针为空, 说明了什么?
+
+----
+
+[ 10.1 树](dbds-10-1.html#/overview)
+[| 练习 |](dbds-exec.html)
+[ 10.4 二叉树的遍历](dbds-10-4.html#/overview)
+
+    </div>
+
+    </div>
+
+    <!--
+    <div id="impress-toolbar"></div>
+    <div id="impress-help"></div>
+
+    <script>
+    if ("ontouchstart" in document.documentElement) { 
+        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+    }
+    </script>
+    -->
+
+    <!-- 页面下方显示进度条 -->
+    <div class="impress-progressbar">
+        <div></div>
+    </div>
+
+    <!-- 页面下方显示当前页/总页数 -->
+    <div class="impress-progress"></div>
+
+    <!-- 使用 markdown 写简单页面 -->
+    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
+
+    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
+    <script src="../extras/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- impress.js 需要放在最下面,并且初始化 -->
+    <script src="../js/impress.js"></script>
+    <script>impress().init();</script>
+    </body>
+    </html>
