@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1024" />
+    <title>404 - Page Not Found | SLIDES</title>
+
+    <link href="/slides/css/impress-course.css" rel="stylesheet" />
+    <link href="/slides/css/impress-common.css" rel="stylesheet" />
+    <link rel="shortcut icon" href="/slides/hustlogo72.png" />
+
+    <style>
+        .error-container {
+            text-align: center;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .error-code {
+            font-size: 120px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in forwards;
+        }
+        .error-message {
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 0.5s forwards;
+        }
+        .back-link {
+            font-size: 24px;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 1s forwards;
+        }
+        .back-link a {
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+        .error-image {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            opacity: 0;
+            animation: fadeIn 1s ease-in 0.25s forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .rotating {
+            animation: rotate 20s linear infinite;
+        }
+        .pulsing {
+            animation: pulse 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="error-container">
+        <div class="error-code">404</div>
+        <div class="error-image">
+            <svg id="geometric-shape" viewBox="0 0 100 100"></svg>
+        </div>
+        <div class="error-message">抱歉，页面未找到</div>
+        <div class="back-link">
+            <a href="javascript:goBack()">返回上一页</a>
+            <br/><br/>
+            <a href="https://slides.lifeplayer.club" style="font-family: Consolas; font-size: 18px;">
+                https://slides.lifeplayer.club
+            </a>
+            <br/>
+            <a href="https://slides.yemengma.cn" style="font-family: Consolas; font-size: 18px;">
+                https://slides.yemengma.cn
+            </a>
+        </div>
+    </div>
+
+    <script>
+    const shapes = [
+        // 圆形与方形的组合
+        {
+            svg: `<circle cx="50" cy="50" r="40" fill="none" stroke-width="2"/>
+                  <rect x="30" y="30" width="40" height="40" fill="none" stroke-width="2"/>`,
+            animation: 'rotating'
+        },
+        
+        // 多边形组合
+        {
+            svg: `<polygon points="50,10 90,90 10,90" fill="none" stroke-width="2"/>
+                  <polygon points="50,20 80,80 20,80" fill="none" stroke-width="2"/>`,
+            animation: 'pulsing'
+        },
+        
+        // 交叉线条与圆
+        {
+            svg: `<line x1="20" y1="20" x2="80" y2="80" stroke-width="2"/>
+                  <line x1="20" y1="80" x2="80" y2="20" stroke-width="2"/>
+                  <circle cx="50" cy="50" r="30" fill="none" stroke-width="2"/>`,
+            animation: 'rotating'
+        },
+        
+        // 同心圆
+        {
+            svg: `<circle cx="50" cy="50" r="40" fill="none" stroke-width="2"/>
+                  <circle cx="50" cy="50" r="30" fill="none" stroke-width="2"/>
+                  <circle cx="50" cy="50" r="20" fill="none" stroke-width="2"/>`,
+            animation: 'pulsing'
+        },
+        
+        // 方形网格
+        {
+            svg: `<rect x="25" y="25" width="50" height="50" fill="none" stroke-width="2"/>
+                  <line x1="25" y1="50" x2="75" y2="50" stroke-width="2"/>
+                  <line x1="50" y1="25" x2="50" y2="75" stroke-width="2"/>`,
+            animation: 'rotating'
+        },
+        
+        // 六边形与三角形
+        {
+            svg: `<polygon points="50,10 90,30 90,70 50,90 10,70 10,30" fill="none" stroke-width="2"/>
+                  <polygon points="50,30 70,50 50,70 30,50" fill="none" stroke-width="2"/>`,
+            animation: 'pulsing'
+        },
+        
+        // 螺旋方块
+        {
+            svg: `<rect x="20" y="20" width="60" height="60" fill="none" stroke-width="2" transform="rotate(0 50 50)"/>
+                  <rect x="30" y="30" width="40" height="40" fill="none" stroke-width="2" transform="rotate(45 50 50)"/>
+                  <rect x="40" y="40" width="20" height="20" fill="none" stroke-width="2" transform="rotate(90 50 50)"/>`,
+            animation: 'rotating'
+        },
+        
+        // 波浪圆
+        {
+            svg: `<circle cx="50" cy="50" r="40" fill="none" stroke-width="2"/>
+                  <path d="M30,50 Q50,30 70,50 Q50,70 30,50" fill="none" stroke-width="2"/>`,
+            animation: 'pulsing'
+        },
+        
+        // 星形
+        {
+            svg: `<polygon points="50,10 61,40 92,40 69,60 79,90 50,73 21,90 31,60 8,40 39,40" fill="none" stroke-width="2"/>`,
+            animation: 'rotating'
+        },
+        
+        // 圆点阵列
+        {
+            svg: `<circle cx="30" cy="30" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="50" cy="30" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="70" cy="30" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="30" cy="50" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="50" cy="50" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="70" cy="50" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="30" cy="70" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="50" cy="70" r="5" fill="none" stroke-width="2"/>
+                  <circle cx="70" cy="70" r="5" fill="none" stroke-width="2"/>`,
+            animation: 'pulsing'
+        }
+    ];
+
+    const colors = [
+        '#2196F3', // 蓝色
+        '#FF5722', // 深橙色
+        '#4CAF50', // 绿色
+        '#9C27B0', // 紫色
+        '#FF9800', // 橙色
+        '#009688', // 青色
+        '#E91E63', // 粉色
+        '#673AB7', // 深紫色
+        '#3F51B5', // 靛蓝色
+        '#00BCD4'  // 浅蓝色
+    ];
+
+    function setRandomShape() {
+        const svg = document.getElementById('geometric-shape');
+        const randomShapeObj = shapes[Math.floor(Math.random() * shapes.length)];
+        const randomColor = colors[Math.floor(Math.random() * colors.length)];
+
+        // 替换形状的颜色并添加动画类
+        const coloredShape = randomShapeObj.svg.replace(/stroke-width="2"/g, `stroke="${randomColor}" stroke-width="2"`);
+        svg.innerHTML = coloredShape;
+        svg.classList.add(randomShapeObj.animation);
+    }
+
+    window.onload = setRandomShape;
+
+    function goBack() {
+        if (window.history.length > 1) {
+            window.history.back();
+        } else if (window.opener) {
+            // 如果是新窗口打开的，关闭当前窗口
+            window.close();
+        } else {
+            // 如果既不能返回也不能关闭，跳转到首页
+            window.location.href = '/slides/';
+        }
+    }
+    </script>
+</body>
+</html>
