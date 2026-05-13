@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>星露谷数据库：三级封锁协议演示</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <style>
+        /* --- 样式复用与升级 --- */
+        :root {
+            --pixel-bg: #f4f4f4;
+            --wood-border: #5d4037;
+            --wood-bg: #d7ccc8;
+            --screen-bg: #e0f7fa;
+        }
+
+        body {
+            font-family: 'Press Start 2P', cursive;
+            background-color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+            user-select: none;
+            color: #3e2723;
+        }
+
+        .arcade-cabinet {
+            width: 800px;
+            background-color: #ffb74d; /* 橘色机身 */
+            border: 8px solid #e65100;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .screen {
+            background-color: var(--screen-bg);
+            border: 6px solid #333;
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            /* 像素网格背景 */
+            background-image: 
+                linear-gradient(#cfd8dc 2px, transparent 2px),
+                linear-gradient(90deg, #cfd8dc 2px, transparent 2px);
+            background-size: 40px 40px;
+        }
+
+        /* 顶部选择栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            background: #fff;
+            padding: 10px;
+            border: 4px solid var(--wood-border);
+        }
+
+        select {
+            font-family: 'Press Start 2P';
+            padding: 5px;
+            border: 2px solid #333;
+        }
+
+        /* 场景元素：商店 */
+        .shop {
+            position: absolute;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 180px;
+            background: #ffcc80;
+            border: 6px solid #5d4037;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .shop-roof {
+            position: absolute;
+            top: -60px;
+            border-bottom: 60px solid #d84315;
+            border-left: 110px solid transparent;
+            border-right: 110px solid transparent;
+        }
+
+        /* 价格牌 (核心数据对象) */
+        .price-board {
+            background: #212121;
+            color: #00e676; /* LED绿 */
+            padding: 10px;
+            font-size: 20px;
+            border: 4px solid #9e9e9e;
+            margin-top: 20px;
+            text-align: center;
+            width: 120px;
+        }
+
+        /* 锁的图标 */
+        .lock-indicator {
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            font-size: 40px;
+            display: none; 
+            transition: transform 0.2s;
+        }
+        .lock-indicator.show { display: block; animation: pop 0.3s; }
+
+        /* 角色 */
+        .char {
+            width: 80px;
+            height: 80px;
+            position: absolute;
+            bottom: 20px;
+            transition: all 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 10;
+        }
+        
+        .char-sprite { font-size: 50px; }
+        .char-label { background: rgba(255,255,255,0.8); padding: 2px 5px; font-size: 10px; border-radius: 4px; margin-top: -5px;}
+        
+        /* 对话框与控制 */
+        .controls {
+            background: #fff3e0;
+            border: 4px solid var(--wood-border);
+            padding: 15px;
+            display: flex;
+            gap: 20px;
+        }
+
+        .textbox {
+            flex: 1;
+            line-height: 1.6;
+            font-size: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        button {
+            font-family: 'Press Start 2P';
+            padding: 10px;
+            background: #81c784;
+            border: 3px solid #2e7d32;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        button:disabled { background: #bdbdbd; border-color: #757575; cursor: not-allowed;}
+        button:active { transform: translateY(2px); }
+
+        /* 状态标记 */
+        .dirty-alert { color: red; font-weight: bold; animation: blink 0.5s infinite; }
+        .safe-alert { color: green; font-weight: bold; }
+        
+        @keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+        @keyframes blink { 50% { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="arcade-cabinet">
+        <div class="header">
+            <div>封锁协议模拟器</div>
+            <select id="levelSelect" onchange="resetGame()">
+                <option value="lvl1">一级封锁 (Level 1) - 脏读</option>
+                <option value="lvl2">二级封锁 (Level 2) - 不可重复读</option>
+                <option value="lvl3">三级封锁 (Level 3) - 可重复读</option>
+            </select>
+        </div>
+
+        <div class="screen">
+            <div class="shop">
+                <div class="shop-roof"></div>
+                <div class="char-label">数据对象 (X)</div>
+                <div class="price-board" id="priceDisplay">💰10</div>
+                <div id="xLock" class="lock-indicator">🔒</div> <div id="sLock" class="lock-indicator" style="right: 20px; color: blue;">🛡️</div> </div>
+
+            <div id="reader" class="char" style="left: 50px;">
+                <div class="char-sprite">🕵️</div>
+                <div class="char-label">A:读者</div>
+            </div>
+
+            <div id="writer" class="char" style="right: 50px;">
+                <div class="char-sprite">👷</div>
+                <div class="char-label">B:写者</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="textbox">
+                <div id="stepInfo" style="margin-bottom: 8px; font-weight: bold; color: #d84315;">准备就绪</div>
+                <div id="dialogue">选择协议级别，点击“下一步”开始演示。</div>
+            </div>
+            <div class="btn-group">
+                <button id="nextBtn" onclick="nextStep()">下一步 ▶</button>
+                <button onclick="resetGame()">↺ 重置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* 逻辑核心：
+           Lock Level 1: 写者加X锁直到结束。读者不加锁(或读完即扔? 在此演示中设定为不加锁以最大化展示脏读)。
+           Lock Level 2: 写者加X锁直到结束。读者加S锁，读完立刻释放。
+           Lock Level 3: 写者加X锁直到结束。读者加S锁，直到事务结束。
+        */
+
+        const priceDisplay = document.getElementById('priceDisplay');
+        const xLock = document.getElementById('xLock'); // 红锁
+        const sLock = document.getElementById('sLock'); // 蓝盾
+        const reader = document.getElementById('reader');
+        const writer = document.getElementById('writer');
+        const dialogue = document.getElementById('dialogue');
+        const stepInfo = document.getElementById('stepInfo');
+        const nextBtn = document.getElementById('nextBtn');
+
+        let currentLevel = 'lvl1';
+        let step = 0;
+        
+        // 坐标定义
+        const POS = {
+            homeLeft: '50px',
+            homeRight: '50px', // right属性
+            shopLeft: '280px', // 读者看店位置
+            shopRight: '280px' // 写者进店位置(right)
+        };
+
+        const SCENARIOS = {
+            // --- 一级封锁：演示脏读 (Dirty Read) ---
+            lvl1: [
+                {
+                    text: "初始状态：价格为 10。<br>规则：写者 B 修改时会加锁。读者 A <span style='color:red'>不加锁/随意读</span> (Level 1 对读无限制)。",
+                    action: () => { setPrice(10); resetPos(); }
+                },
+                {
+                    text: "第1步：写者 B 进店，加 X 锁 (🔒)，将价格改为 20。<br>注意：B 还没有提交事务 (Commit)！",
+                    action: () => { 
+                        move(writer, 'right', POS.shopRight); 
+                        toggleLock(xLock, true);
+                        setPrice(20);
+                    }
+                },
+                {
+                    text: "第2步：读者 A 进店。由于 Level 1 不要求 A 申请锁，或者隔离级别低，<br>A 看到了 B 还没提交的价格：<span class='dirty-alert'>20</span>。",
+                    action: () => { 
+                        move(reader, 'left', POS.shopLeft);
+                        // B 还在店里
+                    }
+                },
+                {
+                    text: "第3步：B 的事务出错了！B 执行回滚 (Rollback)，价格改回 10，解锁离开。<br>但是... A 拿走的记录里写着 20。",
+                    action: () => { 
+                        setPrice(10);
+                        toggleLock(xLock, false);
+                        move(writer, 'right', POS.homeRight);
+                    }
+                },
+                {
+                    text: "结果：<span class='dirty-alert'>读脏数据！</span><br>A 手里的 20 是无效数据。数据库里根本没有这笔交易。",
+                    action: () => {
+                        dialogue.innerHTML += "<br>A: '我刚刚看的明明是 20...？'";
+                    }
+                }
+            ],
+
+            // --- 二级封锁：演示不可重复读 (Non-repeatable Read) ---
+            lvl2: [
+                {
+                    text: "初始状态：价格为 10。<br>规则：读者 A 读数据前必须加 S 锁，但<span style='color:red'>读完立刻释放</span>。",
+                    action: () => { setPrice(10); resetPos(); }
+                },
+                {
+                    text: "第1步：读者 A 进店，加 S 锁 (🛡️)，读取价格：10。",
+                    action: () => { 
+                        move(reader, 'left', POS.shopLeft);
+                        toggleLock(sLock, true);
+                    }
+                },
+                {
+                    text: "第2步：A 读完了，根据 Level 2 规则，<span style='color:red'>立刻释放 S 锁</span>。A 还没离开事务，只是在旁边思考。",
+                    action: () => { 
+                        toggleLock(sLock, false); // 关键：释放锁
+                        move(reader, 'left', '150px'); // 退到旁边
+                    }
+                },
+                {
+                    text: "第3步：因为没有 S 锁挡路，写者 B 成功进店！<br>B 加 X 锁，改价格为 20，提交，释放锁离开。",
+                    action: () => {
+                        move(writer, 'right', POS.shopRight);
+                        toggleLock(xLock, true);
+                        setTimeout(() => { setPrice(20); }, 500); // 模拟修改
+                    }
+                },
+                {
+                    text: "第4步：B 走了(解锁)。读者 A 决定复查一下价格。<br>A 再次加 S 锁进店，发现价格变成了 20！",
+                    action: () => {
+                        toggleLock(xLock, false);
+                        move(writer, 'right', POS.homeRight);
+                        move(reader, 'left', POS.shopLeft); // A 回来
+                        toggleLock(sLock, true);
+                    }
+                },
+                {
+                    text: "结果：<span class='dirty-alert'>不可重复读！</span><br>在同一个事务里，A 读到了 10 和 20 两个不同的值。",
+                    action: () => {}
+                }
+            ],
+
+            // --- 三级封锁：演示可重复读 (Repeatable Read) ---
+            lvl3: [
+                {
+                    text: "初始状态：价格为 10。<br>规则：读者 A 加 S 锁，并且<span style='color:green'>一直持有到事务结束</span>。",
+                    action: () => { setPrice(10); resetPos(); }
+                },
+                {
+                    text: "第1步：读者 A 进店，加 S 锁 (🛡️)，读取价格：10。",
+                    action: () => { 
+                        move(reader, 'left', POS.shopLeft);
+                        toggleLock(sLock, true);
+                    }
+                },
+                {
+                    text: "第2步：A 读完了，在旁边思考。但注意：<span style='color:blue'>A 并没有归还盾牌 (S锁)！</span>",
+                    action: () => { 
+                        // 锁保持显示
+                        move(reader, 'left', '150px'); 
+                    }
+                },
+                {
+                    text: "第3步：写者 B 试图进店修改。但是店门口挂着 A 的 S 锁。<br>规则：有 S 锁时，X 锁无法进入。",
+                    action: () => {
+                        move(writer, 'right', '200px'); // 被挡在外面
+                        dialogue.innerHTML += "<br>B: '怎么锁着？进不去！'";
+                    }
+                },
+                {
+                    text: "第4步：A 决定复查。因为没人能改数据，价格依然是 10。<br>数据一致性得到了保证。",
+                    action: () => {
+                        move(reader, 'left', POS.shopLeft);
+                        // 价格没变
+                    }
+                },
+                {
+                    text: "第5步：A 事务结束，终于释放 S 锁。B 现在才能进去修改。",
+                    action: () => {
+                        toggleLock(sLock, false);
+                        move(reader, 'left', POS.homeLeft); // A 离开
+                        setTimeout(() => {
+                            move(writer, 'right', POS.shopRight); // B 进去了
+                            toggleLock(xLock, true);
+                        }, 1000);
+                    }
+                }
+            ]
+        };
+
+        // --- 辅助函数 ---
+        function setPrice(val) {
+            priceDisplay.innerText = '💰' + val;
+            priceDisplay.style.color = val === 20 ? '#ff5252' : '#00e676';
+        }
+
+        function toggleLock(el, show) {
+            if(show) {
+                el.classList.add('show');
+                el.style.display = 'block';
+            } else {
+                el.classList.remove('show');
+                el.style.display = 'none';
+            }
+        }
+
+        function move(el, side, val) {
+            el.style[side] = val;
+        }
+
+        function resetPos() {
+            move(reader, 'left', POS.homeLeft);
+            move(writer, 'right', POS.homeRight);
+            toggleLock(xLock, false);
+            toggleLock(sLock, false);
+        }
+
+        function resetGame() {
+            currentLevel = document.getElementById('levelSelect').value;
+            step = 0;
+            // 执行第0步初始化
+            SCENARIOS[currentLevel][0].action();
+            updateUI();
+        }
+
+        function nextStep() {
+            const scenario = SCENARIOS[currentLevel];
+            if (step < scenario.length - 1) {
+                step++;
+                scenario[step].action();
+                updateUI();
+            }
+        }
+
+        function updateUI() {
+            const scenario = SCENARIOS[currentLevel];
+            stepInfo.innerText = `步骤 ${step} / ${scenario.length - 1}`;
+            document.getElementById('dialogue').innerHTML = scenario[step].text;
+            nextBtn.disabled = step === scenario.length - 1;
+        }
+
+        // 初始化
+        resetGame();
+
+    </script>
+</body>
+</html>

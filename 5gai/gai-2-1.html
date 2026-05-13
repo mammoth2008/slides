@@ -1,0 +1,783 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=1024" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+
+  <!-- 修改页面标题 -->
+  <title>GAI | HUST</title>
+
+  <!-- 修改 content -->
+  <meta name="description" content="生成式人工智能与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统专业设计. " />
+  <meta name="author" content="xinjiang@hrbust.edu.cn" />
+
+  <!-- 引入数学公式 -->
+  <script type="text/javascript">
+    window.MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']],
+        displayMath: [['$$', '$$'], ['\\[', '\\]']],
+      },
+      chtml: {
+        scale: 0.95
+      }
+    };
+  </script>
+  <script src="../extras/mathjax/tex-chtml-full.js"></script>
+  <!-- 引入完毕 -->
+
+  <link href="../css/impress-course.css" rel="stylesheet" />
+  <link href="../css/impress-common.css" rel="stylesheet" />
+
+  <link rel="shortcut icon" href="../hustlogo72.png" />
+  <link rel="stylesheet" href="../extras/highlight/styles/github.css">
+
+</head>
+
+<body class="impress-not-supported">
+
+  <!-- 左上角加上 logo -->
+  <!--    <div class="logo"></div> -->
+
+  <div class="fallback-message">
+    <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
+    <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
+
+  </div>
+
+  <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
+    data-min-scale="0" data-perspective="1000" data-autoplay="0">
+
+    <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
+    <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
+    <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
+
+    <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
+
+    </div>
+
+    <!-- 修改 id -->
+
+    <div 
+    id         = "c21t"
+    class      = "step"
+    data-x     = "0"
+    data-y     = "0"
+    data-z     = "0"
+    data-scale = "5">
+
+    <!-- 修改标题 -->
+        <h2>2. 提示词工程</h2>
+        <h3 style="text-align: center">2.1 文本生成</h3>
+        <p class="footnote">
+            <inlinecode style="font-size: 16px">
+            Powered by 
+            </inlinecode>
+                <a href="https://github.com/impress/impress.js/">
+                    <inlinecode style="font-size: 16px">
+                    impress.js
+                    </inlinecode>
+                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
+                </a>
+                <br/>
+                <inlinecode style="font-size: 16px">
+                    Ver. 2602
+                </inlinecode>
+            </inlinecode>
+        </p>
+
+    </div>
+        
+    <div 
+    id            = "a1"
+    class         = "step markdown"
+    data-rel-to   = "c21t"
+    data-rel-x    = "-2000"
+    data-rel-y    = "-2000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词工程 (Prompt Engineering) 背景
+
+- 大语言模型能生成文本代码解释和推理
+- 模型能力很强但输出质量依赖提问方式
+- 同一问题不同提示词会得到完全不同的结果
+- Prompt Engineering 因此成为人与 AI 交互的重要方法
+- 本章重点是理解如何设计清晰有效的提示词
+
+    </div>
+
+    <div 
+    id            = "a2"
+    class         = "step markdown"
+    data-rel-to   = "a1"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词工程的发展阶段
+
+- 2023 年 Prompt Engineering 被认为是核心技术
+- 大量指南和模板被提出用于优化提问方式
+- 2024 年开始出现 Tool use RAG 和 AI Agent
+- 2025 年越来越多研究提出 Context Engineering
+- Prompt 不再是全部
+- 但仍然是 AI 系统的重要基础
+
+    </div>
+
+    <div 
+    id            = "a3"
+    class         = "step markdown"
+    data-rel-to   = "a2"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词的基本作用
+
+- 指定 AI 要完成的任务
+- 提供必要的背景信息
+- 指定输出结构或写作风格
+- 引导模型进行推理或分析
+- 降低模型生成错误或偏差的概率
+
+    </div>
+
+    <div 
+    id            = "a4"
+    class         = "step markdown"
+    data-rel-to   = "a3"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词的本质
+
+- Prompt 不是简单的命令
+- Prompt 是对问题的结构化表达
+- Prompt 反映提问者对问题的理解程度
+- 高质量 Prompt 往往来自深度思考
+- AI 输出质量近似等于问题定义质量
+
+    </div>
+
+    <div 
+    id            = "a5"
+    class         = "step markdown"
+    data-rel-to   = "a4"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 与大语言模型 对话 的基本原则
+
+- 明确任务: 不要提出模糊问题
+- 提供背景: 让模型理解情境
+- 指定角色: 帮助模型选择合适语气
+- 指定结构: 控制输出组织方式
+- 允许迭代: 通过多轮对话改进结果
+
+    </div>
+
+    <div 
+    id            = "a6"
+    class         = "step markdown"
+    data-rel-to   = "a5"
+    data-rel-x    = "-2000"
+    data-rel-y    = "-2000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则一 明确任务
+
+- 模糊问题往往产生模糊答案
+- 清晰任务可以减少不相关内容
+- 指定主题范围和目标
+- 可以同时指定字数或内容深度
+- 明确任务是提示词设计的第一步
+
+    </div>
+
+    <div 
+    id            = "a7"
+    class         = "step markdown"
+    data-rel-to   = "a6"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则二 提供背景
+
+- LLM 不了解用户当前情境
+- 提供背景可以减少误解
+- 背景可以包括专业学习阶段或使用目的
+- 背景越清晰模型越容易生成合适内容
+- Context 是 Prompt 的重要组成部分
+
+    </div>
+
+    <div 
+    id            = "a8"
+    class         = "step markdown"
+    data-rel-to   = "a7"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则三 指定角色
+
+- 指定角色可以影响输出风格
+- 角色设定可以帮助模型选择适当语气
+- 角色提示可以提高内容一致性
+- Role Prompting 是最常见的技巧之一
+
+    </div>
+
+    <div 
+    id            = "a9"
+    class         = "step markdown"
+    data-rel-to   = "a8"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则四 指定输出结构
+
+- 输出结构可以控制内容组织
+- 可以指定标题列表或分段方式
+- 可以要求使用 Markdown 或表格
+- 明确结构可以减少冗余内容
+- Structured Output 提高可读性
+
+    </div>
+
+    <div 
+    id            = "a10"
+    class         = "step markdown"
+    data-rel-to   = "a9"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则五 提供示例
+
+- 示例可以帮助模型理解 任务模式
+- Few shot Prompting 是常见方法
+- 示例可以展示输入和输出对应关系
+- 模型通过示例学习任务结构
+- 示例数量不必太多
+- 关键是清晰
+
+    </div>
+
+    <div 
+    id            = "a11"
+    class         = "step markdown"
+    data-rel-to   = "a10"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 原则六 逐步推理
+
+- 复杂问题需要逐步分析
+- Chain of Thought 可以引导推理
+- 模型先解释思路再给出答案
+- 逐步推理可以减少逻辑错误
+- 这种方法在数学或分析任务中常见
+
+    </div>
+
+    <div 
+    id            = "a12"
+    class         = "step markdown"
+    data-rel-to   = "c21t"
+    data-rel-x    = "400"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 常见提示词框架 的作用
+
+- 框架提供组织 Prompt 的结构
+- 框架帮助用户思考任务要素
+- 框架减少 Prompt 设计的随意性
+- 框架有助于学习标准化表达
+- 但框架只是工具关键仍是理解问题
+
+    </div>
+
+    <div 
+    id            = "a13"
+    class         = "step markdown"
+    data-rel-to   = "a12"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### RTF 框架
+
+- RTF 代表 Role Task Format
+- Role 指定 AI 的角色
+- Task 指定需要完成的任务
+- Format 指定输出形式
+- 结构简单适合初学者
+
+    </div>
+
+    <div 
+    id            = "a14"
+    class         = "step markdown"
+    data-rel-to   = "a13"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### CO-STAR 框架
+
+- Context 描述任务背景
+- Objective 描述任务目标
+- Style 指定写作风格
+- Tone 指定语气
+- Audience 指定读者群体
+- Response 指定输出形式
+
+    </div>
+
+    <div 
+    id            = "a15"
+    class         = "step markdown"
+    data-rel-to   = "a14"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### Few-Shot Prompting
+
+- Few Shot 指提供少量示例
+- 示例展示输入与输出的关系
+- 模型通过示例模仿任务结构
+- 常用于分类或格式化任务
+- 示例质量比示例数量更重要
+
+    </div>
+
+    <div 
+    id            = "a16"
+    class         = "step markdown"
+    data-rel-to   = "a15"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### Chain of Thought Prompting
+
+- 引导模型逐步进行推理
+- 常用于逻辑分析或数学问题
+- 可以减少推理过程中的错误
+- 通过提示先分析再回答
+- 提高复杂任务的正确率
+
+    </div>
+
+    <div 
+    id            = "a17"
+    class         = "step markdown"
+    data-rel-to   = "c21t"
+    data-rel-x    = "2800"
+    data-rel-y    = "-2000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词工程的常见误区
+
+- 将 AI 当作搜索引擎使用
+- 认为一次提问就能得到完美答案
+- 认为 Prompt 越长越好
+- 忽略任务拆解
+- 忽略对输出结果的评估
+
+    </div>
+
+    <div 
+    id            = "a18"
+    class         = "step markdown"
+    data-rel-to   = "a17"
+    data-rel-x    = "2000"
+    data-rel-y    = "-1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 误区一 将 AI 当作搜索引擎
+
+- 搜索引擎返回已有网页
+- LLM 根据概率生成文本
+- 两者机制完全不同
+- 使用方式也应不同
+- Prompt 应描述任务而不是关键词
+
+    </div>
+
+    <div 
+    id            = "a19"
+    class         = "step markdown"
+    data-rel-to   = "a18"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 误区二 期待一次完美答案
+
+- AI 输出是概率生成结果
+- 结果可能需要多次修改
+- Prompt 设计通常需要迭代
+- 用户需要不断调整问题
+- 人机协作是重要过程
+
+    </div>
+
+    <div 
+    id            = "a20"
+    class         = "step markdown"
+    data-rel-to   = "a19"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 误区三 Prompt 越长越好
+
+- 长 Prompt 不一定更清晰
+- 关键在于信息结构
+- 冗余信息可能造成干扰
+- 好 Prompt 通常结构清晰
+- 简洁但完整的 Prompt 更有效
+
+    </div>
+
+    <div 
+    id            = "a21"
+    class         = "step markdown"
+    data-rel-to   = "a20"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 误区四 忽略任务拆解
+
+- 复杂任务不应一次完成
+- 可以拆分为多个步骤
+- 例如收集信息、分析、再写作
+- 逐步任务更容易获得好结果
+- Task Decomposition 是重要策略
+
+    </div>
+
+    <div 
+    id            = "a22"
+    class         = "step markdown"
+    data-rel-to   = "a17"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词工程与批判性思维
+
+- Prompt 设计 需要理解问题
+- 需要判断哪些信息重要
+- 需要组织逻辑结构
+- 需要评估 AI 输出质量
+- 因此 Prompt Engineering 与思维能力密切相关
+
+    </div>
+
+    <div 
+    id            = "a23"
+    class         = "step markdown"
+    data-rel-to   = "a22"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 人机协作的基本循环
+
+- 用户提出问题
+- AI 生成初步回答
+- 用户评估结果
+- 用户修改 Prompt
+- 人机协作 不断改进答案
+
+    </div>
+
+    <div 
+    id            = "a24"
+    class         = "step markdown"
+    data-rel-to   = "a23"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 案例一 研究报告任务
+
+- 初始 Prompt 可能过于简单
+- 例如写一篇关于 AI 的文章
+- 输出通常较为泛泛
+- 可以逐步增加任务约束
+- 最终得到结构清晰的报告
+
+    </div>
+
+    <div 
+    id            = "a25"
+    class         = "step markdown"
+    data-rel-to   = "a24"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 改进 Prompt 的方法
+
+- 明确研究主题
+- 指定文章结构
+- 指定读者群体
+- 指定字数范围
+- 指定是否需要引用
+
+    </div>
+
+    <div 
+    id            = "a26"
+    class         = "step markdown"
+    data-rel-to   = "a25"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 案例二 学习一门课程
+
+- 初始问题往往非常笼统
+- 例如我想学习机器学习
+- 模型难以判断学习目标
+- 可以增加背景信息
+- 例如专业基础、学习时间和目标
+
+    </div>
+
+    <div 
+    id            = "a27"
+    class         = "step markdown"
+    data-rel-to   = "a26"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 学习路径 Prompt 的改进
+
+- 指定学习目标
+- 指定学习周期
+- 指定学习资源类型
+- 要求输出学习计划
+- 要求分阶段安排
+
+    </div>
+
+    <div 
+    id            = "a28"
+    class         = "step markdown"
+    data-rel-to   = "a27"
+    data-rel-x    = "0"
+    data-rel-y    = "800"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 案例三 翻译与理解
+
+- 简单 Prompt 只是翻译文本
+- 改进 Prompt 可以加入解释
+- 可以要求解释专业术语
+- 可以要求提供背景知识
+- 可以帮助读者更好理解内容
+
+    </div>
+
+    <div 
+    id            = "a29"
+    class         = "step markdown"
+    data-rel-to   = "a28"
+    data-rel-x    = "0"
+    data-rel-y    = "1200"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 提示词工程的未来角色
+
+- Prompt 不再是唯一接口
+- AI 系统逐渐加入工具和记忆
+- Context Engineering 越来越重要
+- Agent 系统 会自动调用多个模型
+- 但 Prompt 仍然是基础能力
+
+    </div>
+
+    <div 
+    id            = "a30"
+    class         = "step markdown"
+    data-rel-to   = "c21t"
+    data-rel-x    = "400"
+    data-rel-y    = "-4000"
+    data-rel-z    = "0"
+    data-rotate-y = "0"
+    data-scale    = "2">
+
+### 结论
+
+- Prompt Engineering 是人与 AI 的沟通方式
+- 高质量 Prompt 来自清晰问题定义
+- Prompt 框架可以帮助组织思路
+- Prompt 设计需要不断迭代
+- 最终目标是提升问题理解能力
+
+    </div>
+
+    <div
+    id            = "mm21"
+    class         = "step"
+    data-rel-to   = "c21t"
+    data-rel-x    = "0"
+    data-rel-y    = "-2000"
+    data-rotate-y = "0"
+    data-rotate   = "0"
+    data-scale    = "1"
+    style         = "width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
+
+    <iframe
+    src           = "img/c02/mindmap-2-1.html"
+    style         = "width: 100%; height: 100%; border: none;"
+    allowfullscreen>
+    </iframe>
+
+    </div>
+
+<!-- 本节问题 -->
+
+    <div
+    id            = "c21q"
+    class         = "step markdown"
+    data-rel-to   = "c21t"
+    data-rel-x    = "0"
+    data-rel-y    = "-800"
+    data-z        = "500"
+    data-rotate-x = "77"
+    data-rotate-y = "0"
+    data-rotate-z = "180"
+    data-scale    = "2">
+
+### 2.1 文本生成
+
+- 为什么同一个问题不同 Prompt 会产生完全不同的结果?
+- 为什么复杂任务应该拆解为多个步骤?
+- 在什么情况下 LLM 的回答需要人类进行批判性评估?
+- 如何判断一个 Prompt 是否设计得足够清晰?
+- 如果 AI 能自动生成 Prompt, 人类是否仍需要学习 Prompt Engineering?
+
+----
+
+[ 1.3 生成式人工智能 2025 回顾](gai-1-3.html#/overview)
+[| 练习 |](gai-exec.html)
+[ 2.2 多模态内容生成](gai-2-2.html#/overview)
+
+    </div>
+
+    </div>
+
+    <!--
+    <div id="impress-toolbar"></div>
+    <div id="impress-help"></div>
+
+    <script>
+    if ("ontouchstart" in document.documentElement) { 
+        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+    }
+    </script>
+    -->
+
+    <!-- 页面下方显示进度条 -->
+    <div class="impress-progressbar">
+        <div></div>
+    </div>
+
+    <!-- 页面下方显示当前页/总页数 -->
+    <div class="impress-progress"></div>
+
+    <!-- 使用 markdown 写简单页面 -->
+    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
+
+    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
+    <script src="../extras/highlight/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+
+    <!-- impress.js 需要放在最下面,并且初始化 -->
+    <script src="../js/impress.js"></script>
+    <script>impress().init();</script>
+            <br/>
+    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
+        <a href="https://beian.mps.gov.cn/" style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
+            <img class="icon"; src="../beianicon.png" style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
+        &nbsp; 
+        <a href="https://beian.miit.gov.cn/" style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">黑ICP备2024033110号-1</a>
+    </div>
+    </body>
+    </html>
