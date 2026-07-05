@@ -20,13 +20,13 @@
 
 | 路径 | 作用 |
 |---|---|
-| `draft/{课程}/` | Markdown 源码（唯一源） |
+| `/Users/Freeman/Documents/products/courses/library/texts/{课程}-slide-drafts/` | Markdown 源码（唯一源） |
 | `{课程}/`（如 `10pmi/`、`5gai/`） | 生成的 HTML |
-| `pmihg.py` / `gaihg.py` | HTML 生成器 |
+| `.agents/skills/slides-workflow/scripts/generate_html.py` | 统一 HTML 生成器；课程目录下 `*hg.py` 仅为兼容 wrapper |
 | `.agents/skills/slides-workflow/` | 开发工作流（权威） |
 | `.agents/skills/build-layout/` | 布局校验工具 |
 
-**md 与 HTML 目录严格分离**：`draft/` 下不放 html，课程目录下不放 md（教学大纲.md、章节结构.md 除外）。
+**md 与 HTML 目录严格分离**：课程资料库 `library/texts/{课程}-slide-drafts/` 下不放生成后的 html，课程 HTML 目录下不放 md（教学大纲.md、章节结构.md、迁移期审查说明除外）。`draft/` 已移出发布根目录；归档副本位于 `archive/draft-20260704/`，只作回退参考，不再作为新工作的长期源。
 
 **图片与资源目录规则**：课件使用的图片、SVG、mindmap 等前端资源，统一放在目标课程目录的 `img/cNN/` 下，其中 `NN` 为章节号，如第三章放 `5gai/img/c03/`，第四章放 `5gai/img/c04/`。md 中图片路径也写目标目录相对路径形式，如 `img/c04/example.svg`。
 
@@ -66,12 +66,12 @@
 
 ## 全局约定（会话开始就应知晓）
 
-1. **md 是唯一源**。所有修改从 md 开始。
+1. **md 是唯一源**。所有修改从课程资料库的 md 开始。
 2. **生成器每次重置布局和 cXXq**。每次运行生成器后，必须重做移动、布局调整、cXXq 导航修复。
 3. **未经用户审阅同意不生成 HTML**。流程是：完成 md → SOP 检查 → 等同意 → 生成。
 4. **思考题只写在 cXXq 导航页**，不得单独成 slide；md 中不得出现 `### 思考题`。
 5. **读过的原文原样写回**。nav 标题、章节名、术语名，读到什么写什么。
-6. **生成器若先在 `draft/` 下产出 html，必须立即移动到目标课程目录**。不得复制后在 `draft/` 留残留文件。
+6. **生成器若先在旧 `draft/` 路径或课程资料库源包下产出 html，必须立即移动到目标课程目录**。不得复制后留下残留文件。
 
 ## 全局设计尺寸
 
@@ -181,8 +181,8 @@
 原因：生成器覆盖所有布局和 cXXq，重生成后全部重做。
 
 **修改后重生成的标准流程**：
-1. 先改 `draft/{课程}/` 下的源 `md`，必要时同步修改对应的 mindmap `md`
-2. 运行生成器，若临时 `html` 先落在 `draft/`，立刻移动到目标课程目录
+1. 先改课程资料库 `library/texts/{课程}-slide-drafts/` 下的源 `md`，必要时同步修改对应的 mindmap `md`
+2. 运行统一生成脚本，默认直接写入目标课程目录；若旧兼容脚本把临时 `html` 落在旧 `draft/` 路径或课程资料库源包，立刻移动到目标课程目录
 3. 重新应用 layout（至少执行一次 `--dry-run`，再正式写回）
 4. 立即恢复 `cXXq` 三项内容：思考题、左右导航、中间练习链接
 5. 如本节有独立练习页，同步检查并更新对应 `exec html`

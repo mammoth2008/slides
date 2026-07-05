@@ -14,4 +14,4 @@ from generate_html import main
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:], default_course="dbpa")
+    main(sys.argv[1:])

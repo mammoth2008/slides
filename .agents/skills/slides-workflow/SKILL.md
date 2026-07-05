@@ -5,17 +5,22 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 
 ## 课程目录映射
 
-| 课程 | 源目录（draft/） | 目标目录 | 生成器 |
-|---|---|---|---|
-| PMI | draft/pmi/ | 10pmi/ | pmihg.py |
-| GAI | draft/gai/ | 5gai/ | gaihg.py |
-| ITPM | draft/itpm/ | 3itpm/ | pmihg.py |
-| ITA | draft/ita/ | 6ita/ | pmihg.py |
-| IL | draft/il/ | 8il/ | pmihg.py |
-| CCIoT | draft/cciot/ | 2cciot/ | pmihg.py |
-| DBPA | draft/dbpa/ | 1dbpa/ | pmihg.py |
-| FIIoT | draft/fiit/ | 9fiit/ | pmihg.py |
-| 其他 | draft/{course}/ | {course}/ | pmihg.py |
+Markdown 源稿已经从本 repo 的 `draft/` 迁入课程资料库：
+`/Users/Freeman/Documents/products/courses/library/texts/`。
+
+本 repo 现在主要保留生成后的 HTML、课程图片资源、生成器、布局工具和发布站点框架。`draft/` 已移出发布根目录；归档副本位于 `archive/draft-20260704/`，只作回退参考，不再作为新工作的长期源目录。
+
+| 课程 | 源包 | 课件 md 子目录 | mindmap md 子目录 | 目标目录 | 生成脚本 |
+|---|---|---|---|---|---|
+| PMI | `pmi-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `10pmi/` | `generate_html.py` |
+| GAI | `gai-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `5gai/` | `generate_html.py` |
+| ITPM | `itpm-slide-drafts/` | `slide-drafts/` | 无固定目录 | `3itpm/` | `generate_html.py` |
+| ITA | `ita-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `6ita/` | `generate_html.py` |
+| IL | `il-slide-drafts/` | `slide-drafts/` | 无固定目录 | `8il/` | `generate_html.py` |
+| CCIoT | `cciot-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `2cciot/` | `generate_html.py` |
+| DBPA | `dbpa-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `1dbpa/` | `generate_html.py` |
+| FIIoT | `fiit-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `9fiit/` | `generate_html.py` |
+| 其他 | `{course}-slide-drafts/` | `slide-drafts/` | `mindmaps/` | `{course}/` | `generate_html.py` |
 
 > 新增课程时需同步更新本映射。
 
@@ -44,7 +49,9 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 ## 标准工作流（7步）
 
 ### 第1步：确认源文件
-- md 源码必须在 `draft/{course}/` 下，不是在目标目录
+- md 源码必须在课程资料库的 `library/texts/{course}-slide-drafts/` 下，不是在目标 HTML 目录
+- 文本主课件优先读 `slide-drafts/`，mindmap 读 `mindmaps/`，课程设计/材料/任务按源包内分层读取
+- 不再把 `draft/{course}/` 当作长期源；如果旧流程临时需要对照旧稿，只读 `archive/draft-20260704/`，不要恢复为长期源
 - 告知用户文件路径和所在课程
 - 如需新增图片、SVG、mindmap 等资源，统一放在目标课程目录的 `img/cNN/` 下，`NN` 为章节号
 
@@ -63,14 +70,17 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 
 ### 第4步：生成 HTML
 - 参照上方映射表确定目标目录和生成器
-- 运行对应生成器（`python3 pmihg.py` 或 `python3 gaihg.py`），输入文件名（不含 .md）
-- 生成器会先输出到 md 同目录，这是临时产物
+- 使用统一生成脚本，传入课程资料库中的 md 路径；脚本会按课程配置直接写入目标课程目录
+- 推荐命令：
+  `python3 .agents/skills/slides-workflow/scripts/generate_html.py --course gai /Users/Freeman/Documents/products/courses/library/texts/gai-slide-drafts/slide-drafts/gai-3-2.md`
+- 课程目录下旧的 `*hg.py` 仅作为兼容 wrapper；新工作不要再新增每课一个 HG 文件
+- 如果使用尚未更新的旧生成器，可能需要临时复制 md 到兼容目录；这种副本不得成为长期源
 
 ### 第5步：移动到目标目录
-- 将生成的 `.html` 文件从 `draft/{course}/` **移动**到对应目标目录
-- `draft/{course}/` 下不得保留生成后的 `.html` 残留文件
+- 正常情况下 HTML 应直接生成到对应目标目录
+- 如果旧生成器仍把 `.html` 写到旧 `draft/{course}/` 路径或课程资料库源包中，必须立即移动到对应目标目录
+- 旧 `draft/{course}/` 路径和课程资料库源包下都不得保留生成后的 `.html` 残留文件
 - 如果有新增图片，只同步图片资源，不保留错误位置的副本
-- 这一步必须手动执行，生成器不会自动移动
 
 ### 第6步：应用布局
 
@@ -104,8 +114,8 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
   1. 思考题三条
   2. 左导航标题与链接
   3. 右导航标题与链接
-- 先改源 `md`；如果结构摘要变了，mindmap `md` 也要同步改。
-- 运行生成器后，如果临时 html 落在 `draft/{course}/`，**立刻移动**到目标课程目录，不留残留文件。
+- 先改课程资料库中的源 `md`；如果结构摘要变了，mindmap `md` 也要同步改。
+- 运行生成器后，如果临时 html 落在旧 `draft/{course}/` 路径或源包目录，**立刻移动**到目标课程目录，不留残留文件。
 - 然后按顺序执行：
   1. 重跑 layout
   2. 恢复 `cXXq`
@@ -166,9 +176,9 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 **每次生成后必须完整执行第5步到第7步，不得跳过。**
 
 ### ⚠️ draft 目录不留 html 残留
-生成器可能先把 `.html` 写到 `draft/{course}/`。
+旧生成器可能先把 `.html` 写到旧 `draft/{course}/` 路径或源 md 所在目录。
 **正确做法**：生成后立刻移动到目标课程目录。
-**错误做法**：复制一份到目标目录后，让 `draft/` 下残留旧 `.html`。
+**错误做法**：复制一份到目标目录后，让旧 `draft/` 路径或课程资料库源包下残留旧 `.html`。
 
 ### ⚠️ layout 输出格式要求
 `auto_layout.py` 生成的 div 最后一行必须是：
@@ -199,6 +209,10 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 
 ### chinese-fix.py
 按 `references/markdown-sop.md` 的标点/空格规则自动修复 md 文件。
+
+### generate_html.py
+统一从 courses vault 的源 md 生成 impress.js HTML，输出到配置的目标课程目录。课程目录下旧 `*hg.py` 只做兼容转发，不再作为长期生成器维护入口。
+使用方式：`python3 .agents/skills/slides-workflow/scripts/generate_html.py --course gai <source.md>`
 使用方式：`python3 .agents/skills/slides-workflow/chinese_fix.py {filename.md}`
 
 ---
@@ -209,7 +223,7 @@ description: Slides 课程单节开发的标准工作流。当用户提到"开�
 
 **课件 md 不能直接生成 mindmap。** 原因：课件 md 的 `###` 是幻灯片级别（一页一页），而 mindmap 需要知识层级（主题→子主题→要点）。两者结构不同，需要人工提炼。
 
-Mindmap md 文件（`{course}-N-N-mindmap.md`）是对课件 md 的**知识结构重组**，放在同一个 `draft/{course}/` 目录下。
+Mindmap md 文件（`{course}-N-N-mindmap.md` 或 `mindmap-N-N.md`）是对课件 md 的**知识结构重组**，放在课程资料库源包的 `mindmaps/` 目录下。
 
 ### Mindmap md 格式
 
@@ -241,7 +255,7 @@ Mindmap md 文件（`{course}-N-N-mindmap.md`）是对课件 md 的**知识结�
 
 ```
 第1步：Codex 读课件 md，起草 mindmap-md 初稿
-        → 读 draft/{course}/{name}.md 全文
+        → 读课程资料库中对应的课件 md 全文
         → 识别核心主题、知识模块、子主题
         → 按 #/##/###/- 层级重组，写出初稿
         → 告知用户"请审阅 mindmap-md 初稿"，等待确认
@@ -250,7 +264,7 @@ Mindmap md 文件（`{course}-N-N-mindmap.md`）是对课件 md 的**知识结�
   ↓
 第3步：运行脚本生成 HTML
   python3 .agents/skills/slides-workflow/scripts/mindmap_gen.py \
-    draft/{course}/{name}-mindmap.md
+    /Users/Freeman/Documents/products/courses/library/texts/{course}-slide-drafts/mindmaps/{name}-mindmap.md
   ↓
 输出：{course_dir}/img/cNN/mindmap-N-N.html（路径自动推断）
   ↓
@@ -299,7 +313,7 @@ mindmap-md 是独立文件，与课件 md 各自维护。课件 md 更新后，�
 
 ### LLM 起草 mindmap-md 的原则
 
-**读什么**：课件 md 全文（`draft/{course}/{name}.md`）
+**读什么**：课程资料库中的课件 md 全文（通常在 `library/texts/{course}-slide-drafts/slide-drafts/`）
 
 **怎么起草**：
 1. 找出全节的核心主题（→ `#` 根节点，通常就是章节名）
@@ -318,16 +332,17 @@ mindmap-md 是独立文件，与课件 md 各自维护。课件 md 更新后，�
 ```bash
 # 基本用法（输出路径自动推断）
 python3 .agents/skills/slides-workflow/scripts/mindmap_gen.py \
-  draft/gai/gai-3-2-mindmap.md
+  /Users/Freeman/Documents/products/courses/library/texts/gai-slide-drafts/mindmaps/gai-3-2-mindmap.md
 
 # 指定输出路径
 python3 .agents/skills/slides-workflow/scripts/mindmap_gen.py \
-  draft/gai/gai-3-2-mindmap.md \
+  /Users/Freeman/Documents/products/courses/library/texts/gai-slide-drafts/mindmaps/gai-3-2-mindmap.md \
   -o 5gai/img/c03/mindmap-3-2.html
 ```
 
 ### 路径自动推断规则
 
 脚本根据 mindmap md 的路径推断输出位置：
-- `draft/gai/gai-3-2-mindmap.md` → `5gai/img/c03/mindmap-3-2.html`
+- `/Users/Freeman/Documents/products/courses/library/texts/gai-slide-drafts/mindmaps/gai-3-2-mindmap.md` → `5gai/img/c03/mindmap-3-2.html`
+- 兼容旧路径：`draft/gai/gai-3-2-mindmap.md` → `5gai/img/c03/mindmap-3-2.html`
 - 课程前缀映射：`gai→5gai`, `pmi→10pmi`, `itpm→3itpm` 等（见脚本 `COURSE_PREFIXES`）
