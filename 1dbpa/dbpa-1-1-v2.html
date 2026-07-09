@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=1280" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <title>DBPA 1.1 数据库系统概述 | HUST</title>
+    <meta name="description" content="数据库原理与应用课程使用，为哈尔滨理工大学经济与管理学院信息管理与信息系统系本科生设计。" />
+    <meta name="author" content="xinjiang@hrbust.edu.cn" />
+    <meta name="course" content="数据库原理与应用" />
+    <meta name="institution" content="哈尔滨理工大学经济与管理学院" />
+    <link rel="icon" href="resources/theme/branding/mengma-logo/mengma-tusk-path-mark-b3-traced.svg" />
+    <link href="../css/impress-common.css" rel="stylesheet" />
+    <link href="resources/theme/dbpa-visual-identity.css" rel="stylesheet" />
+</head>
+
+<body class="impress-not-supported">
+    <div class="fallback-message">
+        <p>你的浏览器不支持本网站所要求的功能，请使用最新版本 Chrome、Safari、Firefox 或 Edge。</p>
+    </div>
+
+    <div id="impress" data-transition-duration="900" data-width="1280" data-height="960"
+        data-max-scale="3" data-min-scale="0" data-perspective="1300" data-autoplay="0">
+
+        <div id="overview" class="step" data-x="0" data-y="0" data-z="-1500" data-scale="5">
+        </div>
+
+        <div id="c11t" class="step cover section-cover"
+            data-x="0"
+            data-y="0"
+            data-z="0"
+            data-scale="1">
+            <div class="cover-title">
+                <div class="kicker">CHAPTER 01 / SECTION 1.1</div>
+                <h1>数据库系统概述</h1>
+                <div class="cover-meta">
+                    <div class="cover-version-line">
+                        <img class="cover-logo" src="resources/theme/branding/mengma-logo/mengma-tusk-path-mark-b3-traced.svg" alt="">
+                        <div class="cover-version">VER. 2608</div>
+                    </div>
+                    <div class="cover-built">Built with <a href="https://github.com/impress/impress.js/">impress.js</a><img src="resources/theme/branding/mengma-logo/impress-favicon.png" alt=""></div>
+                </div>
+                <p class="english">数据 / 数据库 / 数据库管理系统 / 数据库系统</p>
+            </div>
+            <div class="cover-footer">
+                <span>DBPA / Chapter 01</span>
+                <span>Database System Overview</span>
+            </div>
+
+        </div>
+        <div id="route" class="step slide-surface"
+            data-x="0"
+            data-y="1300"
+            data-z="-150"
+            data-rotate-y="-8"
+            data-scale="1">
+            <div class="chapter-mark">1.1 / LEARNING ROUTE</div>
+            <h2>本节学习路径</h2>
+            <p class="lead">区分四个基本概念；数据管理技术为什么从文件系统走向数据库系统？</p>
+
+            <div class="map-grid">
+                <div class="map-node">
+                    <span class="node-icon icon-database" aria-hidden="true"></span>
+                    <span class="num">01</span>
+                    <span class="title">数据 Data</span>
+                    <span class="hint">符号记录 + 语义</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-table" aria-hidden="true"></span>
+                    <span class="num">02</span>
+                    <span class="title">数据库 Database</span>
+                    <span class="hint">有组织 / 可共享 / 数据模型</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-partition" aria-hidden="true"></span>
+                    <span class="num">03</span>
+                    <span class="title">数据库管理系统 Database Management System</span>
+                    <span class="hint">定义 / 操纵 / 控制 / 维护</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-cluster" aria-hidden="true"></span>
+                    <span class="num">04</span>
+                    <span class="title">数据库系统 Database System</span>
+                    <span class="hint">DB + DBMS + 应用 + 人</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-branches" aria-hidden="true"></span>
+                    <span class="num">05</span>
+                    <span class="title">三阶段</span>
+                    <span class="hint">人工管理 / 文件系统 / 数据库系统</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-safety-certificate" aria-hidden="true"></span>
+                    <span class="num">06</span>
+                    <span class="title">数据库的特点</span>
+                    <span class="hint">共享后的统一控制</span>
+                </div>
+            </div>
+
+            <div class="footer-track"><span>DBPA / 1.1</span><span>textbook order with embedded cases</span></div>
+
+        </div>
+        <div id="data-concept" class="step slide-surface"
+            data-x="1400"
+            data-y="0"
+            data-z="-260"
+            data-rotate-y="-12"
+            data-scale="1">
+            <div class="module-badge">Concept</div>
+            <div class="chapter-mark">1.1.1 / BASIC CONCEPT</div>
+            <h2>什么是数据</h2>
+            <p class="lead">符号因为语义才有意义；数据库关心数据如何被组织和解释</p>
+
+            <ol class="index-list">
+                <li>93 可以表示分数、年龄、编号、温度，也可以只是没有语义的符号</li>
+                <li>(20180002, 刘晨, 女, 1999-9-1, 计算机科学与技术) 需要字段含义才能成为可处理的学生记录</li>
+                <li>文本、图像、音频、视频、订单、等等都可以成为数据库系统管理的数据</li>
+            </ol>
+
+            <div class="footer-track"><span>DBPA / Data</span><span>symbol record plus semantics</span></div>
+
+        </div>
+        <div id="four-concepts" class="step slide-surface"
+            data-x="1400"
+            data-y="1300"
+            data-z="-150"
+            data-rotate-y="-8"
+            data-scale="1">
+            <div class="module-badge">Structure</div>
+            <div class="chapter-mark">1.1.1 / DB DBMS DBS</div>
+            <h2>四个基本概念</h2>
+            <p class="lead">日常所说的数据库，可能指数据库、数据库软件或数据库系统</p>
+
+            <div class="schema-stack">
+                <div class="schema-layer">
+                    <span class="layer-icon icon-file-search" aria-hidden="true"></span>
+                    <div class="tag">DATA</div>
+                    <div class="desc">数据：描述事物的符号记录，是存储和处理对象</div>
+                </div>
+                <div class="schema-layer">
+                    <span class="layer-icon icon-database" aria-hidden="true"></span>
+                    <div class="tag">DB</div>
+                    <div class="desc">数据库：按数据模型组织、长期存储、可共享的大量数据集合</div>
+                </div>
+                <div class="schema-layer">
+                    <span class="layer-icon icon-partition" aria-hidden="true"></span>
+                    <div class="tag">DBMS</div>
+                    <div class="desc">数据库管理系统：位于用户与操作系统之间，统一管理数据库的软件</div>
+                </div>
+                <div class="schema-layer">
+                    <span class="layer-icon icon-cluster" aria-hidden="true"></span>
+                    <div class="tag">DBS</div>
+                    <div class="desc">数据库系统：由数据库、DBMS、应用系统、DBA 和用户共同构成</div>
+                </div>
+            </div>
+
+            <div class="footer-track"><span>DBPA / Four Concepts</span><span>MySQL is DBMS, not the whole DBS</span></div>
+
+        </div>
+        <div id="management-stages" class="step slide-surface"
+            data-x="-1400"
+            data-y="0"
+            data-z="-480"
+            data-rotate-y="10"
+            data-scale="1">
+            <div class="module-badge">History</div>
+            <div class="chapter-mark">1.1.2 / DATA MANAGEMENT</div>
+            <h2>数据管理三阶段</h2>
+            <p class="lead">谁管理数据、数据能否共享、数据和程序是否独立？</p>
+
+            <div class="schema-stack">
+                <div class="schema-layer">
+                    <span class="layer-icon icon-file-search" aria-hidden="true"></span>
+                    <div class="tag">MANUAL</div>
+                    <div class="desc">人工管理阶段：应用程序自己管理数据，数据不长期保存、不共享、不独立</div>
+                </div>
+                <div class="schema-layer">
+                    <span class="layer-icon icon-hdd" aria-hidden="true"></span>
+                    <div class="tag">FILE</div>
+                    <div class="desc">文件系统阶段：数据可以长期保存，但文件彼此孤立，共享弱、冗余高</div>
+                </div>
+                <div class="schema-layer">
+                    <span class="layer-icon icon-database" aria-hidden="true"></span>
+                    <div class="tag">DATABASE</div>
+                    <div class="desc">数据库系统阶段：DBMS 面向组织整体，统一管理共享数据</div>
+                </div>
+            </div>
+
+            <div class="footer-track"><span>DBPA / Data Management</span><span>manual -&gt; file system -&gt; database system</span></div>
+
+        </div>
+        <div id="dbs-features" class="step slide-surface"
+            data-x="-1400"
+            data-y="1300"
+            data-z="-150"
+            data-rotate-y="8"
+            data-scale="1">
+            <div class="chapter-mark">1.1.2 / SYSTEM FEATURES</div>
+            <h2>数据库系统特点</h2>
+            <p class="lead">数据共享，意味着把结构、独立性和控制机制交给 DBMS</p>
+
+            <div class="map-grid">
+                <div class="map-node">
+                    <span class="node-icon icon-branches" aria-hidden="true"></span>
+                    <span class="num">01</span>
+                    <span class="title">整体结构化</span>
+                    <span class="hint">数据之间也有联系</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-cluster" aria-hidden="true"></span>
+                    <span class="num">02</span>
+                    <span class="title">共享、低冗余</span>
+                    <span class="hint">减少重复保存和不一致</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-partition" aria-hidden="true"></span>
+                    <span class="num">03</span>
+                    <span class="title">数据独立性</span>
+                    <span class="hint">物理变化 / 逻辑变化尽量少影响应用</span>
+                </div>
+                <div class="map-node">
+                    <span class="node-icon icon-safety-certificate" aria-hidden="true"></span>
+                    <span class="num">04</span>
+                    <span class="title">统一控制</span>
+                    <span class="hint">安全性 / 完整性 / 并发 / 恢复</span>
+                </div>
+            </div>
+
+            <div class="footer-track"><span>DBPA / Database System Features</span><span>bridge to later chapters</span></div>
+
+        </div>
+
+    </div>
+
+    <div class="impress-progressbar"><div></div></div>
+    <div class="impress-progress"></div>
+    <script src="../js/impress.js"></script>
+    <script>impress().init();</script>
+</body>
+
+</html>
