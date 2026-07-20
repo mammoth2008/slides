@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课程</title>
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <link rel="icon" href="hustlogo72.png">
+  <style>
+    :root {
+      --black: #090a0c;
+      --black-soft: #17181c;
+      --paper: #e9e7dc;
+      --white: #fafaf4;
+      --purple: #5f2a87;
+      --green: #b6d432;
+      --orange: #ef5b27;
+      --line: #292a30;
+      --serif: "Source Han Serif CN", "Source Han Serif SC", "Songti SC", STSong, SimSun, serif;
+      --sans: "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { color-scheme: dark; }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background:
+        linear-gradient(135deg, transparent 0 72%, rgba(95, 42, 135, .18) 72% 74%, transparent 74%),
+        var(--black);
+      color: var(--black);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; }
+
+    .shell {
+      width: min(1320px, calc(100% - 52px));
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      border-inline: 1px solid #303137;
+      background: var(--paper);
+    }
+
+    .masthead {
+      display: grid;
+      min-height: 78px;
+      grid-template-columns: 104px minmax(0, 1fr) 250px;
+      border-bottom: 8px solid var(--black);
+      background: var(--black);
+      color: var(--white);
+    }
+
+    .mark {
+      display: grid;
+      border-right: 8px solid var(--black);
+      background: var(--green);
+      place-items: center;
+    }
+
+    .mark img {
+      width: 44px;
+      height: 44px;
+      filter: grayscale(1) contrast(1.35);
+      object-fit: contain;
+    }
+
+    .system-name {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 24px;
+      padding: 16px 28px;
+      font: 700 13px/1.25 var(--mono);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .system-name span {
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .term {
+      display: grid;
+      align-content: center;
+      padding: 12px 24px;
+      background: var(--purple);
+      color: var(--white);
+      font: 800 14px/1.4 var(--mono);
+      letter-spacing: .08em;
+      text-align: right;
+    }
+
+    .term strong { color: var(--green); font-size: 19px; }
+
+    .workspace {
+      display: grid;
+      min-height: calc(100vh - 78px);
+      min-height: calc(100dvh - 78px);
+      grid-template-columns: 156px minmax(0, 1fr);
+    }
+
+    .status-rail {
+      position: relative;
+      display: flex;
+      overflow: hidden;
+      align-items: center;
+      justify-content: center;
+      border-right: 8px solid var(--black);
+      background: var(--purple);
+      color: var(--white);
+    }
+
+    .status-rail::before {
+      content: "";
+      position: absolute;
+      inset: 0 0 auto;
+      height: 120px;
+      background: repeating-linear-gradient(-45deg, var(--orange) 0 14px, var(--black) 14px 28px);
+    }
+
+    .status-rail::after {
+      content: "ACTIVE / 03";
+      position: absolute;
+      right: 16px;
+      bottom: 18px;
+      color: var(--green);
+      font: 800 13px/1 var(--mono);
+      letter-spacing: .08em;
+    }
+
+    .vertical-label {
+      margin-top: 92px;
+      font: 900 34px/.9 var(--sans);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transform: rotate(180deg);
+      writing-mode: vertical-rl;
+    }
+
+    .content {
+      position: relative;
+      display: grid;
+      min-width: 0;
+      overflow: hidden;
+      padding: 48px 48px 28px;
+      grid-template-rows: auto 1fr auto;
+      gap: 34px;
+      isolation: isolate;
+    }
+
+    .content > :not(.term-watermark) { position: relative; z-index: 1; }
+
+    .term-watermark {
+      position: absolute;
+      z-index: 0;
+      inset: -22%;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .term-watermark svg {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .term-watermark text {
+      font-family: var(--mono);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .14em;
+    }
+
+    .term-dbpa { fill: rgba(24, 91, 145, .14); }
+    .term-cciot { fill: rgba(239, 91, 39, .12); }
+    .term-ita { fill: rgba(95, 42, 135, .135); }
+
+    .hero {
+      position: relative;
+      display: grid;
+      min-height: 168px;
+      overflow: hidden;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      border-bottom: 5px solid var(--black);
+    }
+
+    .hero::after {
+      content: "COURSE SELECT";
+      position: absolute;
+      right: -8px;
+      bottom: -14px;
+      z-index: 0;
+      color: rgba(9, 10, 12, .08);
+      font: 900 clamp(52px, 8vw, 116px)/.8 var(--sans);
+      letter-spacing: -.06em;
+      white-space: nowrap;
+    }
+
+    .hero-copy { position: relative; z-index: 1; padding-bottom: 26px; }
+
+    .eyebrow {
+      display: inline-block;
+      margin: 0 0 10px;
+      padding: 5px 10px 4px;
+      background: var(--black);
+      color: var(--green);
+      font: 800 13px/1 var(--mono);
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font: 900 clamp(64px, 8vw, 104px)/.88 var(--serif);
+      letter-spacing: -.08em;
+    }
+
+    .hero-count {
+      position: relative;
+      z-index: 1;
+      padding: 0 0 22px 24px;
+      color: var(--purple);
+      font: 900 76px/.8 var(--mono);
+      letter-spacing: -.1em;
+    }
+
+    .course-list {
+      display: grid;
+      align-content: center;
+      gap: 20px;
+    }
+
+    .course-row {
+      --accent: var(--green);
+      position: relative;
+      display: grid;
+      min-height: 132px;
+      overflow: hidden;
+      grid-template-columns: 110px minmax(260px, 1fr) 120px 126px;
+      align-items: stretch;
+      border: 4px solid var(--black);
+      background: var(--white);
+      color: var(--black);
+      text-decoration: none;
+      clip-path: polygon(0 0, calc(100% - 22px) 0, 100% 22px, 100% 100%, 0 100%);
+      filter: drop-shadow(7px 7px 0 rgba(9, 10, 12, .16));
+      transition: transform 150ms ease, filter 150ms ease;
+    }
+
+    .course-row[data-course="cciot"] { --accent: var(--orange); }
+    .course-row[data-course="ita"] { --accent: var(--purple); }
+
+    .course-row:hover {
+      transform: translateX(10px);
+      filter: drop-shadow(10px 10px 0 rgba(95, 42, 135, .22)) contrast(1.04);
+    }
+
+    .course-row:focus-visible {
+      outline: 5px solid var(--green);
+      outline-offset: 5px;
+    }
+
+    .course-no {
+      display: grid;
+      border-right: 4px solid var(--black);
+      background: var(--accent);
+      color: var(--black);
+      font: 900 48px/1 var(--mono);
+      place-items: center;
+    }
+
+    .course-row[data-course="ita"] .course-no { color: var(--white); }
+
+    .course-title {
+      display: grid;
+      min-width: 0;
+      align-content: center;
+      padding: 18px 26px;
+    }
+
+    .course-title h2 {
+      margin: 0 0 7px;
+      font: 800 31px/1.12 var(--serif);
+      letter-spacing: -.025em;
+    }
+
+    .course-title p {
+      margin: 0;
+      color: #4a4b4f;
+      font: 700 12px/1.35 var(--sans);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    .course-code {
+      display: grid;
+      border-left: 2px solid var(--line);
+      color: var(--accent);
+      font: 900 17px/1 var(--mono);
+      letter-spacing: .06em;
+      place-items: center;
+    }
+
+    .course-row[data-course="ita"] .course-code { color: var(--purple); }
+
+    .course-action {
+      display: grid;
+      border-left: 4px solid var(--black);
+      background: var(--black);
+      color: var(--white);
+      font: 800 13px/1.2 var(--mono);
+      letter-spacing: .08em;
+      text-align: center;
+      place-items: center;
+    }
+
+    .course-action span { display: block; color: var(--green); font-size: 24px; }
+
+    .footer {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+      padding-top: 18px;
+      border-top: 2px solid var(--black);
+      color: #505156;
+      font: 700 11px/1.5 var(--mono);
+      letter-spacing: .04em;
+    }
+
+    .footer-label {
+      padding: 7px 10px;
+      background: var(--orange);
+      color: var(--black);
+      font-weight: 900;
+    }
+
+    .registration {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px 18px;
+    }
+
+    .registration a { text-decoration-thickness: 1px; text-underline-offset: 3px; }
+
+    @media (max-width: 980px) {
+      .masthead { grid-template-columns: 88px minmax(0, 1fr) 190px; }
+      .workspace { grid-template-columns: 96px minmax(0, 1fr); }
+      .vertical-label { font-size: 25px; }
+      .content { padding-inline: 30px; }
+      .course-row { grid-template-columns: 92px minmax(220px, 1fr) 100px; }
+      .course-code { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      .shell { width: 100%; border: 0; }
+      .masthead { min-height: 70px; grid-template-columns: 76px 1fr; }
+      .system-name { padding-inline: 18px; }
+      .system-name span { font-size: 11px; }
+      .term { display: none; }
+      .workspace { display: block; }
+      .status-rail { display: none; }
+      .content { min-height: calc(100dvh - 70px); padding: 34px 20px 24px; gap: 26px; }
+      .hero { min-height: 132px; }
+      .hero::after { font-size: 58px; }
+      .hero-count { font-size: 54px; }
+      .course-row { min-height: 148px; grid-template-columns: 72px minmax(0, 1fr); }
+      .course-no { grid-row: 1 / 3; font-size: 30px; }
+      .course-title { padding: 18px 20px 12px; }
+      .course-title h2 { font-size: 26px; }
+      .course-action {
+        min-height: 38px;
+        border-top: 3px solid var(--black);
+        border-left: 0;
+        grid-column: 2;
+        grid-template-columns: auto auto;
+        justify-content: space-between;
+        padding: 0 18px;
+        text-align: left;
+      }
+      .course-action span { font-size: 18px; }
+      .footer { grid-template-columns: 1fr; }
+      .registration { justify-content: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <header class="masthead">
+      <div class="mark"><img src="hustlogo72.png"></div>
+      <div class="system-name">
+        <span>Academic System / Online</span>
+      </div>
+      <div class="term"><span>2026—2027</span><strong>TERM 01</strong></div>
+    </header>
+
+    <div class="workspace">
+      <aside class="status-rail" aria-hidden="true">
+        <div class="vertical-label">Course Selection</div>
+      </aside>
+
+      <main class="content">
+        <div class="term-watermark" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+            <defs>
+              <pattern id="course-terms" width="1040" height="54" patternUnits="userSpaceOnUse" patternTransform="rotate(-12)">
+                <text class="term-dbpa" x="0" y="13">DATABASE · RELATION · SCHEMA · QUERY · TRANSACTION · INDEX · NORMALIZATION · DATABASE · RELATION · SCHEMA · QUERY · TRANSACTION · INDEX</text>
+                <text class="term-cciot" x="-120" y="31">CLOUD · VIRTUALIZATION · CONTAINER · EDGE · SENSOR · MQTT · DISTRIBUTED SYSTEM · CLOUD · VIRTUALIZATION · CONTAINER · EDGE · SENSOR · MQTT</text>
+                <text class="term-ita" x="-60" y="49">ARTIFICIAL INTELLIGENCE · MODEL · AGENT · WORKFLOW · PROMPT · INFERENCE · VERIFICATION · ARTIFICIAL INTELLIGENCE · MODEL · AGENT · WORKFLOW</text>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#course-terms)"></rect>
+          </svg>
+        </div>
+
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">Academic Operation</p>
+            <h1 id="page-title">课程</h1>
+          </div>
+          <div class="hero-count" aria-label="三门课程">03</div>
+        </section>
+
+        <nav class="course-list" aria-label="本学期课程">
+          <a class="course-row" data-course="dbpa" href="1dbpa/dbpa-0.html">
+            <span class="course-no">01</span>
+            <div class="course-title">
+              <h2>数据库原理与应用</h2>
+              <p>Database Principles and Applications</p>
+            </div>
+            <span class="course-code">DBPA</span>
+            <span class="course-action">Open Course <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="course-row" data-course="cciot" href="2cciot/cciot-0.html">
+            <span class="course-no">02</span>
+            <div class="course-title">
+              <h2>云计算与物联网</h2>
+              <p>Cloud Computing and Internet of Things</p>
+            </div>
+            <span class="course-code">CCIOT</span>
+            <span class="course-action">Open Course <span aria-hidden="true">→</span></span>
+          </a>
+
+          <a class="course-row" data-course="ita" href="3ita/ita-1-1.html">
+            <span class="course-no">03</span>
+            <div class="course-title">
+              <h2>智能技术及应用</h2>
+              <p>Intelligent Technology and Applications</p>
+            </div>
+            <span class="course-code">ITA</span>
+            <span class="course-action">Open Course <span aria-hidden="true">→</span></span>
+          </a>
+        </nav>
+
+        <footer class="footer">
+          <span class="footer-label">STATUS: AVAILABLE</span>
+          <div class="registration">
+            <a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener">黑公网安备23010302001726号</a>
+            <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">黑ICP备2024033110号-1</a>
+          </div>
+        </footer>
+      </main>
+    </div>
+  </div>
+</body>
+</html>

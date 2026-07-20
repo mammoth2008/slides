@@ -1,304 +1,295 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <title>SLIDES | HUST</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>课程 | HUST</title>
+  <meta name="description" content="哈尔滨理工大学经济与管理学院">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <link rel="icon" href="hustlogo72.png">
+  <style>
+    :root {
+      --page: #f3f6f7;
+      --surface: #ffffff;
+      --ink: #15232d;
+      --ink-soft: #536670;
+      --line: #cbd5da;
+      --dbpa: #185b91;
+      --cciot: #0d6475;
+      --ita: #b95d3b;
+      --serif: "Source Han Serif CN", "Source Han Serif SC", "Songti SC", STSong, SimSun, serif;
+      --sans: "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
 
-    <meta name="description" content="为哈尔滨理工大学经济管理学院信息管理与信息系统系设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
+    * { box-sizing: border-box; }
 
-    <link href="src/ToppanBunkyuMidashiMinchoStdNExtraBold.ttf" />
-    <link href="src/方正风雅宋简体.ttf" />
-    <link href="src/Inconsolata-Regular.ttf" />
-    <link href="src/CONSOLA.TTF" />
+    html { color-scheme: light; }
 
-    <link href="css/impress-course.css" rel="stylesheet" />
-    <link href="css/impress-common.css" rel="stylesheet" />
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
 
-    <link rel="shortcut icon" href="hustlogo72.png" />
-    <link rel="stylesheet" href="extras/highlight/styles/github.min.css">
+    body::before {
+      content: "";
+      position: fixed;
+      z-index: 10;
+      inset: 0 0 auto;
+      height: 6px;
+      background: linear-gradient(
+        to right,
+        var(--dbpa) 0 33.333%,
+        var(--cciot) 33.333% 66.666%,
+        var(--ita) 66.666% 100%
+      );
+    }
 
+    a { color: inherit; }
+
+    .page {
+      display: grid;
+      width: min(1180px, calc(100% - 64px));
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0 auto;
+      grid-template-rows: auto 1fr auto;
+    }
+
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 34px 0 28px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .institution {
+      display: flex;
+      align-items: center;
+    }
+
+    .institution img {
+      width: 40px;
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .term {
+      color: var(--ink-soft);
+      font: 600 14px/1 var(--mono);
+      letter-spacing: .06em;
+    }
+
+    main {
+      display: grid;
+      align-content: center;
+      gap: 42px;
+      padding: 60px 0 68px;
+    }
+
+    .intro {
+      display: block;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      color: var(--ink-soft);
+      font: 600 14px/1 var(--mono);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font: 700 clamp(58px, 7vw, 92px)/.98 var(--serif);
+      letter-spacing: -.04em;
+    }
+
+    .course-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 22px;
+    }
+
+    .course-card {
+      --accent: var(--dbpa);
+      position: relative;
+      display: flex;
+      min-height: 330px;
+      overflow: hidden;
+      flex-direction: column;
+      padding: 28px 30px 26px;
+      border: 1px solid var(--line);
+      border-top: 7px solid var(--accent);
+      background: var(--surface);
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .course-card[data-course="cciot"] { --accent: var(--cciot); }
+    .course-card[data-course="ita"] { --accent: var(--ita); }
+
+    .course-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--accent);
+      box-shadow: 0 20px 44px rgba(21, 35, 45, .12);
+    }
+
+    .course-card:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--accent) 35%, white);
+      outline-offset: 4px;
+    }
+
+    .course-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--accent);
+      font: 700 14px/1 var(--mono);
+      letter-spacing: .1em;
+    }
+
+    .course-card h2 {
+      margin: 54px 0 12px;
+      font: 700 34px/1.2 var(--serif);
+      letter-spacing: -.02em;
+    }
+
+    .course-english {
+      max-width: 27em;
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.5;
+      letter-spacing: .035em;
+      text-transform: uppercase;
+    }
+
+    .course-action {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+      padding-top: 30px;
+      border-top: 1px solid var(--line);
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .course-action span:last-child {
+      color: var(--accent);
+      font-size: 24px;
+      line-height: 1;
+      transition: transform 180ms ease;
+    }
+
+    .course-card:hover .course-action span:last-child { transform: translateX(5px); }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 22px 0 30px;
+      border-top: 1px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .registration {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 10px 18px;
+    }
+
+    .registration a {
+      text-decoration-color: transparent;
+      text-underline-offset: 3px;
+    }
+
+    .registration a:hover { text-decoration-color: currentColor; }
+
+    @media (max-width: 900px) {
+      .course-grid { grid-template-columns: 1fr; }
+      .course-card { min-height: 260px; }
+      .course-card h2 { margin-top: 36px; }
+    }
+
+    @media (max-width: 600px) {
+      .page { width: min(100% - 36px, 1180px); }
+      .site-header { align-items: flex-start; gap: 20px; padding-top: 28px; }
+      .term { padding-top: 4px; text-align: right; }
+      main { padding: 48px 0 54px; }
+      h1 { font-size: 54px; }
+      .course-card { padding-inline: 24px; }
+      footer { align-items: flex-start; flex-direction: column; }
+      .registration { justify-content: flex-start; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
 </head>
+<body>
+  <div class="page">
+    <header class="site-header">
+      <div class="institution">
+        <img src="hustlogo72.png">
+      </div>
+      <div class="term">2026—2027 / 01</div>
+    </header>
 
-<body class="impress-not-supported">
-
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-    </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <div id="overview" class="step" data-x="0" data-y="0" data-z="0" data-scale="10">
-
+    <main>
+      <section class="intro" aria-labelledby="page-title">
+        <div>
+          <p class="eyebrow">Course</p>
+          <h1 id="page-title">课程</h1>
         </div>
+      </section>
 
-        <div id="title" class="step" style="text-align:center;" data-rel-to="title" data-scale="5"
-            data-goto-key-list="arrowleft arrowright">
+      <nav class="course-grid" aria-label="本学期课程">
+        <a class="course-card" data-course="dbpa" href="1dbpa/dbpa-0.html">
+          <div class="course-meta"><span>01</span><span>DBPA</span></div>
+          <h2>数据库原理与<br>应用</h2>
+          <p class="course-english">Database Principles and Applications</p>
+          <div class="course-action"><span>进入课程</span><span aria-hidden="true">→</span></div>
+        </a>
 
-            <h1 style="font-size:165px;">课程</h1>
-            <h1 style="font-size:64px;">COURSES<h1>
-                    <p class="footnote">
-                        <inlinecode style="font-size: 12px">
-                            Powered by
-                            <a href="https://github.com/impress/impress.js/" style="text-shadow: 0 0 0 rgb(0, 0, 0, 0);"
-                                target="_blank">
-                                impress.js
-                            </a>
-                            <span><img class="icon" src="favicon.png"
-                                    style="width:8px;height:8px;vertical-align: 4px;"></span>
-                            <br />
-                            2018 - 2025
-                            <br />
-                            <br />
-                            <a href="https://slides.yemengma.cn" style="text-shadow: 0 0 0 rgb(0, 0, 0, 0);"
-                                target="_blank">
-                                https://slides.yemengma.cn
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <span style="color: #000000;">
-                                    github pages
-                                </span>
-                            </a>
-                            <br />
-                            <a href="https://slides.lifeplayer.club" style="text-shadow: 0 0 0 rgb(0, 0, 0, 0);"
-                                target="_blank">
-                                https://slides.lifeplayer.club
-                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                <span style="color: #000000;">
-                                    cloud server
-                                </span>
-                            </a>
-                            <br />
-                            <a href="https://github.com/mammoth2008/slides" style="text-shadow: 0 0 0 rgb(0, 0, 0, 0);"
-                                target="_blank">
-                                https://github.com/mammoth2008/slides&nbsp;&nbsp;
-                                <span style="color: #000000;">
-                                    github repository
-                                </span>
-                            </a>
-                        </inlinecode>
-                    </p>
-        </div>
+        <a class="course-card" data-course="cciot" href="2cciot/cciot-0.html">
+          <div class="course-meta"><span>02</span><span>CCIOT</span></div>
+          <h2>云计算与<br>物联网</h2>
+          <p class="course-english">Cloud Computing and Internet of Things</p>
+          <div class="course-action"><span>进入课程</span><span aria-hidden="true">→</span></div>
+        </a>
 
-        <!--
-    <div 
-    id                  = "il"
-    class               = "step"
-    style               = "text-align:center; "
-    data-rel-to         = "title"
-    data-rel-x          = "-1740"
-    data-rel-y          = "300"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowup arrowright">
+        <a class="course-card" data-course="ita" href="3ita/ita-1-1.html">
+          <div class="course-meta"><span>03</span><span>ITA</span></div>
+          <h2>智能技术及<br>应用</h2>
+          <p class="course-english">Intelligent Technology and Applications</p>
+          <div class="course-action"><span>进入课程</span><span aria-hidden="true">→</span></div>
+        </a>
+      </nav>
+    </main>
 
-        <h1 style="font-size:102px;"><a href="8il/il-0.html" target="_blank">信息素养</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="8il/il-0.html" target="_blank">INFORMATION LITERACY</a></h1>
-
-    </div>
-
-    <div 
-    id                  = "erp"
-    class               = "step"
-    style               = "text-align:center; "
-    data-rel-to         = "title"
-    data-rel-x          = "-1740"
-    data-rel-y          = "600"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowup arrowright">
-
-        <h1 style="font-size:102px;"><a href="2erp/erp-0.html" target="_blank">ERP 原理及应用</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="2erp/erp-0.html" target="_blank">ENTERPRISE RESOURCE PLANNING PRINCIPLE AND APPLICATION</a></h1>
-
-    </div>
-
-    <div 
-    id                  = "cciot"
-    class               = "step"
-    style               = "text-align:center; "
-    data-rel-to         = "title"
-    data-rel-x          = "-1740"
-    data-rel-y          = "300"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowup arrowright">
-
-        <h1 style="font-size:102px;"><a href="8il/il-0.html" target="_blank">信息素养</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="8il/il-0.html" target="_blank">INFORMATION LITERACY</a></h1>
-
-    </div>
-    <div 
-    id                  = "itpm"
-    class               = "step"
-    style               = "text-align:center;"
-    data-rel-to         = "title"
-    data-rel-x          = "-1740"
-    data-rel-y          = "-400"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowup arrowright">
-
-        <h1 style="font-size:102px;"><a href="3itpm/itpm-0.html" target="_blank">IT 项目管理</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="3itpm/itpm-0.html" target="_blank">INFORMATION TECHNOLOGY <br/> PROJECT MANAGEMENT</a></h1>
-
-    </div>
-
-    <div 
-    id                  = "ipit"
-    class               = "step"
-    style               = "text-align:center;"
-    data-rel-to         = "title"
-    data-rel-x          = "-1740"
-    data-rel-y          = "-600"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowdown arrowright">
-
-        <h1 style="font-size:102px;"><a href="5ipit/ipit-0.html" target="_blank">IT 创新实践</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="5ipit/ipit-0.html" target="_blank">INNOVATION AND PRACTICE OF INFORMATION TECHNOLOGY</a></h1>
-
-    </div>
-
-    <div 
-    id                  = "dbds"
-    class               = "step"
-    style               = "text-align:center;"
-    data-rel-to         = "title"
-    data-rel-x          = "1770"
-    data-rel-y          = "-400"
-    data-rotate-z       = "0"
-    data-scale          = "2"
-    data-goto-key-list  = "arrowdown arrowleft">
-
-        <h1 style="font-size:100px;"><a href="1dbpa/dbpa-0.html" target="_blank">数据库与数据结构</a></h1>
-        <h2> </h2>
-        <h1 style="font-size:38px"><a href="1dbpa/dbpa-0.html" target="_blank">DATABASE, DATA STRUCTURE AND ALGORITHMS</a></h1>
-
-    </div>
--->
-
-        <div id="cciot" class="step" style="text-align:center;" data-rel-to="title" data-rel-x="1800" data-rel-y="-600"
-            data-rotate-z="0" data-scale="2" data-goto-key-list="arrowdown arrowleft">
-
-            <h1 style="font-size:102px;"><a href="2cciot/cciot-0.html" target="_blank">云计算与物联网</a></h1>
-            <h2> </h2>
-            <h1 style="font-size:38px"><a href="2cciot/cciot-0.html" target="_blank">CLOUD COMPUTING AND <br /> INTERNET
-                    OF THINGS</a></h1>
-
-        </div>
-
-        <div id="dbpa" class="step" style="text-align:center;" data-rel-to="title" data-rel-x="-1800" data-rel-y="-600"
-            data-rotate-z="0" data-scale="2" data-goto-key-list="arrowdown arrowleft">
-
-            <h1 style="font-size:100px;"><a href="1dbpa/dbpa-0.html" target="_blank">数据库原理与应用</a></h1>
-            <h2> </h2>
-            <h1 style="font-size:38px"><a href="1dbpa/dbpa-0.html" target="_blank">DATABASE PRINCIPLES AND
-                    APPLICATIONS</a></h1>
-
-        </div>
-
-        <div id="ita" class="step" style="text-align:center;" data-rel-to="title" data-rel-x="1800" data-rel-y="200"
-            data-rotate-z="0" data-scale="2" data-goto-key-list="arrowdown arrowleft">
-
-            <h1 style="font-size:100px;"><a href="6ita/ita-0.html" target="_blank">智能技术及应用</a></h1>
-            <h2> </h2>
-            <h1 style="font-size:38px"><a href="6ita/ita-0.html" target="_blank">INTELLIGENT TECHNOLOGY AND
-                    APPLICATIONS</a></h1>
-
-        </div>
-
-        <div id="fiit" class="step" style="text-align:center; " data-rel-to="title" data-rel-x="-1800" data-rel-y="200"
-            data-rotate-z="0" data-scale="2" data-goto-key-list="arrowup arrowright">
-
-            <h1 style="font-size:102px;"><a href="9fiit/fiit-0.html" target="_blank">信息技术前沿</a></h1>
-            <h2> </h2>
-            <h1 style="font-size:38px"><a href="9fiit/fiit-0.html" target="_blank">FRONTIERS IN INFORMATION
-                    TECHNOLOGY</a></h1>
-
-        </div>
-
-    </div>
-
-    <script src="js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="./beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+    <footer>
+      <span>课程资料·课堂教学使用</span>
+      <div class="registration">
+        <a href="https://beian.mps.gov.cn/" target="_blank" rel="noopener">黑公网安备23010302001726号</a>
+        <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener">黑ICP备2024033110号-1</a>
+      </div>
+    </footer>
+  </div>
 </body>
-
 </html>
-
-<!--
-	DNNNNDDDD8888OOOOZOOOZZZZZZZZOOOOOOOO8888888888DDDDDDDNNNNNNNNNNNNNNNNNNNNNNNNNN
-	DNNDDDDD888OOOOZZZZZZ$$$$$Z$ZZZZZOOOOOO8888888888DDDDDDDNNNNNNNNNNNNNNNNNNNNNNNN
-	NNDDDDDD8OOOZZZ$$$$$$$$$$Z$$$$$ZZZZZOOOO888888888DD8DDDDDDNNNNNNNNNNNNNNNNNNNNNN
-	DDDDDDDDOOZZZ$$$$$$$$$?7$$$$$$$$ZZZ$ZOOO888888888888888DDDDDNNNNNNNNNNNNNNNNNNNN
-	DDDDDDD8OZZZ$$$$$$$$$$$$$$$$$$$$$$$$ZZZOOOOOOOOO88O88888DDDDDDDNNNNNNNNNNNNNNNNN
-	DDDDDD8OZZZ$$$$$$$$$$$$$$$$$$$$$$$$$ZZZZZZZOOOOOO88O888888DDDDDDNNNNNNNNNNNNNNNN
-	DDDDD88OZZ$$$$$$$$$$$$$$$$$$$$$$$$$$$Z$ZZZZZOOOOOO8O88888888DDDDDNNNNNNNNNNNNNNN
-	DDDDD8OZZZZ$7$$$$$$$$$$$$$$$88N7DZ$$$$$$$ZZZZZZZOOOOOO88888O88DDDDDNNNNNNNNNNNNN
-	DDDDD8OZZZ$$$$$$$$$$$$$$$$$$D++=Z7777$$$$888$ZZZZZZOOOOOO8888888DDDDNDNNNNNNNNNN
-	DDDD8OOZ$Z$$$$$$$$$$$$$$$$$7?===$7777777$N=DNZZZZZZZOOOOO8O8888888DDDDNNNNNNNNNN
-	DDDD8OZZZZ$$$$$$$$$$$$$$$$$7?===$77777777DN?.8NZZZZZZZZOOOOO8888888DDDDNNNNNNNNN
-	DDD88OZZZZZZZ$$$$$$$$$$$$$$$:.==N$7$$$77$$$M=.8D$ZZZZZZZZOOOOO8888888DDDNNNNNNNN
-	DDD8ZO8OZZZOZZZZ$$$$$$$$$$$$8,..+NNM++++=NNM+=.N$$ZZZZZZZZOOO8OO888888DDDNNNNNNN
-	DDD8888888OOOZZZZZZ$$$$$$$$$$D,..+==========N=,N$$$ZZZZZZZZZOO8O888888DDDDNNNNNN
-	DDD8D88888888888ZOZZ$$$$$$$$$DNN.===+=MM====+=NN$$?$ZZZZZZZZZOOOOO888888DDNNNNNN
-	D8888O88O8O8OOOOOOO88ZZ$ZZ$$$D====+=NMMMM+==++MN77$$$$ZZZZZZZZZOO8OO8888DDDNNNNN
-	8O8OOOOOOOOOOOOOOZOOOO88ZZZZZN++====NMMMM+==NMMM7777$$$ZZZZZZZZZOOOOO888888DDNNN
-	8OOOOOOOOOOZZZZZZZZZZZZ888OOON++=====MMM?===NMMM77777$$$ZZZZZZZZZZOOOO878888DNNN
-	OOOOOOOOZZZ$$$$$$7$7$$ZZ888OONN=====+=========MM777777$$$ZZZZZZZZZZZOOOO8888DDNN
-	OOZZZ$$$$$7777777777$O8OOOOOOOON+==~~:,,,,,.~~=NI777777$$$ZZZZZZZZZZOOOOO8888DDD
-	ZZ$$77IIIII7IIIIII7$ZZOOOOOOOOOOD=,,.  ......,DNII777777$$$$ZZZZZZZZZOOOOO8888DD
-	Z$77777$ZO88DDO$$OOOZOOOOMMMZZZOOODNMMMMMDNNNNI7II77777777$$$$ZZZZZZZZOOOOO8888D
-	$ZOO8OOOOOOOOOOODD8OOOZO8ZZZZMMMZZMM88M8M8MMII7IIIIII777777$$$ZZZZZZZZZZOOOO8888
-	8OOOOOOOOOOOOOOOO8OO8OZZOZMMOZZZMMZZOM888M8DIIIIIIIII777I777$$$$ZZZ$ZZZZZOOOO888
-	OO7OOOOOOOOOOOOOOOOOOMM.7ZZ$$$ZZZZMMZZM8.M8DM?IIIIIII777III7$$$$$IZZZZZZZZOOO888
-	OOOOOOOOOOOOOOOOOOOOOO8DM...MMMMNZZ.8O.MMMDM8N+IIIIIII77I777$$$$$$$$ZZZZZOOOI888
-	OOOOZZZZ$$$$$$ZZZZZZZZZ$M$ZO.....MMM.MMMMMMDDMI,M7IIII7777777$$$$$$$ZZZZZZZZOOO8
-	ZZ88$:DD$8888??II$$$$$$NMMMMZ$$.,NMMMMMMMMMMDI.,,:MMIII7777777$$$$$$$ZZZZZZZOOOO
-	ODDD=:88~D88+,,8O?=+I777IZZ=OOO+MMMMMMMMMMMMD?..DMMMM$II7I77777$$$$$$ZZZZZZZZOOO
-	O888~,O8,888,D8OOOO=$+IIII$+,??,MMMM M==.MMMD?MMM7$::,MM7I777777$$$$$$$ZZZZZZZZZ
-	+D887,,8+,O+78OO~~~~7$+?II7,?O?OMM.M~==~~M.M8????+IMM..MMMII7777$$$$$$$$ZZZ$ZZZZ
-	~?OOZ=,,ZZO=7+=.,,I?$77+II7ZOI?Z=8MDDDMMDDONI??????I777MD7::7777$$$$$$$$ZZZZZZZZ
-	Z,:=$OOZ7++O,.,$$$$$$$$$?DNONNM8$$NZZNN..MMM,,N??????????I77MI7777$$$$$$ZZZZZZZZ
-	$O$,IO~,~,:8++++,,,,,,$DMDIIOOOO77MZZN..ZMMMOM???????????IIII7777777$$$$$ZZZZZZZ
-	:++=::=Z7=+==,,Z$Z?ZMMMMI777NOO77IZZZO.8M,NNNMN+??????????IIII777777$$$$$ZZZZZZZ
-	~:::I$~,=$?=~??ZOMNNZMMM7D$7NOOII8ZZZZ.M..MDD.MM++++++?????IIII77777$$$$$ZZZZZZ$
-	ZZZ7+~::=,OI:DDMD888ZMMMI7DIZZ7..8ZZI..M..M.M8M=====++++??????II777I7$$$$$ZZZZZZ
-	===~,:O+:8DD?NOZZ888ZDMM7787Z7..Z88Z...M,MO.D8M~~~======++????IIII7777$$$$$$ZZZZ
-	OZZZO8+,7MMMNOOZZ888Z8MMOD.DZ...888D..MMD..ZDMM:~~~~~~~==+++????IIIII7777$$$ZZZ?
-	OOZMMMM.MD8MMMOZ7IDD78MO,OMD:.8N7I8N..MMM.NMDM,:~~~~~~~~===+++???IIIII7777$$ZZZI
-	M77NDDOZN8OZMMZZZI8.+M...O88,...Z$N=.NMM.OM.D,,:~~~~~~~~~=====++???III77777$ZZZZ
-	D8MD88ION8MMDMZZZIDO7M..ZNZO,..+ZZZ.M..M.MMN:,,:~~~~~~~:~~~~===++???IIII777$$ZZZ
-	DDM888IO88MODMOZOOO7IZ8DDOO8...$....D..MDM.M:.,:~~~~~~~~~~~~~~===++??+III777$ZZZ
-	DD8M88IZ8DMODI$8ZZMM$IID7OO:,.IZ....D..M8.8M..,:~~~~~~~::~~~~~~~==++?+?III77$$$$
-	D8888888888OOOD8OZDM$OOOOO..,7ODZ....MM.D.OM.,,:~~~~~~~~::::::::~~==+???III7$$$$
-	D88888888MMOZI88OZ8M8O.OO.,,ODDD:.,MMM..M.M..,,::~~~~~::::::::::~~~==++???I7$$$$
-	N888NN88DMMZZZ?8:IDO..O8,88DZ778,,,.M..M.M...,,:::::::::::::::::::~~==++???I$$$$
-	D88ZZM8ZMMM$$.?D.?M..N..$,,,,8IO,,O...NM.M...,,,::::::::::::::::::::~~===+??I$$$
-	DD8?ZMOMIM $.Z.Z?+MIO.O=?.??,O?D.OO..MM.O...,,,::::::::::::::::::::,:~~~==+??777
-	ND8I+..ZIM,$,..8$.+....=+I======M==M=MM==M==O==M=$:::::~~~~~~:::::::::~~~==+??II
-	NDDDDDDDD8D8DDDDD88DD8888NI8DN=MM==M==M=MM+=M=~O+NOOOOOOOOOOOOOOOOOZOZOOOO888DDD
-	---mengma2008---------yemengma.cn-------------Signture Made by GlassGiant.com---
--->
