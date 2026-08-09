@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITA 6.2 测试、调试与持续改进 | HUST</title>
+  <meta name="description" content="用测试用例、失败定位、单变量修改和回归复测改进 Skill">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="智能技术及应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="6-2">
+  <meta name="version" content="2608.1">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/ita-6-2/assets/cover-testing-debugging.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">ITA · 6.2</div>
+      <h1>测试、调试与持续改进</h1>
+      <p class="cover-description">用三段录音测试 <code>lecture-notes</code> Skill</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 为什么要测试</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">本节结束时，你能写出用例、定位失败并用旧样例复测</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">为 Skill 写正常、边界和失败测试用例</span></li><li><span class="list-marker">02</span><span class="list-text">区分预期、实际结果和通过条件</span></li><li><span class="list-marker">03</span><span class="list-text">沿工作流定位最早失败节点</span></li><li><span class="list-marker">04</span><span class="list-text">一次只修改一个关键变量并记录复测</span></li><li><span class="list-marker">05</span><span class="list-text">用回归和迁移样例检查持续改进</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/16</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 为什么要测试</div>
+    <h2 class="slide-title">一段讲授课整理成功，还不能证明 Skill 可复用</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>一次成功</h3><p>清晰的单人录音生成了完整课程笔记</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>测试</h3><p>再运行多人研讨和损坏录音，主动暴露边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>改进</h3><p>修改说话人规则，并重跑原来的讲授课样例</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>测试让经验从感觉变成可以复查的证据</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="61" data-character-exposure="58" data-character-scale="0.9" style="--character-along:61%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.628f58dc4f4a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>这次成功，能说明下一次也会通过吗？</p></div></div></div></aside>
+    <div class="numeric-progress">3/16</div>
+    <div class="semantic-label">OPENING CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 为什么要测试</div>
+    <h2 class="slide-title">先写一条 `lecture-notes` 测试记录</h2>
+    <div class="slide-content"><p class="slide-lead">测试用例先写预期，再让实际结果接受检查</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">用例</h3><div class="key-value-value"><p>三人研讨录音能否保留说话人差异</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">输入</h3><div class="key-value-value"><p>已授权录音、议程、三人名单；其中一段无法确认说话人</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">预期</h3><div class="key-value-value"><p>带时间转写；每段含 <code>speaker</code>，不确定时写 <code>unknown</code></p></div></div><div class="key-value-item substep"><h3 class="key-value-key">通过</h3><div class="key-value-value"><p>观点不被合并，身份不被猜测，时间位置可以回听</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">实际</h3><div class="key-value-value"><p>v1 把三位说话人合并成教师陈述；失败首先出现在结构化整理</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">复测</h3><div class="key-value-value"><p>只增加说话人字段与 <code>unknown</code> 规则，再重跑三类录音</p></div></div></div></div></div>
+    <div class="numeric-progress">4/16</div>
+    <div class="semantic-label">TEST CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-split axis-horizontal order-cards-media"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 为什么要测试</div>
+    <h2 class="slide-title">五类用例覆盖不同风险</h2>
+    <div class="slide-content"><p class="slide-lead">不同用例让流程面对不同的失败可能</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">正常</h3><div class="key-value-value"><p>清晰单人讲授＋Slides＋术语表 → 原始转写和结构化笔记均可回查</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">边界</h3><div class="key-value-value"><p>三人研讨且一位身份未知 → 保留 <code>unknown</code>，不猜测</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">失败</h3><div class="key-value-value"><p>04:20–06:10 音频损坏 → 标记不可辨认并交给教师</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">回归</h3><div class="key-value-value"><p>增加说话人字段后 → 原单人讲授样例仍然通过</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">迁移</h3><div class="key-value-value"><p>从讲授课换到研讨课 → 步骤保留，输出字段按场景扩展</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/ita-6-2/assets/previews/p0-test-type-matrix-portrait.webp" data-full-src="resources/decks/ita-6-2/assets/p0-test-type-matrix-portrait.png" data-full-width="1086" data-full-height="1448" alt="五类测试用例从正常到迁移覆盖不同风险" tabindex="0" role="button" aria-label="放大图片：五类测试用例从正常到迁移覆盖不同风险" decoding="async"><figcaption>图片只示意五类风险的覆盖关系；输入和通过条件以左侧定义为准</figcaption></figure></div></div>
+    <div class="numeric-progress">5/16</div>
+    <div class="semantic-label">TEST TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-vertical order-text-media"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 从失败定位问题</div>
+    <h2 class="slide-title">输出错误，不一定是模型错误</h2>
+    <div class="slide-content"><p class="slide-lead">沿流程寻找最早偏离预期的节点</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">① 先对照</h3><div class="key-value-value"><p>输入、预期、实际、证据</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">② 再回溯</h3><div class="key-value-value"><p>沿节点从后往前，找到最早偏离</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">③ 最后分类</h3><div class="key-value-value"><p>输入、流程、工具、证据或判断</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">④ 决定下一步</h3><div class="key-value-value"><p>只改最早问题，保留日志并复测</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-6-2/assets/previews/p0-failure-localization.webp" data-full-src="resources/decks/ita-6-2/assets/p0-failure-localization.png" data-full-width="1448" data-full-height="1086" alt="沿输入、上下文、工具、节点、检查和人工判断回溯最早失败" tabindex="0" role="button" aria-label="放大图片：沿输入、上下文、工具、节点、检查和人工判断回溯最早失败" decoding="async"><figcaption>图片只示意回溯方向；按上方模板对照证据，再确认最早失败节点</figcaption></figure></div></div>
+    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="ita-coordinator" data-character-pose="top-explain" data-character-edge="top" data-character-along="82" data-character-exposure="53" data-character-scale="0.9" style="--character-along:82%;--character-exposure:53;--character-hidden:47%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/top-explain.1c13d6633422.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>找到最早偏离，才知道该改哪一个变量</p></div></div></div></aside>
+    <div class="numeric-progress">6/16</div>
+    <div class="semantic-label">LOCATE FAILURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 从失败定位问题</div>
+    <h2 class="slide-title">先分类，再决定改什么</h2>
+    <div class="slide-content"><p class="slide-lead">失败分类帮助我们先修最早的结构性问题</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">输入失败</h3><div class="key-value-value"><p>字段缺失或任务边界不清 → 先补输入或重写任务说明</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">流程失败</h3><div class="key-value-value"><p>节点顺序、依赖或回退不合适 → 检查最早偏离的关系</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">工具失败</h3><div class="key-value-value"><p>权限、连接、格式或执行异常 → 保留日志，走备用或请求授权</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">证据失败</h3><div class="key-value-value"><p>来源不匹配、过时或存在冲突 → 回到来源检查并停止确定性结论</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">判断失败</h3><div class="key-value-value"><p>检查点或人工批准没有发生 → 补检查点或交还责任人</p></div></div></div></div></div>
+    <div class="numeric-progress">7/16</div>
+    <div class="semantic-label">FAILURE CLASSES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-stack teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 从失败定位问题</div>
+    <h2 class="slide-title">`lecture-notes` 的四个复测用例</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 30% 24%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:30%"><col style="width:24%"></colgroup><thead><tr><th>用例</th><th>输入情境</th><th>预期与证据</th><th>失败／最早节点</th></tr></thead><tbody><tr><td>正常</td><td>12 分钟单人讲授，声音清楚</td><td>转写、笔记、术语与时间位置可回查</td><td>若失败，先查输入和转写</td></tr><tr><td>边界</td><td>三人研讨，一位身份未知</td><td><code>speaker: unknown</code>；观点不被合并</td><td>结构化整理；禁止猜测身份</td></tr><tr><td>失败</td><td>04:20–06:10 音频损坏</td><td>标记不可辨认，保留时间段并交教师</td><td>转写节点；不能补写内容</td></tr><tr><td>回归</td><td>v2 增加说话人字段后重跑讲授课</td><td>原有标题、术语和时间位置仍通过</td><td>旧样例失败则拒绝 v2</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>现象是“把三位说话人合并为教师陈述”，最早偏离在结构化整理；先改字段和停止规则，再复测</p></div></div>
+    <div class="numeric-progress">8/16</div>
+    <div class="semantic-label">SHARED CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 从失败定位问题</div>
+    <h2 class="slide-title">一次只改一个关键变量</h2>
+    <div class="slide-content"><p class="slide-lead">单变量修改让改动和结果之间的关系更清楚</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="基线 → 改一项 → 复测 → 比较"><span class="relation-term">基线</span><span class="relation-operator">→</span><span class="relation-term">改一项</span><span class="relation-operator">→</span><span class="relation-term">复测</span><span class="relation-operator">→</span><span class="relation-term">比较</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>保留基线</h3><p>先固定一条已经运行过的样例</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>只改一项</h3><p>每轮只改变一个关键变量</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录差异</h3><p>比较预期、实际和失败位置</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>如果同时改五处，即使结果变好也不知道哪一处起作用</p></div></div>
+    <div class="numeric-progress">9/16</div>
+    <div class="semantic-label">ONE VARIABLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 复测与改进</div>
+    <h2 class="slide-title">课堂练习：写三条测试用例</h2>
+    <div class="slide-content"><p class="slide-lead">为自己的 Skill 写出三条可以实际判定的用例</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 30% 24%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:30%"><col style="width:24%"></colgroup><thead><tr><th>用例</th><th>输入情境</th><th>预期／证据</th><th>通过或停止</th></tr></thead><tbody><tr><td>正常</td><td>清晰单人讲授录音</td><td>原始转写、结构化笔记和时间位置</td><td>术语与内容可回听核对</td></tr><tr><td>边界</td><td>多人研讨且身份不完整</td><td>保留说话人差异与 <code>unknown</code></td><td>不猜测身份；缺名单就请求补充</td></tr><tr><td>失败／接管</td><td>未授权或关键音频损坏</td><td>状态、时间段和待决定事项</td><td>获得授权或教师判断前不得继续</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/16</div>
+    <div class="semantic-label">CLASSROOM WORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-case layout-split teaching-semantic axis-horizontal order-cards-media"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 复测与改进</div>
+    <h2 class="slide-title">修改后要重新跑旧样例</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>新问题解决</h3><p>研讨录音不再把不同说话人合并</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>旧能力保留</h3><p>原讲授课的标题、术语和时间位置仍通过</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>接受或拒绝</h3><p>在 v1 上只增加说话人字段与 <code>unknown</code> 规则；三类样例全通过才接受 v2</p></article></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/ita-6-2/assets/previews/p1-regression-loop-portrait.webp" data-full-src="resources/decks/ita-6-2/assets/p1-regression-loop-portrait.png" data-full-width="1086" data-full-height="1448" alt="从旧基线到单变量修改、三类样例复测和接受或拒绝的回归循环" tabindex="0" role="button" aria-label="放大图片：从旧基线到单变量修改、三类样例复测和接受或拒绝的回归循环" decoding="async"><figcaption>图片只示意回归循环；是否接受新基线要看三类样例、证据和版本记录</figcaption></figure></div></div>
+    <div class="numeric-progress">11/16</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 复测与改进</div>
+    <h2 class="slide-title">失败记录本身也是中间产物</h2>
+    <div class="slide-content"><p class="slide-lead">记录让下一位维护者能够复现同一个问题</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">复现条件和实际输入</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">最早失败节点和证据</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">本轮只修改的变量</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">复测结果、仍然失败的部分和下一步</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">保留结论：接受、拒绝或仍不解决，以及理由</span></li></ul></div></div></div>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="left-confirm" data-character-edge="left" data-character-along="58" data-character-exposure="57" data-character-scale="0.9" style="--character-along:58%;--character-exposure:57;--character-hidden:43%;--character-scale:0.9;--character-bubble-x:440px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/left-confirm.e2a9f9392bc1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>失败记录不是废料，而是下一轮的输入</p></div></div></div></aside>
+    <div class="numeric-progress">12/16</div>
+    <div class="semantic-label">FAILURE LOG</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 复测与改进</div>
+    <h2 class="slide-title">持续改进不是不断加复杂度</h2>
+    <div class="slide-content"><p class="slide-lead">下一周将把这些失败记录带入人机分工与组织方案</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="失败记录 + 回归样例 + 责任人 → 可持续改进"><span class="relation-term">失败记录</span><span class="relation-operator">+</span><span class="relation-term">回归样例</span><span class="relation-operator">+</span><span class="relation-term">责任人</span><span class="relation-operator">→</span><span class="relation-term">可持续改进</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>保留限制，往往比假装流程已经完美更有复用价值</p></div></div>
+    <div class="numeric-progress">13/16</div>
+    <div class="semantic-label">TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2</div>
+    <h2 class="slide-title">本讲回顾</h2>
+    <div class="slide-content"><p class="slide-lead">测试和调试把 Skill 的改动连接回样例与证据</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>用例</h3><p>正常、边界、失败、回归与迁移</p></article><article class="content-card emphasis-card" tabindex="0"><h3>定位</h3><p>沿工作流找最早偏离预期的节点</p></article><article class="content-card emphasis-card" tabindex="0"><h3>改动</h3><p>一次只改一个关键变量</p></article><article class="content-card emphasis-card" tabindex="0"><h3>复测</h3><p>保留旧样例、失败记录和仍未解决的限制</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>能复现失败，才有可能真正改进流程</p></div></div>
+    <div class="numeric-progress">14/16</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2</div>
+    <h2 class="slide-title">本讲知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-6-2/mindmap-6-2.html" title="本讲知识地图"></iframe></div></div>
+    <div class="numeric-progress">15/16</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 6.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么一次成功不能代替测试？</span></li><li><span class="question-no">02</span><span class="question-text">测试用例中的预期和验收标准有什么区别？</span></li><li><span class="question-no">03</span><span class="question-text">输出错误时，如何找到最早失败节点？</span></li><li><span class="question-no">04</span><span class="question-text">为什么要一次只修改一个关键变量？</span></li><li><span class="question-no">05</span><span class="question-text">回归样例要防止什么问题？</span></li><li><span class="question-no">06</span><span class="question-text">失败记录怎样帮助下一位维护者继续工作？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="ita-6-1.html" title="上一节：6.1 从工作流到可复用 Skill" aria-label="上一节：6.1 从工作流到可复用 Skill">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">6.1</span>
+        <span class="nav-title">Skill 复用</span>
+      </a>
+      <a class="exercise-link" href="ita-6-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="ita-7-1.html" title="下一节：7.1 人、AI 与脚本的职责分工" aria-label="下一节：7.1 人、AI 与脚本的职责分工">
+        <span class="nav-title">职责分工</span>
+        <span class="nav-number">7.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">16/16</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

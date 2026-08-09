@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITA 5.2 授权边界、停止条件与人工接管 | HUST</title>
+  <meta name="description" content="为智能体规定工具授权、停止条件与可继续工作的人工接管路径">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="智能技术及应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="5-2">
+  <meta name="version" content="2608.1">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/ita-5-2/assets/cover-authorization-boundary.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">ITA · 5.2</div>
+      <h1>授权边界、停止条件与人工接管</h1>
+      <p class="cover-description">控制 Nova 记录从内部草稿到客户发送的权限</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 为什么需要边界</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">本节结束时，你能写出授权、停止和接管规则</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分工具可用性与工具授权</span></li><li><span class="list-marker">02</span><span class="list-text">规定读取、写入、对外行动和预算边界</span></li><li><span class="list-marker">03</span><span class="list-text">写出完成、超时、无进展、冲突和风险停止条件</span></li><li><span class="list-marker">04</span><span class="list-text">设计带上下文和责任归属的人工接管</span></li><li><span class="list-marker">05</span><span class="list-text">判断何时固定工作流更适合而不是继续自主</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/16</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 为什么需要边界</div>
+    <h2 class="slide-title">能生成 Nova 简报，不等于能发送给客户</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component component-text text-focal"><p>“把 Nova 能力记录覆盖写入共享表，并发送给所有客户”</p></div>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>可以观察</h3><p>读取官方模拟来源和已有 Nova 证据记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可以分析</h3><p>更新工作区草稿，标出支持地区仍为 <code>unknown</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>必须接管</h3><p>覆盖共享历史、选择客户名单和对外承诺</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>工具边界决定智能体能做什么，授权边界决定它现在被允许做什么</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="61" data-character-exposure="58" data-character-scale="0.9" style="--character-along:61%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.628f58dc4f4a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>能调用的工具，为什么不能直接调用？</p></div></div></div></aside>
+    <div class="numeric-progress">3/16</div>
+    <div class="semantic-label">OPENING CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 为什么需要边界</div>
+    <h2 class="slide-title">把行动按后果分层</h2>
+    <div class="slide-content"><p class="slide-lead">授权通常要按行动可能造成的后果逐层收紧，具体仍由任务和责任人决定</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">观察</h3><div class="key-value-value"><p>读公开资料、列候选来源</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">分析</h3><div class="key-value-value"><p>抽取、比较、标记缺口、生成草稿</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">修改</h3><div class="key-value-value"><p>写入工作区、更新中间记录</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">对外行动</h3><div class="key-value-value"><p>发送、发布、批准、删除</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">高风险判断</h3><div class="key-value-value"><p>隐私、合同、财务、人员、公共承诺与组织审批</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-5-2/assets/previews/p0-authorization-ladder.webp" data-full-src="resources/decks/ita-5-2/assets/p0-authorization-ladder.png" data-full-width="1448" data-full-height="1086" alt="从观察、分析到修改、对外行动和高风险判断的授权阶梯" tabindex="0" role="button" aria-label="放大图片：从观察、分析到修改、对外行动和高风险判断的授权阶梯" decoding="async"><figcaption>阶梯只提供讨论框架；具体工具、对象、期限和授权人要写在任务规则中</figcaption></figure></div></div>
+    <div class="numeric-progress">4/16</div>
+    <div class="semantic-label">AUTHORIZATION LAYERS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 为什么需要边界</div>
+    <h2 class="slide-title">通常越接近不可逆后果，授权越窄</h2>
+    <div class="slide-content"><p class="slide-lead">授权窗口和可影响对象都要在流程中写清楚</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="公开读取 → 内部草稿 → 工作区修改 → 对外发布"><span class="relation-term">公开读取</span><span class="relation-operator">→</span><span class="relation-term">内部草稿</span><span class="relation-operator">→</span><span class="relation-term">工作区修改</span><span class="relation-operator">→</span><span class="relation-term">对外发布</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>把“能不能做”改写为“在什么条件下、对什么对象、做到哪一步”</p></div></div>
+    <div class="numeric-progress">5/16</div>
+    <div class="semantic-label">BOUNDARY RULE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 停止条件</div>
+    <h2 class="slide-title">停止是正常的控制动作</h2>
+    <div class="slide-content"><p class="slide-lead">停止让智能体在边界处保持可预测</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">完成</h3><div class="key-value-value"><p>验收标准全部通过 → 记录结果、结束并交付</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">资源</h3><div class="key-value-value"><p>达到最大轮数、时间或预算 → 记录已用资源并接管</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">进展</h3><div class="key-value-value"><p>连续几轮没有减少缺口 → 记录重复尝试，停止或改走固定流程</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">证据</h3><div class="key-value-value"><p>出现冲突或关键证据缺失 → 保留缺口，标记待核实并交给责任人</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">权限或风险</h3><div class="key-value-value"><p>请求越权或即将产生不可逆/对外影响 → 拒绝动作，留下接管包并等待批准</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">人工要求</h3><div class="key-value-value"><p>使用者要求暂停或接管 → 立即停止，记录原因和下一位处理者</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="ita-coordinator" data-character-pose="top-explain" data-character-edge="top" data-character-along="82" data-character-exposure="53" data-character-scale="0.9" style="--character-along:82%;--character-exposure:53;--character-hidden:47%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/top-explain.1c13d6633422.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>什么时候停止，是完成定义的一部分</p></div></div></div></aside>
+    <div class="numeric-progress">6/16</div>
+    <div class="semantic-label">STOP CONDITIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-case layout-split teaching-semantic axis-horizontal order-cards-media"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 停止条件</div>
+    <h2 class="slide-title">三种“还没完成”不应得到同一个答案</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>仍有进展</h3><p>缺口在减少且不越权 → 继续补来源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>没有进展</h3><p>连续尝试未改变状态 → 停止并记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高风险</h3><p>将对外或产生不可逆影响 → 人工接管</p></article></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/ita-5-2/assets/previews/p0-decision-tree-handoff-portrait.webp" data-full-src="resources/decks/ita-5-2/assets/p0-decision-tree-handoff-portrait.png" data-full-width="1086" data-full-height="1448" alt="按进展、无进展和高风险状态选择继续、停止或人工接管" tabindex="0" role="button" aria-label="放大图片：按进展、无进展和高风险状态选择继续、停止或人工接管" decoding="async"><figcaption>图片只示意决策分支；继续、停止和接管的判定以左侧规则为准</figcaption></figure></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="bottom-stop-handoff" data-character-edge="bottom" data-character-along="82" data-character-exposure="45" data-character-scale="0.9" style="--character-along:82%;--character-exposure:45;--character-hidden:55%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:-100px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/bottom-stop-handoff.287e42f06426.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>继续、停止和接管不是同一种未完成</p></div></div></div></aside>
+    <div class="numeric-progress">7/16</div>
+    <div class="semantic-label">STOP OR CONTINUE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 人工接管</div>
+    <h2 class="slide-title">“请人处理”必须带上上下文</h2>
+    <div class="slide-content"><p class="slide-lead">人工接管只有拿到足够上下文才不会从头开始</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>当前状态</h3><p>目标、已完成、待处理和失败记录</p></article><article class="content-card emphasis-card" tabindex="0"><h3>证据</h3><p>来源、摘录、冲突和检查点结果</p></article><article class="content-card emphasis-card" tabindex="0"><h3>待决定</h3><p>需要人判断的具体问题和可选方案</p></article><article class="content-card emphasis-card" tabindex="0"><h3>责任</h3><p>接管人只能在既有授权内继续；责任人决定采用并承担结果</p></article></div></div></div>
+    <div class="numeric-progress">8/16</div>
+    <div class="semantic-label">HANDOFF PACKAGE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 人工接管</div>
+    <h2 class="slide-title">接管人应该能从这里继续工作</h2>
+    <div class="slide-content"><p class="slide-lead">接管包把智能体的状态转换成人可以继续的任务</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="停止 → 接管包 → 人判断 → 更新状态 → 继续或结束"><span class="relation-term">停止</span><span class="relation-operator">→</span><span class="relation-term">接管包</span><span class="relation-operator">→</span><span class="relation-term">人判断</span><span class="relation-operator">→</span><span class="relation-term">更新状态</span><span class="relation-operator">→</span><span class="relation-term">继续或结束</span></div></div>
+<div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">接管人先复述目标和当前状态</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">再检查证据、异常和待决定事项</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">最后更新状态，选择继续、修改或结束</span></li></ul></div></div></div>
+    <div class="numeric-progress">9/16</div>
+    <div class="semantic-label">HUMAN TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-case layout-stack teaching-semantic"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 画出边界</div>
+    <h2 class="slide-title">Nova 记录从草稿到客户发送要经过三道边界</h2>
+    <div class="slide-content"><div class="slide-main-content"><p>按“来源冲突 → 共享记录写入 → 对外发布”依次触发三次接管，每次都记录谁停止、谁批准</p>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 30% 26% 20%"><colgroup><col style="width:24%"><col style="width:30%"><col style="width:26%"><col style="width:20%"></colgroup><thead><tr><th>动作／工具</th><th>允许范围</th><th>期限或触发</th><th>授权人</th></tr></thead><tbody><tr><td>检索工具：补地区证据</td><td>官方公开来源；只读</td><td>最多两轮；仍缺证就停</td><td>任务负责人</td></tr><tr><td>草稿工具：生成 Nova 内部简报</td><td>工作区草稿；保留 <code>unknown</code></td><td>采用前；不代表部门承诺</td><td>任务负责人</td></tr><tr><td>记录工具：更新共享表</td><td>只能新增版本，不覆盖历史</td><td>记录所有者逐次授权</td><td>记录所有者</td></tr><tr><td>发布工具：发送客户简报</td><td>仅限确认过的客户与内容</td><td>每次发送前确认</td><td>部门责任人</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/16</div>
+    <div class="semantic-label">SHARED CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 画出边界</div>
+    <h2 class="slide-title">为自己的循环写五条边界</h2>
+    <div class="slide-content"><p class="slide-lead">把授权、资源上限和停止条件写成可以复演的规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 48% 30%"><colgroup><col style="width:22%"><col style="width:48%"><col style="width:30%"></colgroup><thead><tr><th>边界</th><th>具体写法</th><th>触发与责任</th></tr></thead><tbody><tr><td>可读</td><td>只能读公开来源和已有中间产物，不读个人资料</td><td>超出范围就停止；任务负责人授权</td></tr><tr><td>可写</td><td>只能写工作区草稿或新增记录，不覆盖历史</td><td>共享记录需记录所有者批准</td></tr><tr><td>对外行动</td><td>发送客户简报、发布或承诺都列为人工动作</td><td>部门责任人逐次批准</td></tr><tr><td>资源</td><td>本次练习示例：最多 3 轮、10 分钟；预算达到上限就停</td><td>记录已用资源并交接</td></tr><tr><td>停止与接管</td><td>冲突、无进展、越权、高风险或使用者要求暂停</td><td>留下状态、证据和待决定事项</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/16</div>
+    <div class="semantic-label">CLASSROOM WORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-grid teaching-semantic"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 画出边界</div>
+    <h2 class="slide-title">三个人按接管包复演一次接管</h2>
+    <div class="slide-content"><div class="slide-main-content"><p>用边界表的最后一行和接管包复演一次停止、交接与批准</p>
+<div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>智能体</h3><p>按授权行动；遇到边界就交出状态、证据和待决定事项</p></article><article class="content-card emphasis-card" tabindex="0"><h3>接管人</h3><p>按接管包在既有授权内继续，不自动获得批准权</p></article><article class="content-card emphasis-card" tabindex="0"><h3>责任人</h3><p>决定是否采用并承担结果；说明批准范围和期限</p></article></div></div></div>
+    <div class="numeric-progress">12/16</div>
+    <div class="semantic-label">ROLE PLAY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 画出边界</div>
+    <h2 class="slide-title">受控自主才适合进入复用</h2>
+    <div class="slide-content"><p class="slide-lead">下一周把目标、工具、检查点、边界和接管写成可复用 Skill，组织责任见 7.1</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="目标、工具、检查点、边界、接管 → 可复用 Skill"><span class="relation-term">目标、工具、检查点、边界、接管</span><span class="relation-operator">→</span><span class="relation-term">可复用 Skill</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>能安全停止的流程，才有资格被交给下一次任务</p></div></div>
+    <div class="numeric-progress">13/16</div>
+    <div class="semantic-label">TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">本讲回顾</h2>
+    <div class="slide-content"><p class="slide-lead">智能体的自主程度必须和授权、风险与责任一起设计</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>授权</h3><p>观察、分析、修改、对外行动和高风险判断分层</p></article><article class="content-card emphasis-card" tabindex="0"><h3>停止</h3><p>完成、资源、无进展、证据、权限和风险都可触发</p></article><article class="content-card emphasis-card" tabindex="0"><h3>接管</h3><p>带上状态、证据、待决定事项和责任归属</p></article><article class="content-card emphasis-card" tabindex="0"><h3>选择</h3><p>高风险、难验证或稳定任务可能更适合固定工作流</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>人工接管不是自动化的反面，而是责任边界的一部分</p></div></div>
+    <div class="numeric-progress">14/16</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">本讲知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-5-2/mindmap-5-2.html" title="本讲知识地图"></iframe></div></div>
+    <div class="numeric-progress">15/16</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">工具可用性和当前授权有什么区别？</span></li><li><span class="question-no">02</span><span class="question-text">为什么越接近不可逆后果，授权越窄？</span></li><li><span class="question-no">03</span><span class="question-text">无进展、证据冲突和高风险动作分别如何停止？</span></li><li><span class="question-no">04</span><span class="question-text">一个可继续工作的接管包至少包含什么？</span></li><li><span class="question-no">05</span><span class="question-text">什么任务更适合固定工作流而不是智能体循环？</span></li><li><span class="question-no">06</span><span class="question-text">你的任务中谁拥有最终采用和对外行动的责任？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="ita-5-1.html" title="上一节：5.1 智能体的目标、状态与反馈循环" aria-label="上一节：5.1 智能体的目标、状态与反馈循环">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">5.1</span>
+        <span class="nav-title">智能体循环</span>
+      </a>
+      <a class="exercise-link" href="ita-5-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="ita-6-1.html" title="下一节：6.1 从工作流到可复用 Skill" aria-label="下一节：6.1 从工作流到可复用 Skill">
+        <span class="nav-title">Skill 复用</span>
+        <span class="nav-number">6.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">16/16</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

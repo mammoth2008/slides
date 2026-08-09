@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITA 5.1 智能体的目标、状态与反馈循环 | HUST</title>
+  <meta name="description" content="理解受控智能体如何围绕目标、状态和反馈循环选择下一步">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="智能技术及应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="5-1">
+  <meta name="version" content="2608.1">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/ita-5-1/assets/cover-agent-loop.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">ITA · 5.1</div>
+      <h1>智能体的目标、状态与反馈循环</h1>
+      <p class="cover-description">根据 Nova 记录中的证据缺口选择下一步</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 为什么需要循环</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">本节结束时，你能区分三种模式，并写出状态驱动的循环</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分固定工作流、一次模型调用和智能体循环</span></li><li><span class="list-marker">02</span><span class="list-text">说明目标、状态、工具和反馈的作用</span></li><li><span class="list-marker">03</span><span class="list-text">把多轮任务写成观察、选择、行动和检查循环</span></li><li><span class="list-marker">04</span><span class="list-text">识别状态丢失、工具误用和无进展重复</span></li><li><span class="list-marker">05</span><span class="list-text">写出进展条件和停止入口</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 为什么需要循环</div>
+    <h2 class="slide-title">Nova 能力记录还缺一个字段</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component component-text text-focal"><p>目标：完成 Nova 部署能力记录</p>
+<p>客户环境部署＝不支持｜私有网络端点＝支持｜支持地区＝<code>unknown</code></p></div>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>固定流程</h3><p>不管缺什么，都重新获取、抽取、比较三项字段</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一次模型调用</h3><p>建议“查询地区文档”，但不读取查询结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>受控循环</h3><p>只围绕“支持地区缺证”获取、检查、更新或停止</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>智能体的价值不是多说几轮，而是根据反馈改变行动</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="62" data-character-exposure="58" data-character-scale="0.9" style="--character-along:62%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.628f58dc4f4a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>下一轮还应该重新核查已完成字段吗？</p></div></div></div></aside>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">OPENING CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-vertical order-text-media"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 为什么需要循环</div>
+    <h2 class="slide-title">智能体是一个可观察的循环</h2>
+    <div class="slide-content"><p class="slide-lead">它围绕目标反复读取状态、选择行动、调用工具并观察反馈</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="目标 → 状态 → 选择 → 行动 → 反馈 → 更新状态"><span class="relation-term">目标</span><span class="relation-operator">→</span><span class="relation-term">状态</span><span class="relation-operator">→</span><span class="relation-term">选择</span><span class="relation-operator">→</span><span class="relation-term">行动</span><span class="relation-operator">→</span><span class="relation-term">反馈</span><span class="relation-operator">→</span><span class="relation-term">更新状态</span></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-5-1/assets/previews/p0-agent-loop.webp" data-full-src="resources/decks/ita-5-1/assets/p0-agent-loop.png" data-full-width="1448" data-full-height="1086" alt="智能体围绕目标读取状态、行动、观察反馈并更新状态的循环" tabindex="0" role="button" aria-label="放大图片：智能体围绕目标读取状态、行动、观察反馈并更新状态的循环" decoding="async"><figcaption>图片只示意循环形状；具体状态字段和反馈规则以正文为准</figcaption></figure></div></div>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">AGENT LOOP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-split axis-horizontal order-cards-media"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 为什么需要循环</div>
+    <h2 class="slide-title">固定工作流、模型调用与智能体</h2>
+    <div class="slide-content"><p class="slide-lead">三个模式的差别在于下一步是否由状态和反馈决定</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>固定工作流</h3><p>节点和顺序预先确定，稳定且容易测试</p></article><article class="content-card emphasis-card" tabindex="0"><h3>一次模型调用</h3><p>输入上下文，生成一次候选结果</p></article><article class="content-card emphasis-card" tabindex="0"><h3>智能体循环</h3><p>根据状态和反馈决定是否继续和做什么</p></article></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/ita-5-1/assets/previews/p1-fixed-call-agent-comparison-portrait.webp" data-full-src="resources/decks/ita-5-1/assets/p1-fixed-call-agent-comparison-portrait.png" data-full-width="1086" data-full-height="1448" alt="固定工作流、一次模型调用与智能体循环的执行模式比较" tabindex="0" role="button" aria-label="放大图片：固定工作流、一次模型调用与智能体循环的执行模式比较" decoding="async"><figcaption>三种模式的边界以卡片正文为准；图片只作执行形状示意</figcaption></figure></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">THREE PATTERNS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 目标与状态</div>
+    <h2 class="slide-title">状态要说明哪些字段完成、哪些仍缺证</h2>
+    <div class="slide-content"><p class="slide-lead">状态至少要能回答</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>已完成</h3><p>客户环境部署与私有网络端点已有证据和判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>待处理</h3><p>支持地区仍为 <code>unknown</code>，需要官方地区矩阵</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>失败记录</h3><p>旧地区页面链接失效，不能重复访问同一地址</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>当前边界</h3><p>最多再查询两次，只读官方公开来源</p></article></div></div></div>
+    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="ita-coordinator" data-character-pose="left-explain" data-character-edge="left" data-character-along="58" data-character-exposure="57" data-character-scale="0.9" style="--character-along:58%;--character-exposure:57;--character-hidden:43%;--character-scale:0.9;--character-bubble-x:440px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/left-explain.508164e22a7f.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>没有状态，循环只是在重复动作</p></div></div></div></aside>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">GOAL AND STATE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 选择下一步</div>
+    <h2 class="slide-title">当前缺口决定下一轮做什么</h2>
+    <div class="slide-content"><p class="slide-lead">智能体不是随意挑选工具，而是回应当前缺口</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">支持地区缺来源：查找官方地区矩阵</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">找到矩阵但无 Nova 字段：保留 <code>unknown</code>，说明范围</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">地区页面与产品文档冲突：比较版本和发布日期</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">得到直接证据：更新地区字段并交给人复核</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">两轮仍无进展：停止，记录已查范围并请求人工补充</span></li></ul></div></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">CHOOSE ACTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-grid teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 选择下一步</div>
+    <h2 class="slide-title">地区查询的三种结果会改变下一步</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>成功</h3><p>找到当前地区矩阵，更新支持地区和来源位置</p></article><article class="content-card emphasis-card" tabindex="0"><h3>部分成功</h3><p>搜索摘要提到地区，但原始矩阵不可访问：继续补原文</p></article><article class="content-card emphasis-card" tabindex="0"><h3>失败</h3><p>旧链接再次失效：失败次数增加，不再重复同一调用</p></article></div></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">FEEDBACK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 选择下一步</div>
+    <h2 class="slide-title">每轮都要能说明“变好了什么”</h2>
+    <div class="slide-content"><p class="slide-lead">没有可观察进展时，循环就应该停下</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="进展=缺口减少、证据增加、状态变化或安全结束"><span class="relation-term">进展</span><span class="relation-operator">=</span><span class="relation-term">缺口减少、证据增加、状态变化或安全结束</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>缺口减少</h3><p>待处理字段、来源或判断问题变少</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>证据增加</h3><p>新增结果能够支持下一步判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>安全结束</h3><p>已经完成，或达到停止条件并交还给人</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>如果状态没有变化，继续调用同一工具不是自主，而是重复</p></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">PROGRESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 设计一个受控循环</div>
+    <h2 class="slide-title">课堂练习：写三到五轮循环</h2>
+    <div class="slide-content"><p class="slide-lead">先照下面的格式写一轮，再扩展到三到五轮</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">目标和完成条件</span></li><li><span class="list-marker">■</span><span class="list-text">前状态：当前已有材料、缺口和边界</span></li><li><span class="list-marker">■</span><span class="list-text">行动：在当前授权内选择工具；需要判断或触及边界时请求人工并交出接管包</span></li><li><span class="list-marker">■</span><span class="list-text">反馈与后状态：结果如何改变状态</span></li><li><span class="list-marker">■</span><span class="list-text">进展差值与停止：少了哪个缺口；若状态不变如何记录并停止</span></li></ul></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 24% 24% 26%"><colgroup><col style="width:26%"><col style="width:24%"><col style="width:24%"><col style="width:26%"></colgroup><thead><tr><th>前状态</th><th>行动</th><th>反馈</th><th>后状态／下一步</th></tr></thead><tbody><tr><td>支持地区为 <code>unknown</code>；尚未查询</td><td>查官方地区矩阵</td><td>找到当前矩阵</td><td>增加可定位来源；下一步抽取地区字段</td></tr><tr><td>旧链接失效；已有一次失败记录</td><td>换查询条件查当前矩阵</td><td>仍只有同一失效链接</td><td>缺口未减少；达到两次上限并转人工</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">CLASSROOM WORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-case layout-grid teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 设计一个受控循环</div>
+    <h2 class="slide-title">让同伴按状态卡复演你的循环</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>复演者</h3><p>先写前状态，再按规则选行动；收到反馈后写后状态和下一步</p></article><article class="content-card emphasis-card" tabindex="0"><h3>观察者</h3><p>记录是否重复、是否越过检查点、进展是否真的减少缺口</p></article><article class="content-card emphasis-card" tabindex="0"><h3>作者</h3><p>解释哪一个状态字段或边界需要修改</p></article><article class="content-card emphasis-card" tabindex="0"><h3>保留问题</h3><p>把仍需人工判断的位置带入下一讲</p></article></div></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">REPLAY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 设计一个受控循环</div>
+    <h2 class="slide-title">智能体循环必须有边界</h2>
+    <div class="slide-content"><p class="slide-lead">今天只定义循环结构，下一讲继续规定</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>工具范围</h3><p>能读什么、能写什么、能不能对外行动</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>停止条件</h3><p>何时结束、何时超时、何时无进展</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>人工接管</h3><p>哪些判断和高风险动作必须交还给人</p></article></div></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="bottom-stop-handoff" data-character-edge="bottom" data-character-along="82" data-character-exposure="45" data-character-scale="0.9" style="--character-along:82%;--character-exposure:45;--character-hidden:55%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:-100px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/bottom-stop-handoff.287e42f06426.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>会循环不等于可以一直循环</p></div></div></div></aside>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1</div>
+    <h2 class="slide-title">本讲回顾</h2>
+    <div class="slide-content"><p class="slide-lead">智能体用目标和状态把多轮行动组织成反馈循环</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>目标</h3><p>说明任务何时真正完成</p></article><article class="content-card emphasis-card" tabindex="0"><h3>状态</h3><p>记录已完成、待处理、失败和边界</p></article><article class="content-card emphasis-card" tabindex="0"><h3>反馈</h3><p>改变下一步选择，而不是只增加文本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>进展</h3><p>每轮减少缺口，或安全地停止和交接</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>智能体的核心不是自主生成，而是受反馈约束的下一步选择</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1</div>
+    <h2 class="slide-title">本讲知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-5-1/mindmap-5-1.html" title="本讲知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH05 <span>|</span> 5.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">固定工作流和智能体循环分别适合什么情况？</span></li><li><span class="question-no">02</span><span class="question-text">状态中为什么要保留失败记录？</span></li><li><span class="question-no">03</span><span class="question-text">工具结果怎样改变下一步选择？</span></li><li><span class="question-no">04</span><span class="question-text">什么才算一轮循环有进展？</span></li><li><span class="question-no">05</span><span class="question-text">智能体何时是在重复而不是在自主？</span></li><li><span class="question-no">06</span><span class="question-text">你的任务中哪些状态应该交给人确认？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="ita-4-2.html" title="上一节：4.2 验证、证据与异常处理" aria-label="上一节：4.2 验证、证据与异常处理">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">4.2</span>
+        <span class="nav-title">验证与异常</span>
+      </a>
+      <a class="exercise-link" href="ita-5-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="ita-5-2.html" title="下一节：5.2 授权边界、停止条件与人工接管" aria-label="下一节：5.2 授权边界、停止条件与人工接管">
+        <span class="nav-title">智能体边界</span>
+        <span class="nav-number">5.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

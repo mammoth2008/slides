@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITA 课程全景 | 智能技术及应用</title>
+  <meta name="description" content="智能技术及应用课程全景：从真实任务到可信、可复用的智能工作流">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --page: #e8e8e4;
+      --surface: #f7f5ef;
+      --surface-raised: #fffdf8;
+      --surface-muted: #eef2f1;
+      --ink: #182126;
+      --ink-soft: #526068;
+      --primary: #244d63;
+      --primary-soft: #e5edf0;
+      --auxiliary: #b95d3b;
+      --auxiliary-soft: #f4e5dc;
+      --line: #b9c2c3;
+      --line-soft: #d3d8d5;
+      --shadow: rgba(24, 33, 38, .16);
+      --serif: "Course Source Han Serif", "Source Han Serif CN", "Source Han Serif SC", "Songti SC", STSong, SimSun, serif;
+      --sans: "Course Source Han Sans", "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      min-width: 320px;
+      background: var(--page);
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      background: var(--page);
+      color: var(--ink);
+      font-family: var(--sans);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button,
+    a {
+      font: inherit;
+    }
+
+    button {
+      color: inherit;
+    }
+
+    a {
+      color: var(--primary);
+      text-underline-offset: 4px;
+    }
+
+    .page {
+      width: min(1440px, calc(100% - 48px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 22px 0 24px;
+    }
+
+    .course-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 54px;
+      padding: 0 2px 18px;
+      border-bottom: 2px solid var(--line);
+    }
+
+    .course-identity {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+    }
+
+    .course-code {
+      color: var(--auxiliary);
+      font: 700 17px/1 var(--mono);
+      letter-spacing: .12em;
+    }
+
+    .course-name {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .course-header-note {
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: .04em;
+    }
+
+    main {
+      display: grid;
+      gap: 20px;
+      padding-top: 24px;
+    }
+
+    .thesis {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 32px;
+      align-items: end;
+    }
+
+    .thesis h1 {
+      max-width: 1080px;
+      margin: 0;
+      font: 700 clamp(42px, 4.2vw, 66px)/1.08 var(--serif);
+      letter-spacing: -.025em;
+    }
+
+    .thesis h1 span {
+      color: var(--primary);
+    }
+
+    .thesis-action {
+      margin: 0 0 6px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: right;
+    }
+
+    .map-shell {
+      position: relative;
+      padding: 28px 30px 26px;
+      border: 2px solid var(--line);
+      background: var(--surface);
+    }
+
+    .map-shell::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 34%;
+      height: 7px;
+      background: var(--primary);
+    }
+
+    .map-shell::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 34%;
+      width: 18%;
+      height: 7px;
+      background: var(--auxiliary);
+    }
+
+    .section-label {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 0 0 16px;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: .08em;
+    }
+
+    .section-label::after {
+      content: "";
+      height: 2px;
+      flex: 1;
+      background: var(--line-soft);
+    }
+
+    .stage-spine {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .stage-spine::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      top: 39px;
+      left: 4%;
+      right: 4%;
+      height: 4px;
+      background: var(--primary);
+    }
+
+    .stage-card {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      min-height: 176px;
+      padding: 17px 18px 16px;
+      border: 2px solid var(--line);
+      border-top: 6px solid var(--primary);
+      background: var(--surface-raised);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .stage-card::before {
+      content: "";
+      position: absolute;
+      top: 27px;
+      left: 18px;
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--primary);
+      background: var(--surface-raised);
+    }
+
+    .stage-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      box-shadow: 0 16px 30px var(--shadow);
+    }
+
+    .stage-card:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--primary) 32%, white);
+      outline-offset: 4px;
+    }
+
+    .stage-card[aria-pressed="true"] {
+      border-color: var(--auxiliary);
+      border-top-color: var(--auxiliary);
+      background: var(--auxiliary-soft);
+    }
+
+    .stage-card[aria-pressed="true"]::before {
+      border-color: var(--auxiliary);
+      background: var(--auxiliary);
+      box-shadow: inset 0 0 0 4px var(--surface-raised);
+    }
+
+    .stage-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 30px;
+      padding-left: 34px;
+      color: var(--primary);
+      font: 700 13px/1 var(--mono);
+      letter-spacing: .08em;
+    }
+
+    .stage-card[aria-pressed="true"] .stage-meta {
+      color: var(--auxiliary);
+    }
+
+    .stage-card h2 {
+      margin: 24px 0 8px;
+      font: 700 clamp(21px, 1.65vw, 27px)/1.15 var(--serif);
+      letter-spacing: -.015em;
+    }
+
+    .stage-card p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .practice-rails {
+      display: grid;
+      gap: 11px;
+      margin-top: 20px;
+    }
+
+    .practice-rail {
+      --rail-color: var(--auxiliary);
+      --rail-soft: var(--auxiliary-soft);
+      display: grid;
+      grid-template-columns: minmax(188px, .85fr) repeat(4, minmax(0, 1fr));
+      min-height: 76px;
+      border: 2px solid var(--line);
+      border-left: 8px solid var(--rail-color);
+      background: var(--surface-raised);
+    }
+
+    .practice-rail.group-rail {
+      --rail-color: var(--primary);
+      --rail-soft: var(--primary-soft);
+    }
+
+    .rail-title,
+    .rail-stop {
+      display: grid;
+      align-content: center;
+      padding: 12px 16px;
+    }
+
+    .rail-title {
+      background: var(--rail-soft);
+    }
+
+    .rail-title strong {
+      color: var(--rail-color);
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .rail-title span {
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .rail-stop {
+      position: relative;
+      border-left: 2px solid var(--line-soft);
+    }
+
+    .rail-stop::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: -6px;
+      width: 10px;
+      height: 10px;
+      margin-top: -5px;
+      background: var(--rail-color);
+    }
+
+    .rail-stop strong {
+      font-size: 16px;
+      line-height: 1.25;
+    }
+
+    .rail-stop span {
+      margin-top: 3px;
+      color: var(--ink-soft);
+      font: 600 11px/1.2 var(--mono);
+      letter-spacing: .04em;
+    }
+
+    .lower-band {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(420px, 1fr);
+      gap: 18px;
+    }
+
+    .capability-window,
+    .course-destination {
+      min-height: 100px;
+      padding: 18px 22px;
+      border: 2px solid var(--line);
+      background: var(--surface);
+    }
+
+    .capability-window {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 22px;
+      align-items: center;
+    }
+
+    .capability-window h2,
+    .course-destination h2 {
+      margin: 0;
+      font: 700 21px/1.2 var(--serif);
+    }
+
+    .capability-items {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 10px;
+      justify-content: flex-end;
+    }
+
+    .capability-item {
+      padding: 8px 12px;
+      border-left: 5px solid var(--auxiliary);
+      background: var(--auxiliary-soft);
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .course-destination {
+      border-left: 8px solid var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .course-destination p {
+      margin: 10px 0 0;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .stage-dialog {
+      width: min(820px, calc(100% - 36px));
+      max-height: min(760px, calc(100dvh - 48px));
+      padding: 0;
+      overflow: auto;
+      border: 0;
+      background: transparent;
+      color: var(--ink);
+    }
+
+    .stage-dialog::backdrop {
+      background: rgba(24, 33, 38, .72);
+      backdrop-filter: blur(4px);
+    }
+
+    .dialog-panel {
+      position: relative;
+      padding: 34px 38px 32px;
+      border: 2px solid var(--line);
+      border-top: 8px solid var(--primary);
+      background: var(--surface);
+      box-shadow: 0 28px 70px rgba(24, 33, 38, .3);
+    }
+
+    .dialog-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      border: 2px solid var(--line);
+      background: var(--surface-raised);
+      cursor: pointer;
+    }
+
+    .dialog-close:hover {
+      border-color: var(--auxiliary);
+      background: var(--auxiliary-soft);
+    }
+
+    .dialog-close:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--auxiliary) 32%, white);
+      outline-offset: 3px;
+    }
+
+    .dialog-meta {
+      margin: 0 0 12px;
+      color: var(--auxiliary);
+      font: 700 14px/1 var(--mono);
+      letter-spacing: .1em;
+    }
+
+    .dialog-panel h2 {
+      max-width: 680px;
+      margin: 0;
+      font: 700 clamp(34px, 5vw, 52px)/1.12 var(--serif);
+    }
+
+    .dialog-question {
+      margin: 18px 0 24px;
+      padding: 16px 20px;
+      border-left: 6px solid var(--auxiliary);
+      background: var(--auxiliary-soft);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .dialog-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, .72fr);
+      gap: 18px;
+    }
+
+    .dialog-block {
+      padding: 20px 22px;
+      border: 2px solid var(--line);
+      background: var(--surface-raised);
+    }
+
+    .dialog-block h3 {
+      margin: 0 0 14px;
+      color: var(--primary);
+      font-size: 20px;
+    }
+
+    .lesson-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .lesson-list li {
+      display: grid;
+      grid-template-columns: 50px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      min-height: 48px;
+      padding: 8px 10px;
+      border-left: 5px solid var(--primary);
+      background: var(--primary-soft);
+    }
+
+    .lesson-list a {
+      font-weight: 700;
+    }
+
+    .lesson-number {
+      color: var(--primary);
+      font: 700 13px/1 var(--mono);
+    }
+
+    .lesson-title {
+      font-size: 15px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .lesson-status {
+      color: var(--ink-soft);
+      font-size: 11px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .dialog-notes {
+      display: grid;
+      gap: 14px;
+    }
+
+    .dialog-note {
+      padding-left: 14px;
+      border-left: 5px solid var(--auxiliary);
+    }
+
+    .dialog-note strong {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--auxiliary);
+      font-size: 14px;
+    }
+
+    .dialog-note p {
+      margin: 0;
+      color: var(--ink-soft);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .page-footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-top: 18px;
+      padding: 16px 2px 0;
+      border-top: 2px solid var(--line);
+      color: var(--ink-soft);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1080px) {
+      .page { width: min(100% - 32px, 920px); }
+      .thesis { grid-template-columns: 1fr; gap: 12px; }
+      .thesis-action { text-align: left; }
+      .stage-spine { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .stage-spine::before { display: none; }
+      .stage-card:last-child { grid-column: 1 / -1; }
+      .practice-rail { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rail-title { grid-column: 1 / -1; }
+      .rail-stop:nth-child(2n) { border-left: 0; }
+      .lower-band { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 680px) {
+      .page { width: min(100% - 24px, 620px); padding-top: 14px; }
+      .course-header { align-items: flex-start; gap: 16px; }
+      .course-identity { display: grid; gap: 8px; }
+      .course-header-note { max-width: 130px; text-align: right; }
+      main { padding-top: 20px; }
+      .thesis h1 { font-size: 40px; }
+      .map-shell { padding: 24px 18px 20px; }
+      .stage-spine { grid-template-columns: 1fr; }
+      .stage-card:last-child { grid-column: auto; }
+      .stage-card { min-height: 142px; }
+      .practice-rail { grid-template-columns: 1fr; }
+      .rail-title { grid-column: auto; }
+      .rail-stop,
+      .rail-stop:nth-child(2n) { border-top: 2px solid var(--line-soft); border-left: 0; }
+      .rail-stop::before { top: -6px; left: 18px; margin: 0; }
+      .capability-window { grid-template-columns: 1fr; }
+      .capability-items { justify-content: flex-start; }
+      .dialog-panel { padding: 30px 20px 24px; }
+      .dialog-grid { grid-template-columns: 1fr; }
+      .dialog-close { top: 12px; right: 12px; }
+      .lesson-list li { grid-template-columns: 44px minmax(0, 1fr); }
+      .lesson-status { grid-column: 2; }
+      .page-footer { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        transition-duration: .01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="course-header">
+      <div class="course-identity">
+        <span class="course-code">ITA</span>
+        <span class="course-name">智能技术及应用</span>
+      </div>
+      <div class="course-header-note">8 周 · 32 学时 · 14 个小节</div>
+    </header>
+
+    <main>
+      <section class="thesis" aria-labelledby="page-title">
+        <h1 id="page-title">从真实任务出发，组织人、AI、脚本和工具，形成<span>可信、可复用的智能工作流</span></h1>
+        <p class="thesis-action">选择一个阶段，查看课程问题与小节入口</p>
+      </section>
+
+      <section class="map-shell" aria-labelledby="spine-title">
+        <p class="section-label" id="spine-title">课程能力主线</p>
+
+        <div class="stage-spine" aria-label="ITA 五个课程阶段">
+          <button class="stage-card" type="button" data-stage="1" aria-pressed="false">
+            <span class="stage-meta"><span>01</span><span>WEEK 1</span></span>
+            <h2>认识能力与边界</h2>
+            <p>从 AI 发展进入现实任务、验证与责任</p>
+          </button>
+
+          <button class="stage-card" type="button" data-stage="2" aria-pressed="false">
+            <span class="stage-meta"><span>02</span><span>WEEK 2—3</span></span>
+            <h2>连接工具并组织工作流</h2>
+            <p>从模型、工具、工具调用和上下文走向可观察过程</p>
+          </button>
+
+          <button class="stage-card" type="button" data-stage="3" aria-pressed="false">
+            <span class="stage-meta"><span>03</span><span>WEEK 4—5</span></span>
+            <h2>设置检查点并控制智能体</h2>
+            <p>用检查、证据、异常和授权控制行动空间</p>
+          </button>
+
+          <button class="stage-card" type="button" data-stage="4" aria-pressed="false">
+            <span class="stage-meta"><span>04</span><span>WEEK 6—7</span></span>
+            <h2>固化方法与组织应用</h2>
+            <p>把一次成功过程变成可复用的组织能力</p>
+          </button>
+
+          <button class="stage-card" type="button" data-stage="5" aria-pressed="false">
+            <span class="stage-meta"><span>05</span><span>WEEK 8</span></span>
+            <h2>展示方案并更新判断</h2>
+            <p>依据过程证据解释方案，并接受新信息修正</p>
+          </button>
+        </div>
+
+        <div class="practice-rails" aria-label="课程两条实践轨道">
+          <div class="practice-rail">
+            <div class="rail-title">
+              <strong>课堂共同任务</strong>
+              <span>AI 技术与企业应用观察</span>
+            </div>
+            <div class="rail-stop">
+              <strong>辨认主张</strong>
+              <span>第 1 周 · 能力事实与宣传承诺</span>
+            </div>
+            <div class="rail-stop">
+              <strong>获取与结构化</strong>
+              <span>第 2—3 周 · 来源 · 字段 · 工作流</span>
+            </div>
+            <div class="rail-stop">
+              <strong>检查与控制</strong>
+              <span>第 4—5 周 · 证据 · 异常 · 接管</span>
+            </div>
+            <div class="rail-stop">
+              <strong>固化并更新</strong>
+              <span>第 6—8 周 · Skill · 组织 · 新证据</span>
+            </div>
+          </div>
+
+          <div class="practice-rail group-rail">
+            <div class="rail-title">
+              <strong>学生自选任务</strong>
+              <span>来自生活、学习或工作</span>
+            </div>
+            <div class="rail-stop">
+              <strong>选择真实任务</strong>
+              <span>第 2 周 · 任务与完成标准</span>
+            </div>
+            <div class="rail-stop">
+              <strong>画出工作流</strong>
+              <span>第 4 周 · 节点与检查点</span>
+            </div>
+            <div class="rail-stop">
+              <strong>试用并修改</strong>
+              <span>第 6 周 · 一次失败或修正</span>
+            </div>
+            <div class="rail-stop">
+              <strong>简短展示</strong>
+              <span>第 8 周 · 整合同一份成果</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="lower-band" aria-label="能力窗口与课程终点">
+        <div class="capability-window">
+          <h2>能力窗口</h2>
+          <div class="capability-items" aria-label="课堂穿插演示">
+            <span class="capability-item">图片、视频与声音</span>
+            <span class="capability-item">版权与深度伪造</span>
+            <span class="capability-item">AI 辅助编程</span>
+            <span class="capability-item">隐私、授权与责任</span>
+          </div>
+        </div>
+
+        <div class="course-destination">
+          <h2>课程终点</h2>
+          <p>为真实任务设计包含输入、中间产物、检查点和输出的智能工作流，并说明人、AI、脚本和工具的职责、证据与风险边界</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="page-footer">
+      <span>课堂共同任务建立方法，小组自选任务完成迁移</span>
+      <span>ITA COURSE MAP · UPDATED 2608 · 14 SECTIONS</span>
+    </footer>
+  </div>
+
+  <dialog class="stage-dialog" id="stage-dialog" aria-labelledby="dialog-title">
+    <section class="dialog-panel">
+      <button class="dialog-close" type="button" aria-label="关闭阶段详情">×</button>
+      <p class="dialog-meta" id="dialog-meta"></p>
+      <h2 id="dialog-title"></h2>
+      <p class="dialog-question" id="dialog-question"></p>
+      <div class="dialog-grid">
+        <section class="dialog-block" aria-labelledby="lessons-title">
+          <h3 id="lessons-title">小节入口</h3>
+          <ul class="lesson-list" id="lesson-list"></ul>
+        </section>
+        <section class="dialog-block dialog-notes" aria-label="本阶段实践">
+          <div class="dialog-note">
+            <strong>课堂共同任务</strong>
+            <p id="dialog-classroom"></p>
+          </div>
+          <div class="dialog-note">
+            <strong>学生自选任务</strong>
+            <p id="dialog-group"></p>
+          </div>
+          <div class="dialog-note">
+            <strong>能力窗口</strong>
+            <p id="dialog-window"></p>
+          </div>
+        </section>
+      </div>
+    </section>
+  </dialog>
+
+  <script>
+    const stages = {
+      1: {
+        meta: "01 · WEEK 1",
+        title: "认识能力与边界",
+        question: "今天的 AI 能做什么，依赖什么条件，又把哪些判断和责任留给了人？",
+        lessons: [
+          { number: "1.1", title: "从文化想象到智能工作流", status: "已发布", href: "ita-1-1.html" }
+        ],
+        classroom: "辨认有关 AI 能力与企业应用的主张，区分能力事实、支撑条件和宣传承诺",
+        group: "选择一个真实、重复发生、自己能够判断结果好坏的生活、学习或工作任务",
+        window: "用文化作品和现实 AI 应用建立共同语言，不增加课外作品"
+      },
+      2: {
+        meta: "02 · WEEK 2—3",
+        title: "连接工具并组织工作流",
+        question: "模型如何借助外部工具行动，一次任务又如何变成可以观察和检查的过程？",
+        lessons: [
+          { number: "2.1", title: "模型、工具、工具调用与上下文", status: "已发布", href: "ita-2-1.html" },
+          { number: "3.1", title: "工作流的对象、节点与依赖", status: "已发布", href: "ita-3-1.html" },
+          { number: "3.2", title: "从真实任务到工作流画布", status: "已发布", href: "ita-3-2.html" }
+        ],
+        classroom: "从模型、工具、工具调用和上下文开始，形成来源、字段和可接续结果，再进入工作流画布",
+        group: "第 2 周确定任务与完成标准，第 4 周形成第一版工作流和检查点",
+        window: "用图片、声音、视频生成展示工具输入输出，再用多模态生产链展示节点依赖"
+      },
+      3: {
+        meta: "03 · WEEK 4—5",
+        title: "设置检查点并控制智能体",
+        question: "AI 可以获得多大行动空间，错误怎样被发现，何时必须停止并交还给人？",
+        lessons: [
+          { number: "4.1", title: "检查点与验收标准", status: "已发布", href: "ita-4-1.html" },
+          { number: "4.2", title: "验证、证据与异常处理", status: "已发布", href: "ita-4-2.html" },
+          { number: "5.1", title: "智能体的目标、状态与反馈循环", status: "已发布", href: "ita-5-1.html" },
+          { number: "5.2", title: "授权边界、停止条件与人工接管", status: "已发布", href: "ita-5-2.html" }
+        ],
+        classroom: "从证据、时效、主张匹配和异常处理进入智能体授权、停止与人工接管",
+        group: "为自选任务规定关键检查点，明确证据、失败回退和人工接管",
+        window: "用版权、肖像、深度伪造和品牌安全展示检查点，用 AI 编程展示反馈循环"
+      },
+      4: {
+        meta: "04 · WEEK 6—7",
+        title: "固化方法与组织应用",
+        question: "一次成功尝试如何被复用、测试和调试，并进入多人协作与组织流程？",
+        lessons: [
+          { number: "6.1", title: "从工作流到可复用 Skill", status: "已发布", href: "ita-6-1.html" },
+          { number: "6.2", title: "测试、调试与持续改进", status: "已发布", href: "ita-6-2.html" },
+          { number: "7.1", title: "人、AI 与脚本的职责分工", status: "已发布", href: "ita-7-1.html" },
+          { number: "7.2", title: "组织工作流与智能应用方案", status: "已发布", href: "ita-7-2.html" }
+        ],
+        classroom: "把行业跟踪方法固化为 Skill，换一个对象测试，再判断企业采用条件、成本、风险与治理",
+        group: "第 6 周保留一次真实试用、失败或修改记录，不要求开发完整软件或长期运行的智能体",
+        window: "把多模态或软件任务整理成可复用模板，再讨论隐私、商业秘密、授权和责任"
+      },
+      5: {
+        meta: "05 · WEEK 8",
+        title: "展示方案并更新判断",
+        question: "怎样用过程证据说明方案可信，并根据反馈和新信息修正原有判断？",
+        lessons: [
+          { number: "8.1", title: "方案汇报与互评", status: "已发布", href: "ita-8-1.html" },
+          { number: "8.2", title: "课程回顾与期末复习", status: "已发布", href: "ita-8-2.html" }
+        ],
+        classroom: "用新增证据更新一次关于 AI 技术与企业应用的判断，说明为什么改变或保持不变",
+        group: "第 8 周整合前面同一份成果并简短展示，不另写长报告，不以工具数量和作品华丽程度评分",
+        window: "回看各种能力窗口，判断它们在什么任务、证据和责任边界下才真正有用"
+      }
+    };
+
+    const dialog = document.querySelector("#stage-dialog");
+    const closeButton = dialog.querySelector(".dialog-close");
+    const stageButtons = [...document.querySelectorAll(".stage-card")];
+    const lessonList = document.querySelector("#lesson-list");
+
+    function localLessonHref(publishHref) {
+      if (window.location.protocol === "file:" && window.location.pathname.includes("/courses/ita/overview/")) {
+        const deckDirectory = publishHref.replace(/\.html$/, "");
+        return "../../../_build/slides/" + deckDirectory + "/" + publishHref;
+      }
+      return publishHref;
+    }
+
+    function renderLessons(lessons) {
+      lessonList.replaceChildren();
+      lessons.forEach((lesson) => {
+        const item = document.createElement("li");
+        const number = document.createElement("span");
+        const title = lesson.href ? document.createElement("a") : document.createElement("span");
+        const status = document.createElement("span");
+
+        number.className = "lesson-number";
+        number.textContent = lesson.number;
+        title.className = "lesson-title";
+        title.textContent = lesson.title;
+        status.className = "lesson-status";
+        status.textContent = lesson.status;
+
+        if (lesson.href) {
+          title.href = localLessonHref(lesson.href);
+        }
+
+        item.append(number, title, status);
+        lessonList.append(item);
+      });
+    }
+
+    function openStage(stageNumber) {
+      const stage = stages[stageNumber];
+      stageButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", String(button.dataset.stage === stageNumber));
+      });
+
+      document.querySelector("#dialog-meta").textContent = stage.meta;
+      document.querySelector("#dialog-title").textContent = stage.title;
+      document.querySelector("#dialog-question").textContent = stage.question;
+      document.querySelector("#dialog-classroom").textContent = stage.classroom;
+      document.querySelector("#dialog-group").textContent = stage.group;
+      document.querySelector("#dialog-window").textContent = stage.window;
+      renderLessons(stage.lessons);
+      dialog.showModal();
+    }
+
+    stageButtons.forEach((button) => {
+      button.addEventListener("click", () => openStage(button.dataset.stage));
+    });
+
+    closeButton.addEventListener("click", () => dialog.close());
+
+    dialog.addEventListener("click", (event) => {
+      if (event.target === dialog) {
+        dialog.close();
+      }
+    });
+
+    dialog.addEventListener("close", () => {
+      stageButtons.forEach((button) => button.setAttribute("aria-pressed", "false"));
+    });
+  </script>
+</body>
+</html>
