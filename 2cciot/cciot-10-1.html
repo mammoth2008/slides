@@ -1,473 +1,379 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>CCIOT | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="云计算与物联网课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 10.1 感知技术 | HUST</title>
+  <meta name="description" content="从感与知的分工出发，理解传感器数字化、无线传感器网络、数据融合和绿色感知的工程权衡">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="10-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-10-1/assets/cover-sensing-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 10.1</div>
+      <h1>感知技术</h1>
+      <p class="cover-description">把物质世界变成可理解的数据</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c101t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>10. 标识</h2>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c101t" data-rel-x="-2000" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物联网标识概念
-
-- 物联网标识是"物"在信息世界的"身份证"
-- 赋予物理实体唯一数字身份
-- 实现追踪、定位、管理和交互功能
-- 类似"电子身份证"
-- 是认证和授权机制的基础
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 标识技术体系
-
-- 包括两类对象: 目标对象与识别者
-- 包括两个要素: "标"与"识"
-- "标"是标记, 强调编码设计和分配
-- "识"是识别, 强调解析过程
-- 目标对象可以是设备、实体物或人
-- 识别者是实施识别的设备
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物联网标识特征
-
-- 在特定语境中具有唯一性
-- 应具备安全性和隐私性
-- 具有规范性
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物联网标识分类
-
-- 按连接媒介分类
-- 常见媒介: 光、电、磁、射频、声音、生物特征
-- 按合作关系分类
-- 合作式标识: 目标对象主动呈现标识
-- 非合作式标识: 识别者从特征中判定标识
-- 按应用领域分类
-- 如商品零售、车辆、共享单车标识
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 合作式标识
-
-- 目标对象显式或主动呈现标识
-- 典型技术: RFID、条码
-- 遵循预设规则和协议
-- 属于通信学科范畴
-- 采用编码、解码、纠错等算法
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 非合作式标识
-
-- 目标对象不参与信息传递
-- 提供特征信息由识别者判定
-- 典型技术: 人脸识别、车牌识别
-- 属于人工智能或模式识别范畴
-- 采用特征工程、机器学习等方法
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="c101t" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 条码概述
-
-- 由规则排列的条、空组成
-- 可供机器识读表示信息
-- 包括一维条码和二维条码
-- 一维条码: 一个维度表示信息
-- 二维条码: 两个维度表示信息
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 条码产生与发展
-
-- 思想起源于20世纪20年代
-- 1949年获得第一个条码专利
-- 1974年首次用于商品销售
-- 80年代在多个领域广泛应用
-- 一维条码信息密度低, 推动二维条码发展
-- QR码由日本原昌宏于1994年发明
-- 2012年在中国爆发式增长
-- 技术仍在发展: 彩色条码、动态条码、环保材料
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 一维条码编码
-
-- 由静区、起始符、数据符、分隔符、结束符组成
-- 最窄条或空称为模块
-- 左右两侧编码不同, 便于判断方向
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 一维条码识别
-
-- 基于光线反射原理
-- 阅读器包含光源、接收装置、解码器
-- 信号转换为二进制序列
-- 解码是编码的反向过程
-- 可识别正向和反向摆放的条码
-- 也可通过摄像头和图像处理识别
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 二维条码编码
-
-- 最小元素称为模块
-- 有多个版本, 版本1为21×21模块
-- 最高版本可存储7089个数字
-- 包含静区、位置探测图案、对齐图案
-- 中心区域存储数据码和纠错码
-- 引入纠错编码提供数据恢复能力
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 二维条码识别
-
-- 基于摄像头获取图像
-- 基本流程: 图像获取、处理、定位校正、解码、纠错、解析
-- 智能手机可高效完成这些步骤
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 一维与二维条码比较
-
-- 共同特点: 成本低, 需对准, 需充足光线
-- 一维条码: 信息密度低、容量小、类型有限、无纠错加密
-- 二维条码: 信息密度高、容量大、类型丰富、有纠错加密
-- 一维条码标识一类"物"
-- 二维条码可标识单个"物"
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="c101t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID技术概述
-
-- 射频识别技术
-- 物联网概念形成伊始就凸显重要价值
-- 比条码更高效、灵活的标识采集和跟踪能力
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID产生与发展
-
-- 起源于20世纪40年代雷达技术改进
-- 1948年奠定理论基础
-- 数十年间逐渐成熟应用
-- 21世纪进入商业应用快速推广阶段
-- 2024年全球市场规模达154.9亿美元
-- 中国产量占全球70%~80%
-- 应用广泛: 公交卡、地铁卡、身份证
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID系统组成
-
-- 三个基本元件: 阅读器、天线、电子标签
-- 阅读器: 核心, 发送射频能量和信号, 接收标签回复
-- 天线: 转换单元, 导行波与电磁波转换
-- 标签: 数据载体, 分被动式、主动式、半主动式
-- 被动式: 无电源, 从射频信号获取能量
-- 主动式: 自带电源, 通信距离远
-- 半主动式: 自带电池供电, 通信能量从外界获取
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID工作原理
-
-- 阅读器通过天线发射射频信号
-- 信号包含能量和查询命令
-- 标签接收信号, 被动式标签获取能量
-- 标签处理查询命令, 返回存储的标识信息
-- 阅读器接收信号, 解析标识信息
-- 存在标签信号冲突问题
-- 需要防冲突算法处理多标签情况
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID技术特点
-
-- 非接触式标识技术
-- 可穿透非金属材质封装
-- 识别速度快, 可批量识别
-- 数据容量大, 安全性好
-- 可重复使用, 数据可更新
-- 环境耐受力强, 抗污损
-- 使用寿命长, 一般10年以上
-- 主要缺点: 成本高于条码
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### RFID应用场景
-
-- 智能交通: 电子收费、停车场管理、车辆防盗、信号控制
-- 物流系统: 库存管理、资产跟踪、防止丢失、供应链优化
-- 医疗保健: 患者身份验证、药品追踪、器械管理、样本管理
-- 零售、制造、食品溯源、图书管理、智能家居等
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="c101t" data-rel-x="4200" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 基于特征的标识技术概述
-
-- 无需在目标对象上附加图案或装置
-- 属于非合作式标识
-- 识别者预先登记目标对象特征
-- 识别时提取特征并匹配标识
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 光学字符识别
-
-- 利用光学方式获得字符图像并提取文本
-- 分析处理图像文件, 获取文字及版面信息
-- 1929年由德国科学家提出
-- 1966年IBM发表首篇汉字识别论文
-- 21世纪深度学习提升识别效果
-- 典型应用: 车牌检测
-- 流程: 捕获图像、定位车牌、分割字符、识别输出
-
-        </div>
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 生物特征识别
-
-- 人脸识别: 分析面部特征识别身份
-- 流程: 获取图像、定位人脸、标准化、特征提取、比对识别
-- 指纹识别: 采集比对活体指纹
-- 操作简单, 易于接受
-- 成本高, 安全性高
-- 虹膜识别: 分析虹膜独特图案
-- 独一无二, 包括双胞胎
-- 非常高精度和可靠性
-
-        </div>
-
-        <div id="a23" class="step markdown" data-rel-to="a22" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 基于特征的标识技术原理
-
-- 预先构建特征与标识关联数据库
-- 从目标对象获取原始数据并提取特征
-- 根据特征检索数据库确定标识
-- 本质上属于监督学习中的最近邻算法
-- 特征到标识的映射可通过规则引擎或深度神经网络实现
-- 深度学习可自动学习特征表示
-
-        </div>
-
-        <div id="mm101" class="step" data-rel-to="c101t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c10/mindmap-10-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c101q" class="step markdown" data-rel-to="c101t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 10. 标识
-
-- 物联网标识技术体系包括哪两个要素?
-- 物联网标识的三个核心特征是什么?
-- 按连接媒介分类, 物联网标识包括哪些常见类型?
-- 一维条码和二维条码在数据容量和容错能力上有何差异?
-- RFID系统的三个基本元件是什么?
-- 常见的生物特征识别技术有哪三种?
-
-            ----
-
-            [ 9. 感知](cciot-9-1.html#/overview)
-            [| 练习 |](cciot-exec.html)
-            [ 11. 定位与授时](cciot-11-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节承接 9.1 的感知功能域，从“感”与“知”开始，经过传感器数字化和节点网络，最后回到准确、能耗、维护和反馈的工程权衡
+封面图只作感知流程意象，不代表固定的传感器系统架构
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">感知系统可按感知流程、信号链、节点网络和工程证据逐项分析</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分感、知与感知的关系</span></li><li><span class="list-marker">02</span><span class="list-text">解释传感器如何把物理量转换为信号</span></li><li><span class="list-marker">03</span><span class="list-text">说明模拟信号数字化和 ADC 的作用</span></li><li><span class="list-marker">04</span><span class="list-text">读懂传感器节点、汇聚节点与多跳网络</span></li><li><span class="list-marker">05</span><span class="list-text">分析数据融合、能量和覆盖之间的权衡</span></li><li><span class="list-marker">06</span><span class="list-text">从案例判断感知系统是否可靠和可维护</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 感知基础</div>
+    <h2 class="slide-title">“感”与“知”构成连续的感知流程</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.a6f0f0381a37.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>传感器有读数，就已经完成感知</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">测到数据不等于已经理解了对象或事件</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>感 Sensing</h3><p>使用传感器检测或测量物质世界中的变量</p>
+<p>输出代表光、温度、压力、声音等参量的信号</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>知 Perception</h3><p>解析、解释和理解传感器数据</p>
+<p>形成关于对象、状态或事件的有意义信息</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>感知把测量信号变成可用于判断的信息</p></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">SENSING AND PERCEPTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 感知基础</div>
+    <h2 class="slide-title">感知是物联网连接两个世界的入口</h2>
+    <div class="slide-content"><p class="slide-lead">传感器完成“感”，计算和场景信息帮助形成“知”</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>感：物理量 → 传感器信号 → 数字数据 知：数字数据 → 状态／事件理解 用：决策 → 执行</p></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">物理输入</h3><div class="key-value-value"><p>温度、湿度、压力、光线、声音、气体或生物量</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">信号输出</h3><div class="key-value-value"><p>传感器将变化转换为可传输和处理的信号</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">信息理解</h3><div class="key-value-value"><p>从数据中识别对象、状态、趋势或异常</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">服务反馈</h3><div class="key-value-value"><p>为控制、告警、分析或用户体验提供依据</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>没有可靠感知，物联网后续决策只能建立在不完整信息上</p></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">FROM WORLD TO DATA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 感知基础</div>
+    <h2 class="slide-title">练习：这一步位于感知链哪一段？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 27% 38%"><colgroup><col style="width:35%"><col style="width:27%"><col style="width:38%"></colgroup><thead><tr><th>动作</th><th>请判断所在阶段</th><th>请写关键证据</th></tr></thead><tbody><tr><td>测量轮胎压力</td><td>感／知／决策／执行</td><td>填写证据</td></tr><tr><td>从图像中识别行人</td><td>感／知／决策／执行</td><td>填写证据</td></tr><tr><td>判断前方存在碰撞风险</td><td>感／知／决策／执行</td><td>填写证据</td></tr><tr><td>触发车辆制动</td><td>感／知／决策／执行</td><td>填写证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>区分感、知、决策和执行，定位问题所在</p></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">PERCEPTION JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+<!-- speaker-notes
+参考判断：测量轮胎压力属于感，证据是传感器输出物理量信号；从图像中识别行人属于知，证据是数据被解析为对象类别；判断前方存在碰撞风险属于决策，证据是结合状态与规则形成判断；触发车辆制动属于执行，证据是命令改变物理过程。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器与数字化</div>
+    <h2 class="slide-title">传感器把不同参量转换成可处理信号</h2>
+    <div class="slide-content"><p class="slide-lead">敏感元件感受变化，转换元件输出电信号</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>被测量 → 敏感／转换 → 信号调理 → 模数转换器 ADC → 数字数据 → 处理／通信</p></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">敏感元件</h3><div class="key-value-value"><p>感受被测量的变化</p></div></div><div class="key-value-item"><h3 class="key-value-key">转换元件</h3><div class="key-value-value"><p>把敏感元件的输出转换为电信号</p></div></div><div class="key-value-item"><h3 class="key-value-key">辅助单元</h3><div class="key-value-value"><p>提供电源、放大、滤波和信号调理</p></div></div><div class="key-value-item"><h3 class="key-value-key">后端系统</h3><div class="key-value-value"><p>处理、传输、存储和理解数字数据</p></div></div></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>图中主链从被测量到数字数据；后端系统负责后续处理，不是传感器本体</p></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-10-1/assets/previews/sensor-signal-chain-image2.webp" data-full-src="resources/decks/cciot-10-1/assets/sensor-signal-chain-image2.png" data-full-width="1448" data-full-height="1086" alt="从被测量经过敏感元件和信号调理到数字处理的传感器信号链" tabindex="0" role="button" aria-label="放大图片：从被测量经过敏感元件和信号调理到数字处理的传感器信号链" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>传感器输出经调理和数字化，更易统一处理</p></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">SENSOR SIGNAL CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器与数字化</div>
+    <h2 class="slide-title">数字化让信号更容易传输、校准和诊断</h2>
+    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.936981e72281.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>可处理不等于可信，校准仍然要有证据</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">数字信号仍有误差，但在一定范围内可以再生</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>模拟信号 Analog Signal</h3><p>连续变化，长距离传输会受到衰减和噪声影响</p>
+<p>误差可能随路径逐步累积</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>数字信号 Digital Signal</h3><p>幅值离散，可在一定范围内判决和再生，配合纠错提高可靠性</p>
+<p>便于统一处理和传输</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数字化改善可处理性，但采样、量化和测量误差仍然存在</p></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">ANALOG AND DIGITAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器与数字化</div>
+    <h2 class="slide-title">练习：信号链各步做什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 30% 36%"><colgroup><col style="width:34%"><col style="width:30%"><col style="width:36%"></colgroup><thead><tr><th>动作</th><th>请写主要作用</th><th>请写需要关注的边界</th></tr></thead><tbody><tr><td>敏感元件发生变化</td><td>填写作用</td><td>填写边界</td></tr><tr><td>转换成电信号</td><td>填写作用</td><td>填写边界</td></tr><tr><td>ADC 采样与量化</td><td>填写作用</td><td>填写边界</td></tr><tr><td>数字校准并加状态码</td><td>填写作用</td><td>填写边界</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先定位变化发生在哪一步，再判断误差来自测量、转换、数字化还是传输</p></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">SIGNAL JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+<!-- speaker-notes
+参考判断：敏感元件发生变化的作用是感受被测量，需关注量程、响应和环境；转换成电信号的作用是统一输出形式，需关注线性、噪声和调理；ADC 采样把模拟信号变成数字码，需关注采样率、分辨率和量化；数字校准并加状态码改善一致性与诊断，需关注模型、标识和异常边界。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 泛在互连与智能融合</div>
+    <h2 class="slide-title">多个节点让感知从一个点扩展到一个系统</h2>
+    <div class="slide-content"><p class="slide-lead">传感器互连后，多个节点协同感知空间、对象和事件</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>节点：感知＋计算／通信＋能量 路径：节点 → 自组织／有线网络 → 汇聚 → 平台与应用</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>泛在互连</h3><p>多点、多类型传感器协同感知</p></article><article class="content-card emphasis-card" tabindex="0"><h3>节点能力</h3><p>感知、计算、通信和能量模块组合</p></article><article class="content-card emphasis-card" tabindex="0"><h3>汇聚节点</h3><p>接收多跳数据并接入更大网络</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多个节点通过协作形成整体感知</p></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">NETWORKED SENSING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 泛在互连与智能融合</div>
+    <h2 class="slide-title">数据融合与绿色设计要按系统总账权衡</h2>
+    <div class="slide-content"><p class="slide-lead">本地计算可能减少通信量和通信能耗，但会增加节点复杂度；维护仍需另评估</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-text">多源数据
+→ 校准、压缩与融合
+→ 面向任务的判断依据</code></pre></div></div></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">智能传感器 Smart Sensor 在节点内处理数据，可补偿、校准、压缩和自诊断</span></li><li><span class="list-marker">02</span><span class="list-text">融合可少传或互相印证；智能判断仍需任务证据</span></li><li><span class="list-marker">03</span><span class="list-text">低功耗芯片、休眠和低功耗通信延长节点寿命</span></li><li><span class="list-marker">04</span><span class="list-text">无源化 Passive 可减少换电池频率，但不等于零能耗或免维护</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择在哪里计算，要同时比较时延、带宽、能耗和可靠性</p></div></div>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">FUSION AND ENERGY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 泛在互连与智能融合</div>
+    <h2 class="slide-title">练习：这项措施改善了什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 29% 37%"><colgroup><col style="width:34%"><col style="width:29%"><col style="width:37%"></colgroup><thead><tr><th>措施</th><th>请判断主要改善</th><th>请写仍需考虑的边界</th></tr></thead><tbody><tr><td>摄像头与激光雷达融合</td><td>填写改善方向</td><td>填写边界</td></tr><tr><td>节点本地压缩上传</td><td>填写改善方向</td><td>填写边界</td></tr><tr><td>节点间多跳转发</td><td>填写改善方向</td><td>填写边界</td></tr><tr><td>太阳能能量采集</td><td>填写改善方向</td><td>填写边界</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>感知优化要同时检查新增边界和系统权衡</p></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">FUSION JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+<!-- speaker-notes
+参考判断：摄像头与激光雷达融合改善信息质量和识别互补，但要考虑时间同步、标定和误差；节点本地压缩上传可减少通信量与能耗，但要考虑本地计算和信息损失；节点间多跳转发改善连接与可达性，但要考虑路由变化、延迟和能耗，多跳不一定总是更省能；太阳能能量采集可改善维护周期和续航，但要考虑天气、储能和稳定性。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器组成与类型</div>
+    <h2 class="slide-title">传感器类型不同，测量边界也不同</h2>
+    <div class="slide-content"><p class="slide-lead">这些示例采用不同分类轴；选择还要看参量、物理机制和部署环境</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="30% 70%" style="--key-value-columns:minmax(0,30fr) minmax(0,70fr)"><div class="key-value-item"><h3 class="key-value-key">温度（被测参量）</h3><div class="key-value-value"><p>接触或非接触测量热状态</p></div></div><div class="key-value-item"><h3 class="key-value-key">气体（被测参量）</h3><div class="key-value-value"><p>气敏传感器检测气体成分或浓度</p></div></div><div class="key-value-item"><h3 class="key-value-key">超声（工作机制）</h3><div class="key-value-value"><p>利用发射与回波进行测距或探测</p></div></div><div class="key-value-item"><h3 class="key-value-key">图像（输出形态）</h3><div class="key-value-value"><p>把光学场景转换为图像等高维数据</p></div></div><div class="key-value-item"><h3 class="key-value-key">光纤（光学机制）</h3><div class="key-value-value"><p>利用外界扰动引起的光信号变化进行测量</p></div></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>教材典型示例，不构成完整目录；分类轴可交叉，选择还要看参量、机制、环境与维护</p></div></div></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">SENSOR TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器组成与类型</div>
+    <h2 class="slide-title">从被测量和场景反推传感器方案</h2>
+    <div class="slide-content"><p class="slide-lead">同一目标可能需要多种传感器互相印证</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 29% 46%"><colgroup><col style="width:25%"><col style="width:29%"><col style="width:46%"></colgroup><thead><tr><th>任务</th><th>可能的感知方式</th><th>关键约束</th></tr></thead><tbody><tr><td>夜间围界入侵</td><td>振动、红外、视频等融合</td><td>误报、漏报和全天候运行</td></tr><tr><td>管道温度监测</td><td>接触式温度测量</td><td>安装、量程和耐受</td></tr><tr><td>气体泄漏识别</td><td>气敏传感器与环境参数</td><td>选择性、校准和安全</td></tr><tr><td>车辆距离测量</td><td>超声或图像等</td><td>反射、遮挡和实时性</td></tr><tr><td>桥梁形变监测</td><td>光纤、应变或位移传感器</td><td>长期稳定和结构耦合</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>传感器选择由被测量、环境和后续决策共同决定</p></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">SENSOR SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 传感器组成与类型</div>
+    <h2 class="slide-title">练习：哪种方案更接近需求？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 27% 36%"><colgroup><col style="width:37%"><col style="width:27%"><col style="width:36%"></colgroup><thead><tr><th>需求</th><th>请填写更接近的选择</th><th>请写判断依据</th></tr></thead><tbody><tr><td>监测温室温度趋势</td><td>填写感知方案</td><td>填写判断依据</td></tr><tr><td>发现气体浓度越界</td><td>填写感知方案</td><td>填写判断依据</td></tr><tr><td>识别围栏攀爬行为</td><td>填写感知方案</td><td>填写判断依据</td></tr><tr><td>观察桥梁细微形变</td><td>填写感知方案</td><td>填写判断依据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>好的感知方案要说明为什么这个信号能支持目标判断</p></div></div>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">SENSOR JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+<!-- speaker-notes
+参考判断：监测温室温度趋势可选温度传感器网络，依据是多点、长期和低功耗；发现气体浓度越界可选气敏传感器加告警，依据是选择性、阈值和安全；识别围栏攀爬行为可选多传感器融合，依据是单一信号难以区分干扰；观察桥梁细微形变可选光纤或应变类传感器，依据是长期稳定和结构适配。题目比较的是感知方案，不是唯一型号。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 无线传感器网络</div>
+    <h2 class="slide-title">无线传感器网络 WSN：覆盖、多跳与汇聚</h2>
+    <div class="slide-content"><p class="slide-lead">节点通过多跳协作把数据送到汇聚节点</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>示意路径：节点 → 邻居／多跳 → 汇聚节点 → 更大网络</p></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>覆盖圈=感知范围，不是通信范围；箭头=示例链路；汇聚节点=上行出口；电量=能量约束</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-10-1/assets/previews/wireless-sensor-network-image2.webp" data-full-src="resources/decks/cciot-10-1/assets/wireless-sensor-network-image2.png" data-full-width="1448" data-full-height="1086" alt="无线传感器网络的覆盖、多跳路由、汇聚与能量约束示意" tabindex="0" role="button" aria-label="放大图片：无线传感器网络的覆盖、多跳路由、汇聚与能量约束示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">WSN TOPOLOGY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="e1b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 无线传感器网络</div>
+    <h2 class="slide-title">受限节点的四项模块职责</h2>
+    <div class="slide-content"><p class="slide-lead">感知、处理、通信和能量共同决定 WSN 能否持续工作</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">感知模块</h3><div class="key-value-value"><p>测量环境或对象状态</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">处理模块</h3><div class="key-value-value"><p>过滤、融合和路由判断</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">通信模块</h3><div class="key-value-value"><p>与邻居或汇聚节点交换数据</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">能量模块</h3><div class="key-value-value"><p>电池、供电或能量采集</p></div></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>模块组合要在覆盖、时延、可靠性和寿命之间权衡</p></div></div></div></div>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">NODE MODULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 无线传感器网络</div>
+    <h2 class="slide-title">覆盖、路由和寿命决定网络能否持续感知</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-frustrated.8b832f357da1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>覆盖加密了，电池怎么更快没了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">部署更多节点不一定解决所有问题</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>覆盖</h3><p>点覆盖监测目标，栅栏覆盖检测穿越，面覆盖（区域覆盖）观察整个区域</p>
+<p>覆盖空洞会让系统看不见关键位置</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>寿命</h3><p>休眠、低功耗通信和本地融合通常可减少能量消耗；多跳要结合链路条件判断</p>
+<p>节点失效会改变路由和覆盖范围</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>WSN 设计要同时验证覆盖、连通和寿命</p></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">COVERAGE AND LIFE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 无线传感器网络</div>
+    <h2 class="slide-title">练习：故障优先检查什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 29% 36%"><colgroup><col style="width:35%"><col style="width:29%"><col style="width:36%"></colgroup><thead><tr><th>现象</th><th>请写优先检查对象</th><th>请写需要的证据</th></tr></thead><tbody><tr><td>区域出现感知空洞</td><td>填写优先检查对象</td><td>填写需要的证据</td></tr><tr><td>节点数据到达很慢</td><td>填写优先检查对象</td><td>填写需要的证据</td></tr><tr><td>电池很快耗尽</td><td>填写优先检查对象</td><td>填写需要的证据</td></tr><tr><td>汇聚节点无数据</td><td>填写优先检查对象</td><td>填写需要的证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用覆盖、路由、能量和汇聚证据定位网络问题</p></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">WSN JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+<!-- speaker-notes
+参考判断：区域出现感知空洞先查覆盖与节点位置，核对点、栅栏或面覆盖是否满足；节点数据到达很慢查路由与多跳，核对邻居、链路和拥塞状态；电池很快耗尽查能量策略，核对发送频率、休眠和本地融合；汇聚节点无数据查网关与上行，核对节点路由、汇聚和核心网络。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 案例与工程权衡</div>
+    <h2 class="slide-title">案例比较：精度、能耗、维护与安全</h2>
+    <div class="slide-content"><p class="slide-lead">不同环境会改变“好方案”的定义</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 33% 42%"><colgroup><col style="width:25%"><col style="width:33%"><col style="width:42%"></colgroup><thead><tr><th>场景</th><th>主要感知挑战</th><th>工程权衡</th></tr></thead><tbody><tr><td>围界监测</td><td>全天候、低漏报率与低误报率</td><td>多传感器、融合、维护和响应</td></tr><tr><td>生态监测</td><td>不干扰环境、长期无人值守</td><td>加固、能源、覆盖和低维护</td></tr><tr><td>矿井安全</td><td>恶劣环境和高风险</td><td>防爆、混合组网、可靠告警</td></tr><tr><td>农业与用电</td><td>空间差异和长期趋势</td><td>低功耗、成本、反馈与解释</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>感知系统的最终证据是决策或服务是否可靠，而不是数据图表是否漂亮</p></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">CASE ENGINEERING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 案例与工程权衡</div>
+    <h2 class="slide-title">用一张清单检查一个感知方案</h2>
+    <div class="slide-content"><p class="slide-lead">从被测量追到反馈结果，检查每一段证据</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">被测对象与参量
+→ 传感器与安装
+→ 节点、网络与能量
+→ 数据融合与判断
+→ 告警、控制或服务反馈</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>对象</h3><p>明确参量、事件、空间和时间范围</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>设备</h3><p>选择机制、量程、能量和保护方式</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>网络</h3><p>安排覆盖、路由、汇聚和数据策略</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>验收</h3><p>检查误报、漏报、延迟、寿命和反馈</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整方案要能测到、传回来、解释清楚、维护得住并支持行动</p></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-thinking" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-thinking.14d2e1444bce.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>更准的读数，也可能带来更高能耗和维护成本</p></div></div></div></aside>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">DESIGN CHECKLIST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 案例与工程权衡</div>
+    <h2 class="slide-title">练习：还缺什么证据？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 29% 37%"><colgroup><col style="width:34%"><col style="width:29%"><col style="width:37%"></colgroup><thead><tr><th>已知描述</th><th>请标出已有证据</th><th>请写仍需补充的证据</th></tr></thead><tbody><tr><td>传感器精度很高</td><td>填写已有证据</td><td>填写补充证据</td></tr><tr><td>节点可以无线通信</td><td>填写已有证据</td><td>填写补充证据</td></tr><tr><td>平台能识别异常</td><td>填写已有证据</td><td>填写补充证据</td></tr><tr><td>数据持续上传</td><td>填写已有证据</td><td>填写补充证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>单项指标不能代替系统证据</p></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+<!-- speaker-notes
+参考判断：传感器精度很高只证明测量能力，还要补长期稳定、校准和维护；节点可以无线通信只证明连接能力，还要补覆盖、路由、能耗和安全；平台能识别异常只证明理解能力，还要补误报、漏报和处置反馈；数据持续上传只证明数据流存在，还要补服务目标、隐私和生命周期。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">分析感知系统时，按感知流程、信号链、节点网络和工程权衡逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">感与知：测量信号与信息理解构成连续流程</span></li><li><span class="list-marker">02</span><span class="list-text">传感器：敏感、转换、调理和数字化把参量变成可处理信号</span></li><li><span class="list-marker">03</span><span class="list-text">融合趋势：互连、智能传感、数据融合和绿色设计扩展能力</span></li><li><span class="list-marker">04</span><span class="list-text">类型选择：参量、机制、环境和后续任务共同决定传感器方案</span></li><li><span class="list-marker">05</span><span class="list-text">WSN：节点、多跳、汇聚、覆盖和能量形成系统约束</span></li><li><span class="list-marker">06</span><span class="list-text">工程验收：精度、误报、延迟、寿命、维护和反馈必须同时检查</span></li></ol></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-10-1/mindmap-10-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH10 <span>|</span> 10.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">“感”与“知”在感知流程中分别完成什么？</span></li><li><span class="question-no">02</span><span class="question-text">物理量如何经过传感器和 ADC 变成可处理信号？</span></li><li><span class="question-no">03</span><span class="question-text">模拟信号数字化和 ADC 为什么重要？</span></li><li><span class="question-no">04</span><span class="question-text">传感器节点、汇聚节点和多跳网络如何协同？</span></li><li><span class="question-no">05</span><span class="question-text">数据融合、能耗、覆盖和维护如何权衡？</span></li><li><span class="question-no">06</span><span class="question-text">如何用案例证据判断一个感知系统是否可靠并支持行动？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-9-1.html" title="上一节：9.1 物联网参考模型与技术体系" aria-label="上一节：9.1 物联网参考模型与技术体系">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">9.1</span>
+        <span class="nav-title">物联网参考模型与技术体系</span>
+      </a>
+      <a class="exercise-link" href="cciot-10-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-11-1.html" title="下一节：11.1 标识技术" aria-label="下一节：11.1 标识技术">
+        <span class="nav-title">标识技术</span>
+        <span class="nav-number">11.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

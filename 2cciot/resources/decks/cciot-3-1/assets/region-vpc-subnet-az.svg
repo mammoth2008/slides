@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="620" viewBox="0 0 1200 620" role="img" aria-labelledby="title desc">
+  <title id="title">区域、VPC、可用区、子网与实例的关系</title>
+  <desc id="desc">一个区域中的 VPC 可以跨越两个可用区，每个子网只位于一个可用区，实例部署在子网中</desc>
+  <defs>
+    <linearGradient id="region" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f7fbfc"/>
+      <stop offset="1" stop-color="#e9f3f5"/>
+    </linearGradient>
+    <linearGradient id="vpc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f1f7f8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0 0 L12 6 L0 12 Z" fill="#c26432"/>
+    </marker>
+    <style>
+      .label { font-family: "Source Han Sans SC", "Microsoft YaHei", sans-serif; fill: #102a35; }
+      .small { font-size: 24px; }
+      .medium { font-size: 30px; font-weight: 700; }
+      .large { font-size: 38px; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect x="3" y="3" width="1194" height="614" rx="28" fill="#ffffff" stroke="#94adb5" stroke-width="4"/>
+  <text x="48" y="62" class="label large">一个区域里的网络与部署关系</text>
+  <text x="48" y="101" class="label small" fill="#45616c">位置边界和网络边界不是一条单线嵌套</text>
+
+  <rect x="42" y="132" width="1116" height="438" rx="24" fill="url(#region)" stroke="#0d6475" stroke-width="4"/>
+  <text x="72" y="180" class="label medium" fill="#0d6475">区域 Region</text>
+  <text x="72" y="215" class="label small" fill="#45616c">一个地理服务范围，包含多个可用区</text>
+
+  <rect x="230" y="238" width="890" height="286" rx="22" fill="url(#vpc)" stroke="#c26432" stroke-width="4" stroke-dasharray="14 10"/>
+  <text x="262" y="280" class="label medium" fill="#c26432">VPC：区域内的逻辑隔离网络</text>
+  <text x="262" y="314" class="label small" fill="#45616c">VPC 可以跨越多个可用区</text>
+
+  <rect x="274" y="345" width="380" height="142" rx="18" fill="#eef7f8" stroke="#0d6475" stroke-width="3"/>
+  <text x="302" y="385" class="label medium" fill="#0d6475">可用区 A</text>
+  <rect x="302" y="405" width="146" height="54" rx="10" fill="#ffffff" stroke="#94adb5" stroke-width="2"/>
+  <text x="375" y="439" class="label small" text-anchor="middle">子网 A</text>
+  <rect x="478" y="405" width="146" height="54" rx="10" fill="#faebdf" stroke="#c26432" stroke-width="2"/>
+  <text x="551" y="439" class="label small" text-anchor="middle">实例</text>
+  <path d="M450 432 L470 432" stroke="#c26432" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <rect x="696" y="345" width="380" height="142" rx="18" fill="#eef7f8" stroke="#0d6475" stroke-width="3"/>
+  <text x="724" y="385" class="label medium" fill="#0d6475">可用区 B</text>
+  <rect x="724" y="405" width="146" height="54" rx="10" fill="#ffffff" stroke="#94adb5" stroke-width="2"/>
+  <text x="797" y="439" class="label small" text-anchor="middle">子网 B</text>
+  <rect x="900" y="405" width="146" height="54" rx="10" fill="#faebdf" stroke="#c26432" stroke-width="2"/>
+  <text x="973" y="439" class="label small" text-anchor="middle">实例</text>
+  <path d="M872 432 L892 432" stroke="#c26432" stroke-width="4" marker-end="url(#arrow)"/>
+
+  <path d="M654 416 L690 416" stroke="#c26432" stroke-width="3" stroke-dasharray="8 8"/>
+  <text x="672" y="392" class="label small" text-anchor="middle" fill="#c26432">VPC 跨区</text>
+
+  <text x="72" y="555" class="label small" fill="#45616c">子网从 VPC 地址空间划分范围，并完整地位于一个可用区</text>
+</svg>

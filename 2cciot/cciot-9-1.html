@@ -1,365 +1,396 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>CCIOT | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="云计算与物联网课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 9.1 物联网参考模型与技术体系 | HUST</title>
+  <meta name="description" content="从物联网系统组成与双世界映射出发，比较 ITU-T 与 IWF 参考模型，并用九个功能域组织后续技术专题">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="9-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-9-1/assets/cover-iot-reference-model-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 9.1</div>
+      <h1>物联网参考模型与技术体系</h1>
+      <p class="cover-description">把复杂系统拆成可分析的层、面与功能</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c91t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>9. 感知</h2>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c91t" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 感知技术概述
-
-- 感 (Sensing): 使用传感器检测或测量物质世界
-- 知 (Perception): 从数据中提取有意义的信息
-- 感知: 感与知的融合
-- 物联网的前提与基础
-- 应用: 智能家居, 车联网
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="c91t" data-rel-x="-2000" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 感知技术的发展
-
-- 传感器技术
-- 传感器的数字化
-- 泛在互连趋势
-- 智能融合趋势
-- 无源绿色趋势
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 传感器技术
-
-- 现代信息技术的三大基础之一
-- 扮演感官的角色
-- 感知信息的多样性
-- 输出信号的一致性 (统一为电信号)
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 传感器的数字化
-
-- 模拟信号: 易受衰减和噪声影响
-- 数字信号: 幅值离散, 可再生
-- 核心器件: 模数转换器 (ADC)
-- 数字化: 便于处理, 补偿和故障诊断
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 感知技术的泛在互连趋势
-
-- 联网实现多点多类型感知
-- 传感器节点: 传感 + 计算 + 通信
-- 传感器网络 (Sensor Network): 自组网 (Ad-Hoc)
-- 汇聚节点 (Sink): 网关功能
-- 例子: 车辆间共享视野, 超视距感知
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 感知技术的智能融合趋势
-
-- 处理海量异构数据
-- 智能传感器 (Smart Sensor): 传感器 + MCU
-- 本地处理: 补偿, 校准, 压缩, 自诊断
-- 数据融合 (Data Fusion): 节点内或节点间
-- 分级融合, 优化信息质量
-- 例子: 自动驾驶 (摄像头 + 激光雷达)
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 感知技术的无源绿色趋势
-
-- 传感器节点能耗是巨大挑战
-- 无源 (Passive) 传感器: 从环境捕获能量
-- 能量来源: 太阳能, 热能, 风能, 电磁能
-- 绿色物联网 (GIoT): 节能硬件与软件
-- 绿色措施: 低功耗芯片, 休眠策略, 本地计算
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="c91t" data-rel-x="0" data-rel-y="2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 传感器技术及应用
-
-- 传感器的组成与工作原理
-- 典型的传感器及应用
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 传感器的组成与工作原理
-
-- 核心元件: 敏感元件, 转换元件
-- 辅助单元: 电源, 信号调理模块
-- 敏感元件: 感知参量变化 (通常为非电量)
-- 转换元件: 将非电量转换为电信号
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 传感器类型
-
-- 温度传感器: 接触式 vs 非接触式 (农业, 工业, 医学)
-- 气敏传感器: 检测气体浓度与成分 (家庭安全, 工矿)
-- 超声波传感器: 发射并接收反射信号 (测距, 探伤, 成像)
-- 图像传感器: CCD vs CMOS (安防, 交通, 自动驾驶)
-- 光纤传感器: 利用光信号受外界因素扰动, 线型传感器
-- 适合围界监控和大型结构监测
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="c91t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 无线传感器网络 (WSN) 技术及应用
-
-- WSN 的构成与特征
-- 组网与网内信息处理
-- 感知覆盖技术
-- 生命周期延长技术
-- WSN 的应用
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSN 的构成与特征
-
-- 由大量无线传感器节点 (Wireless Sensor Node) 构成
-- 多跳 (Multi-hop) 逐跳转发
-- 汇聚节点 (Sink) 接入核心网
-- 节点模块: 传感, 处理器, 无线通信, 能量
-- 典型特征: 数量巨大, 自组织, 资源受限 (尤其能量)
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSN 的组网与网内信息处理
-
-- 邻居发现: 节点广播信标消息 (Beacon)
-- 路由拓扑: 通常为树状结构 (父节点, 根节点)
-- 路由构造: 节点协同完成 (如最短跳数)
-- 网内信息处理: 非透明传输
-- 数据融合: 降低传输量 (如求最大/最小值)
-- 数据印证: 提高可靠性 (如投票)
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSN 的感知覆盖技术
-
-- 目标: 有效布置节点以满足感知需求
-- 点覆盖 (Point Coverage): 监控特定目标点
-- 栅栏覆盖 (Barrier Coverage): 检测穿越行为
-- 面覆盖 (Area Coverage): 区域无缝监控
-- 覆盖空洞: 随机部署导致, 可用移动节点填补
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSN 的生命周期延长技术
-
-- 能量受限是核心约束
-- 选择低功耗硬件模块
-- 休眠策略: 间歇性工作 节约能量
-- 多跳无线通信: 短距离多跳比长距离单跳更节能
-- 计算与通信权衡: 计算能耗远低于通信能耗
-- 能量收集: 太阳能, 风能 (无源化)
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSN 的应用
-
-- 建筑物健康监测: 监测应力, 压强, 位移 (广州塔)
-- 农业信息监测: 精准农业 (土壤, 产量, 病虫害)
-- 用电信息监测: 测量不同电器用电情况 (智能插座)
-
-        </div>
-
-        <div id="mm91" class="step" data-rel-to="c91t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c09/mindmap-9-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c91q" class="step markdown" data-rel-to="c91t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 9. 感知
-
-- 请分别解释物联网中的感和知有什么区别.
-- 为什么说传感器的数字化是连接物质世界和信息世界的桥梁?
-- 感知技术发展的三个主要趋势是什么?
-- 一个典型的传感器由哪两个核心元件组成?
-- 简述什么是无线传感器网络.
-- 请简述无线传感器网络的三种典型感知覆盖目标.
-
-            ----
-
-            [ 8.1 物联网的参考模型与技术体系](cciot-8-1.html#/overview)
-            [| 练习 |](cciot-exec.html)
-            [ 10. 标识](cciot-10-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节承接物联网概念，先画出系统组成和双世界映射，再比较两种参考模型，最后把后续专题放入九个功能域
+封面图只作层、网关、平台和双世界连接的场景意象，不代表唯一部署架构
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">物联网系统可以用组成、映射、模型、功能域和证据逐项分析</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明边缘设备、网络、网关、平台和应用的分工</span></li><li><span class="list-marker">02</span><span class="list-text">解释实体物与虚拟物如何双向映射</span></li><li><span class="list-marker">03</span><span class="list-text">读懂 ITU-T 四层两面参考模型</span></li><li><span class="list-marker">04</span><span class="list-text">读懂 IWF 七层信息流转模型</span></li><li><span class="list-marker">05</span><span class="list-text">用九个功能域组织物联网技术体系</span></li><li><span class="list-marker">06</span><span class="list-text">用层、面和功能域分析一条物联网故障链</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/25</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.0000%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 系统组成与双世界</div>
+    <h2 class="slide-title">不同应用仍可用同一组角色拆解</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.a6f0f0381a37.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一设备，在系统里只承担一个角色</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">角色链说明信息如何进入、流转和反馈，但不是固定部署清单</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>进入：实体物 → 边缘设备 → 网络／网关 → 平台 → 应用 反馈：应用决策 → 执行设备 → 实体物</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>边缘设备</h3><p>传感器、执行器、标签和控制器</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>网络与网关</h3><p>连接设备、传输数据并适配协议</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>平台</h3><p>提供计算、存储、数据管理和共享</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用服务器</h3><p>围绕行业目标分析、决策和服务用户</p></article></div></div></div>
+    <div class="numeric-progress">3/25</div>
+    <div class="semantic-label">SYSTEM COMPOSITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 系统组成与双世界</div>
+    <h2 class="slide-title">实体物与虚拟物共同组成物联网视图</h2>
+    <div class="slide-content"><p class="slide-lead">信息系统借助虚拟物表示实体物状态，并把控制决策传给现场设备</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-text">实体物状态
+→ 传感、标识或定位
+→ 虚拟物与数据
+→ 分析和决策
+→ 控制命令
+→ 实体物变化</code></pre></div></div></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">一个实体物可以对应一个或多个虚拟物</span></li><li><span class="list-marker">02</span><span class="list-text">虚拟围栏等信息对象不一定有直接实体对应</span></li><li><span class="list-marker">03</span><span class="list-text">数据不仅要有数值，还要有对象、时间和语义</span></li><li><span class="list-marker">04</span><span class="list-text">反馈结果要能在现场被执行和再次观察</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>实体物、虚拟物和反馈关系比一张设备列表更能说明系统如何工作</p></div></div>
+    <div class="numeric-progress">4/25</div>
+    <div class="semantic-label">DUAL WORLD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.0000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 系统组成与双世界</div>
+    <h2 class="slide-title">练习：对象、动作如何关联双世界？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 29% 39%"><colgroup><col style="width:32%"><col style="width:29%"><col style="width:39%"></colgroup><thead><tr><th>对象或动作</th><th>判断世界或方向</th><th>请写作用关系</th></tr></thead><tbody><tr><td>田地中的阀门</td><td>物质世界／信息世界／跨越两侧</td><td>填写作用关系</td></tr><tr><td>阀门的在线状态</td><td>物质世界／信息世界／跨越两侧</td><td>填写作用关系</td></tr><tr><td>虚拟灌溉分区</td><td>物质世界／信息世界／跨越两侧</td><td>填写作用关系</td></tr><tr><td>控制命令下发</td><td>物质世界／信息世界／跨越两侧</td><td>填写作用关系</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统分析要同时标出实体、信息表示和映射方向</p></div></div>
+    <div class="numeric-progress">5/25</div>
+    <div class="semantic-label">SYSTEM JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+<!-- speaker-notes
+参考判断：田地中的阀门位于物质世界，接收命令改变水流；阀门的在线状态位于信息世界，表示实体物当前状态；虚拟灌溉分区位于信息世界，组织规则和服务范围；控制命令下发跨越两侧，信息决策作用于实体物。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 设备与连接</div>
+    <h2 class="slide-title">设备、网络、网关与平台如何协同</h2>
+    <div class="slide-content"><p class="slide-lead">链路和接口决定能否通信；数据语义决定能否正确协同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 28% 48%"><colgroup><col style="width:24%"><col style="width:28%"><col style="width:48%"></colgroup><thead><tr><th>角色</th><th>主要任务</th><th>需要关注</th></tr></thead><tbody><tr><td>边缘设备</td><td>采集、识别、定位或执行</td><td>物理耦合、功耗、接口和本地状态</td></tr><tr><td>网络（含核心网络）</td><td>组网、寻址、汇聚和传输</td><td>覆盖、时延、带宽和可靠性</td></tr><tr><td>网关</td><td>连接异构设备并适配协议</td><td>转换、缓存、身份和安全</td></tr><tr><td>云与数据平台</td><td>计算、存储和数据服务</td><td>规模、数据治理和应用接口</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“设备在线”只说明某一段连接成立，不等于数据语义和业务链完整</p></div></div>
+    <div class="numeric-progress">6/25</div>
+    <div class="semantic-label">DEVICES AND NETWORKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:24.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 设备与连接</div>
+    <h2 class="slide-title">三种连接关系帮助定位接口问题</h2>
+    <div class="slide-content"><p class="slide-lead">直达、经网络和经网关表示不同连接条件，不分高低</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>直达链路</h3><p>两端有直接链路，数据格式兼容</p>
+<p>可以直接通信</p></article><article class="content-card emphasis-card" tabindex="0"><h3>经网络连接</h3><p>两端接口可互通，但没有直达链路</p>
+<p>需要网络寻址和转发</p></article><article class="content-card emphasis-card" tabindex="0"><h3>经网关适配</h3><p>两端接口或协议不兼容</p>
+<p>需要协议转换或接口适配</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先判断接口和语义，再选择链路与网关，而不是只看设备是否亮灯</p></div></div>
+    <div class="numeric-progress">7/25</div>
+    <div class="semantic-label">CONNECTION FORMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 设备与连接</div>
+    <h2 class="slide-title">练习：系统在哪一段失效？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 29% 36%"><colgroup><col style="width:35%"><col style="width:29%"><col style="width:36%"></colgroup><thead><tr><th>现象</th><th>请写优先检查对象</th><th>请写需要的证据</th></tr></thead><tbody><tr><td>传感器无本地读数</td><td>填写对象</td><td>填写证据</td></tr><tr><td>设备有读数但平台无数据</td><td>填写对象</td><td>填写证据</td></tr><tr><td>平台有数据但对象错了</td><td>填写对象</td><td>填写证据</td></tr><tr><td>命令下发但阀门不动</td><td>填写对象</td><td>填写证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>沿着设备、连接、标识、语义和执行逐段取证</p></div></div>
+    <div class="numeric-progress">8/25</div>
+    <div class="semantic-label">CONNECTIVITY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:32.0000%"></div></div>
+<!-- speaker-notes
+参考判断：传感器无本地读数先查设备与物理耦合，核对电源、传感元件和本地状态；设备有读数但平台无数据查网络与网关，核对链路、地址、协议和转换；平台有数据但对象错了查标识与语义，核对设备身份、时间和字段含义；命令下发但阀门不动查执行链路，核对权限、控制器、驱动和反馈。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> ITU-T 参考模型</div>
+    <h2 class="slide-title">ITU-T 参考模型：四层两面</h2>
+    <div class="slide-content"><p class="slide-lead">设备、网络、平台、应用按职责分工；管理与安全跨层贯穿</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>四层：设备／网络／平台／应用 两面：管理／安全，跨层贯穿</p></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>这是职责抽象，不是固定部署顺序或清单；管理面和安全面跨层贯穿</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-9-1/assets/previews/iot-reference-model-layers-image2.webp" data-full-src="resources/decks/cciot-9-1/assets/iot-reference-model-layers-image2.png" data-full-width="1448" data-full-height="1086" alt="物联网四层模型与跨层管理面和安全面的示意" tabindex="0" role="button" aria-label="放大图片：物联网四层模型与跨层管理面和安全面的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">9/25</div>
+    <div class="semantic-label">ITU-T MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.0000%"></div></div>
+  </section>
+<section id="c1b" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> ITU-T 参考模型</div>
+    <h2 class="slide-title">ITU-T 四层分别负责什么</h2>
+    <div class="slide-content"><p class="slide-lead">每层代表一组主要职责，不要求一一对应具体设备</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">设备层</h3><div class="key-value-value"><p>边缘设备与通用设备，负责采集、执行、计算和连接</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">网络层</h3><div class="key-value-value"><p>组网、传输、路由和协议适配</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">平台层</h3><div class="key-value-value"><p>提供服务与应用支持，包括数据库、云计算、数据管理和专用支撑</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">应用层</h3><div class="key-value-value"><p>行业业务、用户接口和智能服务</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confirm" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confirm.3ee1c90cd31d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>四层是在分工，不是在切开同一个系统</p></div></div></div></aside>
+    <div class="numeric-progress">10/25</div>
+    <div class="semantic-label">LAYER RESPONSIBILITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> ITU-T 参考模型</div>
+    <h2 class="slide-title">管理面与安全面跨层承担系统责任</h2>
+    <div class="slide-content"><p class="slide-lead">系统各层都要配置、监测和保护</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>管理面（管理能力）</h3><p>资源发现、系统配置、故障处理、性能监测、计费和生命周期管理</p>
+<p>回答系统如何持续运行</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>安全面（安全能力）</h3><p>身份、授权、机密性、完整性、隐私和审计</p>
+<p>回答谁能做什么以及证据如何留存</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>层说明分工，管理与安全贯穿运行</p></div></div>
+    <div class="numeric-progress">11/25</div>
+    <div class="semantic-label">CROSS LAYER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> ITU-T 参考模型</div>
+    <h2 class="slide-title">练习：它属于哪一层或哪一个面？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 27% 39%"><colgroup><col style="width:34%"><col style="width:27%"><col style="width:39%"></colgroup><thead><tr><th>功能</th><th>请先判断层或面</th><th>请写判断依据</th></tr></thead><tbody><tr><td>读取传感器状态</td><td>填写层或面</td><td>填写依据</td></tr><tr><td>转换两种协议</td><td>填写层或面</td><td>填写依据</td></tr><tr><td>保存历史数据</td><td>填写层或面</td><td>填写依据</td></tr><tr><td>认证设备身份</td><td>填写层或面</td><td>填写依据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先找功能，再判断它位于哪一层以及是否跨层</p></div></div>
+    <div class="numeric-progress">12/25</div>
+    <div class="semantic-label">ITU-T JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.0000%"></div></div>
+<!-- speaker-notes
+参考判断：读取传感器状态主要属于设备层，依据是与实体物直接耦合；转换两种协议主要属于网络层与网关，依据是解决连通和接口适配；保存历史数据主要属于平台层，依据是提供通用数据支撑；认证设备身份属于安全面，依据是跨层保护访问与信任。具体设备或网关也可能承担其他层和功能，题目按 ITU-T 视角判断。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> IWF 参考模型</div>
+    <h2 class="slide-title">IWF 参考模型：七层信息流</h2>
+    <div class="slide-content"><p class="slide-lead">七层按信息流组织；四组只是阅读分组，不表示部署顺序</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="27% 73%" style="--key-value-columns:minmax(0,27fr) minmax(0,73fr)"><div class="key-value-item"><h3 class="key-value-key">第1层：物理设备与控制器</h3><div class="key-value-value"><p>与实体物交互，产生数据或执行控制</p></div></div><div class="key-value-item"><h3 class="key-value-key">第2–3层：连通／边缘计算</h3><div class="key-value-value"><p>连通层连接设备；边缘层靠近现场过滤、压缩并快速决策</p></div></div><div class="key-value-item"><h3 class="key-value-key">第4–5层：数据累积／数据抽象</h3><div class="key-value-value"><p>累积层沉淀动态数据；抽象层统一结构、来源和语义</p></div></div><div class="key-value-item"><h3 class="key-value-key">第6–7层：应用／协作与流程</h3><div class="key-value-value"><p>应用层提供业务服务；协作层跨应用、组织和人员协调任务</p></div></div></div></div></div>
+    <div class="numeric-progress">13/25</div>
+    <div class="semantic-label">IWF MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> IWF 参考模型</div>
+    <h2 class="slide-title">动态数据经边缘处理和累积进入应用</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>七层模型最先帮我们追踪哪一段信息流？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">周期或事件数据可先在现场处理，位置取决于时延、带宽、隐私和责任</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-text">传感器产生动态数据
+→ 边缘过滤、压缩或检测
+→ 数据累积并统一结构与语义
+→ 应用分析与协作</code></pre></div></div></div>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">温度按周期上报，适合形成趋势记录</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">烟雾事件触发时，系统可能告警或执行动作</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">边缘处理减少无效数据和响应延迟</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">数据抽象让不同来源能够共享语义</span></li></ol></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>示例信息流可省略、回流或改变处理位置</p></div></div></div></div>
+    <div class="numeric-progress">14/25</div>
+    <div class="semantic-label">DATA IN MOTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.0000%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> IWF 参考模型</div>
+    <h2 class="slide-title">练习：这一步对应哪一层？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 28% 39%"><colgroup><col style="width:33%"><col style="width:28%"><col style="width:39%"></colgroup><thead><tr><th>动作</th><th>请先判断主要层</th><th>请写判断依据</th></tr></thead><tbody><tr><td>在摄像头旁检测危险状态</td><td>填写层</td><td>填写现场和时延证据</td></tr><tr><td>保存一周的温度记录</td><td>填写层</td><td>填写数据状态证据</td></tr><tr><td>把不同厂商字段统一</td><td>填写层</td><td>填写结构和语义证据</td></tr><tr><td>让交通、停车和支付系统协同</td><td>填写层</td><td>填写跨应用任务证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用数据状态和处理目的判断所在层，设备名称只作线索</p></div></div>
+    <div class="numeric-progress">15/25</div>
+    <div class="semantic-label">IWF JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+<!-- speaker-notes
+参考判断：在摄像头旁检测危险状态属于边缘计算层，依据是靠近现场并减少延迟；保存一周的温度记录属于数据累积层，依据是动态数据沉淀为可查询数据；把不同厂商字段统一属于数据抽象层，依据是统一结构和语义；让交通、停车和支付系统协同属于协作与流程层，依据是跨应用组织业务任务。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-split axis-horizontal order-group-group"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 功能域技术体系</div>
+    <h2 class="slide-title">九个功能域按系统功能组织技术</h2>
+    <div class="slide-content"><p class="slide-lead">功能域可以跨越多个层和接口</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-list list-key-value has-column-widths" data-column-widths="34% 66%" style="--key-value-columns:minmax(0,34fr) minmax(0,66fr)"><div class="key-value-item"><h3 class="key-value-key">感知</h3><div class="key-value-value"><p>获取物理状态并形成可用信息</p></div></div><div class="key-value-item"><h3 class="key-value-key">标识</h3><div class="key-value-value"><p>区分并解析对象身份</p></div></div><div class="key-value-item"><h3 class="key-value-key">定位与授时</h3><div class="key-value-value"><p>确定物在哪里、事件何时发生</p></div></div><div class="key-value-item"><h3 class="key-value-key">执行</h3><div class="key-value-value"><p>把决策作用于现场</p></div></div><div class="key-value-item"><h3 class="key-value-key">网络</h3><div class="key-value-value"><p>连接设备并传输信息</p></div></div></div></div>
+<div class="component content-group group-align-start"><div class="component component-list list-key-value has-column-widths" data-column-widths="34% 66%" style="--key-value-columns:minmax(0,34fr) minmax(0,66fr)"><div class="key-value-item"><h3 class="key-value-key">计算</h3><div class="key-value-value"><p>分级处理海量信息</p></div></div><div class="key-value-item"><h3 class="key-value-key">数据与智能</h3><div class="key-value-value"><p>挖掘规律并支持决策</p></div></div><div class="key-value-item"><h3 class="key-value-key">安全与隐私</h3><div class="key-value-value"><p>保护系统、数据与用户隐私</p></div></div><div class="key-value-item"><h3 class="key-value-key">管理</h3><div class="key-value-value"><p>负责配置、监测、诊断和生命周期管理</p></div></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>两列不表示层级；九个功能域可以协同并跨越多个层和接口</p></div></div></div></div></div>
+    <div class="numeric-progress">16/25</div>
+    <div class="semantic-label">FUNCTION DOMAINS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.0000%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 功能域技术体系</div>
+    <h2 class="slide-title">一条灌溉任务链调用多个功能域</h2>
+    <div class="slide-content"><p class="slide-lead">表中按任务合并显示九个功能域，证据仍要分别核对</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 42% 35%"><colgroup><col style="width:23%"><col style="width:42%"><col style="width:35%"></colgroup><thead><tr><th>相关功能域</th><th>任务中的问题</th><th>典型证据</th></tr></thead><tbody><tr><td>感知／标识</td><td>测到什么，属于哪块田</td><td>数据、设备身份和时间</td></tr><tr><td>定位与授时</td><td>位置和先后是否可靠</td><td>坐标、时钟和事件顺序</td></tr><tr><td>网络／计算</td><td>信息怎样到达并被处理</td><td>链路、延迟和处理结果</td></tr><tr><td>数据与智能／执行</td><td>何时灌溉，怎样作用</td><td>规则、模型、阀门反馈</td></tr><tr><td>安全与隐私／管理</td><td>谁能操作，如何发现异常</td><td>权限、日志、配置和告警</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>面向任务的服务闭环需要多个功能域协同</p></div></div>
+    <div class="numeric-progress">17/25</div>
+    <div class="semantic-label">DOMAIN CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.0000%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 功能域技术体系</div>
+    <h2 class="slide-title">练习：故障涉及哪些功能域？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 29% 37%"><colgroup><col style="width:34%"><col style="width:29%"><col style="width:37%"></colgroup><thead><tr><th>现象</th><th>请先判断主要功能域，可多选</th><th>请写需要的证据</th></tr></thead><tbody><tr><td>设备数据无法区分来源</td><td>填写功能域</td><td>填写证据</td></tr><tr><td>数据到达但时间顺序错乱</td><td>填写功能域</td><td>填写证据</td></tr><tr><td>平台分析正常但阀门无动作</td><td>填写功能域</td><td>填写证据</td></tr><tr><td>未授权设备可以读取数据</td><td>填写功能域</td><td>填写证据</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按功能域拆分故障，逐项核对证据</p></div></div>
+    <div class="numeric-progress">18/25</div>
+    <div class="semantic-label">DOMAIN JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.0000%"></div></div>
+<!-- speaker-notes
+参考判断：设备数据无法区分来源主要涉及标识与管理，证据是身份、解析和设备关系；数据到达但时间顺序错乱主要涉及定位与授时，证据是时钟、时间戳和同步；平台分析正常但阀门无动作主要涉及执行，证据是控制器、权限和反馈；未授权设备可以读取数据主要涉及安全与隐私，证据是身份、授权和审计。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 跨层设计与责任</div>
+    <h2 class="slide-title">同一智能灌溉系统可从三个视角分析</h2>
+    <div class="slide-content"><p class="slide-lead">同一案例可以用三个互补视角分析</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-list list-key-value has-column-widths" data-column-widths="34% 66%" style="--key-value-columns:minmax(0,34fr) minmax(0,66fr)"><div class="key-value-item"><h3 class="key-value-key">ITU-T</h3><div class="key-value-value"><p>看职责分工：各层与跨层面承担什么职责</p></div></div><div class="key-value-item"><h3 class="key-value-key">IWF</h3><div class="key-value-value"><p>看信息流转：数据怎样从现场变成业务与协作</p></div></div><div class="key-value-item"><h3 class="key-value-key">九个功能域</h3><div class="key-value-value"><p>看横向能力：哪些功能跨层并连接技术专题</p></div></div></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>同一系统可用多个视角；三种视角不是三套并列部署架构</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-9-1/assets/previews/irrigation-three-views-image2.webp" data-full-src="resources/decks/cciot-9-1/assets/irrigation-three-views-image2.png" data-full-width="1448" data-full-height="1086" alt="同一智能灌溉系统由多个参考模型从不同视角分析的示意" tabindex="0" role="button" aria-label="放大图片：同一智能灌溉系统由多个参考模型从不同视角分析的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">19/25</div>
+    <div class="semantic-label">MODEL AS TOOL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.0000%"></div></div>
+  </section>
+<section id="f1b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 跨层设计与责任</div>
+    <h2 class="slide-title">选择分析视角要看问题和证据</h2>
+    <div class="slide-content"><p class="slide-lead">同一系统可以用多个视角分析，关键是保持接口和责任一致</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 31% 44%"><colgroup><col style="width:25%"><col style="width:31%"><col style="width:44%"></colgroup><thead><tr><th>视角</th><th>更适合追问</th><th>典型模型</th></tr></thead><tbody><tr><td>职责分工</td><td>各层与跨层面承担什么职责</td><td>ITU-T 四层两面</td></tr><tr><td>信息流转</td><td>数据怎样从现场变成业务与协作</td><td>IWF 七层</td></tr><tr><td>功能专题</td><td>哪些功能跨层、如何组织技术体系</td><td>九个功能域</td></tr></tbody></table></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>模型是分析工具，不是唯一部署清单</p></div></div></div></div>
+    <div class="numeric-progress">20/25</div>
+    <div class="semantic-label">MODEL CHOICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 跨层设计与责任</div>
+    <h2 class="slide-title">用层、面和功能域定位一条故障链</h2>
+    <div class="slide-content"><p class="slide-lead">按现象取证；箭头不表示部署层级</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">现场无变化
+→ 检查执行与设备
+→ 检查网络与网关
+→ 检查平台数据与应用规则
+→ 检查权限、配置、监控与审计</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>映射</h3><p>确认实体物和虚拟物是否对应</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>接口</h3><p>确认数据是否沿正确接口流动</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>权限</h3><p>确认决策和命令是否拥有权限</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>反馈</h3><p>确认结果是否改变并回报现场</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>复杂故障可以拆成分工、接口、功能域和责任四类问题</p></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>层、面和功能域，是定位责任的三种索引</p></div></div></div></aside>
+    <div class="numeric-progress">21/25</div>
+    <div class="semantic-label">DIAGNOSTIC CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.0000%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 跨层设计与责任</div>
+    <h2 class="slide-title">练习：还缺哪些证据？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 30% 37%"><colgroup><col style="width:33%"><col style="width:30%"><col style="width:37%"></colgroup><thead><tr><th>现象</th><th>请标出已有证据</th><th>请写还需补充的证据</th></tr></thead><tbody><tr><td>设备在线</td><td>填写已有证据</td><td>填写缺口</td></tr><tr><td>平台有历史数据</td><td>填写已有证据</td><td>填写缺口</td></tr><tr><td>控制命令已发送</td><td>填写已有证据</td><td>填写缺口</td></tr><tr><td>模型图画完</td><td>填写已有证据</td><td>填写缺口</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>模型图只是起点，工程完成还需要可观察的接口和责任证据</p></div></div>
+    <div class="numeric-progress">22/25</div>
+    <div class="semantic-label">MODEL REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.0000%"></div></div>
+<!-- speaker-notes
+参考判断：设备在线只证明网络连接存在，还要补标识、数据语义和感知状态；平台有历史数据只证明数据累积成立，还要补应用规则、权限和实时性；控制命令已发送只证明应用做出决策，还要补执行器动作和反馈结果；模型图画完只证明结构有抽象，还要补接口、监控、安全和维护责任。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">按组成、映射、模型、功能域和责任逐项取证</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">组成：按任务组合边缘设备、网络、网关、平台和应用</span></li><li><span class="list-marker">02</span><span class="list-text">双世界：实体物与虚拟物通过感知、数据、决策和执行映射</span></li><li><span class="list-marker">03</span><span class="list-text">ITU-T：四层组织职责，管理面与安全面跨层贯穿</span></li><li><span class="list-marker">04</span><span class="list-text">IWF：七层展开物理设备、连通、边缘、数据累积、数据抽象、应用和协作流程</span></li><li><span class="list-marker">05</span><span class="list-text">功能域：九个跨层能力组织技术</span></li><li><span class="list-marker">06</span><span class="list-text">工程判断：用层、面、功能域和接口证据定位缺口</span></li></ol></div></div></div>
+    <div class="numeric-progress">23/25</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-9-1/mindmap-9-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">24/25</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">物联网系统中的边缘设备、网络、网关、平台和应用如何分工？</span></li><li><span class="question-no">02</span><span class="question-text">实体物与虚拟物如何通过数据和反馈互相映射？</span></li><li><span class="question-no">03</span><span class="question-text">ITU-T 四层两面分别解决什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">IWF 七层模型为什么要把边缘、数据累积和数据抽象展开？</span></li><li><span class="question-no">05</span><span class="question-text">九个功能域如何组织物联网技术？</span></li><li><span class="question-no">06</span><span class="question-text">如何用层、面、功能域和接口证据定位一条故障链？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-8-1.html" title="上一节：8.1 物联网概述" aria-label="上一节：8.1 物联网概述">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">8.1</span>
+        <span class="nav-title">物联网概述</span>
+      </a>
+      <a class="exercise-link" href="cciot-9-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-10-1.html" title="下一节：10.1 感知技术" aria-label="下一节：10.1 感知技术">
+        <span class="nav-title">感知技术</span>
+        <span class="nav-number">10.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">25/25</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

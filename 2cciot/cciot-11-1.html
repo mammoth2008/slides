@@ -1,469 +1,362 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>CCIOT | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="云计算与物联网课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 11.1 标识技术 | HUST</title>
+  <meta name="description" content="从标与识的语境出发，比较合作式与非合作式识别，并理解条码、RFID、特征识别与多标识工程">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="11-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-11-1/assets/cover-identification-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 11.1</div>
+      <h1>标识技术</h1>
+      <p class="cover-description">让系统知道数据属于哪个对象</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c111t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>11. 定位与授时</h2>
-            <h3 style="text-align: center">11.1 定位与授时</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c111t" data-rel-x="-2000" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 定位与授时基本要素
-
-- 定位: 获取实体对象或事件位置的过程
-- 授时: 建立时间标准和传递时间信息的过程
-- 三要素: 对象/事件、空间、时间
-- 正问题: 对象/事件→空间/时间
-- 反问题: 空间+时间→对象/事件
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 位置信息表现形式
-
-- 绝对位置: 经度、纬度、海拔
-- 相对位置: 如东南方向300m
-- 绝对时间: 协调世界时 (UTC)
-- 相对时间: 如车辆启动后第30分钟
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物联网定位应用场景
-
-- 智能交通: 行人、车辆、船舶、航空器导航
-- 灾害搜救: 待搜救者发送位置信息
-- 军事国防: 武器制导确定目标位置
-- 智能仓储: 物品存放位置管理
-- 基于位置的服务: 外卖、共享单车、叫车服务
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 定位场景差异分析
-
-- 定位需求不同: 精度要求各异
-- 定位方式不同: 室外用卫星, 室内用其他方式
-- 定位问题不同: 有正问题也有反问题
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物联网授时应用场景
-
-- 时钟同步: 不同设备间时间基准一致
-- 判定先后: 如人流计数判断出入方向
-- 测量时长: 如车辆区间平均速度测量
-- 同步操作: 多执行器精准时序配合
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 授时场景差异分析
-
-- 同步范围与目标不同: 局部或全局同步到UTC
-- 精度要求不同: 从秒级到毫秒级不等
-- 使用方式不同: 有正问题也有反问题
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="c111t" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 定位与授时的价值
-
-- 指导物联网行为决策: 导航、制导、指引
-- 蕴含运动规律: 分析历史位置预测未来行为
-- 关联安全与隐私: 保障安全也需注意隐私保护
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 几何定位概述
-
-- 依据几何学理论通过距离或角度关系定位
-- 参照物位置已知, 称为锚节点
-- 两个步骤: 测量空间关系, 求解位置
-- 核心内容: 距离测量、角度测量、方程求解
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 距离测量方法
-
-- 基于波传播规律和波速
-- 到达时间 (TOA) : 需收发端严格同步
-- 往返传播时间: 无需同步, 假设双向对称
-- 波速差测量: 发射两种不同速度的波
-- 到达时间差 (TDoA) : 多接收端同步, 得距离差
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 角度测量方法
-
-- 基于到达角 (AoA) 测量
-- 接收端需安装多根天线
-- 利用信号到达各天线时刻差异推算角度
-- 类似人类双耳判定声音方向
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 方程求解
-
-- 三维空间需至少3个独立方程
-- 三边定位: 三球面相交于一点
-- 实际转换为最优化问题
-- 目标: 估计距离与测量距离差值平方和最小
-- 测量精度和锚节点分布影响结果
-- 锚节点分布越均匀, 定位效果越好
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="c111t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 特征定位概述
-
-- 建立特征与位置的映射关系
-- 利用映射关系确定目标位置
-- 特征包括: 信号强度、地磁场、图像、气压等
-- 隐含假设: 不同位置有不同特征
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 指纹定位法
-
-- 也称为基于射频信号的特征定位
-- 两个阶段: 按骥绘图和按图索骥
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 准备阶段
-
-- 预先测量区域每个位置的特征向量
-- 获取各位置信号特征并储存至数据库
-- 实质构建特征与位置坐标的数据集
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 定位阶段
-
-- 未知位置测量特征向量
-- 与数据库特征值比对
-- 找出最接近特征, 关联位置作为结果
-- 采用最近邻或K近邻模型
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="c111t" data-rel-x="4200" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 特征定位本质
-
-- 属于机器学习监督学习问题
-- 目标: 建立特征到位置的映射函数
-- 使预测误差最小化
-- 深度学习可自动学习特征表示
-- 缺点: 需大量现场测量, 不适应动态变化
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 航位推算定位
-
-- 已知当前位置, 测量移动距离和方位
-- 推算下一时刻位置
-- 需要加速度计、罗盘、陀螺仪等
-- 误差会逐步累积增大
-- 需结合其他方法定期校正
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 计时误差来源
-
-- 核心元件: 晶体振荡器 (晶振)
-- 实际频率与标称值存在偏差
-- 精度如20×10⁻⁶允许相对误差
-- 环境变化 (主要是温度) 影响频率
-- 设备休眠导致失去时间基准
-- 需要定期重新时钟同步
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 单向时间同步
-
-- 发送端传输包含时间戳的数据
-- 接收端按时间戳校准自身时间
-- 存在不确定延迟: 传播延时和处理器交互延时
-- 传播延时在短距离可忽略
-- 处理器交互延时是主要误差来源
-- 参考广播同步 (RBS) 可消除发送端延时
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="a19" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 双向时间同步
-
-- 依赖发送端和接收端双向交互
-- 四个时间戳: t₁、t₂、t₃、t₄
-- 假设双向传输对称
-- 对象A的(t₁+t₄)/2对应对象B的(t₂+t₃)/2
-- 可多次进行取平均值降低误差
-- 精度高于单向同步
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 卫星导航系统
-
-- 基于人造卫星网络的无线电导航系统
-- 功能: 定位、授时、测速
-- 全球系统: GPS、GLONASS、北斗、伽利略
-- 北斗三号: 24颗中圆轨道卫星, 3颗地球静止, 3颗倾斜同步
-- 全球民用精度10米内, 亚太5米内
-- 具有短报文功能
-- 缺点: 无法室内、隧道、水下定位, 能耗较大
-
-        </div>
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 蜂窝基站定位系统
-
-- 利用移动通信基站进行定位
-- 源小区定位 (COO) : 直接将基站位置作为结果
-- 误差较大但简单易用
-- 5G R16要求室内3米、室外10米精度
-- 5G R17提高到0.5米甚至更高
-- 优点: 无需卫星模块, 室内外均可定位
-- 缺点: 依赖移动通信系统, 无基站覆盖地区无法定位
-
-        </div>
-
-        <div id="a23" class="step markdown" data-rel-to="a22" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 室内定位系统
-
-- 卫星无法用于室内场景
-- 基站定位缺乏专业设备时误差大
-- 携带测量距离角度硬件, 基于几何定位
-- 捕获环境特征, 采用特征定位
-- 结合陀螺仪等实现航位推算
-- 多种方法组合使用
-- 常见方案: 基于Wi-Fi指纹或RFID信号指纹
-
-        </div>
-
-        <div id="a24" class="step markdown" data-rel-to="a23" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 网络时间协议NTP
-
-- TCP/IP协议族应用层协议
-- 客户端和服务器间时钟同步
-- 采用层级 (Stratum) 结构
-- 层级1从权威时钟源获得UTC
-- 层级越小准确度越高
-- 采用双向时间同步方法
-- 互联网环境精度几十毫秒
-- 局域网理想条件几毫秒精度
-
-        </div>
-
-        <div id="mm111" class="step" data-rel-to="c111t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c11/mindmap-11-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c111q" class="step markdown" data-rel-to="c111t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 11. 定位与授时
-
-- 请解释物联网定位与授时的三个基本要素及其相互关系.
-- 请简述时钟同步在物联网中的三个关键作用.
-- 几何定位包含哪两个主要步骤?
-- 请列举四种距离测量方法, 并说明各自的适用条件.
-- 航位推算定位的主要问题是什么?
-
-            ----
-
-            [ 10. 标识](cciot-10-1.html#/overview)
-            [| 练习 |](cciot-exec.html)
-            [ 12. 网络](cciot-12-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节承接感知数据，先建立标与识的语境，再比较合作式与非合作式识别，最后用条码、RFID、特征和多标识案例说明身份如何进入服务与安全
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">标识判断要结合对象、语境、媒介和证据</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释物联网标识中的对象、要素和语境，并区分标识、认证与授权</span></li><li><span class="list-marker">02</span><span class="list-text">说明唯一性、安全性、隐私性和规范性</span></li><li><span class="list-marker">03</span><span class="list-text">区分合作式与非合作式识别</span></li><li><span class="list-marker">04</span><span class="list-text">读懂条码的编码与光学识别链</span></li><li><span class="list-marker">05</span><span class="list-text">读懂 RFID 的阅读器、天线和标签交互</span></li><li><span class="list-marker">06</span><span class="list-text">设计多标识绑定、权限和注销的基本思路</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/23</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 标识基础</div>
+    <h2 class="slide-title">标识把对象与信息编码对应起来</h2>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="top-misconception" data-character-edge="top" data-character-along="84" data-character-exposure="55" data-character-scale="0.9" style="--character-along:84%;--character-exposure:55;--character-hidden:45%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:470px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/top-misconception.c8f95a50adb8.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>读出一串编码，就已经识别了对象</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">编号只有进入语境，才能支持追踪、管理和交互</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>标：目标对象 → 标记与分配 识：识别者在语境中读取／解析 → 对象的标识结果</p></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">目标对象</h3><div class="key-value-value"><p>设备、实体物、人或一类等价物</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">识别者</h3><div class="key-value-value"><p>读取、观察或推断对象标识的设备与系统</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">标</h3><div class="key-value-value"><p>设计、分配和呈现编码序列或符号</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">识</h3><div class="key-value-value"><p>通过媒介、协议或模型解析出对象的标识</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>标识的作用是把数据绑定到正确对象和语境，而不是制造孤立编号</p></div></div>
+    <div class="numeric-progress">3/23</div>
+    <div class="semantic-label">IDENTITY IN CONTEXT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 标识基础</div>
+    <h2 class="slide-title">标识能否使用，要看四项属性</h2>
+    <div class="slide-content"><p class="slide-lead">唯一不等于安全，标识也不等于认证或授权</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>唯一性</h3><p>在规定语境中区分对象或对象类别</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>安全性</h3><p>防止未授权增加、篡改或删除</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>隐私性</h3><p>控制身份信息的暴露、关联和追踪</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>规范性</h3><p>遵循格式、分配和解析规则</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>标识属性要放回识别目的、时间、空间和系统边界来判断</p></div></div>
+    <div class="numeric-progress">4/23</div>
+    <div class="semantic-label">IDENTITY PROPERTIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 标识基础</div>
+    <h2 class="slide-title">练习：这项信息能当作什么标识？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 29% 38%"><colgroup><col style="width:33%"><col style="width:29%"><col style="width:38%"></colgroup><thead><tr><th>信息</th><th>填写判断</th><th>填写证据</th></tr></thead><tbody><tr><td>设备序列号</td><td>填写</td><td>填写</td></tr><tr><td>同型号商品条码</td><td>填写</td><td>填写</td></tr><tr><td>传感器读数</td><td>填写</td><td>填写</td></tr><tr><td>人脸特征向量</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断标识要问它区分谁、在哪个语境中、由谁读取和如何保护</p></div></div>
+    <div class="numeric-progress">5/23</div>
+    <div class="semantic-label">IDENTITY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.7391%"></div></div>
+<!-- speaker-notes
+参考判断：设备序列号通常标识单台设备，但要核对分配规则、生命周期和权限；同型号商品条码通常标识一类商品，若要区分每一件商品还需要更细的实例标识；传感器读数是状态数据，不是标识本身，还要绑定设备身份、时间和数据语义；人脸特征向量可以作为生物特征身份线索，但要结合语境、阈值、隐私和人工复核。识别线索不等于认证或授权结论。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 合作式与非合作式识别</div>
+    <h2 class="slide-title">合作式与非合作式识别使用不同证据</h2>
+    <div class="slide-content"><p class="slide-lead">关键差异是对象按约定呈现编码，还是识别者从特征推断标识</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>合作式</h3><p>对象按约定呈现或返回编码</p>
+<p>识别者按规则读取、解码和校验</p>
+<p>条码、射频识别 RFID 是常见例子</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>非合作式</h3><p>对象不直接提供编码，识别者从特征推断标识</p>
+<p>人脸、车牌是常见例子</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先看交互关系，再选择编码读取还是特征推断</p></div></div>
+    <div class="numeric-progress">6/23</div>
+    <div class="semantic-label">TWO IDENTIFICATION MODES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.0870%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 合作式与非合作式识别</div>
+    <h2 class="slide-title">两种识别方式的可靠性边界不同</h2>
+    <div class="slide-content"><p class="slide-lead">都需要语境、权限、误差处理和隐私治理</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 34% 41%"><colgroup><col style="width:25%"><col style="width:34%"><col style="width:41%"></colgroup><thead><tr><th>维度</th><th>合作式识别</th><th>非合作式识别</th></tr></thead><tbody><tr><td>证据来源</td><td>编码、协议和返回数据</td><td>图像、字符、生物特征或行为</td></tr><tr><td>技术基础</td><td>编码、解码、检错与纠错</td><td>特征工程、数据集与模型匹配</td></tr><tr><td>常见风险</td><td>标签复制、读取冲突、权限</td><td>误识、拒识、偏差和隐私</td></tr><tr><td>复核方式</td><td>校验码、协议与人工抽查</td><td>阈值、置信度与人工复核</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>识别结果要结合证据和不确定性；认证、授权另行判断</p></div></div>
+    <div class="numeric-progress">7/23</div>
+    <div class="semantic-label">EVIDENCE AND RISK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 合作式与非合作式识别</div>
+    <h2 class="slide-title">练习：哪种识别关系更接近场景？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 28% 36%"><colgroup><col style="width:36%"><col style="width:28%"><col style="width:36%"></colgroup><thead><tr><th>场景</th><th>填写识别关系</th><th>填写依据</th></tr></thead><tbody><tr><td>手机扫描商品码</td><td>填写</td><td>填写</td></tr><tr><td>阅读器批量读取标签</td><td>填写</td><td>填写</td></tr><tr><td>摄像头识别车牌</td><td>填写</td><td>填写</td></tr><tr><td>门禁摄像头识别人脸</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div></div>
+    <div class="numeric-progress">8/23</div>
+    <div class="semantic-label">MODE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.7826%"></div></div>
+<!-- speaker-notes
+参考判断：手机扫描商品码和阅读器批量读取标签更接近合作式识别，前者由商品呈现编码图案，后者由标签按协议返回身份；摄像头识别车牌和人脸门禁核验更接近非合作式识别，前者从图像特征推断，后者不要求人主动发送身份编码。这里的分类描述交互关系，不直接推出安全性。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 条码技术</div>
+    <h2 class="slide-title">条码与 RFID：光学链和射频链</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confused" data-character-edge="right" data-character-along="48" data-character-exposure="70" data-character-scale="0.9" style="--character-along:48%;--character-exposure:70;--character-hidden:30%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confused.5ad25a44d69d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>条码和 RFID 的可靠性，取决于哪条证据链？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一维／二维条码按信息组织区分；RFID 依靠射频交互</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>上方：条码（编码 → 图案 → 光学获取 → 解码／应用） 下方：RFID（阅读器 → 射频交互 → 标签 → 返回标识）</p></div></div>
+<div class="component component-text text-inset"><p>上方条码光学链：一维沿一个方向组织条／空；二维在两个方向组织模块，容量通常更高，部分制式支持纠错；条码需可见、可对准。下方是 RFID 射频链</p></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-11-1/assets/previews/barcode-rfid-identity-chain-image2.webp" data-full-src="resources/decks/cciot-11-1/assets/barcode-rfid-identity-chain-image2.png" data-full-width="1448" data-full-height="1086" alt="上方条码光学识别链与下方 RFID 射频交互链的对照图" tabindex="0" role="button" aria-label="放大图片：上方条码光学识别链与下方 RFID 射频交互链的对照图" decoding="async"></figure></div></div>
+    <div class="numeric-progress">9/23</div>
+    <div class="semantic-label">BARCODE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 条码技术</div>
+    <h2 class="slide-title">条码的“标”与“识”分别发生在哪里</h2>
+    <div class="slide-content"><p class="slide-lead">编码结构和读取条件共同决定结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>标</h3><p>按条码制式设计数据符、定界结构和校验或纠错信息</p>
+<p>把标识编码成可印刷或显示的图案</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>识</h3><p>用光学或摄像头获取条码图案</p>
+<p>定位条、空或模块并解码；应用再把编码映射到对象</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>静区、方向、光照、污损和纠错都会影响条码识别</p></div></div>
+    <div class="numeric-progress">10/23</div>
+    <div class="semantic-label">BARCODE EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 条码技术</div>
+    <h2 class="slide-title">练习：条码识别异常该查哪里？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 29% 37%"><colgroup><col style="width:34%"><col style="width:29%"><col style="width:37%"></colgroup><thead><tr><th>现象</th><th>填写检查项</th><th>填写证据</th></tr></thead><tbody><tr><td>手机无法定位图案</td><td>填写</td><td>填写</td></tr><tr><td>扫描结果方向错误</td><td>填写</td><td>填写</td></tr><tr><td>条码局部污损仍可读</td><td>填写</td><td>填写</td></tr><tr><td>读出编码但找不到商品</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先查图案，再查解码和应用映射</p></div></div>
+    <div class="numeric-progress">11/23</div>
+    <div class="semantic-label">BARCODE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.8261%"></div></div>
+<!-- speaker-notes
+参考判断：手机无法定位图案，优先检查静区、角度和光照；扫描结果方向错误，检查起止结构和定位；二维条码局部污损仍可读，检查纠错以及损坏是否在可恢复范围；读出编码但找不到商品，检查应用解析、标识映射和数据库记录。排查顺序是图案、解码、应用映射逐层定位。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> RFID 技术</div>
+    <h2 class="slide-title">射频识别 RFID：非接触标识交互</h2>
+    <div class="slide-content"><p class="slide-lead">阅读器、天线和标签形成一条能量与数据路径</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>下行：阅读器 → 天线 → 供能／查询 → 标签 上行：标签 → 天线 → 返回标识 → 阅读器解析</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>阅读器</h3><p>发送查询和射频能量，接收标签响应</p></article><article class="content-card emphasis-card" tabindex="0"><h3>天线</h3><p>把导行波与空间电磁波相互转换</p></article><article class="content-card emphasis-card" tabindex="0"><h3>标签</h3><p>保存标识数据，按类型获得工作能量并返回数据</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非接触和批量读取仍需防冲突、环境与权限控制</p></div></div>
+    <div class="numeric-progress">12/23</div>
+    <div class="semantic-label">RFID INTERACTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> RFID 技术</div>
+    <h2 class="slide-title">标签类型决定供能与使用边界</h2>
+    <div class="slide-content"><p class="slide-lead">批量读取与可更新数据带来新的治理要求</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>被动标签</h3><p>从阅读器射频场获得工作能量</p>
+<p>结构简单，依赖读取环境</p></article><article class="content-card emphasis-card" tabindex="0"><h3>主动标签</h3><p>自带电源，通常通信距离更大</p>
+<p>需要管理电池和生命周期</p></article><article class="content-card emphasis-card" tabindex="0"><h3>半主动标签</h3><p>电池供内部工作，通信能量仍来自外部射频</p>
+<p>在能量与距离之间折中</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>读到标签不等于有权使用；批量读取仍有隐私风险</p></div></div>
+    <div class="numeric-progress">13/23</div>
+    <div class="semantic-label">RFID TRADEOFFS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> RFID 技术</div>
+    <h2 class="slide-title">练习：RFID 读取链哪里需要治理？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 29% 36%"><colgroup><col style="width:35%"><col style="width:29%"><col style="width:36%"></colgroup><thead><tr><th>现象</th><th>填写治理项</th><th>填写证据</th></tr></thead><tbody><tr><td>多个标签同时响应</td><td>填写</td><td>填写</td></tr><tr><td>金属环境读写不稳</td><td>填写</td><td>填写</td></tr><tr><td>标签可被未授权读取</td><td>填写</td><td>填写</td></tr><tr><td>旧标签仍可进入系统</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>RFID 系统要同时治理射频环境、标签身份和使用权限</p></div></div>
+    <div class="numeric-progress">14/23</div>
+    <div class="semantic-label">RFID JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
+<!-- speaker-notes
+参考判断：多个标签同时响应，检查防冲突机制和协议，证据是是否能区分并完整读取；金属环境读写不稳，检查天线、距离和环境，证据是射频路径和安装条件；标签可被未授权读取，检查身份、权限、访问控制、必要的保护措施和审计；旧标签仍可进入系统，检查生命周期管理、注销、替换和停用规则。不能把加密或黑名单说成所有 RFID 标签的固有能力。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 特征识别</div>
+    <h2 class="slide-title">特征识别从观察结果生成身份候选</h2>
+    <div class="slide-content"><p class="slide-lead">对象不必呈现编码；识别结果仍有不确定性</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>原始数据 → 目标区域／预处理 → 特征表示 与登记数据或模型匹配 → 身份候选＋置信度 → 接受、拒绝或人工复核</p></div></div>
+<div class="component component-text text-inset"><p>目标区域是图像内区域，不是地理定位；候选／置信度不等于认证或授权，按阈值和风险决定复核</p></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-11-1/assets/previews/feature-identification-evidence-image2.webp" data-full-src="resources/decks/cciot-11-1/assets/feature-identification-evidence-image2.png" data-full-width="1448" data-full-height="1086" alt="特征识别从原始数据、特征匹配到置信度和人工复核的证据链" tabindex="0" role="button" aria-label="放大图片：特征识别从原始数据、特征匹配到置信度和人工复核的证据链" decoding="async"></figure></div></div>
+    <div class="numeric-progress">15/23</div>
+    <div class="semantic-label">FEATURE IDENTIFICATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.2174%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 特征识别</div>
+    <h2 class="slide-title">非合作式识别的难点在样本、阈值和后果</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-misconception" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-misconception.2ea5a9d1a007.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>模型给出身份候选，就可以直接采取行动</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">自动处理越多，越要写清复核和申诉边界</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">获取图像或信号
+→ 提取特征表示
+→ 检索或模型匹配
+→ 输出身份候选与置信度
+→ 接受、拒绝或人工复核</code></pre></div></div></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">样本差异会影响特征稳定性</span></li><li><span class="list-marker">02</span><span class="list-text">阈值会在误识与拒识之间取舍</span></li><li><span class="list-marker">03</span><span class="list-text">数据偏差可能造成不同人群的不同结果</span></li><li><span class="list-marker">04</span><span class="list-text">生物特征与图像需要最小化收集和严格访问</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>特征识别必须把模型能力与人的复核、隐私和救济放在一起设计</p></div></div>
+    <div class="numeric-progress">16/23</div>
+    <div class="semantic-label">FEATURE EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.5652%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 特征识别</div>
+    <h2 class="slide-title">练习：识别结果还需什么才能支持行动？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 29% 37%"><colgroup><col style="width:34%"><col style="width:29%"><col style="width:37%"></colgroup><thead><tr><th>结果</th><th>填写后续动作</th><th>填写证据</th></tr></thead><tbody><tr><td>车牌识别得到某车辆候选</td><td>填写</td><td>填写</td></tr><tr><td>人脸匹配得到某账户候选</td><td>填写</td><td>填写</td></tr><tr><td>光学字符识别 OCR 读出快递单号</td><td>填写</td><td>填写</td></tr><tr><td>未找到匹配特征</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>识别输出要与风险等级和后续动作相匹配</p></div></div>
+    <div class="numeric-progress">17/23</div>
+    <div class="semantic-label">FEATURE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.9130%"></div></div>
+<!-- speaker-notes
+参考判断：车牌识别为某车辆，可以支持查询停车记录，但要检查图像质量、置信度和人工复核；人脸匹配为某账户，可以作为低风险操作的一个输入，但是否需要活体检查、授权、隐私保护和申诉机制要由场景决定，识别不等于认证或授权；OCR 读出快递单号，可以进入物流查询，但要检查字符错误和订单映射；未找到匹配特征只能说明标识不确定，要判断是否重新采集或转人工处理。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 多标识工程</div>
+    <h2 class="slide-title">同一物可以拥有面向不同主体的多个标识</h2>
+    <div class="slide-content"><p class="slide-lead">不同主体使用不同标识，后端要维护映射和生命周期</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 29% 48%"><colgroup><col style="width:23%"><col style="width:29%"><col style="width:48%"></colgroup><thead><tr><th>主体</th><th>可能使用的标识</th><th>关注问题</th></tr></thead><tbody><tr><td>用户</td><td>二维码或短编号</td><td>易读、授权和防冒用</td></tr><tr><td>设备</td><td>蓝牙地址、设备序列</td><td>通信、绑定和替换</td></tr><tr><td>平台</td><td>平台内部 ID、数据库主键</td><td>关联、审计和生命周期</td></tr><tr><td>维护人员</td><td>可见编号或标签</td><td>快速发现、调度和维修</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多标识系统必须维护“哪些标识属于同一个物”的对应关系，并写清平台内部 ID 的有效范围</p></div></div>
+    <div class="numeric-progress">18/23</div>
+    <div class="semantic-label">MULTIPLE IDENTITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.2609%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 多标识工程</div>
+    <h2 class="slide-title">用一条清单设计可追溯的多标识方案</h2>
+    <div class="slide-content"><p class="slide-lead">多标识方案要连起对象、关系、权限和生命周期</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-text">对象／使用者 → 编码读取或特征推断 → 多标识绑定
+权限／使用／更新／注销 → 准确性／隐私／审计／责任验收</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>对象</h3><p>识别谁、谁读取、谁被追踪</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>媒介／特征</h3><p>光／电／射频／声音；采集与匹配条件</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>关系</h3><p>规定标识绑定、转移、更新与注销</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>验证</h3><p>核对准确性、隐私、权限、审计与责任</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>闭环：分配、读取、使用、更新、注销、追责</p></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>可追溯的标识方案，要让每个标识都有边界和责任</p></div></div></div></aside>
+    <div class="numeric-progress">19/23</div>
+    <div class="semantic-label">IDENTIFICATION DESIGN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.6087%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 多标识工程</div>
+    <h2 class="slide-title">练习：共享车辆的多个标识如何分工？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 31% 42%"><colgroup><col style="width:27%"><col style="width:31%"><col style="width:42%"></colgroup><thead><tr><th>标识</th><th>填写主要使用者</th><th>填写维护关系</th></tr></thead><tbody><tr><td>用户可见二维码</td><td>填写</td><td>填写</td></tr><tr><td>设备通信地址</td><td>填写</td><td>填写</td></tr><tr><td>维护编号</td><td>填写</td><td>填写</td></tr><tr><td>平台内部 ID</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多标识不是重复建设，而是为不同主体提供不同的识别入口</p></div></div>
+    <div class="numeric-progress">20/23</div>
+    <div class="semantic-label">MULTI-ID CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.9565%"></div></div>
+<!-- speaker-notes
+参考判断：用户可见二维码主要服务用户，需要绑定车辆、账户和授权并防止替换；设备通信地址主要服务设备与平台，需要维护设备绑定、换件和在线状态；维护编号主要服务运维人员，需要关联资产、维修、调度和注销；平台内部 ID 主要服务业务系统，需要关联订单、位置、日志和审计。平台内部 ID 通常只在本系统内有效，跨系统使用还要通过明确映射和权限边界。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">分析标识技术时，按语境、媒介、交互证据和生命周期逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">标识基础：目标对象、识别者、标与识在语境中建立对象标识</span></li><li><span class="list-marker">02</span><span class="list-text">属性边界：唯一、安全、隐私和规范共同决定可用性</span></li><li><span class="list-marker">03</span><span class="list-text">识别关系：合作式按约定呈现或返回编码，非合作式从特征推断标识</span></li><li><span class="list-marker">04</span><span class="list-text">条码技术：图案编码、光学获取、解码和应用映射</span></li><li><span class="list-marker">05</span><span class="list-text">RFID 与特征识别：射频交互或特征匹配，各自有环境和误差边界</span></li><li><span class="list-marker">06</span><span class="list-text">多标识工程：绑定、授权、更新、注销和审计组成闭环</span></li></ol></div></div></div>
+    <div class="numeric-progress">21/23</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-11-1/mindmap-11-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">22/23</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.6522%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">标识中的目标对象、识别者、标与识分别是什么？</span></li><li><span class="question-no">02</span><span class="question-text">唯一性、安全性、隐私性和规范性为什么依赖语境？</span></li><li><span class="question-no">03</span><span class="question-text">合作式与非合作式识别的证据、风险和复核有什么不同？</span></li><li><span class="question-no">04</span><span class="question-text">条码如何从编码图案走到应用对象？</span></li><li><span class="question-no">05</span><span class="question-text">RFID 的阅读器、天线和标签如何完成交互？</span></li><li><span class="question-no">06</span><span class="question-text">如何为同一物设计多标识绑定、权限和注销流程？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-10-1.html" title="上一节：10.1 感知技术" aria-label="上一节：10.1 感知技术">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">10.1</span>
+        <span class="nav-title">感知技术</span>
+      </a>
+      <a class="exercise-link" href="cciot-11-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-12-1.html" title="下一节：12.1 定位与授时" aria-label="下一节：12.1 定位与授时">
+        <span class="nav-title">定位与授时</span>
+        <span class="nav-number">12.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">23/23</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

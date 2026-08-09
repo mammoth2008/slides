@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 14.1 计算技术 | HUST</title>
+  <meta name="description" content="从输入、规则与输出出发，比较端、边、云、人机协同与任务调度">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="14-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-14-1/assets/cover-computing-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 14.1</div>
+      <h1>计算技术</h1>
+      <p class="cover-description">让数据在合适的位置变成可行动的判断</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本节承接网络与时空数据，先把计算写成输入、规则与输出，再比较端、边、云与人机协同，最后用自动驾驶和智慧医疗分配任务
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">物联网计算要看任务、位置、资源、人机关系和责任</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用输入、规则、输出和约束描述物联网计算任务</span></li><li><span class="list-marker">02</span><span class="list-text">比较端计算、边缘计算和云计算的距离、能力与失败边界</span></li><li><span class="list-marker">03</span><span class="list-text">解释本地执行、全卸载、部分卸载和云边端调度</span></li><li><span class="list-marker">04</span><span class="list-text">区分 IaaS、PaaS、SaaS 的服务责任</span></li><li><span class="list-marker">05</span><span class="list-text">说明人计算、众包／社会计算与人机协同中的增强、自动化和放大</span></li><li><span class="list-marker">06</span><span class="list-text">为案例分配任务并保留隐私、安全、接管与责任</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算任务与主体</div>
+    <h2 class="slide-title">计算把输入按规则映射为可行动的输出</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confused" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confused.5ad25a44d69d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个任务，为什么不能都放到云上？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先写任务输入、规则和输出，再选执行位置</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>感知／行为输入 → 规则、算法或模型 → 结果、预测、告警或控制</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>输入</h3><p>温度、图像、位置、日志或人的判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>规则</h3><p>统计、识别、预测、阈值、流程或模型</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输出</h3><p>标签、排序、告警、服务响应或执行指令</p></article></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-14-1/assets/previews/computing-decision-pipeline-image2.webp" data-full-src="resources/decks/cciot-14-1/assets/computing-decision-pipeline-image2.png" data-full-width="1448" data-full-height="1086" alt="计算任务从输入经规则与约束到执行位置和可行动输出的示意" tabindex="0" role="button" aria-label="放大图片：计算任务从输入经规则与约束到执行位置和可行动输出的示意" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>计算任务的边界由输入、输出、完成时间、资源和责任共同定义</p></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">COMPUTATION AS A MAPPING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算任务与主体</div>
+    <h2 class="slide-title">物联网任务的约束并不相同</h2>
+    <div class="slide-content"><p class="slide-lead">同一份数据在不同任务中可能需要不同的计算位置</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>实时性</h3><p>结果必须在动作或安全窗口内到达</p></article><article class="content-card emphasis-card" tabindex="0"><h3>吞吐量</h3><p>需要处理大量设备、样本或长期数据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>资源</h3><p>端侧算力、存储、电量、带宽和成本</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>可靠性</h3><p>断网、节点或服务故障时仍需可用</p></article><article class="content-card emphasis-card" tabindex="0"><h3>隐私与安全</h3><p>数据、模型和决策要按权限保护</p></article><article class="content-card emphasis-card" tabindex="0"><h3>责任</h3><p>谁解释、确认、接管和承担后果</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先写约束，才能判断是由设备、附近服务器、云端还是人来完成计算</p></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">TASK CONSTRAINTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算任务与主体</div>
+    <h2 class="slide-title">练习：把任务写成输入—规则—输出</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 25% 27% 26%"><colgroup><col style="width:22%"><col style="width:25%"><col style="width:27%"><col style="width:26%"></colgroup><thead><tr><th>任务</th><th>请写输入</th><th>请写规则与输出</th><th>请补充关键约束</th></tr></thead><tbody><tr><td>温度超限</td><td>填写</td><td>填写</td><td>填写</td></tr><tr><td>车牌识别</td><td>填写</td><td>填写</td><td>填写</td></tr><tr><td>预测维护</td><td>填写</td><td>填写</td><td>填写</td></tr><tr><td>医疗诊断建议</td><td>填写</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不要先问“用什么 AI”，先问任务要在何时、以什么证据、由谁负责完成</p></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">TASK JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+<!-- speaker-notes
+参考判断：温度超限的输入是温度及时间序列，规则可用阈值与时间窗口，输出是告警，约束包括响应时限和误报处理；车牌识别的输入是图像，规则是图像特征与匹配，输出是车牌标签，约束包括隐私、误识复核和授权；预测维护的输入是振动等设备历史数据，规则是趋势分析或模型，输出是维修建议，约束包括长期数据、模型版本和停机责任；医疗诊断建议的输入是病历、影像和临床资料，规则是模型与临床规则，输出是辅助意见，约束包括解释、隐私、医生确认和最终责任。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 端计算</div>
+    <h2 class="slide-title">端计算在数据产生处换取实时与离线能力</h2>
+    <div class="slide-content"><p class="slide-lead">端设备直接处理输入，不必把所有原始数据送出</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>端上：采集／筛选 → 即时响应或少量上报 可选上送边缘／云；受算力、电池、更新与安全约束</p></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">优势</h3><div class="key-value-value"><p>低通信延迟、少占带宽、可离线、数据较少外传</p></div></div><div class="key-value-item"><h3 class="key-value-key">设备</h3><div class="key-value-value"><p>传感器、手环、家电、机器人、手机和车载计算单元</p></div></div><div class="key-value-item"><h3 class="key-value-key">方案</h3><div class="key-value-value"><p>定制化可优化能效，通用化更灵活和兼容</p></div></div><div class="key-value-item"><h3 class="key-value-key">边界</h3><div class="key-value-value"><p>算力、存储、电池、更新、密钥和物理安全有限</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>端计算的“快”来自靠近数据源，但它必须接受设备资源和维护能力的约束</p></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">COMPUTE AT THE EDGE OF THE OBJECT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 端计算</div>
+    <h2 class="slide-title">端计算要在定制与通用之间取舍</h2>
+    <div class="slide-content"><p class="slide-lead">任务确定性、部署规模和未来变化会改变最优方案</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>定制化端</h3><p>为固定任务设计专用硬件与软件</p>
+<p>能效和成本可能更好，但设备碎片化、升级和扩展更难</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>通用化端</h3><p>用标准硬件与软件承载多种任务</p>
+<p>兼容与维护更容易，但可能出现过度设计和额外功耗</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>端侧能力不是越强越好，而是要与任务稳定性、生命周期和能源预算匹配</p></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">LOCAL TRADEOFFS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 端计算</div>
+    <h2 class="slide-title">练习：哪些处理适合在设备上完成？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 34% 37%"><colgroup><col style="width:29%"><col style="width:34%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请写端上优先处理的部分</th><th>请写仍需考虑的边界</th></tr></thead><tbody><tr><td>门锁开门</td><td>填写</td><td>填写</td></tr><tr><td>手环异常</td><td>填写</td><td>填写</td></tr><tr><td>摄像头监控</td><td>填写</td><td>填写</td></tr><tr><td>离线导航</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>端上处理不等于数据不上送；处理位置和上送范围都由时延、隐私与任务决定</p></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">LOCAL JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+<!-- speaker-notes
+参考判断：门锁可在端上完成身份校验和安全动作，但要考虑密钥更新、撤销和失败保护；手环可在端上做异常初筛和即时提醒，但原始数据、模型更新和医疗责任仍需处理；摄像头可在端上筛选事件或提取特征，但要处理原始视频隐私、误报和存储；离线导航可在端上保存局部地图并做路径判断，但要考虑地图版本、重新连接和同步。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 边缘计算与卸载</div>
+    <h2 class="slide-title">边缘计算把计算资源放到数据源附近</h2>
+    <div class="slide-content"><p class="slide-lead">它为现场任务提供近端执行点，但不是端到云的必经层</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>位置：靠近数据源的计算资源 作用：过滤／推断／协调；任务可留端、交给边或直达云</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>更近</h3><p>通信路径短，延迟和回传数据量可能更小</p></article><article class="content-card emphasis-card" tabindex="0"><h3>更强</h3><p>可使用服务器、加速器、存储和设备管理能力</p></article><article class="content-card emphasis-card" tabindex="0"><h3>更靠近现场边界</h3><p>可做预处理、加密和访问控制；不天然安全</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>边缘的价值是让任务、数据和责任在靠近现场的位置重新组合</p></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">EDGE COMPUTING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 边缘计算与卸载</div>
+    <h2 class="slide-title">卸载有三种基本方式</h2>
+    <div class="slide-content"><p class="slide-lead">任务大小、通信代价、端／边／云算力和完成时限共同决定选择</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>本地：端侧完成 全卸载：上传 → 边缘或云端计算 → 返回 部分卸载：按阶段拆分</p></div></div>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>本地执行</h3><p>任务全部在端设备完成</p>
+<p>通信少、可离线，但受端侧资源限制</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>全卸载</h3><p>任务整体交给边缘或云端</p>
+<p>端侧负担小，但依赖链路和远端可用性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>部分卸载</h3><p>按阶段把预处理、推断或汇总拆给端、边或云</p>
+<p>可平衡延迟、能耗、带宽与隐私</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“卸载多少”本质上是计算时间、通信时间、能量和风险的联合优化</p></div></div>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confirm" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confirm.3ee1c90cd31d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>卸载是在端、边、云之间重新分配代价</p></div></div></div></aside>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">OFFLOADING CHOICES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 边缘计算与卸载</div>
+    <h2 class="slide-title">练习：任务如何在端、边、云间分工？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 34% 37%"><colgroup><col style="width:29%"><col style="width:34%"><col style="width:37%"></colgroup><thead><tr><th>任务</th><th>请写初步分工</th><th>请写校验点</th></tr></thead><tbody><tr><td>实时交通告警</td><td>填写</td><td>填写</td></tr><tr><td>工厂振动检测</td><td>填写</td><td>填写</td></tr><tr><td>大规模历史分析</td><td>填写</td><td>填写</td></tr><tr><td>隐私摄像头</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>把任务拆成“必须立即完成”和“可以延后分析”的部分，卸载才有依据</p></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">OFFLOADING JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+<!-- speaker-notes
+参考判断：实时交通告警可由边缘筛选、端侧执行安全动作，校验延迟、断网降级和误报；工厂振动检测可由端侧采样、边缘推断，校验能耗、模型更新和数据留存；大规模历史分析适合云端批处理，校验带宽、版本和长期存储；隐私摄像头可在端或边缘提取结果，校验原始数据访问和人工复核。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 云计算与服务</div>
+    <h2 class="slide-title">云计算把远程资源变成按需服务</h2>
+    <div class="slide-content"><p class="slide-lead">用户使用共享资源池，不必自行拥有每一台底层设备</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>访问：任务／数据 → 共享资源池 服务：弹性计算／存储／数据库／应用</p></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">资源</h3><div class="key-value-value"><p>服务器、存储、网络、数据库、软件和分析能力</p></div></div><div class="key-value-item"><h3 class="key-value-key">模式</h3><div class="key-value-value"><p>按需获取和释放，服务方承担部分底层管理</p></div></div><div class="key-value-item"><h3 class="key-value-key">优势</h3><div class="key-value-value"><p>规模、伸缩、共享与远程访问；恢复能力取决于服务设计</p></div></div><div class="key-value-item"><h3 class="key-value-key">边界</h3><div class="key-value-value"><p>网络依赖、数据主权、服务中断、供应商责任和延迟</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云端适合规模化和长期服务，但“远程可用”不等于“现场实时”</p></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">CLOUD AS A SERVICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 云计算与服务</div>
+    <h2 class="slide-title">三种云服务模式：谁管理什么？</h2>
+    <div class="slide-content"><p class="slide-lead">服务方承担得越多，用户管理的底层越少；可控范围随之变化</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>基础设施即服务 IaaS</h3><p>提供虚拟计算、存储和网络</p>
+<p>用户仍需管理操作系统、运行时和应用</p></article><article class="content-card emphasis-card" tabindex="0"><h3>平台即服务 PaaS</h3><p>进一步提供运行环境、数据库和开发工具</p>
+<p>用户聚焦应用代码与数据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>软件即服务 SaaS</h3><p>直接提供可使用的应用服务</p>
+<p>用户管理配置、账户、业务数据和使用规则</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云服务选型要问“谁负责什么”，而不是只看服务名称</p></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">IAAS PAAS SAAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 云计算与服务</div>
+    <h2 class="slide-title">练习：云端能力怎样回到物联网现场？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 34% 36%"><colgroup><col style="width:30%"><col style="width:34%"><col style="width:36%"></colgroup><thead><tr><th>云端工作</th><th>请写适合放在云端的原因</th><th>请写现场仍要保留的部分</th></tr></thead><tbody><tr><td>长期数据分析</td><td>填写</td><td>填写</td></tr><tr><td>模型训练与更新</td><td>填写</td><td>填写</td></tr><tr><td>设备管理服务</td><td>填写</td><td>填写</td></tr><tr><td>关键安全动作</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云端负责规模和长期能力，现场仍需保留安全动作、降级路径和可验证的本地状态</p></div></div>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">CLOUD JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+<!-- speaker-notes
+参考判断：长期数据分析适合云端，因为数据量大且可批量处理；现场仍要保留采集、版本和隐私授权。模型训练与更新需要规模化数据与资源，但边或端仍要负责推断、回滚和验证。设备管理服务适合统一登记、配置和审计，但现场要保留断网缓存、最小权限和接管。关键安全动作不应只依赖远程链路，应由端侧或边缘提供本地保护。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 人机协同计算</div>
+    <h2 class="slide-title">人参与物联网计算与决策</h2>
+    <div class="slide-content"><p class="slide-lead">机器扩大处理；人保留判断；明确证据、接管与后果责任</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>数据与模型 → 机器分析 → 人理解／判断／沟通 决策／行动 → 反馈</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>人计算</h3><p>把人的识别、判断或输入作为计算资源</p></article><article class="content-card emphasis-card" tabindex="0"><h3>众包计算</h3><p>把可分解任务分给大量参与者，汇总群体结果</p></article><article class="content-card emphasis-card" tabindex="0"><h3>社会计算</h3><p>利用技术支持群体互动、知识共享和集体决策</p></article><article class="content-card emphasis-card" tabindex="0"><h3>人机协同</h3><p>让机器和人互补，共同完成复杂任务</p></article></div></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">HUMAN AND MACHINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 人机协同计算</div>
+    <h2 class="slide-title">增强、自动化和放大是三种协同形式</h2>
+    <div class="slide-content"><p class="slide-lead">它们可以组合，但人工责任不会因为自动化而消失</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>增强</h3><p>机器提供分析、建议或信息，人做最终判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>自动化</h3><p>机器独立完成规则明确、风险可控的任务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>放大</h3><p>机器处理规模和复杂度，人提供方向、语境与责任</p></article></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>采集与模型 → 机器输出 人工复核／接管 → 行动 → 反馈改进</p></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>机器承担的任务越多，越要明确偏差、解释、隐私、申诉和责任界面</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.a6f0f0381a37.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>自动化越高，人就越不需要参与</p></div></div></div></aside>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">AUGMENT AUTOMATE AMPLIFY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 人机协同计算</div>
+    <h2 class="slide-title">练习：哪些决定不能只交给模型？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 33% 37%"><colgroup><col style="width:30%"><col style="width:33%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请写机器适合的部分</th><th>请写人需要保留的部分</th></tr></thead><tbody><tr><td>医学影像</td><td>填写</td><td>填写</td></tr><tr><td>生产分拣</td><td>填写</td><td>填写</td></tr><tr><td>客服问答</td><td>填写</td><td>填写</td></tr><tr><td>复杂工程设计</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>把机器输出放回人的工作和责任流程，才能判断“自动化”是否真的合适</p></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">HUMAN JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+<!-- speaker-notes
+参考判断：医学影像适合机器提取模式和比较病例，人保留临床语境、沟通和最终诊断；生产分拣适合机器完成重复分类和异常筛选，人保留例外处理、质量责任和停线决定；客服问答适合机器检索和初步响应，人保留高风险承诺、申诉和情绪沟通；复杂工程设计适合机器生成候选和仿真，人保留目标取舍、审批和安全责任。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算案例与治理</div>
+    <h2 class="slide-title">云边端与人机协同：任务闭环</h2>
+    <div class="slide-content"><p class="slide-lead">图示把端、边、云与人放在同一闭环；各位置按任务承担不同职责</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>端：即时动作 ↔ 边：近端协同 ↔ 云：分析／更新 ↔ 人：高风险判断／接管 按任务组合这些位置，不必全部经过</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-14-1/assets/previews/edge-cloud-human-loop-image2.webp" data-full-src="resources/decks/cciot-14-1/assets/edge-cloud-human-loop-image2.png" data-full-width="1448" data-full-height="1086" alt="端侧、边缘、云端和人的判断共同完成任务闭环的示意" tabindex="0" role="button" aria-label="放大图片：端侧、边缘、云端和人的判断共同完成任务闭环的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">CLOUD EDGE END HUMAN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="f1b" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算案例与治理</div>
+    <h2 class="slide-title">案例中的计算分工与责任</h2>
+    <div class="slide-content"><p class="slide-lead">同一闭环在不同场景中分工不同，关键是保留安全动作、临床判断和调度责任</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>自动驾驶</h3><p>端侧感知与控制，边缘处理道路协同，云端训练与长期分析；关键安全动作不能只依赖远端</p></article><article class="content-card emphasis-card" tabindex="0"><h3>智慧医疗</h3><p>设备和平台采集整理，机器辅助分析，医生负责临床判断、沟通与最终决策</p></article><article class="content-card emphasis-card" tabindex="0"><h3>调度支撑</h3><p>协调任务、资源、网络和版本；保留审计、降级和恢复</p></article></div></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">CASE RESPONSIBILITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算案例与治理</div>
+    <h2 class="slide-title">用一张清单分配计算任务</h2>
+    <div class="slide-content"><p class="slide-lead">从“算出来”走到“可用、可解释、可恢复”</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-text">输入 → 端／边／云／人分工 → 证据 → 行动／接管 → 版本／隐私／恢复</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>约束</h3><p>时延、吞吐、能耗、隐私、可靠性、成本</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>分配</h3><p>本地、端边协同、云服务或人工协同</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>验证</h3><p>对象、时间、版本与结果证据</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>治理</h3><p>权限、更新、接管、降级、审计、责任</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>高风险任务必须留下可接管的决策点</p></div></div></div></aside>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">COMPUTING DESIGN CHECKLIST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 计算案例与治理</div>
+    <h2 class="slide-title">练习：为一个高风险任务保留接管点</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 34% 37%"><colgroup><col style="width:29%"><col style="width:34%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请写自动计算的部分</th><th>请写必须保留的接管或恢复</th></tr></thead><tbody><tr><td>自动驾驶避障</td><td>填写</td><td>填写</td></tr><tr><td>医疗诊断建议</td><td>填写</td><td>填写</td></tr><tr><td>工业预测维护</td><td>填写</td><td>填写</td></tr><tr><td>设备批量更新</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>高风险系统必须让自动结果可追溯、可质疑、可接管、可恢复</p></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+<!-- speaker-notes
+参考判断：自动驾驶避障可由端侧快速识别并执行动作，但要保留传感器异常处理、降级和安全停车；医疗诊断建议可由机器做模式分析和病例检索，但要保留医生确认、解释和患者沟通；工业预测维护可由边缘筛选与云端趋势分析完成，但要保留停机审批、误报复核和版本回滚；设备批量更新可由云端编排和分批发布，但要保留签名、灰度、断电恢复和审计。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">分析物联网计算时，按任务、位置、资源、人机关系和责任逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">任务：输入、规则、输出和实时性、吞吐、资源、责任约束</span></li><li><span class="list-marker">02</span><span class="list-text">端计算：近、快、可离线和少外传，但受设备资源与维护限制</span></li><li><span class="list-marker">03</span><span class="list-text">边缘计算：靠近数据源，支持低延迟、预处理和任务卸载</span></li><li><span class="list-marker">04</span><span class="list-text">云计算：按需资源、伸缩与服务模式，承担规模化和长期能力</span></li><li><span class="list-marker">05</span><span class="list-text">人机协同：增强、自动化、放大，明确证据、接管和责任</span></li><li><span class="list-marker">06</span><span class="list-text">案例闭环：任务分工、版本、隐私、恢复和最终行动共同决定可用性</span></li></ol></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-14-1/mindmap-14-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH14 <span>|</span> 14.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">如何用输入、规则、输出和约束定义一个物联网计算任务？</span></li><li><span class="question-no">02</span><span class="question-text">端计算、边缘计算和云计算分别在哪些条件下更合适？</span></li><li><span class="question-no">03</span><span class="question-text">本地执行、全卸载和部分卸载如何比较通信、能耗和延迟？</span></li><li><span class="question-no">04</span><span class="question-text">IaaS、PaaS、SaaS 把哪些资源和责任交给服务方？</span></li><li><span class="question-no">05</span><span class="question-text">人计算、众包计算、社会计算与人机协同有什么关系，增强、自动化、放大如何区分？</span></li><li><span class="question-no">06</span><span class="question-text">如何为自动驾驶或智慧医疗设计带版本、证据、接管和恢复的计算闭环？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-13-1.html" title="上一节：13.1 物联网网络" aria-label="上一节：13.1 物联网网络">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">13.1</span>
+        <span class="nav-title">物联网网络</span>
+      </a>
+      <a class="exercise-link" href="cciot-14-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-15-1.html" title="下一节：15.1 数据与智能" aria-label="下一节：15.1 数据与智能">
+        <span class="nav-title">数据与智能</span>
+        <span class="nav-number">15.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

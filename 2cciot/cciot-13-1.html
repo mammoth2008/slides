@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 13.1 物联网网络 | HUST</title>
+  <meta name="description" content="从节点、链路与路由出发，比较个域网、局域网和广域网，并用案例设计多网络协同">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="13-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-13-1/assets/cover-network-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 13.1</div>
+      <h1>物联网网络</h1>
+      <p class="cover-description">让数据沿着可解释的链路到达目标节点</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本节承接时空数据，先建立节点、链路和路由的网络语言，再按覆盖范围比较 PAN、LAN、WAN，最后用远程抄表、共享单车和智能家居做多网络协同
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">分析物联网网络要同时看节点、链路、范围和责任</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用节点、链路、逐跳转发和路由描述通信网络</span></li><li><span class="list-marker">02</span><span class="list-text">比较有线／无线、公用／专用以及 PAN、LAN、WAN</span></li><li><span class="list-marker">03</span><span class="list-text">解释蓝牙、ZigBee、Wi-Fi 和工业网络的角色与边界</span></li><li><span class="list-marker">04</span><span class="list-text">比较移动通信、NB-IoT 与 LoRaWAN 的覆盖、能耗和运维责任</span></li><li><span class="list-marker">05</span><span class="list-text">为远程抄表、共享车辆和智能家居设计多网络组合</span></li><li><span class="list-marker">06</span><span class="list-text">把网关、身份、故障恢复、安全和维护放进端到端方案</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/25</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.0000%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络抽象</div>
+    <h2 class="slide-title">网络把设备关系抽象成节点、链路和路径</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>网络图上的节点，代表设备还是逻辑角色？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先回答“谁与谁连接”，再讨论协议和性能</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="源节点 → 逐跳转发（可经中继／网关）→ 目标（宿）节点"><span class="relation-term">源节点</span><span class="relation-operator">→</span><span class="relation-term">逐跳转发（可经中继／网关）</span><span class="relation-operator">→</span><span class="relation-term">目标（宿）节点</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>节点</h3><p>传感器、手机、服务器、执行器或路由设备</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>链路</h3><p>有线或无线媒介，以及连接双方的接口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>路由</h3><p>从源到宿的连续转发路径</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>网络的价值是让数据沿着可解释的路径流动，而不是让所有节点彼此直连</p></div></div>
+    <div class="numeric-progress">3/25</div>
+    <div class="semantic-label">NODES AND LINKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络抽象</div>
+    <h2 class="slide-title">一个物联网节点可能承担两种逻辑角色</h2>
+    <div class="slide-content"><p class="slide-lead">终端／网络设备按功能划分，源／中继／宿按数据路径划分</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>终端节点</h3><p>直接与用户、物质世界或应用交互</p>
+<p>采集数据、处理状态、输出控制或上报结果</p></article><article class="content-card emphasis-card" tabindex="0"><h3>网络设备</h3><p>主要负责转发、路由、协议适配和连接管理</p>
+<p>交换机、路由器、网关也可能承载安全与运维</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>源节点</h3><p>信息流开始的位置</p></article><article class="content-card emphasis-card" tabindex="0"><h3>中继节点</h3><p>接收、选择下一跳并转发</p></article><article class="content-card emphasis-card" tabindex="0"><h3>宿节点</h3><p>信息流结束并交给应用或控制</p></article></div></div></div>
+    <div class="numeric-progress">4/25</div>
+    <div class="semantic-label">ROLES AND RESPONSIBILITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.0000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络抽象</div>
+    <h2 class="slide-title">练习：画出一条端到端路径</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 38% 34%"><colgroup><col style="width:28%"><col style="width:38%"><col style="width:34%"></colgroup><thead><tr><th>场景</th><th>请画／写一条路径</th><th>请说明责任与风险</th></tr></thead><tbody><tr><td>智能门锁上报</td><td>填写</td><td>填写谁采集、谁转发、谁存储</td></tr><tr><td>环境传感器告警</td><td>填写</td><td>填写下一跳、断链和缓存</td></tr><tr><td>云端下发动作</td><td>填写</td><td>填写认证、确认和失败保护</td></tr><tr><td>手机控制家电</td><td>填写</td><td>填写手机是否承担网关角色</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先画路径，再标出转发、故障和权限边界</p></div></div>
+    <div class="numeric-progress">5/25</div>
+    <div class="semantic-label">PATH JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+<!-- speaker-notes
+参考判断：智能门锁上报可画为锁、家庭网关、路由器到云服务，说明谁采集、谁转发、谁存储；环境传感器告警可经过多跳节点、汇聚网关到控制台，说明下一跳、断链和缓存；云端下发动作可经过服务、网关、控制器到执行器，说明认证、确认和失败保护；手机控制家电要根据实际连接判断手机是否承担网关角色。答案不是唯一设备清单，关键是路径和责任可解释。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络分类与范围</div>
+    <h2 class="slide-title">网络分类把媒介、所有权与覆盖范围分开</h2>
+    <div class="slide-content"><p class="slide-lead">同一条链路可以同时属于多个分类维度</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 35% 40%"><colgroup><col style="width:25%"><col style="width:35%"><col style="width:40%"></colgroup><thead><tr><th>维度</th><th>典型类别</th><th>选择要问什么</th></tr></thead><tbody><tr><td>媒介</td><td>有线／无线</td><td>稳定性、移动性、干扰和敷设</td></tr><tr><td>建设与管理</td><td>公用网／专用网</td><td>谁建设、谁管理、谁承担责任</td></tr><tr><td>覆盖</td><td>PAN／LAN／WAN</td><td>对象距离、规模和跨区域需求</td></tr><tr><td>组织</td><td>直连／基础设施／多跳</td><td>中继、漫游、故障与扩展</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>分类只说明连接条件；安全、可靠和端到端可用仍需验证</p></div></div>
+    <div class="numeric-progress">6/25</div>
+    <div class="semantic-label">NETWORK CLASSIFICATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:24.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络分类与范围</div>
+    <h2 class="slide-title">PAN、LAN、WAN：三种连接尺度</h2>
+    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.936981e72281.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>PAN、LAN、WAN 首先描述尺度，不替你选择路径</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">PAN、LAN、WAN 是覆盖尺度，不是必经层级</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>个域网 PAN：身边设备与个人空间 局域网 LAN：家庭、园区、厂区或校园 广域网 WAN：城市、地区乃至跨区域</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-13-1/assets/previews/network-scale-layers-image2.webp" data-full-src="resources/decks/cciot-13-1/assets/network-scale-layers-image2.png" data-full-width="1448" data-full-height="1086" alt="PAN、LAN 和 WAN 从近身、局部到广域的网络尺度对比" tabindex="0" role="button" aria-label="放大图片：PAN、LAN 和 WAN 从近身、局部到广域的网络尺度对比" decoding="async"></figure></div></div>
+    <div class="numeric-progress">7/25</div>
+    <div class="semantic-label">PAN LAN WAN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.0000%"></div></div>
+  </section>
+<section id="b2b" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络分类与范围</div>
+    <h2 class="slide-title">尺度决定边界，不规定唯一路径</h2>
+    <div class="slide-content"><p class="slide-lead">PAN、LAN、WAN 可以组合，设备也可能直接接入 WAN</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>PAN</h3><p>身边设备与个人空间</p>
+<p>强调短距离、便携和低功耗</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>LAN</h3><p>家庭、园区、厂区或校园</p>
+<p>强调邻近设备的吞吐、延迟或确定性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>WAN</h3><p>城市、地区乃至跨区域</p>
+<p>强调覆盖、移动性、大连接和运营责任</p></article></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>常见组合：PAN／LAN → 接入 → WAN → 云／服务 实际路径取决于覆盖、功耗、业务和责任；不必逐一经过三种尺度</p></div></div></div></div>
+    <div class="numeric-progress">8/25</div>
+    <div class="semantic-label">SCALE AND PATH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:32.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 网络分类与范围</div>
+    <h2 class="slide-title">练习：场景先受哪项约束？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 32% 37%"><colgroup><col style="width:31%"><col style="width:32%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请写首要约束</th><th>请写还要确认的边界</th></tr></thead><tbody><tr><td>电池手环</td><td>填写</td><td>填写</td></tr><tr><td>校园摄像头</td><td>填写</td><td>填写</td></tr><tr><td>远程水表</td><td>填写</td><td>填写</td></tr><tr><td>工厂控制线</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“范围更大”不等于“能力更强”，它只是改变了网络必须承担的约束</p></div></div>
+    <div class="numeric-progress">9/25</div>
+    <div class="semantic-label">RANGE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.0000%"></div></div>
+<!-- speaker-notes
+参考判断：电池手环优先看功耗与短距离，确认个人设备、配对和隐私；校园摄像头优先看局域高吞吐，确认供电、布线和访问隔离；远程水表优先看广域覆盖与低频上报，确认电池、运营和地下穿透；工厂控制线优先看确定性与抗干扰，确认冗余、维护和安全停机。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 个域网</div>
+    <h2 class="slide-title">个域网在短距离与低功耗之间取平衡</h2>
+    <div class="slide-content"><p class="slide-lead">它连接身边设备，也承担发现、配对、睡眠和小范围协同</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>蓝牙：发现／配对 → 中心设备 ZigBee：协调器建网；路由器转发；终端采集／控制 → 多跳／网关</p></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">蓝牙</h3><div class="key-value-value"><p>适合个人设备之间的发现、配对和短距离数据交换；中心设备组织微微网 Piconet，多个微微网可形成分散结构</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">ZigBee</h3><div class="key-value-value"><p>适合大量低速率节点；协调器建网，路由器转发，终端采集／控制；网络可自组织发现多跳路径</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">拓扑</h3><div class="key-value-value"><p>直连、星形、网状或簇状对应不同覆盖、管理和冗余</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">边界</h3><div class="key-value-value"><p>睡眠、冲突、距离、密钥、路由维护和电池更换都会影响可用性</p></div></div></div></div></div>
+    <div class="numeric-progress">10/25</div>
+    <div class="semantic-label">PERSONAL AREA NETWORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 个域网</div>
+    <h2 class="slide-title">蓝牙和 ZigBee 解决不同的个域协同问题</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-frustrated.8b832f357da1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>覆盖拉远了，电池怎么先撑不住了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">不能只用“无线”两个字判断其适用性</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>蓝牙路径</h3><p>手机、耳机、手环或门锁通过发现、配对和短距离连接交换数据</p>
+<p>适合个人设备和手机作为临时网关的场景</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>ZigBee 路径</h3><p>协调器建立网络，路由器转发，终端节点采集或控制</p>
+<p>适合多节点、低功耗和需要多跳覆盖的场景</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>蓝牙偏向便捷连接，ZigBee偏向多节点协作；方案可以组合，均需管理设备身份和密钥</p></div></div>
+    <div class="numeric-progress">11/25</div>
+    <div class="semantic-label">BLUETOOTH AND ZIGBEE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 个域网</div>
+    <h2 class="slide-title">练习：连接组织变化会带来什么代价？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 33% 38%"><colgroup><col style="width:29%"><col style="width:33%"><col style="width:38%"></colgroup><thead><tr><th>连接组织／方案</th><th>请写优势</th><th>请写代价与边界</th></tr></thead><tbody><tr><td>直连／星形</td><td>填写</td><td>填写</td></tr><tr><td>网状</td><td>填写</td><td>填写</td></tr><tr><td>簇状</td><td>填写</td><td>填写</td></tr><tr><td>手机作网关</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>拓扑是资源和责任的分配，不只是图上的线条</p></div></div>
+    <div class="numeric-progress">12/25</div>
+    <div class="semantic-label">PAN TOPOLOGY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.0000%"></div></div>
+<!-- speaker-notes
+参考判断：直连／星形的优势是路径清晰、易管理，边界是中心节点或覆盖范围可能成为瓶颈；网状可以多跳扩展并绕开部分故障，但会增加路由维护、能耗和冲突；簇状便于分区管理与跨簇连接，但会带来簇头负担和层级故障；手机作网关可以避免为每个设备配置广域模块，但依赖手机在场、权限和电量。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 局域网</div>
+    <h2 class="slide-title">局域网要在吞吐、漫游与确定性之间取舍</h2>
+    <div class="slide-content"><p class="slide-lead">家庭、园区、厂区的“近”并不意味着业务需求相同</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>Wi-Fi：终端经接入点 AP 加入基础服务集 BSS 多个 BSS 通过分布系统形成扩展服务集 ESS；终端可漫游</p><p>工业网络：传感器／控制器／执行器 → 工业总线或工业以太网 → 控制系统</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>Wi-Fi</h3><p>以 AP 组织基础设施 BSS，多个 AP 可以组成 ESS 并支持漫游</p></article><article class="content-card emphasis-card" tabindex="0"><h3>工业总线</h3><p>强调现场实时性、确定性、抗干扰和错误检测</p></article><article class="content-card emphasis-card" tabindex="0"><h3>工业以太网</h3><p>在以太网上按现场要求支持实时、冗余、耐用和扩展</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>局域网选型要同时看带宽、移动、功耗、时延抖动和失败后的控制后果</p></div></div>
+    <div class="numeric-progress">13/25</div>
+    <div class="semantic-label">LOCAL AREA NETWORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 局域网</div>
+    <h2 class="slide-title">Wi-Fi 与工业网络的“可靠”含义不同</h2>
+    <div class="slide-content"><p class="slide-lead">Wi-Fi 重在灵活接入；工业网络重在确定性控制</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>Wi-Fi 基础设施</h3><p>终端通过 AP 加入 BSS，AP 接入分布系统</p>
+<p>BSS／ESS 描述接入服务关系，不是逐跳路径；终端可在覆盖区间漫游</p></article><article class="content-card emphasis-card" tabindex="0"><h3>工业网络</h3><p>传感器、控制器和执行器通过总线或工业以太网协同</p>
+<p>面对电磁干扰、金属、温湿度、振动与冲击，强调时序和冗余</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>吞吐</h3><p>摄像头、媒体和批量数据的容量</p></article><article class="content-card emphasis-card" tabindex="0"><h3>确定性</h3><p>动作在可预测时刻到达</p></article><article class="content-card emphasis-card" tabindex="0"><h3>维护</h3><p>诊断、更新、隔离和恢复</p></article></div></div></div>
+    <div class="numeric-progress">14/25</div>
+    <div class="semantic-label">WIFI AND INDUSTRIAL NETWORKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.0000%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 局域网</div>
+    <h2 class="slide-title">练习：哪一项局域网指标是关键？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 32% 38%"><colgroup><col style="width:30%"><col style="width:32%"><col style="width:38%"></colgroup><thead><tr><th>场景</th><th>请写首要指标</th><th>请写需要配套的证据</th></tr></thead><tbody><tr><td>家庭视频</td><td>填写</td><td>填写</td></tr><tr><td>车间闭环</td><td>填写</td><td>填写</td></tr><tr><td>电池门锁</td><td>填写</td><td>填写</td></tr><tr><td>校园漫游</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先写失败会伤害什么，再决定带宽、时延、功耗或冗余的优先级</p></div></div>
+    <div class="numeric-progress">15/25</div>
+    <div class="semantic-label">LAN JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+<!-- speaker-notes
+参考判断：家庭视频优先看吞吐与覆盖，配套 AP 规划、认证和干扰监测；车间闭环优先看时延抖动与确定性，配套同步、冗余和安全停机；电池门锁优先看低功耗与可靠唤醒，配套配对、重试和电量管理；校园漫游优先看切换连续性，配套 ESS、身份和故障诊断。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 广域网</div>
+    <h2 class="slide-title">广域网支持跨区域、大连接和移动服务</h2>
+    <div class="slide-content"><p class="slide-lead">它把远端设备和局域网接入跨区域服务</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>接入：终端／局域网 → 基站或网关 → 核心网络 回传：核心网络 → 云服务／跨区域应用</p></div></div>
+<div class="component component-text text-inset"><p>小区是覆盖区域，不是路径节点；不必经过所有中间网络</p></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">移动性</h3><div class="key-value-value"><p>处理多径、干扰、多普勒、切换和漫游</p></div></div><div class="key-value-item"><h3 class="key-value-key">覆盖</h3><div class="key-value-value"><p>小区制通过多基站、频率复用和统一协调扩展服务区域</p></div></div><div class="key-value-item"><h3 class="key-value-key">业务</h3><div class="key-value-value"><p>增强移动宽带 eMBB、超可靠低时延通信 URLLC、大规模机器类通信 mMTC</p></div></div><div class="key-value-item"><h3 class="key-value-key">运维</h3><div class="key-value-value"><p>频谱、基础设施、资费、身份和跨区域故障由不同主体承担</p></div></div></div></div></div>
+    <div class="numeric-progress">16/25</div>
+    <div class="semantic-label">WIDE AREA NETWORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.0000%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 广域网</div>
+    <h2 class="slide-title">移动通信与 LPWAN：需求不同</h2>
+    <div class="slide-content"><p class="slide-lead">按覆盖、速率、能耗和运营责任选择组合</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>移动通信</h3><p>面向移动终端和多种业务，支持切换、漫游及不同带宽和时延需求</p>
+<p>适合车辆、手机、视频和需要持续连接的应用</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>低功耗广域网 LPWAN</h3><p>面向电池设备、低速率、低频次和广覆盖</p>
+<p>窄带物联网 NB-IoT 依托运营商蜂窝网；LoRa 是无线调制技术，LoRaWAN 是网络协议与生态，可自建或用第三方网络</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>LPWAN 主要解决续航与覆盖；安全、可靠和端到端可用仍需验证</p></div></div>
+    <div class="numeric-progress">17/25</div>
+    <div class="semantic-label">CELLULAR AND LPWAN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.0000%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 广域网</div>
+    <h2 class="slide-title">练习：NB-IoT 与 LoRaWAN 怎样选择？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 32% 38%"><colgroup><col style="width:30%"><col style="width:32%"><col style="width:38%"></colgroup><thead><tr><th>维度</th><th>请判断更接近哪种方案</th><th>请写需要核对的证据</th></tr></thead><tbody><tr><td>网络建设</td><td>填写</td><td>填写</td></tr><tr><td>运营责任</td><td>填写</td><td>填写</td></tr><tr><td>场景</td><td>填写</td><td>填写</td></tr><tr><td>风险</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先确定谁负责建网与维护，再比较覆盖、续航、成本和连接规模</p></div></div>
+    <div class="numeric-progress">18/25</div>
+    <div class="semantic-label">WAN JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.0000%"></div></div>
+<!-- speaker-notes
+参考判断：网络建设若希望复用已有覆盖，更接近运营商蜂窝接入；若现场有网关部署和管理能力，更接近自建 LPWAN。运营责任方面，前者由运营商承担较多连接维护，后者由组织者承担网关、服务器和现场维护；跨区域、深度覆盖、统一接入更偏向运营商方案，园区、农场或专用网络可考虑自建；风险分别关注资费、服务边界、运营依赖，以及覆盖规划、频谱合规和安全维护。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 多网络案例</div>
+    <h2 class="slide-title">多网络组合：从现场到云端</h2>
+    <div class="slide-content"><p class="slide-lead">图中展示的是组合示意；设备、网关、手机、基站和云服务各自承担一段路径</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>示意：PAN／LAN → 网关／手机或直达 WAN → 云／服务 → 反馈 实际组合随应用变化</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-13-1/assets/previews/multi-network-iot-case-image2.webp" data-full-src="resources/decks/cciot-13-1/assets/multi-network-iot-case-image2.png" data-full-width="1448" data-full-height="1086" alt="物联网应用组合 PAN、LAN、网关和 WAN 完成端到端路径的示意" tabindex="0" role="button" aria-label="放大图片：物联网应用组合 PAN、LAN、网关和 WAN 完成端到端路径的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">19/25</div>
+    <div class="semantic-label">END-TO-END NETWORKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.0000%"></div></div>
+  </section>
+<section id="f1b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 多网络案例</div>
+    <h2 class="slide-title">三个案例如何分工网络责任</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>多网络协同，先分清每段连接的责任</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">逐段核对对象、媒介、功耗、权限和失败处理，不把一张示意图当成固定架构</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>案例</th><th>网络分工</th><th>责任与失败核对</th></tr></thead><tbody><tr><td>远程抄表</td><td>表计 → LPWAN → 后台</td><td>低频、低功耗、覆盖、运营与离线</td></tr><tr><td>共享单车</td><td>车锁—蓝牙→手机—移动通信→后台；或车锁直连移动通信</td><td>闲置／骑行切换、授权、手机缺席</td></tr><tr><td>智能家居</td><td>设备 → PAN／Wi-Fi／家庭出口</td><td>带宽、电量、出口权限、断网恢复</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">20/25</div>
+    <div class="semantic-label">NETWORK RESPONSIBILITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:2fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 多网络案例</div>
+    <h2 class="slide-title">用一张清单检查多网络方案</h2>
+    <div class="slide-content"><p class="slide-lead">从能上网到长期可用</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-text">对象标识→接入→网关／直达 WAN→服务→反馈</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>需求</h3><p>覆盖／移动／数据量／时延／功耗／可靠性</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>路径</h3><p>终端→接入→网关／回传→服务→反馈；节点可选</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>证据</h3><p>对象标识／到达确认／顺序／重试／缓存／恢复</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>治理</h3><p>配对／密钥／更新／日志／共享／跨网访问</p></div></div></div></div></div>
+    <div class="numeric-progress">21/25</div>
+    <div class="semantic-label">NETWORK DESIGN CHECKLIST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.0000%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 多网络案例</div>
+    <h2 class="slide-title">练习：共享车辆的网络如何分工？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 33% 39%"><colgroup><col style="width:28%"><col style="width:33%"><col style="width:39%"></colgroup><thead><tr><th>阶段</th><th>请写网络组合</th><th>请写需要复核的内容</th></tr></thead><tbody><tr><td>闲置上报</td><td>填写</td><td>填写</td></tr><tr><td>用户开锁</td><td>填写</td><td>填写</td></tr><tr><td>骑行服务</td><td>填写</td><td>填写</td></tr><tr><td>维护调度</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>网络设计最后要回答：数据从哪里来、经过谁、如何确认到达、失败后谁负责</p></div></div>
+    <div class="numeric-progress">22/25</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.0000%"></div></div>
+<!-- speaker-notes
+参考判断：闲置上报可由车锁使用低功耗广域连接，检查电量、位置、周期与离线缓存；用户开锁可组合手机扫描、蓝牙与移动通信，检查身份、授权、重放与超时；骑行服务可由车锁或手机经 WAN 上报，检查移动覆盖、轨迹隐私和计费；维护调度依赖云服务与车辆回传，检查设备状态、任务确认和异常回收。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">分析物联网网络时，按角色、范围、媒介、性能和端到端后果逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">网络抽象：节点、链路、逐跳转发、源／宿和路由组织数据流</span></li><li><span class="list-marker">02</span><span class="list-text">分类与范围：有线／无线、公用／专用、PAN／LAN／WAN 提供不同边界</span></li><li><span class="list-marker">03</span><span class="list-text">个域网：蓝牙、ZigBee 以低功耗、拓扑和多跳连接身边设备</span></li><li><span class="list-marker">04</span><span class="list-text">局域网：Wi-Fi 支持灵活接入与漫游，工业网络关注实时与确定性</span></li><li><span class="list-marker">05</span><span class="list-text">广域网：移动通信和 LPWAN 在覆盖、移动性、续航与运维之间取舍</span></li><li><span class="list-marker">06</span><span class="list-text">案例闭环：网关、多网络、对象标识、故障恢复和安全共同决定可用性</span></li></ol></div></div></div>
+    <div class="numeric-progress">23/25</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-13-1/mindmap-13-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">24/25</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH13 <span>|</span> 13.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">节点、链路、源／宿与路由如何描述数据路径？</span></li><li><span class="question-no">02</span><span class="question-text">有线／无线、公用／专用、PAN／LAN／WAN 分别表示什么边界？</span></li><li><span class="question-no">03</span><span class="question-text">蓝牙与 ZigBee 的拓扑、低功耗和自组织边界是什么？</span></li><li><span class="question-no">04</span><span class="question-text">Wi-Fi 的 BSS／ESS 与工业网络确定性如何影响局域网？</span></li><li><span class="question-no">05</span><span class="question-text">移动通信、NB-IoT 与 LoRaWAN 如何权衡覆盖、续航、成本与责任？</span></li><li><span class="question-no">06</span><span class="question-text">如何画出可验证、可恢复的多网络闭环？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-12-1.html" title="上一节：12.1 定位与授时" aria-label="上一节：12.1 定位与授时">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">12.1</span>
+        <span class="nav-title">定位与授时</span>
+      </a>
+      <a class="exercise-link" href="cciot-13-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-14-1.html" title="下一节：14.1 计算技术" aria-label="下一节：14.1 计算技术">
+        <span class="nav-title">计算技术</span>
+        <span class="nav-number">14.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">25/25</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

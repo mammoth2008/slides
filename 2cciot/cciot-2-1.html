@@ -1,382 +1,407 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>CCIOT | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="云计算与物联网课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 2.1 虚拟化技术 | HUST</title>
+  <meta name="description" content="从资源抽象与虚拟网络出发，通过课堂虚拟机演示理解快照、克隆，并认识 Workstation 与 WSL2 的使用定位">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="2-1">
+  <meta name="version" content="2607">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-2-1/assets/cover-virtualization-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 2.1</div>
+      <h1>虚拟化技术</h1>
+      <p class="cover-description">一台物理机支持多个运行环境</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2607</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c21t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>2. 初探虚拟化</h2>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c21t" data-rel-x="-2000" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 虚拟化 Virtualization
-
-- 将一台物理计算机虚拟为多台逻辑计算机
-- 简化管理
-- 优化资源
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Virtualization](img/c02/1-virtualization.png)
-#### Virtualization
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Hypervisor Types](img/c02/2-Hypervisor_Types_in_Virtualization.jpg)
-#### Hypervisor Types
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 虚拟机软件
-
-- VMware
-- VirtualBox
-- Hyper-V
-- Xen
-- KVM
-- QEMU
-- Parallel
-- WSL2
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### VMware
-
-- VMware Fusion
-- VMware Workstation
-- 适合 GUI
-- 兼容 Hyper-V
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![VMware](img/c02/3-vmware-fusion-ws.webp)
-#### VMware Fusion vs Workstation
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### VirtualBox
-
-- 常用在 Linux 上
-- 常用 CLI
-- 开源
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![VirtualBox](img/c02/4-virtualbox.jpg)
-#### VirtualBox
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### Hyper-V
-
-- 内置于 Windows 中
-- 适合使用 Windows 虚拟机
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Architecture of Hyper-V](img/c02/5-architecture-of-hyper-v.png)
-#### Architecture of Hyper-V
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Interface of Hyper-V](img/c02/5-clienthyper-v.png)
-#### Interface of Hyper-V
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="c21t" data-rel-x="400" data-rel-y="700" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### Xen
-
-- 性能接近原生
-- 支持多种 CPU 架构
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Architecture of Xen](img/c02/6-xen-architecture.png)
-#### Architecture of Xen
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### KVM
-
-- 支持多种 CPU 架构
-- 使用 QEMU 提供硬件仿真
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Architecture of KVM](img/c02/7-kvm-illustration.webp)
-#### Architecture of KVM
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### QEMU
-
-- 用软件仿真
-- 性能较差
-- 适应性最广
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="c21t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### Parallel
-
-- 和 Mac 集成较好
-- 适合个人使用
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Parallel](img/c02/8-parallels.png)
-#### Parallel
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### WSL2
-
-- Windows subsystem for Linux 2
-- 内置于 Windows 10、11
-- 在托管 VM 内使用真正的 Linux 内核
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="a19" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Architecture of WSL2](img/c02/9-WSL-2-Architecture.jpg)
-#### Architecture of WSL2
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Interface of WSL2](img/c02/10-wsl2.jpg)
-#### Interface of WSL2
-
-        </div>
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### VMware 网络模式
-
-- 虚拟机
-- 宿主机
-- 虚拟网络
-
-        </div>
-
-        <div id="a23" class="step markdown" data-rel-to="a22" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### VMware 网络模式
-
-- 桥接模式: 模拟一台独立主机
-- NAT 模式: 通过宿主机所在网络访问公网
-- 仅主机模式: 虚拟机只能和宿主机通信
-
-        </div>
-
-        <div id="mm21" class="step" data-rel-to="c21t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c02/mindmap-2-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c21q" class="step markdown" data-rel-to="c21t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 2. 初探虚拟化
-
-- 简述虚拟化的基本概念.
-- 为什么说 Xen 的性能接近原生?
-- QEMU 与 KVM 有何关系?
-- 请比较三种虚拟机网络配置方式, 并说明各自适用的典型场景.
-- 如果你要在一台 Windows 笔记本上学习 Linux 系统, 你会选择哪种虚拟机? 说明理由.
-
-            ----
-
-            [ 1. 遇见云计算](cciot-1-1.html#/overview)
-            [| 练习 |](cciot-exec.html)
-            [ 3. 体验公有云](cciot-3-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节先建立虚拟化的资源抽象与隔离概念，再通过 VMware Fusion 完成网络、远程管理、快照和克隆演示，最后转入学生日常使用的 WSL2
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释虚拟化技术如何抽象和分配物理资源</span></li><li><span class="list-marker">02</span><span class="list-text">区分宿主机、虚拟化层、虚拟机和客户操作系统</span></li><li><span class="list-marker">03</span><span class="list-text">根据虚拟化层的位置区分 Type 1 与 Type 2</span></li><li><span class="list-marker">04</span><span class="list-text">根据连通需求选择桥接、NAT 或仅主机网络</span></li><li><span class="list-marker">05</span><span class="list-text">区分远程管理、快照、克隆与备份</span></li><li><span class="list-marker">06</span><span class="list-text">明确 Workstation 与 WSL2 的不同定位</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/27</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:7.4074%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 为什么需要虚拟化</div>
+    <h2 class="slide-title">单项任务未必需要占用整台计算机</h2>
+    <div class="slide-content"><p class="slide-lead">固定分配让空闲资源难以被有效利用</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/a2-resource-sharing.webp" data-full-src="resources/decks/cciot-2-1/assets/a2-resource-sharing.webp" data-full-width="1200" data-full-height="1311" alt="一机一系统与一机多环境资源利用对比图" tabindex="0" role="button" aria-label="放大图片：一机一系统与一机多环境资源利用对比图" decoding="async"></figure>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>单操作系统</h3><p>每套操作系统独占一台物理计算机</p>
+<p>负载低时，CPU、内存和存储仍被占用</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多环境</h3><p>多台虚拟机共享同一组物理资源</p>
+<p>每个工作负载拥有相对独立的操作系统环境</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>虚拟化让物理资源能够被重新划分和组合</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-question" data-character-edge="right" data-character-along="48.935" data-character-exposure="77.355" data-character-scale="0.9" style="--character-along:48.935%;--character-exposure:77.355;--character-hidden:22.645%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-question.32f94d873be3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>多环境和多任务的区别？</p></div></div></div></aside>
+    <div class="numeric-progress">3/27</div>
+    <div class="semantic-label">RESOURCE UTILIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 为什么需要虚拟化</div>
+    <h2 class="slide-title">虚拟化呈现了逻辑结构</h2>
+    <div class="slide-content"><p class="slide-lead">虚拟机展示逻辑资源，虚拟化层将逻辑结构转译到物理设备</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/virtual-machine-architecture.webp" data-full-src="resources/decks/cciot-2-1/assets/virtual-machine-architecture.png" data-full-width="1024" data-full-height="960" alt="物理硬件、虚拟化层和多个虚拟机的架构" tabindex="0" role="button" aria-label="放大图片：物理硬件、虚拟化层和多个虚拟机的架构" decoding="async"></figure>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="19.092% 80.908%" style="--key-value-columns:minmax(0,19.092fr) minmax(0,80.908fr)"><div class="key-value-item substep"><h3 class="key-value-key">抽象</h3><div class="key-value-value"><p>隐藏具体差异，呈现统一的虚拟硬件</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">分配</h3><div class="key-value-value"><p>把 CPU、内存、磁盘和网络能力交给不同虚拟机</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">隔离</h3><div class="key-value-value"><p>减少不同工作负载之间的直接干扰</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">管理</h3><div class="key-value-value"><p>复制、回退和调整运行环境</p></div></div></div></div></div>
+    <div class="numeric-progress">4/27</div>
+    <div class="semantic-label">VIRTUALIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.8148%"></div></div>
+  </section>
+<section id="a3b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 为什么需要虚拟化</div>
+    <h2 class="slide-title">虚拟机与容器的联系与区别</h2>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confirm" data-character-edge="right" data-character-along="46.672" data-character-exposure="72.202" data-character-scale="0.9" style="--character-along:46.672%;--character-exposure:72.202;--character-hidden:27.798%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confirm.1a0e1b15f21a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>Docker 真的很好用</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">都能隔离应用；但构建运行环境的方式不同</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/virtual-machine-container-comparison.webp" data-full-src="resources/decks/cciot-2-1/assets/virtual-machine-container-comparison.jpg" data-full-width="1238" data-full-height="662" alt="虚拟机架构与容器架构的横向对比" tabindex="0" role="button" aria-label="放大图片：虚拟机架构与容器架构的横向对比" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>虚拟机拥有完整操作系统，容器通常共享宿主操作系统内核</p></div></div>
+    <div class="numeric-progress">5/27</div>
+    <div class="semantic-label">VIRTUAL MACHINES AND CONTAINERS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.5185%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 为什么需要虚拟化</div>
+    <h2 class="slide-title">练习：哪些场景真正使用了虚拟化？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31.828% 23.815% 44.357%"><colgroup><col style="width:31.828%"><col style="width:23.815%"><col style="width:44.357%"></colgroup><thead><tr><th>场景</th><th>已知信息</th><th>判断依据</th></tr></thead><tbody><tr><td>一边写作业一边听歌</td><td>同一操作系统运行两个应用</td><td>没有出现独立虚拟硬件或客户系统</td></tr><tr><td>远程桌面连接另一电脑</td><td>通过网络控制另一台物理机</td><td>远程访问不等于资源虚拟化</td></tr><tr><td>Windows 中运行 WSL2</td><td>Linux 看到独立计算资源</td><td>物理资源被抽象为虚拟硬件</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断虚拟化要寻找虚拟硬件、客户系统和资源分配的证据</p></div></div>
+    <div class="numeric-progress">6/27</div>
+    <div class="semantic-label">VIRTUALIZATION EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机如何运行</div>
+    <h2 class="slide-title">虚拟机与容器所在层级不同</h2>
+    <div class="slide-content"><p class="slide-lead">客户系统与共享内核的区别</p>
+<div class="slide-main-content"><div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">虚拟机</h3><div class="key-value-value"><p>每台虚拟机都包含独立的客户操作系统和虚拟硬件</p></div></div><div class="key-value-item"><h3 class="key-value-key">容器</h3><div class="key-value-value"><p>多个容器共享宿主内核，主要意义在于将应用及其依赖封装起来</p></div></div><div class="key-value-item"><h3 class="key-value-key">隔离边界</h3><div class="key-value-value"><p>虚拟机技术隔离了操作系统环境，而容器主要隔离了进程环境</p></div></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/virtual-machine-container-stacks.webp" data-full-src="resources/decks/cciot-2-1/assets/virtual-machine-container-stacks.jpg" data-full-width="1536" data-full-height="1024" alt="虚拟机与容器运行层次的纵向堆叠对比" tabindex="0" role="button" aria-label="放大图片：虚拟机与容器运行层次的纵向堆叠对比" decoding="async"></figure></div></div>
+    <div class="numeric-progress">7/27</div>
+    <div class="semantic-label">VIRTUAL MACHINE LAYERS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.9259%"></div></div>
+  </section>
+<section id="b1b" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机如何运行</div>
+    <h2 class="slide-title">Type 1 与 Type 2 的区别</h2>
+    <div class="slide-content"><p class="slide-lead">虚拟化层位的不同，决定了类型不同</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/type1-type2-hypervisors.webp" data-full-src="resources/decks/cciot-2-1/assets/type1-type2-hypervisors.png" data-full-width="801" data-full-height="550" alt="Type 1 与 Type 2 虚拟化架构对比" tabindex="0" role="button" aria-label="放大图片：Type 1 与 Type 2 虚拟化架构对比" decoding="async"></figure>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>Type 1：裸机型</h3><p>物理硬件之上直接运行虚拟化层，再由虚拟化层承载多个虚拟机</p>
+<p>主要用于服务器集中承载与管理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Type 2：宿主型</h3><p>物理硬件上运行宿主操作系统，虚拟化软件是运行在宿主操作系统上的应用程序</p>
+<p>VMware Workstation 是典型例子</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>以上只是简单分类，具体产品的内部架构往往更加复杂</p></div></div>
+    <div class="numeric-progress">8/27</div>
+    <div class="semantic-label">HYPERVISOR TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.6296%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机如何运行</div>
+    <h2 class="slide-title">隔离不等于绝对安全</h2>
+    <div class="slide-content"><p class="slide-lead">虚拟机相对独立，但仍共享宿主机、虚拟化层和物理设备</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/b2-shared-failure-boundary.webp" data-full-src="resources/decks/cciot-2-1/assets/b2-shared-failure-boundary.jpg" data-full-width="1536" data-full-height="1024" alt="虚拟机隔离边界与共享故障边界示意图" tabindex="0" role="button" aria-label="放大图片：虚拟机隔离边界与共享故障边界示意图" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>工作负载隔离</h3><p>某虚拟机出故障，一般不影响另一台虚拟机</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>资源竞争</h3><p>多个虚拟机会分配同一宿主机的计算资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共同故障边界</h3><p>宿主机、虚拟化层故障同时影响多个虚拟机</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>共享提高了利用率，也带来了共同资源和共同故障边界</p></div></div>
+    <div class="numeric-progress">9/27</div>
+    <div class="semantic-label">ISOLATION BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 工具角色</div>
+    <h2 class="slide-title">常见的不同虚拟机工具</h2>
+    <div class="slide-content"><p class="slide-lead">不同级别的设备需要使用不同的工具</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 25% 25% 26%"><colgroup><col style="width:24%"><col style="width:25%"><col style="width:25%"><col style="width:26%"></colgroup><thead><tr><th>工具角色</th><th>典型例子</th><th>运行位置</th><th>主要任务</th></tr></thead><tbody><tr><td>桌面虚拟化</td><td>Workstation、VirtualBox</td><td>个人计算机</td><td>学习、测试、多系统运行</td></tr><tr><td>裸机型虚拟化</td><td>Xen、Hyper-V Server</td><td>服务器硬件</td><td>集中承载和管理虚拟机</td></tr><tr><td>内核虚拟化能力</td><td>KVM</td><td>Linux 内核</td><td>利用硬件能力运行虚拟 CPU</td></tr><tr><td>设备模型与模拟</td><td>QEMU</td><td>主机用户空间</td><td>提供虚拟设备或模拟其他架构</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/27</div>
+    <div class="semantic-label">VIRTUALIZATION ROLES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.0370%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 工具角色</div>
+    <h2 class="slide-title">Windows 11 中的两种 Linux 环境</h2>
+    <div class="slide-content"><p class="slide-lead">完整虚拟机用于观察机制，WSL2 用于日常运行工具</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>VMware Workstation</h3><p>创建和运行完整虚拟机</p>
+<p>可以观察虚拟硬件、网络、快照和克隆等管理机制</p></article><article class="content-card emphasis-card" tabindex="0"><h3>WSL2</h3><p>快速进入 Linux 命令行</p>
+<p>适合持续使用 Bash、Python、Git 和部署本地 AI 工具</p></article></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/vmware-workstation.webp" data-full-src="resources/decks/cciot-2-1/assets/vmware-workstation.png" data-full-width="1024" data-full-height="608" alt="Windows 11 中的 VMware Workstation 界面" tabindex="0" role="button" aria-label="放大图片：Windows 11 中的 VMware Workstation 界面" decoding="async"></figure>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/wsl2.webp" data-full-src="resources/decks/cciot-2-1/assets/wsl2.jpg" data-full-width="2160" data-full-height="1620" alt="Windows 11 中运行的 WSL2 Linux 环境" tabindex="0" role="button" aria-label="放大图片：Windows 11 中运行的 WSL2 Linux 环境" decoding="async"></figure></div></div>
+    <div class="numeric-progress">11/27</div>
+    <div class="semantic-label">CLASSROOM ENVIRONMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.7407%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:2fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟网络</div>
+    <h2 class="slide-title">三种网络模式</h2>
+    <div class="slide-content"><p class="slide-lead">根据互联网、宿主机和局域网访问需求判断合理的模式</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/virtual-network-modes.webp" data-full-src="resources/decks/cciot-2-1/assets/virtual-network-modes.jpeg" data-full-width="800" data-full-height="1000" alt="桥接、NAT 和仅主机三种虚拟网络模式" tabindex="0" role="button" aria-label="放大图片：桥接、NAT 和仅主机三种虚拟网络模式" decoding="async"></figure>
+<div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">桥接</h3><div class="key-value-value"><p>虚拟机被视为一台单独计算机，可以被同一网络中的其他设备直接访问</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">NAT</h3><div class="key-value-value"><p>虚拟机通过宿主机转换地址访问外部网络，依赖宿主机的网络访问能力</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">仅主机</h3><div class="key-value-value"><p>虚拟机只连接宿主机私有网络，默认不能访问互联网</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>网络模式安排的是通信路径，服务、端口或防火墙需要自行设置</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="34.424" data-character-exposure="84.356" data-character-scale="0.9" style="--character-along:34.424%;--character-exposure:84.356;--character-hidden:15.644%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>重点是虚拟机和宿主机的关系</p></div></div></div></aside>
+    <div class="numeric-progress">12/27</div>
+    <div class="semantic-label">NETWORK MODES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟网络</div>
+    <h2 class="slide-title">练习：为三个任务选择网络模式</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="49.221% 15.057% 35.722%"><colgroup><col style="width:49.221%"><col style="width:15.057%"><col style="width:35.722%"></colgroup><thead><tr><th>任务</th><th>优先模式</th><th>判断线索</th></tr></thead><tbody><tr><td>分析不可信文件，只与宿主机交换结果</td><td>仅主机</td><td>尽量限制外部连通范围</td></tr><tr><td>访问互联网，不占用局域网独立地址</td><td>NAT</td><td>通过宿主机地址转换出网</td></tr><tr><td>让同学直接访问虚拟机中的 Web 服务</td><td>桥接</td><td>虚拟机需要进入物理局域网</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先写出机器之间的访问关系，再选择网络模式</p></div></div>
+    <div class="numeric-progress">13/27</div>
+    <div class="semantic-label">NETWORK CHOICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.1481%"></div></div>
+  </section>
+<section id="e1" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机演示</div>
+    <h2 class="slide-title">虚拟机操作演示</h2>
+    <div class="slide-content"><p class="slide-lead">注意观察基本设置和访问机制</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/demo-preparation-image2.webp" data-full-src="resources/decks/cciot-2-1/assets/demo-preparation-image2.png" data-full-width="1086" data-full-height="1448" alt="虚拟机课堂演示的资源与网络准备示意" tabindex="0" role="button" aria-label="放大图片：虚拟机课堂演示的资源与网络准备示意" decoding="async"></figure>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>准备</h3><p>ARM64 Linux 已安装并能够正常启动</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>联网</h3><p>网络设为 NAT，Linux 已启用 SSH</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>身份</h3><p>使用普通用户，不采用教材固定 root 密码</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>状态</h3><p>保留基线快照和预先创建的完整克隆</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="top-explain" data-character-edge="top" data-character-along="84.237" data-character-exposure="54.236" data-character-scale="0.9" style="--character-along:84.237%;--character-exposure:54.236;--character-hidden:45.764%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:470px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/top-explain.f9c322901a8d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>入门 Linux 最好的选择还是 Ubuntu</p></div></div></div></aside>
+    <div class="numeric-progress">14/27</div>
+    <div class="semantic-label">DEMO PREPARATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:51.8519%"></div></div>
+<!-- speaker-notes
+课前确认 Mac 剩余磁盘空间足够，避免快照恢复或合并因空间不足中断
+-->
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机演示</div>
+    <h2 class="slide-title">客户系统视图</h2>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confirm" data-character-edge="right" data-character-along="33.806" data-character-exposure="68.402" data-character-scale="0.9" style="--character-along:33.806%;--character-exposure:68.402;--character-hidden:31.598%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confirm.1a0e1b15f21a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>虽然 CLI 学习成本比较高，但是真的很好用</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">Linux 只能看到虚拟化层呈现给它的资源视图</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/guest-resource-view-image2.webp" data-full-src="resources/decks/cciot-2-1/assets/guest-resource-view-image2.png" data-full-width="1086" data-full-height="1448" alt="虚拟化层呈现给客户系统的资源视图示意" tabindex="0" role="button" aria-label="放大图片：虚拟化层呈现给客户系统的资源视图示意" decoding="async"></figure>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="21.104% 78.896%" style="--key-value-columns:minmax(0,21.104fr) minmax(0,78.896fr)"><div class="key-value-item"><h3 class="key-value-key">架构</h3><div class="key-value-value"><p>用 <code>uname -m</code> 查看客户系统架构</p></div></div><div class="key-value-item"><h3 class="key-value-key">内存</h3><div class="key-value-value"><p>用 <code>free -h</code> 查看虚拟机获得的内存</p></div></div><div class="key-value-item"><h3 class="key-value-key">磁盘</h3><div class="key-value-value"><p>用 <code>lsblk</code> 查看虚拟磁盘</p></div></div><div class="key-value-item"><h3 class="key-value-key">网卡</h3><div class="key-value-value"><p>用 <code>ip a</code> 查看虚拟网络接口</p></div></div></div></div></div>
+    <div class="numeric-progress">15/27</div>
+    <div class="semantic-label">GUEST RESOURCE VIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
+<!-- speaker-notes
+先在虚拟机关闭状态查看 Fusion 的处理器与内存、磁盘和网络适配器设置，再启动 Linux 运行四条命令
+-->
+  </section>
+<section id="e3" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机演示</div>
+    <h2 class="slide-title">从 NAT 联网到 SSH 登录</h2>
+    <div class="slide-content"><p class="slide-lead">把控制台中的虚拟机变成网络中的可管理主机</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/ssh-host-to-virtual-machine.webp" data-full-src="resources/decks/cciot-2-1/assets/ssh-host-to-virtual-machine.png" data-full-width="2054" data-full-height="1253" alt="宿主机通过 SSH 连接 NAT 网络中的虚拟机" tabindex="0" role="button" aria-label="放大图片：宿主机通过 SSH 连接 NAT 网络中的虚拟机" decoding="async"></figure>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>确认网络</h3><p>虚拟机网络适配器使用 NAT</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>查询地址</h3><p>在 Linux 中运行 <code>ip a</code></p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>确认服务</h3><p>检查 Linux 中的 SSH 服务已经运行</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>远程登录</h3><p>从宿主机运行 <code>ssh 用户名@虚拟机地址</code> 并创建课堂标记文件</p></div></div></div></div></div>
+    <div class="numeric-progress">16/27</div>
+    <div class="semantic-label">NAT AND SSH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.2593%"></div></div>
+  </section>
+<section id="e4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 虚拟机演示</div>
+    <h2 class="slide-title">虚拟机能上网，为什么 SSH 失败？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">检查地址：连接的 IP 是否属于当前虚拟机</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">检查路径：宿主机能否到达虚拟机所在网络</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">检查服务：虚拟机中的 SSH 服务是否正在运行</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">检查端口：防火墙是否允许对应端口</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">检查认证：用户名、密钥或密码是否正确</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>能够访问网站，只能证明单向路径成立</p></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-explain" data-character-edge="bottom" data-character-along="85.785" data-character-exposure="67.238" data-character-scale="0.9" style="--character-along:85.785%;--character-exposure:67.238;--character-hidden:32.762%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-explain.b729b51fd552.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>排查顺序就是错误的常见程度</p></div></div></div></aside>
+    <div class="numeric-progress">17/27</div>
+    <div class="semantic-label">SSH DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.9630%"></div></div>
+  </section>
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 状态管理</div>
+    <h2 class="slide-title">快照：同一环境回到较早状态</h2>
+    <div class="slide-content"><p class="slide-lead">用一个文件变化观察虚拟机状态回退</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/snapshot-restore.webp" data-full-src="resources/decks/cciot-2-1/assets/snapshot-restore.webp" data-full-width="800" data-full-height="632" alt="虚拟机创建快照并恢复到较早状态" tabindex="0" role="button" aria-label="放大图片：虚拟机创建快照并恢复到较早状态" decoding="async"></figure>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>创建</h3><p>拍摄快照并命名，作为实验基线</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>改变</h3><p>创建、修改或删除课堂标记文件</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>恢复</h3><p>回到实验基线快照</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>观察</h3><p>核对文件和系统状态是否回退</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>快照记录状态变化关系，不会生成一套独立虚拟机</p></div></div>
+    <div class="numeric-progress">18/27</div>
+    <div class="semantic-label">SNAPSHOT DEMO</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 状态管理</div>
+    <h2 class="slide-title">快照、克隆和备份解决不同问题</h2>
+    <div class="slide-content"><p class="slide-lead">状态管理方式需要按照管理目标来确定</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/f2-snapshot-clone-backup.webp" data-full-src="resources/decks/cciot-2-1/assets/f2-snapshot-clone-backup.jpeg" data-full-width="800" data-full-height="1200" alt="快照、克隆和备份用途对比图" tabindex="0" role="button" aria-label="放大图片：快照、克隆和备份用途对比图" decoding="async"></figure>
+<div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">快照</h3><div class="key-value-value"><p>让同一虚拟机回到较早状态，不形成独立环境</p></div></div><div class="key-value-item"><h3 class="key-value-key">克隆</h3><div class="key-value-value"><p>产生另一台可以独立使用的虚拟机</p></div></div><div class="key-value-item"><h3 class="key-value-key">备份</h3><div class="key-value-value"><p>在原环境之外保留副本，用于抵御设备或介质丢失</p></div></div></div></div></div>
+    <div class="numeric-progress">19/27</div>
+    <div class="semantic-label">STATE MANAGEMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.3704%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-split teaching-semantic axis-horizontal order-media-cards"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 状态管理</div>
+    <h2 class="slide-title">快照是不是备份？</h2>
+    <div class="slide-content"><div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/snapshot-chain.webp" data-full-src="resources/decks/cciot-2-1/assets/snapshot-chain.jpg" data-full-width="1024" data-full-height="480" alt="快照依赖父磁盘形成的状态变化链" tabindex="0" role="button" aria-label="放大图片：快照依赖父磁盘形成的状态变化链" decoding="async"></figure>
+<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>快照</h3><p>记录相对父磁盘发生的变化</p>
+<p>父磁盘损坏或丢失时，快照链也会失去依据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>独立备份</h3><p>在原虚拟机之外保存可恢复副本</p>
+<p>原磁盘失效时，仍能从另一位置恢复</p></article></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>如果宿主机的磁盘损坏，保存在同一磁盘上的快照不能救回虚拟机</p></div></div>
+    <div class="numeric-progress">20/27</div>
+    <div class="semantic-label">SNAPSHOT IS NOT BACKUP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:74.0741%"></div></div>
+  </section>
+<section id="f4" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 状态管理</div>
+    <h2 class="slide-title">克隆后，需要检查系统身份</h2>
+    <div class="slide-content"><p class="slide-lead">复制文件不等于两台虚拟机可以无冲突并行运行</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/clone-identity-image2.webp" data-full-src="resources/decks/cciot-2-1/assets/clone-identity-image2.png" data-full-width="1086" data-full-height="1448" alt="虚拟机克隆后需要重新治理系统身份的示意" tabindex="0" role="button" aria-label="放大图片：虚拟机克隆后需要重新治理系统身份的示意" decoding="async"></figure>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="33.781% 66.219%" style="--key-value-columns:minmax(0,33.781fr) minmax(0,66.219fr)"><div class="key-value-item"><h3 class="key-value-key">UUID</h3><div class="key-value-value"><p>复制虚拟机后，为副本生成新的虚拟机标识</p></div></div><div class="key-value-item"><h3 class="key-value-key">MAC 地址</h3><div class="key-value-value"><p>虚拟网卡获得新的硬件地址</p></div></div><div class="key-value-item"><h3 class="key-value-key">主机名</h3><div class="key-value-value"><p>客户系统内部名称可能仍与原虚拟机相同</p></div></div><div class="key-value-item"><h3 class="key-value-key">网络与密钥</h3><div class="key-value-value"><p>静态地址、应用密钥和服务配置仍可能发生冲突</p></div></div></div></div></div>
+    <div class="numeric-progress">21/27</div>
+    <div class="semantic-label">CLONE IDENTITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+  </section>
+<section id="g1" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> WSL2</div>
+    <h2 class="slide-title">WSL2 让 Windows 可以直接使用 Linux</h2>
+    <div class="slide-content"><p class="slide-lead">WSL2 使用虚拟化技术，但简化了设备管理</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/cciot-2-1/assets/previews/wsl2-architecture.webp" data-full-src="resources/decks/cciot-2-1/assets/wsl2-architecture.jpg" data-full-width="2096" data-full-height="1175" alt="Windows 11、WSL2 托管虚拟机和 Linux 内核的架构" tabindex="0" role="button" aria-label="放大图片：Windows 11、WSL2 托管虚拟机和 Linux 内核的架构" decoding="async"></figure>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="43.709% 56.291%" style="--key-value-columns:minmax(0,43.709fr) minmax(0,56.291fr)"><div class="key-value-item"><h3 class="key-value-key">真实 Linux 内核</h3><div class="key-value-value"><p>WSL2 在轻量级托管虚拟机中运行 Linux 内核</p></div></div><div class="key-value-item"><h3 class="key-value-key">Windows 集成</h3><div class="key-value-value"><p>Windows 与 Linux 命令、文件和应用可以协同使用</p></div></div><div class="key-value-item"><h3 class="key-value-key">日常工具环境</h3><div class="key-value-value"><p>适合 Python、Git、编译工具和 AI 开发工作流</p></div></div></div></div></div>
+    <div class="numeric-progress">22/27</div>
+    <div class="semantic-label">WSL2 ARCHITECTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.4815%"></div></div>
+  </section>
+<section id="g2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> WSL2</div>
+    <h2 class="slide-title">WSL2 的起点</h2>
+    <div class="slide-content"><p class="slide-lead">完成 Linux 的第一个真实任务</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">POWERSHELL</span><pre tabindex="0" aria-label="POWERSHELL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08</span><code class="language-powershell">wsl --status
+wsl --list --online
+wsl -l -v
+wsl --install -d Ubuntu
+wsl -d Ubuntu
+wsl --set-default Ubuntu
+wsl --update
+wsl --shutdown</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>检查</h3><p>查看 WSL 状态和已安装发行版</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>安装</h3><p>必要时安装默认 Linux 发行版</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>进入</h3><p>启动默认发行版并建立普通用户</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>使用</h3><p>运行 Linux 命令、Python 脚本或 Git 命令</p></div></div></div></div></div>
+    <div class="numeric-progress">23/27</div>
+    <div class="semantic-label">WSL2 BASICS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.1852%"></div></div>
+<!-- speaker-notes
+如果课堂没有 Windows 11 演示机，使用提前准备的终端截图或请一名学生展示 wsl -l -v，不在教师 Mac 上模拟 WSL2 界面
+-->
+  </section>
+<section id="g3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> WSL2</div>
+    <h2 class="slide-title">不同虚拟机的使用时机</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43.36% 22.077% 34.563%"><colgroup><col style="width:43.36%"><col style="width:22.077%"><col style="width:34.563%"></colgroup><thead><tr><th>任务</th><th>优先环境</th><th>主要理由</th></tr></thead><tbody><tr><td>观察桥接、NAT 和仅主机网络</td><td>Workstation</td><td>需要显式控制虚拟网卡与网络模式</td></tr><tr><td>练习快照恢复和克隆</td><td>Workstation</td><td>需要完整虚拟机状态管理</td></tr><tr><td>日常运行 Python 与 AI 工具</td><td>WSL2</td><td>启动轻、与 Windows 工作流结合</td></tr><tr><td>快速使用 Bash、Git 和包管理器</td><td>WSL2</td><td>不必维护完整桌面虚拟机</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整虚拟机帮助理解机制，WSL2 帮助持续使用 Linux</p></div></div>
+    <div class="numeric-progress">24/27</div>
+    <div class="semantic-label">ENVIRONMENT CHOICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">判断虚拟化方案时，沿着资源、网络、状态和使用目标逐层分析</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">资源抽象：虚拟化层把物理资源呈现为虚拟硬件</span></li><li><span class="list-marker">02</span><span class="list-text">运行位置：Type 1 直接面向硬件，Type 2 运行在宿主系统之上</span></li><li><span class="list-marker">03</span><span class="list-text">隔离边界：虚拟机相对独立，但仍共享宿主机与物理设备</span></li><li><span class="list-marker">04</span><span class="list-text">网络路径：桥接、NAT 和仅主机安排不同的可达范围</span></li><li><span class="list-marker">05</span><span class="list-text">状态管理：快照用于回退，克隆用于复制，备份用于恢复</span></li><li><span class="list-marker">06</span><span class="list-text">环境选择：Workstation 展示完整虚拟机机制，WSL2 支持日常使用</span></li></ol></div></div></div>
+    <div class="numeric-progress">25/27</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.5926%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-2-1/mindmap-2-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">26/27</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.2963%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH02 <span>|</span> 2.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">虚拟化层如何把物理资源提供给多个虚拟机？</span></li><li><span class="question-no">02</span><span class="question-text">虚拟机相互隔离，为什么仍可能同时受到宿主机故障影响？</span></li><li><span class="question-no">03</span><span class="question-text">Type 1 与 Type 2 的虚拟化层分别位于哪里，Workstation 属于哪一类？</span></li><li><span class="question-no">04</span><span class="question-text">桥接、NAT 和仅主机如何改变访问路径？</span></li><li><span class="question-no">05</span><span class="question-text">为什么快照不能替代独立备份？</span></li><li><span class="question-no">06</span><span class="question-text">Workstation 与 WSL2 分别适合承担什么任务？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-1-1.html" title="上一节：1.1 云计算概述" aria-label="上一节：1.1 云计算概述">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.1</span>
+        <span class="nav-title">云计算概述</span>
+      </a>
+      <a class="exercise-link" href="cciot-2-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-3-1.html" title="下一节：3.1 体验公有云" aria-label="下一节：3.1 体验公有云">
+        <span class="nav-title">体验公有云</span>
+        <span class="nav-number">3.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">27/27</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

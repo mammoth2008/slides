@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 16.1 安全与隐私保护 | HUST</title>
+  <meta name="description" content="从威胁面与 CIA 出发，理解设备、信息、应用安全和隐私生命周期控制">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="16-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-16-1/assets/cover-security-privacy-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 16.1</div>
+      <h1>安全与隐私保护</h1>
+      <p class="cover-description">让系统可信地连接、处理和行动</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本节把身份、时空、网络、计算、数据与模型的边界收束成威胁—控制—验证—责任链，先分清安全与隐私，再做案例闭环
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">安全与隐私要看边界、威胁、控制、证据和后果</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分物联网安全与隐私，说明安全边界跨越物理世界与信息世界</span></li><li><span class="list-marker">02</span><span class="list-text">用机密性、完整性、可用性分析威胁与后果</span></li><li><span class="list-marker">03</span><span class="list-text">说明设备、信息、应用的纵深防御关系</span></li><li><span class="list-marker">04</span><span class="list-text">按数据生命周期设计隐私控制</span></li><li><span class="list-marker">05</span><span class="list-text">比较去标识化／匿名化、失真／模糊、合成数据、同态加密、安全多方计算与联邦学习</span></li><li><span class="list-marker">06</span><span class="list-text">为医疗物联网或位置服务设计可恢复、可申诉的安全闭环</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全与隐私边界</div>
+    <h2 class="slide-title">安全与隐私相关，但保护对象不同</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>安全和隐私，保护的是同一个对象吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">安全不等于隐私：加密、认证不替代最小化和用户控制</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>物理对象、设备／网络、数据／服务与人的生活相互影响</p></div></div>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>安全</h3><p>保护设备、网络、数据和服务免受未经授权的访问、攻击、篡改、破坏或中断</p>
+<p>关注系统能否可信运行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>隐私</h3><p>保护自然人的私密空间、活动和信息，并让个人能控制收集、使用、公开与共享</p>
+<p>关注数据是否被合理使用</p></article></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-16-1/assets/previews/security-privacy-boundary-image2.webp" data-full-src="resources/decks/cciot-16-1/assets/security-privacy-boundary-image2.png" data-full-width="1448" data-full-height="1086" alt="安全保护与隐私保护围绕同一物联网数据的边界对比" tabindex="0" role="button" aria-label="放大图片：安全保护与隐私保护围绕同一物联网数据的边界对比" decoding="async"></figure></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">SECURITY AND PRIVACY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全与隐私边界</div>
+    <h2 class="slide-title">物联网安全边界从信息延伸到物质世界</h2>
+    <div class="slide-content"><p class="slide-lead">设备、网络、云、环境和人的操作会互相影响</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>入口更多</h3><p>传感器、标签、手机、网关、云服务与运维接口</p></article><article class="content-card emphasis-card" tabindex="0"><h3>资源更受限</h3><p>大量设备受成本、体积、能耗和更新能力限制</p></article><article class="content-card emphasis-card" tabindex="0"><h3>后果更直接</h3><p>数据、服务和控制可能影响交通、能源、健康与居家生活</p></article></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>信息流示意，不是固定网络流水线 感知／标识 → 网络／计算 → 数据／决策 → 控制／行动</p></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一处失守可能沿关联环节扩大影响；安全设计要覆盖信息流和物理后果</p></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">A DIFFUSE SECURITY PERIMETER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全与隐私边界</div>
+    <h2 class="slide-title">练习：安全、隐私，还是两者都有？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 29% 39%"><colgroup><col style="width:32%"><col style="width:29%"><col style="width:39%"></colgroup><thead><tr><th>场景</th><th>请判断安全／隐私边界</th><th>请写安全属性或隐私追问</th></tr></thead><tbody><tr><td>摄像头被远程接管</td><td>填写</td><td>填写</td></tr><tr><td>位置被过度收集</td><td>填写</td><td>填写</td></tr><tr><td>控制指令被篡改</td><td>填写</td><td>填写</td></tr><tr><td>服务被压垮</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先定义资产、主体、用途与后果，再决定安全和隐私控制的组合</p></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">BOUNDARY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+<!-- speaker-notes
+参考判断：摄像头被远程接管同时涉及安全与隐私，追问身份、权限、数据用途和响应；位置被过度收集主要是隐私问题，追问目的、精度、保留和用户控制；控制指令被篡改主要是安全问题，CIA 属性是完整性，追问认证、接管和物理后果；服务被压垮主要是安全问题，CIA 属性是可用性，追问资源、隔离、降级和恢复。安全属性与隐私边界是两个可以交叉的分析轴。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 威胁面与 CIA</div>
+    <h2 class="slide-title">CIA：机密性、完整性、可用性</h2>
+    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-astonished" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-astonished.bd621945285a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>一次攻击可能同时伤到机密性、完整性和可用性</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">同一攻击可能同时破坏多个属性</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>机密性</h3><p>未经授权的主体不能读取敏感信息</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完整性</h3><p>数据和指令不能被未授权修改、插入、延迟、乱序或丢失</p></article><article class="content-card emphasis-card" tabindex="0"><h3>可用性</h3><p>授权使用者在需要时能获得信息和服务</p></article></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="资产／威胁 → CIA 属性 → 业务后果 → 控制与验证"><span class="relation-term">资产／威胁</span><span class="relation-operator">→</span><span class="relation-term">CIA 属性</span><span class="relation-operator">→</span><span class="relation-term">业务后果</span><span class="relation-operator">→</span><span class="relation-term">控制与验证</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>CIA 不是三张独立清单，而是把威胁和现实后果连接起来的分析语言</p></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">CIA TRIAD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 威胁面与 CIA</div>
+    <h2 class="slide-title">物联网威胁面：设备、信息与应用</h2>
+    <div class="slide-content"><p class="slide-lead">同一威胁可影响多个面，后果可能回到真实对象；恢复与责任要单独核对</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>设备面</h3><p>拆解、移动、篡改、弱口令、恶意固件和供应链</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>信息面</h3><p>窃听、伪造、重放、拒绝服务、横向移动和云配置错误</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用面</h3><p>业务逻辑缺陷、异常数据、控制链操纵和组合失效</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>威胁建模要写出攻击入口、被影响的属性、可能动作和可观测证据</p></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">THREAT SURFACES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 威胁面与 CIA</div>
+    <h2 class="slide-title">练习：攻击破坏了什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 31% 37%"><colgroup><col style="width:32%"><col style="width:31%"><col style="width:37%"></colgroup><thead><tr><th>现象</th><th>请写 CIA 属性</th><th>请写后果、证据与附加隐私风险</th></tr></thead><tbody><tr><td>读取健康记录</td><td>填写</td><td>填写</td></tr><tr><td>修改传感器读数</td><td>填写</td><td>填写</td></tr><tr><td>让门锁无法响应</td><td>填写</td><td>填写</td></tr><tr><td>伪造设备位置</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>安全分析要从“发生了什么”走到“谁因此失去什么能力”</p></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">THREAT JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+<!-- speaker-notes
+参考判断：读取健康记录主要破坏机密性，后果是泄露，证据包括越权日志和通知记录；修改传感器读数主要破坏完整性，后果是错误模型输入，证据包括校验结果和对照数据；让门锁无法响应主要破坏可用性，后果是拒绝服务，证据包括人工开锁和恢复记录；伪造设备位置主要破坏完整性，也可能造成隐私风险，后果是错误调度，证据包括轨迹审计和设备身份。CIA 属性与附加隐私风险应分开记录。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 纵深安全控制</div>
+    <h2 class="slide-title">纵深防御：多层控制互相补位</h2>
+    <div class="slide-content"><p class="slide-lead">一层控制失效时，其他层仍应限制影响</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>控制相互补位：设备加固｜身份与密码｜访问与隔离｜应用校验｜监控与恢复 上方：安全纵深｜横向：运维责任｜下方：隐私生命周期</p></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-16-1/assets/previews/defense-in-depth-privacy-image2.webp" data-full-src="resources/decks/cciot-16-1/assets/defense-in-depth-privacy-image2.png" data-full-width="1448" data-full-height="1086" alt="设备、网络、应用和运维的纵深安全与隐私生命周期示意" tabindex="0" role="button" aria-label="放大图片：设备、网络、应用和运维的纵深安全与隐私生命周期示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">DEFENSE IN DEPTH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="c1b" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 纵深安全控制</div>
+    <h2 class="slide-title">纵深防御的四个责任面</h2>
+    <div class="slide-content"><p class="slide-lead">四个责任面不是四个顺序层级，运维横向贯穿</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">设备</h3><div class="key-value-value"><p>物理固定、安全封装、可信启动、签名固件、轻量密码和补丁</p></div></div><div class="key-value-item"><h3 class="key-value-key">信息</h3><div class="key-value-value"><p>加密、密钥、身份认证、完整性校验、访问控制和审计</p></div></div><div class="key-value-item"><h3 class="key-value-key">应用</h3><div class="key-value-value"><p>业务逻辑、异常检测、设备关系、危险动作保护和恢复</p></div></div><div class="key-value-item"><h3 class="key-value-key">运维</h3><div class="key-value-value"><p>最小权限、隔离、监控、灰度更新、回滚和事件响应</p></div></div></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>设备保护物理与启动；信息保护通信与数据；应用保护业务动作；运维持续验证与恢复</p></div></div></div></div>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">DEFENSE RESPONSIBILITIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 纵深安全控制</div>
+    <h2 class="slide-title">控制要与威胁类型相匹配</h2>
+    <div class="slide-content"><p class="slide-lead">“有密码”不能回答所有安全问题</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>设备被俘获</h3><p>用封装、可信启动、密钥保护、定位与远程锁定／清除降低物理风险</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>数据被窃听或篡改</h3><p>用加密、认证、完整性校验、隔离和审计保护传输与存储</p>
+<p>信息隐藏或数字水印可以隐藏敏感内容的存在或标记来源，但不能代替加密和完整性校验</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>控制必须有对象、条件、证据和失效后的补救，而不是只写技术名词</p></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">CONTROL MATCHING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 纵深安全控制</div>
+    <h2 class="slide-title">练习：为联网门锁补齐纵深防御</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 34% 37%"><colgroup><col style="width:29%"><col style="width:34%"><col style="width:37%"></colgroup><thead><tr><th>风险</th><th>请写控制</th><th>请写验证证据</th></tr></thead><tbody><tr><td>设备被拆解</td><td>填写</td><td>填写</td></tr><tr><td>弱口令登录</td><td>填写</td><td>填写</td></tr><tr><td>固件被替换</td><td>填写</td><td>填写</td></tr><tr><td>云端指令误发</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>纵深防御的验收标准是攻击发生时仍能限制动作、发现异常并恢复服务</p></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">CONTROL JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+<!-- speaker-notes
+参考判断：设备被拆解可用防拆封装、密钥保护和移动告警，验证传感器、日志和响应记录；弱口令登录可用强认证、最小权限和限次，验证登录、失败和授权日志；固件被替换可用签名、可信启动和版本回滚，验证启动校验、更新包和审计；云端指令误发可用指令认证、条件校验和人工接管，验证设备状态、确认和拒绝原因。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私生命周期</div>
+    <h2 class="slide-title">隐私保护跟着数据生命周期走</h2>
+    <div class="slide-content"><p class="slide-lead">采集、传输、分析和共享都可能改变个人信息的风险</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>示意路径：最小采集 → 传输／存储 → 受控分析 → 限制共享 回流与退出：缓存／备份／模型输入也要纳入控制；支持撤回、删除与复盘</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>采集</h3><p>限制传感器、阅读器、定位和健康模块的访问</p></article><article class="content-card emphasis-card" tabindex="0"><h3>传输／存储</h3><p>加密、认证、访问、保留和备份控制</p></article><article class="content-card emphasis-card" tabindex="0"><h3>分析／处理</h3><p>限制用途、第三方算力和中间结果暴露</p></article><article class="content-card emphasis-card" tabindex="0"><h3>发布／共享</h3><p>控制身份、精度、时间、空间和可关联性</p></article></div></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">PRIVACY BY DATA STAGE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私生命周期</div>
+    <h2 class="slide-title">每个阶段都有不同的最小化动作</h2>
+    <div class="slide-content"><p class="slide-lead">安全性、服务质量和个人控制需要一起权衡</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">采集</h3><div class="key-value-value"><p>目的限制、权限、物理阻断与可见告知</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">传输／存储</h3><div class="key-value-value"><p>加密、密钥、身份认证、完整性和访问记录</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">分析／处理</h3><div class="key-value-value"><p>分域、脱敏、受控计算和模型输入限制</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">发布／共享</h3><div class="key-value-value"><p>去标识化／匿名化、模糊、失真、保留期限、撤回和删除</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“服务需要数据”不是无限收集和长期保留的理由</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>位置服务需要精确到什么程度才够用？</p></div></div></div></aside>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">PRIVACY CONTROLS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私生命周期</div>
+    <h2 class="slide-title">练习：位置服务需要多精确？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 33% 37%"><colgroup><col style="width:30%"><col style="width:33%"><col style="width:37%"></colgroup><thead><tr><th>用途</th><th>请写最小必要信息</th><th>请写保护措施</th></tr></thead><tbody><tr><td>区域推荐</td><td>填写</td><td>填写</td></tr><tr><td>路线导航</td><td>填写</td><td>填写</td></tr><tr><td>紧急救援</td><td>填写</td><td>填写</td></tr><tr><td>长期分析</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>位置精度、时间范围和身份关联都应按用途最小化，而不是默认收集最细粒度</p></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">PRIVACY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+<!-- speaker-notes
+参考判断：区域推荐通常只需区域或模糊位置，可降低精度并限时访问；路线导航需要当前与目标位置，应加密、授权并短期保留；紧急救援在明确触发时可使用更精确的位置与时刻，但要审计并事后删除；长期分析可使用聚合趋势，并考虑去标识化、匿名或合成数据。精度和保留期限应随用途变化。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私计算与共享</div>
+    <h2 class="slide-title">隐私计算：减少原始数据暴露</h2>
+    <div class="slide-content"><p class="slide-lead">它减少原始数据暴露，但方法、输出和剩余风险不同</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>共同目标：减少原始数据暴露；方法、输出和剩余风险不同</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>同态加密</h3><p>在密文上进行特定计算，结果由持钥者解密</p></article><article class="content-card emphasis-card" tabindex="0"><h3>安全多方计算 MPC</h3><p>多方不公开各自输入，共同计算目标函数</p></article><article class="content-card emphasis-card" tabindex="0"><h3>联邦学习 Federated Learning</h3><p>各方本地训练并交换受控更新，原始数据不直接汇出</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>原始数据不直接外传，仍要保护身份、密钥、模型、更新、输出与参与关系</p></div></div>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">PRIVACY-PRESERVING COMPUTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私计算与共享</div>
+    <h2 class="slide-title">公开或共享数据时控制可识别性与精度</h2>
+    <div class="slide-content"><p class="slide-lead">服务质量和重识别风险需要一起评估</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>去标识化与匿名化</h3><p>移除或替换直接标识，降低与特定个人的直接关联</p>
+<p>仍要警惕组合信息和外部数据带来的重识别</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>失真、模糊与合成</h3><p>扰动数值、降低空间／时间精度，或生成保留统计特性的非真实数据</p>
+<p>需要验证分析价值和剩余隐私风险</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据共享不是“删掉姓名”就结束，而是要控制可关联性、精度、用途和生命周期</p></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">DATA RELEASE CONTROLS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 隐私计算与共享</div>
+    <h2 class="slide-title">练习：跨机构联合分析怎样少暴露？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 34% 36%"><colgroup><col style="width:30%"><col style="width:34%"><col style="width:36%"></colgroup><thead><tr><th>任务</th><th>请写初步思路</th><th>请写仍需检查</th></tr></thead><tbody><tr><td>公开区域趋势</td><td>填写</td><td>填写</td></tr><tr><td>医院联合训练</td><td>填写</td><td>填写</td></tr><tr><td>云端敏感统计</td><td>填写</td><td>填写</td></tr><tr><td>位置推荐</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择隐私技术时要说明保护的对象、攻击者、剩余信息和可接受的服务损失</p></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">PRIVACY TECH JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+<!-- speaker-notes
+参考判断：公开区域趋势可采用聚合、模糊或合成数据，但要检查小样本重识别和用途边界；医院联合训练可考虑联邦学习或安全多方计算，但要检查更新泄露、聚合和模型偏差；云端敏感统计可考虑同态或受控分域计算，但要检查计算成本、密钥和输出风险；位置推荐可降低精度并限时授权，但要检查服务质量、轨迹关联和撤回。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全隐私案例与治理</div>
+    <h2 class="slide-title">医疗物联网与位置服务：各自核对责任</h2>
+    <div class="slide-content"><p class="slide-lead">资产和业务后果不同，但都要核对控制、证据、响应、恢复与责任</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>资产／数据 → 风险与目的 → 控制与证据 → 响应／恢复 通知、申诉与责任复盘</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>医疗物联网</h3><p>设备控制、患者信息、医院网络和远程维护必须分层保护</p></article><article class="content-card emphasis-card" tabindex="0"><h3>基于位置的服务 LBS</h3><p>精确位置支撑服务，同时可能暴露家庭、工作和行为规律</p></article><article class="content-card emphasis-card" tabindex="0"><h3>共同核对项</h3><p>身份认证、最小权限、分区、加密、更新、接管、审计与恢复</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>案例评价要看安全控制、隐私边界、可用性、异常响应、告知与责任追踪</p></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">CASE LOOP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全隐私案例与治理</div>
+    <h2 class="slide-title">清单：控制、证据、恢复与责任</h2>
+    <div class="slide-content"><p class="slide-lead">从“有控制”走到“出事时能发现、能恢复、能说明”</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-text">资产／用途 → 风险 → 控制／最小化 → 证据 → 响应／恢复／申诉</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>资产</h3><p>设备、数据、服务、角色与保护目标</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>控制</h3><p>身份、访问、隔离、加密、更新、最小化</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>证据</h3><p>版本、权限、输入／输出、异常、用户选择</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>响应</h3><p>告警、接管、回滚、通知、删除、申诉与责任复盘</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>安全与隐私要同时留下控制、证据和恢复路径</p></div></div></div></aside>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">SECURITY PRIVACY CHECKLIST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 安全隐私案例与治理</div>
+    <h2 class="slide-title">练习：医疗设备上线前后要守住什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 34% 37%"><colgroup><col style="width:29%"><col style="width:34%"><col style="width:37%"></colgroup><thead><tr><th>阶段</th><th>请写关键控制</th><th>请写需要复核</th></tr></thead><tbody><tr><td>部署</td><td>填写</td><td>填写</td></tr><tr><td>使用</td><td>填写</td><td>填写</td></tr><tr><td>维护</td><td>填写</td><td>填写</td></tr><tr><td>事件</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>高风险物联网系统要让技术控制、业务流程和人的责任同时可见</p></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+<!-- speaker-notes
+参考判断：部署阶段可做设备加固、分区和身份配置，复核固件、默认配置和物理环境；使用阶段执行最小权限、加密和审计，复核临床动作、数据用途和异常；维护阶段使用签名更新、灰度和回滚，复核远程入口、停机保护和版本；事件阶段隔离、接管、通知和恢复，复核患者影响、证据、申诉与复盘。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">按资产、威胁、控制、证据和后果逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">边界：安全保护系统运行，隐私保护个人信息控制，两者互相支撑但不等同</span></li><li><span class="list-marker">02</span><span class="list-text">威胁：设备、信息、应用跨越物理世界与信息世界</span></li><li><span class="list-marker">03</span><span class="list-text">CIA：机密性、完整性、可用性把攻击连接到业务后果</span></li><li><span class="list-marker">04</span><span class="list-text">纵深：设备加固、密码、访问、隔离、更新、监控和恢复互补</span></li><li><span class="list-marker">05</span><span class="list-text">生命周期：采集、传输／存储、分析／处理、发布／共享各有隐私控制</span></li><li><span class="list-marker">06</span><span class="list-text">案例治理：医疗与位置服务需要最小化、复核、告知、响应、申诉和责任</span></li></ol></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-16-1/mindmap-16-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">物联网安全与隐私分别保护什么，为什么两者不能互相替代？</span></li><li><span class="question-no">02</span><span class="question-text">如何用机密性、完整性、可用性分析设备、信息和应用威胁？</span></li><li><span class="question-no">03</span><span class="question-text">设备加固、密码、访问控制、隔离、更新和审计如何形成纵深防御？</span></li><li><span class="question-no">04</span><span class="question-text">采集、传输／存储、分析／处理、发布／共享各阶段怎样做隐私最小化？</span></li><li><span class="question-no">05</span><span class="question-text">去标识化／匿名化、失真／模糊、合成数据与隐私计算各保护什么、还留下什么风险？</span></li><li><span class="question-no">06</span><span class="question-text">如何为医疗物联网或位置服务设计能发现、能恢复、能申诉、能追责的安全隐私闭环？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-15-1.html" title="上一节：15.1 数据与智能" aria-label="上一节：15.1 数据与智能">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">15.1</span>
+        <span class="nav-title">数据与智能</span>
+      </a>
+      <a class="exercise-link" href="cciot-16-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-17-1.html" title="下一节：17.1 物联网应用" aria-label="下一节：17.1 物联网应用">
+        <span class="nav-title">物联网应用</span>
+        <span class="nav-number">17.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

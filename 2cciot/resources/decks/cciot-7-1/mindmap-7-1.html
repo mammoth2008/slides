@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>体验云应用 · Mind Map</title>
+  <link rel="stylesheet" href="../../theme/fonts.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    html, body, #mindmap { width: 100%; height: 100%; background: #fff; }
+    html { font-synthesis: none; }
+    svg text, .markmap-foreign { font-family: "Course Source Han Sans", "Source Han Sans SC", sans-serif; color: #15232d; fill: #15232d; font-size: 24px; }
+    .markmap-foreign { line-height: 1.2; }
+    #mindmap .markmap-foreign strong { color: #a8542b; font-weight: inherit !important; }
+    .markmap-node > circle { fill: #a8542b; }
+    .markmap-link { stroke: rgba(21, 35, 45, .22); }
+  </style>
+</head>
+<body>
+  <svg id="mindmap"></svg>
+  <script src="../../../../resources/impress/vendor/markmap/d3.min.js"></script>
+  <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
+  <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
+  <script>
+    const tree = {"content":"体验云应用","children":[{"content":"云应用服务","children":[{"content":"任务：发布校园志愿活动帖","children":[]},{"content":"数据：正文进数据库，图片进对象存储","children":[]},{"content":"证据：实例、进程、入口与发帖结果","children":[]}]},{"content":"大数据处理","children":[{"content":"问题：哪个活动最受关注","children":[]},{"content":"4V：体量、速度、多样性与价值密度","children":[]},{"content":"流程：收集、去重、统一口径、统计与核对","children":[]}]},{"content":"AI 云应用","children":[{"content":"候选：活动标题、正文与配图","children":[]},{"content":"平台：接收输入并生成候选","children":[]},{"content":"人：核对事实、版权、隐私与发布","children":[]}]},{"content":"Web 应用架构","children":[{"content":"请求：浏览器、入口与应用实例","children":[]},{"content":"正文：用户、活动内容与发布时间","children":[]},{"content":"图片：对象地址与访问权限","children":[]}]},{"content":"高可用与弹性","children":[{"content":"负载均衡：请求分给健康实例","children":[]},{"content":"高可用：实例 A 故障后由 B 继续服务","children":[]},{"content":"弹性伸缩：报名高峰按策略增加实例","children":[]}]},{"content":"发布与回收","children":[{"content":"发布：发帖并由另一位用户再次读取","children":[]},{"content":"变化：停止 A，观察流量与帖子状态","children":[]},{"content":"回收：实例、监听器、记录、图片与权限","children":[]}]}]};
+    const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
+    const api = window.markmap;
+    window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);
+  </script>
+</body>
+</html>

@@ -1,460 +1,345 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>CCIOT | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="云计算与物联网课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CCIOT 12.1 定位与授时 | HUST</title>
+  <meta name="description" content="从时空三要素出发，理解几何、特征、航位推算与授时，并能按场景选择定位系统">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="云计算与物联网">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="12-1">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/cciot-12-1/assets/cover-positioning-time-image2.png" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">CCIOT · 12.1</div>
+      <h1>定位与授时</h1>
+      <p class="cover-description">用证据判断对象和事件的时空</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c121t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>12. 网络</h2>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c121t" data-rel-x="-2000" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 网络对物联网的价值
-
-- 提供必要连接能力, 实现设备互联与数据交换
-- 提供数据处理与分析的传输通道
-- 低延迟、高带宽提升系统效率与可靠性
-- 通过加密、认证、隔离等技术保护安全
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 网络的基本概念
-
-- 网络是图结构, 基本要素是节点与链路
-- 链路是有线或无线通信媒介
-- 信息传递采用逐跳中继方式
-- 传输路径称为路由
-- 信息流开始节点为源节点
-- 结束节点为目标节点或宿节点
-- 网络设备主要负责数据转发
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 网络的分类
-
-- 按通信媒介: 有线网络和无线网络
-- 按构建主体: 公用网和专用网
-- 按覆盖范围: 个域网、局域网、广域网
-- 互联网是"网络的网络"
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 有线网络特点
-
-- 信号能量约束在线缆附近
-- 单位距离损耗小、干扰小
-- 频率资源丰富、传输容量大
-- 受外界干扰小、可靠性强
-- 保密性与安全性好
-- 不足是敷设成本高、移动不便
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 无线网络特点
-
-- 信号能量向周围发散
-- 单位距离损耗大、存在干扰
-- 传输速率相对受限
-- 受天气影响大、安全性较弱
-- 优势是部署灵活、移动性好
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 公用网与专用网
-
-- 公用网由国家或运营商建设
-- 为任何人或设备提供服务
-- 专用网属于特定机构或组织
-- 仅为内部人员或设备服务
-- 强调高安全性、高可靠性和高管理性
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="c121t" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 个域网 (PAN)
-
-- 覆盖范围约10米
-- 服务个人设备间连接
-- 常采用无线方式(WPAN)
-- 要求便携性和低功耗
-- 用于健康监测、可穿戴设备、智能家电
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 局域网 (LAN)
-
-- 覆盖范围约100米~1千米
-- 园区级别如校园、企业
-- 数据传输速率高、延迟低
-- 适合邻近设备高速连接
-- 用于智能家居、智能工厂
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 广域网 (WAN)
-
-- 覆盖范围可达数千千米
-- 跨越国家或洲际
-- 移动通信网络和互联网属于广域网
-- 用于智能交通、精准农业、环境监测
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="c121t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 个域网技术特点
-
-- 强调短距离、低功耗、灵活移动
-- 常见技术: 蓝牙和ZigBee
-- 两者均工作在ISM开放频段
-- ISM频段可免费使用, 无需许可
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 蓝牙技术
-
-- 1998年由爱立信、英特尔、诺基亚提出
-- 希望统一短距离无线通信领域
-- 引入无线电测向技术, 支持室内定位
-- 应用于智能家居、智慧医疗
-- 常见设备: 耳机、音箱、手环、手表等
-- 通信距离通常10米内
-- 设备功率约1mW, 功耗很低
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### ZigBee技术
-
-- 2001年由飞利浦、摩托罗拉、三菱提出
-- 命名灵感来自蜜蜂ZigZag舞蹈
-- 2003年进入IEEE 802.15.4标准
-- 协调器: 网络核心, 每个网络仅一个
-- 路由器: 负责数据转发与路由发现
-- 终端节点: 数据采集和控制网元
-- 注重低功耗设计, 可进入睡眠模式
-- 自组织网络: 自动发现、动态路由
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 局域网技术特点
-
-- 实现家庭、园区、厂区设备互连
-- 与物联网应用场景地域范围吻合
-- 强调高传输速率或实时性和可靠性
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### Wi-Fi技术
-
-- 无线局域网技术, 已成为WLAN代名词
-- 允许电子设备通过无线信号交换数据
-- IEEE 802.11标准持续演进
-- 组网结构: BSS和ESS
-- 节点可自由移动并漫游
-- 优势: 灵活性、移动性、速率、经济性
-- 缺点: 功耗较大, 不适合电池供电
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 工业总线与工业以太网
-
-- 满足实时性、确定性、抗干扰、冗余性要求
-- 工业现场恶劣因素: 电磁干扰、物理障碍
-- 极端温湿度、振动撞击
-- CAN总线: 高可靠性、良好错误检测
-- 广泛应用汽车控制和恶劣工业环境
-- 工业以太网: 基于标准以太网优化
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="c121t" data-rel-x="4200" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 广域网特点
-
-- 连接大量局域网形成
-- 城市、地区、国家甚至世界级覆盖
-- 物联网重要基础设施
-- 使大连接、跨区域服务成为可能
-- 应用: 智能电网、智能物流、智能交通
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 移动通信网络技术
-
-- 通信双方在移动中交换信息
-- 不受空间限制, 灵活可靠
-- 技术挑战: 信号传播条件恶劣
-- 多径效应、噪声干扰、多普勒频移
-- 组网体制: 大区制和小区制
-- 大区制: 单基站覆盖20~50km
-- 功率大、系统简单、频率利用率低
-- 小区制: 主流技术, 服务区划分小区
-- 正六边形小区最优, 称蜂窝网络
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 5G
-
-- 峰值速率10Gbit/s以上
-- 延迟低至1ms, 4G为30~50ms
-- 支持每平方千米百万级设备连接
-- eMBB: 增强移动宽带
-- URLLC: 超可靠低延迟通信
-- mMTC: 大规模机器类通信
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 低功率广域网技术
-
-- 关键特性: 低功耗、长距离、低数据速率
-- 电池可运行多年
-- 单基站覆盖几km到几十km
-- 速率约1kbit/s
-- 设备和运营成本低
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="a19" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### NB-IoT技术
-
-- 构建于现有蜂窝网络
-- 占用180kHz带宽
-- 可直接部署于2G~5G系统
-- 利用现有蜂窝网天线和射频
-- 使用运营商授权频段
-- 低功耗, 深度覆盖
-- 地下车库、地下室也能连接
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### LoRa技术
-
-- 2009年法国Cycleo公司推出
-- 城镇传输2km~5km
-- 农村5km~15km
-- 需自行创建网络
-- 速率250bit/s~50kbit/s
-- 发射功率20mW
-- 多层加密保障安全
-
-        </div>
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### NB-IoT与LoRa比较
-
-- LoRa: 独立建网, ISM频段
-- 适合专用网络, 无运营费用
-- NB-IoT: 使用运营商网络, 授权频段
-- 依托基础设施, 高可靠性
-- 需支付费用, 但费用很低
-
-        </div>
-
-        <div id="mm121" class="step" data-rel-to="c121t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c12/mindmap-12-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c121q" class="step markdown" data-rel-to="c121t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 12. 网络
-
-- 请解释网络中的节点和链路的概念.
-- 有线网络和无线网络在灵活性、稳定性和安全性方面有何差异?
-- 请简述ZigBee网络中协调器、路由器和终端节点的功能区别.
-- Wi-Fi技术有哪些主要优点和缺点?
-- 请简述5G系统的三大应用场景及其特点.
-
-            ----
-
-            [ 11. 定位与授时](cciot-11-1.html#/overview)
-            [| 练习 |](cciot-exec.html)
-            [ 全景图](cciot-0.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节承接对象标识，先用对象（事件）—空间—时间三要素建立问题边界，再比较几何、特征、航位推算与同步方法，最后做系统选择和案例闭环
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">定位与授时要结合对象、空间、时间和证据</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用对象（事件）、空间与时间三要素描述定位和授时任务</span></li><li><span class="list-marker">02</span><span class="list-text">解释几何定位的锚节点、测量、方程与误差边界</span></li><li><span class="list-marker">03</span><span class="list-text">比较特征定位、指纹建图与航位推算的证据和代价</span></li><li><span class="list-marker">04</span><span class="list-text">说明晶振漂移、单向／双向同步和时间戳交换</span></li><li><span class="list-marker">05</span><span class="list-text">按室外、室内、无网络或动态环境选择系统组合</span></li><li><span class="list-marker">06</span><span class="list-text">将时空证据连接到行动、验证、安全与隐私治理</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/23</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 三要素与任务</div>
+    <h2 class="slide-title">定位与授时围绕三个基本要素展开</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-thinking" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-thinking.a70f0bf291e3.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>定位和授时，先要说清楚哪个要素？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先明确“谁／什么”“在哪里”“什么时候”</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>正—位置：对象／事件 → 空间 正—时间：对象／事件 → 时刻 反：空间＋时间 → 查询对象／事件或触发行动</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>对象／事件</h3><p>设备、车辆、人员或某次事件</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>空间</h3><p>绝对坐标，或区域、楼层、货架、相对方向</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>时间</h3><p>绝对时间基准，或相对启动、采样和另一事件的时刻</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>定位提供空间信息，授时提供可比较的时间基准；两者支持查询、排序和控制</p></div></div>
+    <div class="numeric-progress">3/23</div>
+    <div class="semantic-label">SPACE AND TIME</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 三要素与任务</div>
+    <h2 class="slide-title">同一组时空要素可以形成正问题或反问题</h2>
+    <div class="slide-content"><p class="slide-lead">区别在于系统是在“求位置／时间”，还是在“用时空找对象／触发动作”</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>正问题</h3><p>对象／事件 → 空间或时间</p>
+<p>导航更新车辆位置、记录设备采样时刻、判断事件发生地点</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>反问题</h3><p>空间 + 时间 → 对象／事件</p>
+<p>查找某时刻某区域的车辆，或在给定时刻让设备执行动作</p></article></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>输出不同</h3><p>全球坐标、楼层货架、事件时刻或持续时长</p></article><article class="content-card emphasis-card" tabindex="0"><h3>精度不同</h3><p>导航、仓储、人流计数和协同控制的容错不同</p></article><article class="content-card emphasis-card" tabindex="0"><h3>范围不同</h3><p>局部关联设备可以同步，不一定都要对齐全球时间</p></article></div></div></div>
+    <div class="numeric-progress">4/23</div>
+    <div class="semantic-label">POSITIVE AND INVERSE PROBLEMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 三要素与任务</div>
+    <h2 class="slide-title">练习：把场景还原成时空任务</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 25% 45%"><colgroup><col style="width:30%"><col style="width:25%"><col style="width:45%"></colgroup><thead><tr><th>场景</th><th>请写问题方向</th><th>请写关键要求</th></tr></thead><tbody><tr><td>车辆导航</td><td>填写</td><td>填写</td></tr><tr><td>仓库找货</td><td>填写</td><td>填写</td></tr><tr><td>两点测车速</td><td>填写</td><td>填写</td></tr><tr><td>车间协同动作</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div></div>
+    <div class="numeric-progress">5/23</div>
+    <div class="semantic-label">TASK JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.7391%"></div></div>
+<!-- speaker-notes
+参考判断：车辆导航是对象到空间，要求连续位置、室外覆盖和地图匹配；仓库找货是空间到对象，要求局部坐标、对象标识和查询时刻；两点测车速是由两个事件时刻反推出时间关系，两个传感器需要共享可比较的时间基准；车间协同动作是用时间条件触发事件，必须考虑执行器时序、延迟和失败保护。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 几何定位</div>
+    <h2 class="slide-title">几何定位先测量，再用关系求解位置</h2>
+    <div class="slide-content"><p class="slide-lead">锚节点位置已知，目标对象的位置待求解</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>左：距离／距离差 → 几何约束 → 求解位置 右：到达角 AoA 方向 → 几何约束 → 求解位置</p></div></div>
+<div class="component component-text text-inset"><p>距离／距离差与 AoA 都是测量证据，不是两个必经阶段；锚点分布、同步和误差会影响求解稳定性</p></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-12-1/assets/previews/positioning-geometry-image2.webp" data-full-src="resources/decks/cciot-12-1/assets/positioning-geometry-image2.png" data-full-width="1448" data-full-height="1086" alt="锚节点测量几何证据并求解目标位置的示意" tabindex="0" role="button" aria-label="放大图片：锚节点测量几何证据并求解目标位置的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">6/23</div>
+    <div class="semantic-label">GEOMETRIC LOCALIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.0870%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 几何定位</div>
+    <h2 class="slide-title">不同测量方式输出不同的几何证据</h2>
+    <div class="slide-content"><p class="slide-lead">测量方式决定证据类型；同步与对称条件决定约束是否可靠</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 43% 39%"><colgroup><col style="width:18%"><col style="width:43%"><col style="width:39%"></colgroup><thead><tr><th>方法</th><th>输入证据与同步前提</th><th>输出证据</th></tr></thead><tbody><tr><td>到达时间 TOA</td><td>单程传播时间；收发端共享足够准确的时间基准</td><td>传播时间 × 波速得到目标到锚点的距离</td></tr><tr><td>往返时间 RTT</td><td>往返传播时间与处理延迟；路径近似对称</td><td>换算目标到锚点的距离，可减弱两端未同步影响</td></tr><tr><td>到达时间差 TDoA</td><td>多个同步锚点比较到达时刻</td><td>目标到锚点的距离差</td></tr><tr><td>到达角 AoA</td><td>多天线比较到达差异</td><td>目标相对接收端的方向</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先问测量输出是什么，再问它能否提供足够独立的方程</p></div></div>
+    <div class="numeric-progress">7/23</div>
+    <div class="semantic-label">RANGE AND ANGLE EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 几何定位</div>
+    <h2 class="slide-title">练习：锚点多也不保证定位可靠</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-misconception" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-misconception.2ea5a9d1a007.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>锚点越多，定位就越可靠</p></div></div></div></aside>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 32% 36%"><colgroup><col style="width:32%"><col style="width:32%"><col style="width:36%"></colgroup><thead><tr><th>设计</th><th>请判断可能结果</th><th>请写优先检查</th></tr></thead><tbody><tr><td>三个锚点分布均匀</td><td>填写</td><td>填写</td></tr><tr><td>两个锚点几乎重合</td><td>填写</td><td>填写</td></tr><tr><td>四个以上锚点</td><td>填写</td><td>填写</td></tr><tr><td>只有一个单天线、无测角能力的接收端</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>更多观测只有在误差可控、几何分布合理且信息独立时才会转化为更好的定位</p></div></div>
+    <div class="numeric-progress">8/23</div>
+    <div class="semantic-label">GEOMETRY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.7826%"></div></div>
+<!-- speaker-notes
+参考判断：三个锚点分布均匀，约束区域通常更稳定，要检查距离误差与方程独立性；两个锚点几乎重合，信息近似重复，要检查几何条件与覆盖范围；四个以上锚点可以形成超定方程，要检查优化目标与异常测量；只有一个单天线、无测角能力且没有额外距离约束的同步接收端，只能得到有限关系。一个接收端若另有测角或其他距离证据，结论会不同。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 特征定位与航位推算</div>
+    <h2 class="slide-title">特征定位把环境差异做成位置指纹</h2>
+    <div class="slide-content"><p class="slide-lead">它不直接解几何方程，而是把观测特征与环境地图匹配</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>离线：已知位置采集特征 → 建立环境—位置地图／模型 在线：采集未知特征 → 匹配／预测位置</p></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">特征来源</h3><div class="key-value-value"><p>Wi-Fi 或 RFID 信号特征，以及地磁、图像、气压等与位置相关的信号或物理量</p></div></div><div class="key-value-item"><h3 class="key-value-key">建图阶段</h3><div class="key-value-value"><p>在已知位置采样并保存特征向量与坐标</p></div></div><div class="key-value-item"><h3 class="key-value-key">定位阶段</h3><div class="key-value-value"><p>查找最近记录，或用监督学习／K 近邻 KNN 模型预测坐标</p></div></div><div class="key-value-item"><h3 class="key-value-key">失效边界</h3><div class="key-value-value"><p>环境变化、设备差异、样本覆盖和维护成本会改变映射</p></div></div></div></div></div>
+    <div class="numeric-progress">9/23</div>
+    <div class="semantic-label">FEATURE FINGERPRINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 特征定位与航位推算</div>
+    <h2 class="slide-title">特征定位与航位推算：地图与运动证据</h2>
+    <div class="slide-content"><p class="slide-lead">两种方法都要说明证据如何失效、如何校正</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>特征定位</h3><p>把采集到的信号、地磁、图像或气压与地图中的记录匹配</p>
+<p>需要现场建图，动态环境会让旧指纹失效</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>航位推算</h3><p>从已知起点出发，用步数、距离、方向、加速度计、罗盘和陀螺仪迭代位置</p>
+<p>不依赖持续外部信号，但误差会随路径累积</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>室内或隧道可组合两者与外部校正，降低单一证据的长期漂移</p></div></div>
+    <div class="numeric-progress">10/23</div>
+    <div class="semantic-label">FINGERPRINT OR DEAD RECKONING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 特征定位与航位推算</div>
+    <h2 class="slide-title">练习：没有卫星信号时怎么选证据？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>场景</th><th>请选择优先方案</th><th>请写主要边界</th></tr></thead><tbody><tr><td>固定仓库货架</td><td>填写</td><td>填写</td></tr><tr><td>有锚点的 AGV</td><td>填写</td><td>填写</td></tr><tr><td>地下停车场步行</td><td>填写</td><td>填写</td></tr><tr><td>临时移动设备</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选方案时要同时写出可获得的证据、准备成本和失效后的校正路径</p></div></div>
+    <div class="numeric-progress">11/23</div>
+    <div class="semantic-label">EVIDENCE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.8261%"></div></div>
+<!-- speaker-notes
+参考判断：固定仓库货架优先考虑 Wi-Fi／RFID 指纹，边界是货架、货物和环境变化会要求更新地图；有锚点的 AGV 优先考虑几何测距，边界是锚点布置、遮挡和测量噪声；地下停车场步行可用航位推算并配合校正，边界是起点误差和累计漂移；临时移动设备适合组合方法，边界是能耗、部署速度和可维护性。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 授时与时钟同步</div>
+    <h2 class="slide-title">时钟漂移让事件难比较</h2>
+    <div class="slide-content"><p class="slide-lead">晶体振荡器（晶振）的频率会漂移；网络延迟会影响时间戳比较</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>频率偏差</h3><p>晶体振荡器（晶振）的实际频率与标称值有差异</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>环境变化</h3><p>温度、供电和工作状态改变计时行为</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>传输延迟</h3><p>传播、排队、射频处理和中断响应都会改变时间戳到达时刻</p></article></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>独立时钟 → 漂移或传输延迟 → 时间戳难比较 → 同步与误差评估</p></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>授时不是一次性设置时间，而是持续维护关联设备可比较的时间基准</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-astonished" data-character-edge="right" data-character-along="48" data-character-exposure="70" data-character-scale="0.9" style="--character-along:48%;--character-exposure:70;--character-hidden:30%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-astonished.6c5886ef2779.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>时钟一漂移，事件先后都可能反过来</p></div></div></div></aside>
+    <div class="numeric-progress">12/23</div>
+    <div class="semantic-label">CLOCK DRIFT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 授时与时钟同步</div>
+    <h2 class="slide-title">单向简单，双向可估计偏差和链路延迟</h2>
+    <div class="slide-content"><p class="slide-lead">选择同步方式要看误差后果和链路条件</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>单向同步</h3><p>发送端传时间戳，接收端校准；传播、排队和处理延迟难完全分离。参考广播可减弱发送端处理延迟，仍受传播与接收影响</p></article></div>
+<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>双向同步</h3><p>A 发 t₁ → B 收 t₂ → B 发 t₃ → A 收 t₄；利用近似对称往返估计时钟偏差和链路延迟，可重复测量取平均</p></article></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-12-1/assets/previews/time-synchronization-image2.webp" data-full-src="resources/decks/cciot-12-1/assets/time-synchronization-image2.png" data-full-width="1448" data-full-height="1086" alt="单向和双向时间同步中时钟偏差与链路延迟的示意" tabindex="0" role="button" aria-label="放大图片：单向和双向时间同步中时钟偏差与链路延迟的示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">13/23</div>
+    <div class="semantic-label">ONE-WAY AND TWO-WAY SYNC</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 授时与时钟同步</div>
+    <h2 class="slide-title">练习：时间误差会改变什么？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 31% 37%"><colgroup><col style="width:32%"><col style="width:31%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请写需要比较的时间</th><th>请写失步后果</th></tr></thead><tbody><tr><td>住宅温度采样</td><td>填写</td><td>填写</td></tr><tr><td>人流方向计数</td><td>填写</td><td>填写</td></tr><tr><td>车辆途经时长</td><td>填写</td><td>填写</td></tr><tr><td>车间协同动作</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同步范围和精度应由测量、排序、控制或审计的后果倒推</p></div></div>
+    <div class="numeric-progress">14/23</div>
+    <div class="semantic-label">TIMING JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
+<!-- speaker-notes
+参考判断：住宅温度采样通常比较周期与大致时刻，失步会造成趋势分析的时间标签偏移；人流方向计数要比较两个传感器的先后，失步可能导致进出方向判断错误；车辆途经时长要比较两个地点的事件时刻，失步会使速度计算失真；车间协同动作要比较执行器相对时序，失步可能造成动作冲突或设备风险。
+-->
+  </section>
+<section id="e1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 定位系统选择</div>
+    <h2 class="slide-title">典型系统是环境约束下的组合选择</h2>
+    <div class="slide-content"><p class="slide-lead">覆盖、能耗、基础设施和可验证性共同决定方案</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 34% 43%"><colgroup><col style="width:23%"><col style="width:34%"><col style="width:43%"></colgroup><thead><tr><th>系统</th><th>适合条件</th><th>主要边界</th></tr></thead><tbody><tr><td>卫星导航</td><td>开阔室外，需要定位、授时或测速</td><td>室内、隧道、水下受遮挡；终端能耗需管理</td></tr><tr><td>蜂窝定位</td><td>有移动通信覆盖，室内外都可能使用</td><td>覆盖和基础设施决定可用性与精细程度</td></tr><tr><td>室内定位</td><td>仓储、商场、医院等局部空间</td><td>多径、遮挡、指纹维护与锚点部署</td></tr><tr><td>网络时间协议 NTP</td><td>客户端可访问层级化时间源</td><td>延迟、上游可信度和断网需要处理</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>定位结果不等于正确、安全或获准使用；还要核对标识、回传、同步、环境和验证</p></div></div>
+    <div class="numeric-progress">15/23</div>
+    <div class="semantic-label">SYSTEM FIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.2174%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 定位系统选择</div>
+    <h2 class="slide-title">定位与授时如何选择系统</h2>
+    <div class="slide-content"><p class="slide-lead">系统选择取决于环境、证据、资源和后果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>环境</h3><p>室外、室内、地下、海上或动态变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>证据</h3><p>锚点、信号指纹、运动传感器或权威时钟</p></article><article class="content-card emphasis-card" tabindex="0"><h3>资源</h3><p>能耗、带宽、终端算力、部署和维护</p></article><article class="content-card emphasis-card" tabindex="0"><h3>后果</h3><p>误差对导航、调度、控制、安全和隐私的影响</p></article></div>
+<div class="component component-text text-panel"><div class="reading-panel"><p>场景 → 证据 → 系统组合 误差验证 → 失效与恢复</p></div></div></div></div>
+    <div class="numeric-progress">16/23</div>
+    <div class="semantic-label">CHOICE DIMENSIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.5652%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 定位系统选择</div>
+    <h2 class="slide-title">练习：为场景选择一条可验证的路径</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 34% 39%"><colgroup><col style="width:27%"><col style="width:34%"><col style="width:39%"></colgroup><thead><tr><th>场景</th><th>请选择初步组合</th><th>请写还要验证的内容</th></tr></thead><tbody><tr><td>草原牧场</td><td>填写</td><td>填写</td></tr><tr><td>城市仓库</td><td>填写</td><td>填写</td></tr><tr><td>地下隧道</td><td>填写</td><td>填写</td></tr><tr><td>远海渔船</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每个方案都要写出“证据从哪里来、结果如何回传、失效时做什么”</p></div></div>
+    <div class="numeric-progress">17/23</div>
+    <div class="semantic-label">SYSTEM JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.9130%"></div></div>
+<!-- speaker-notes
+参考判断：草原牧场可选卫星定位、通信和越界规则，检查覆盖、项圈能耗和告警回传；城市仓库可选几何或指纹加局部网络，检查锚点／地图维护、遮挡和对象绑定；地下隧道可选航位推算加间歇校正，检查起点、漂移、校正信号和安全停机；远海渔船可选卫星定位加卫星通信，检查无移动网络时的定位、求救和隐私。
+-->
+  </section>
+<section id="f1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 时空案例与治理</div>
+    <h2 class="slide-title">三个案例用同一套时空判断结构</h2>
+    <div class="slide-content"><p class="slide-lead">设备不同，判断结构相同</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>对象标识 → 时空证据 → 回传／同步 决策动作 → 误差／隐私复核</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>数字牧场</h3><p>项圈中的卫星终端持续报告位置，越界规则触发告警</p></article><article class="content-card emphasis-card" tabindex="0"><h3>室内 AGV</h3><p>标签固定；同一台 AGV 在多个已知位置测距，约束独立性取决于位置分布</p></article><article class="content-card emphasis-card" tabindex="0"><h3>定位鞋</h3><p>惯性测量单元 IMU 与步态估计在地下或隧道中延续位置，外部校正抑制漂移</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>案例的核心不是记住产品，而是检查对象标识、证据、行动和复核</p></div></div>
+    <div class="numeric-progress">18/23</div>
+    <div class="semantic-label">CASE LOOP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.2609%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 时空案例与治理</div>
+    <h2 class="slide-title">用一张清单检查时空系统是否可用</h2>
+    <div class="slide-content"><p class="slide-lead">从“得到位置”走到“结果值得使用”</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-text">对象标识 → 定位／授时证据 → 回传与存储 → 决策动作 → 误差、权限与隐私复核</code></pre></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>对象</h3><p>确认被定位或计时的目标，以及标识是否仍然有效</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>证据</h3><p>说明测量、指纹、运动或同步来源与假设</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>行动</h3><p>定义查询、调度、告警、控制和人工复核</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>治理</h3><p>限制采集、访问、保留、共享和异常追责</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>时空系统可用，不只看算法，还要看误差、覆盖与治理</p></div></div></div></aside>
+    <div class="numeric-progress">19/23</div>
+    <div class="semantic-label">ENGINEERING CHECKLIST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.6087%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 时空案例与治理</div>
+    <h2 class="slide-title">练习：轨迹数据应该保留到什么程度？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 33% 38%"><colgroup><col style="width:29%"><col style="width:33%"><col style="width:38%"></colgroup><thead><tr><th>用途</th><th>请写最小必要记录</th><th>请写仍需保护的内容</th></tr></thead><tbody><tr><td>越界告警</td><td>填写</td><td>填写</td></tr><tr><td>仓库调度</td><td>填写</td><td>填写</td></tr><tr><td>隧道导航</td><td>填写</td><td>填写</td></tr><tr><td>事件审计</td><td>填写</td><td>填写</td></tr></tbody></table></div></div></div></div>
+    <div class="numeric-progress">20/23</div>
+    <div class="semantic-label">PRIVACY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.9565%"></div></div>
+<!-- speaker-notes
+参考判断：越界告警至少需要对象、区域、时刻和告警状态，同时保护访问权限、误报复核和保留期限；仓库调度至少需要设备、货位和任务阶段，同时保护运维身份、历史轨迹和内部权限；隧道导航至少需要起点、相对位移和校正状态，同时保护个人绑定、失败恢复和安全停机；事件审计至少需要事件时刻、来源和证据摘要，同时保护原始轨迹、共享范围和撤销机制。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">分析定位与授时时，按任务、证据、同步、系统和后果逐项判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">三要素：对象／事件、空间、时间构成正问题与反问题</span></li><li><span class="list-marker">02</span><span class="list-text">几何定位：锚节点测距或测角，再用方程与几何条件求解</span></li><li><span class="list-marker">03</span><span class="list-text">特征与航位：指纹依赖环境地图，航位推算依赖起点和运动校正</span></li><li><span class="list-marker">04</span><span class="list-text">授时同步：漂移与延迟需要单向或双向时间戳交换</span></li><li><span class="list-marker">05</span><span class="list-text">系统选择：卫星、蜂窝、室内定位与 NTP 各有覆盖和失效边界</span></li><li><span class="list-marker">06</span><span class="list-text">工程治理：对象标识、时空证据、行动、误差验证和隐私共同闭环</span></li></ol></div></div></div>
+    <div class="numeric-progress">21/23</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-12-1/mindmap-12-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">22/23</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.6522%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">CCIOT <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">对象／事件、空间和时间如何构成定位与授时的正问题、反问题？</span></li><li><span class="question-no">02</span><span class="question-text">TOA、往返时间、TDoA 和 AoA 各自需要什么同步条件，输出什么证据？</span></li><li><span class="question-no">03</span><span class="question-text">特征定位为什么需要离线建图，航位推算为什么必须考虑累计误差？</span></li><li><span class="question-no">04</span><span class="question-text">单向与双向时间同步怎样处理传播、排队和处理延迟？</span></li><li><span class="question-no">05</span><span class="question-text">室外、室内、地下和无网络场景应如何选择定位与授时系统？</span></li><li><span class="question-no">06</span><span class="question-text">如何把对象标识、时空证据、行动、误差验证和轨迹隐私放进同一条工程闭环？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="cciot-11-1.html" title="上一节：11.1 标识技术" aria-label="上一节：11.1 标识技术">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">11.1</span>
+        <span class="nav-title">标识技术</span>
+      </a>
+      <a class="exercise-link" href="cciot-12-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="cciot-13-1.html" title="下一节：13.1 物联网网络" aria-label="下一节：13.1 物联网网络">
+        <span class="nav-title">物联网网络</span>
+        <span class="nav-number">13.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">23/23</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>
