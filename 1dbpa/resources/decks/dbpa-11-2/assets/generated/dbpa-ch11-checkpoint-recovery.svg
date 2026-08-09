@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">检查点前后事务的恢复分类</title>
+  <desc id="desc">T1 在检查点前提交不需重做，T2 和 T4 在检查点后故障前提交需要重做，T3 和 T5 在故障时未完成需要撤销。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .undo { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 8; }
+      .redo { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 8; }
+      .done { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 8; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .bar { stroke: #7890a5; stroke-width: 12; stroke-linecap: round; }
+      .line { stroke: #7890a5; stroke-width: 2; }
+      .marker { stroke: #25364a; stroke-width: 3; stroke-dasharray: 7 6; }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">检查点把事务分成三类：不重做、重做、撤销</text>
+  <rect class="panel" x="45" y="105" width="1110" height="475"/>
+  <text class="label" x="120" y="155">事务</text>
+  <text class="text" x="340" y="150">检查点 C</text><text class="text" x="980" y="150">故障 F</text>
+  <line class="marker" x1="500" y1="170" x2="500" y2="535"/><line class="marker" x1="1030" y1="170" x2="1030" y2="535"/>
+  <line class="line" x1="200" y1="180" x2="1080" y2="180"/>
+  <text class="text" x="240" y="205">开始</text><text class="text" x="820" y="205">提交</text>
+
+  <text class="label" x="110" y="260">T₁</text><line class="bar" x1="220" y1="255" x2="445" y2="255"/><circle cx="445" cy="255" r="8" fill="#7890a5"/>
+  <rect class="done" x="710" y="225" width="300" height="52"/><text class="label" x="860" y="247">检查点前提交</text><text class="text" x="860" y="268">不必 REDO</text>
+
+  <text class="label" x="110" y="325">T₂</text><line class="bar" x1="220" y1="320" x2="850" y2="320"/><circle cx="850" cy="320" r="8" fill="#8d7bb8"/>
+  <rect class="redo" x="710" y="290" width="300" height="52"/><text class="label" x="860" y="312">检查点后提交</text><text class="text" x="860" y="333">可能尚未落盘 → REDO</text>
+
+  <text class="label" x="110" y="390">T₃</text><line class="bar" x1="220" y1="385" x2="1030" y2="385"/><circle cx="1030" cy="385" r="8" fill="#d49a61"/>
+  <rect class="undo" x="710" y="355" width="300" height="52"/><text class="label" x="860" y="377">故障时未完成</text><text class="text" x="860" y="398">撤销更新 → UNDO</text>
+
+  <text class="label" x="110" y="455">T₄</text><line class="bar" x1="540" y1="450" x2="900" y2="450"/><circle cx="900" cy="450" r="8" fill="#8d7bb8"/>
+  <rect class="redo" x="710" y="420" width="300" height="52"/><text class="label" x="860" y="442">检查点后开始并提交</text><text class="text" x="860" y="463">需要 REDO</text>
+
+  <text class="label" x="110" y="520">T₅</text><line class="bar" x1="540" y1="515" x2="1030" y2="515"/><circle cx="1030" cy="515" r="8" fill="#d49a61"/>
+  <rect class="undo" x="710" y="485" width="300" height="52"/><text class="label" x="860" y="507">检查点后开始，未完成</text><text class="text" x="860" y="528">需要 UNDO</text>
+
+  <text class="text" x="55" y="625">恢复时：从最后检查点开始扫描日志；活动事务先进入 UNDO-LIST，遇到提交标记再移入 REDO-LIST。</text>
+</svg>

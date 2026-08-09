@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">辅助索引与指针桶</title>
+  <desc id="desc">重复的专业值通过指针桶连接多条记录，两个辅助索引得到的指针集合可以求交。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 18; }
+      .idx { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .bucket { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 12; }
+      .row { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .result { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 14; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">重复值不重复存入口，用指针桶接住多条记录</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="255"/>
+  <text class="label" x="150" y="155">Smajor 辅助索引</text>
+  <rect class="idx" x="75" y="205" width="150" height="70"/>
+  <text class="text" x="150" y="235">计算机科学</text>
+  <text class="text" x="150" y="258">→ B17</text>
+  <rect class="bucket" x="315" y="180" width="240" height="120"/>
+  <text class="label" x="435" y="220">指针桶 B17</text>
+  <text class="text" x="435" y="252">T03　T08　T12　T19</text>
+  <path class="arrow" d="M225 240 H310"/>
+  <rect class="row" x="650" y="180" width="150" height="55"/>
+  <rect class="row" x="650" y="245" width="150" height="55"/>
+  <text class="text" x="725" y="213">T03：学生记录</text>
+  <text class="text" x="725" y="278">T08：学生记录</text>
+  <path class="arrow" d="M555 220 C595 220 605 205 645 205"/>
+  <path class="arrow" d="M555 260 C595 260 605 275 645 275"/>
+
+  <rect class="panel" x="45" y="400" width="1110" height="220"/>
+  <text class="label" x="150" y="450">Sbirthdate 辅助索引</text>
+  <rect class="idx" x="75" y="490" width="150" height="70"/>
+  <text class="text" x="150" y="520">2002-01-01</text>
+  <text class="text" x="150" y="543">→ B22</text>
+  <rect class="bucket" x="315" y="465" width="240" height="120"/>
+  <text class="label" x="435" y="505">指针桶 B22</text>
+  <text class="text" x="435" y="537">T03　T14　T27</text>
+  <path class="arrow" d="M225 525 H310"/>
+  <rect class="result" x="700" y="465" width="300" height="120"/>
+  <text class="label" x="850" y="505">两个指针集合求交</text>
+  <text class="text" x="850" y="540">{T03,T08,T12,T19}</text>
+  <text class="text" x="850" y="565">∩ {T03,T14,T27} = {T03}</text>
+  <path class="arrow" d="M555 525 H695"/>
+  <text class="small" x="75" y="665">索引项只负责找到桶，桶中的指针再定位基本表记录</text>
+</svg>

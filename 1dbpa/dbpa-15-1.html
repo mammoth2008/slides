@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 15.1 大数据特征与键值、文档数据库 | HUST</title>
+  <meta name="description" content="从 4V 和访问模式推导键值与文档模型">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="15-1">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-15-1/assets/dbpa-15-1.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 15.1</div>
+      <h1>大数据特征与键值、文档数据库</h1>
+      <p class="cover-description">从数据特征与访问模式推导管理模型</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元从 4V 开始，经过访问模式和索引取舍，落到键值接口、文档模型和 MongoDB 集群。
+封面图用于建立大数据模型与系统路线的主题，不作为具体架构证据。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">根据 4V 识别数据管理压力</span></li><li><span class="list-marker">02</span><span class="list-text">用 GET、SET、SCAN 和 DELETE 表达点查、更新和范围访问</span></li><li><span class="list-marker">03</span><span class="list-text">按点查、范围查和写入比例比较哈希、有序索引和 LSM-tree</span></li><li><span class="list-marker">04</span><span class="list-text">解释文档嵌套与模式灵活性带来的应用维护责任</span></li><li><span class="list-marker">05</span><span class="list-text">追踪 MongoDB 请求从路由到分片与结果聚合的路径</span></li><li><span class="list-marker">06</span><span class="list-text">根据数据形态、访问模式和系统代价选择管理模型</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/13</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.3846%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">4V 让大数据成为管理压力</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要数据量够大，另外三个 V 就不用管了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">数据量、类型、速度和价值分别改变存储、建模、响应与服务要求</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-1/assets/generated/dbpa-ch15-nosql-models-image2.png" data-full-src="resources/decks/dbpa-15-1/assets/generated/dbpa-ch15-nosql-models-image2.png" alt="第 15 章键值、文档、图和时序模型的总览关系" tabindex="0" role="button" aria-label="放大图片：第 15 章键值、文档、图和时序模型的总览关系" decoding="async"><figcaption>数据模型总览与 4V 管理压力</figcaption></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>数据量 Volume</h3><p>规模持续膨胀 → 需要分布式存储与横向扩展</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据多样性 Variety</h3><p>结构化、半结构化和非结构化并存 → 需要多种模型与接口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>到达速度 Velocity</h3><p>数据到达快且响应时限短 → 需要高吞吐与低延迟处理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>潜在价值 Value</h3><p>价值要通过处理、分析或服务转化 → 需要把数据接入业务流程</p></article></div></div></div>
+    <div class="numeric-progress">3/13</div>
+    <div class="semantic-label">4V</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.0769%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">大数据系统的架构倾向</h2>
+    <div class="slide-content"><p class="slide-lead">不同系统在部署、架构、数据质量和扩展上的典型差异</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>维度</th><th>典型关系系统倾向</th><th>典型大数据系统倾向</th></tr></thead><tbody><tr><td>部署</td><td>常见单机或有限集群</td><td>常见多节点集群</td></tr><tr><td>架构</td><td>部分系统紧耦合</td><td>部分系统存算分离或松耦合</td></tr><tr><td>数据质量</td><td>约束更多集中在数据库</td><td>约束与清洗职责更分散</td></tr><tr><td>扩展</td><td>纵向扩展或受限横向扩展</td><td>横向与弹性扩展更常见</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>放宽前置模式或完整性约束后，数据质量责任会更多落在采集、平台与应用治理</p>
+<p>数据真实性 veracity 也是常见扩展维度；4V 可作为大数据特征的主要分析框架</p></div></div></div>
+    <div class="numeric-progress">4/13</div>
+    <div class="semantic-label">BIG DATA SYSTEM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.7692%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">键值模型用可定位的键连接访问与数据</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="68" data-character-exposure="60" data-character-scale="0.9" style="--character-along:68%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>值只能是一段简单字符串，不能保存对象吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先把键的定位职责与值的内容职责分开，再判断具体查询能力</p>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="student:2021001　→　{ name, grade }　→　GET／SET／DELETE"><span class="relation-term">student:2021001</span><span class="relation-operator">→</span><span class="relation-term">{ name, grade }</span><span class="relation-operator">→</span><span class="relation-term">GET／SET／DELETE</span></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>范围扫描不是所有键值系统的共同能力；通常需要有序键值组织或具体系统提供的范围接口</p></div></div></div>
+    <div class="numeric-progress">5/13</div>
+    <div class="semantic-label">KEY VALUE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.4615%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">键值接口把访问模式直接暴露出来</h2>
+    <div class="slide-content"><p class="slide-lead">接口简单不等于每一种访问都同样便宜</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 31% 23% 23%"><colgroup><col style="width:23%"><col style="width:31%"><col style="width:23%"><col style="width:23%"></colgroup><thead><tr><th>接口</th><th>课程中的抽象含义</th><th>典型访问</th><th>条件或边界</th></tr></thead><tbody><tr><td><code>GET(key)</code></td><td>按键读取一个值</td><td>点查询</td><td>需要可定位键</td></tr><tr><td><code>SET(key,value)</code></td><td>插入或更新键值对</td><td>写入或状态更新</td><td>写入语义由系统定义</td></tr><tr><td><code>SCAN(key,count)</code></td><td>从起点读取若干键</td><td>连续读取</td><td>具体接口可能不同</td></tr><tr><td><code>SCAN(key1,key2)</code></td><td>读取键范围</td><td>范围访问</td><td>通常依赖有序组织</td></tr><tr><td><code>DELETE(key)</code></td><td>删除键值对</td><td>生命周期管理</td><td>删除和回收语义由系统定义</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>点查、范围查和写入需求决定接口与索引选择</p></div></div>
+    <div class="numeric-progress">6/13</div>
+    <div class="semantic-label">KEY VALUE API</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.1538%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">组织结构决定键值数据库的访问边界</h2>
+    <div class="slide-content"><p class="slide-lead">点查、范围查和写入吞吐不能只看一个指标</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>组织结构</th><th>通常擅长</th><th>局限或代价</th></tr></thead><tbody><tr><td>哈希</td><td>按键点查与更新</td><td>不擅长按键顺序的范围访问</td></tr><tr><td>B／B+ 树</td><td>点查和范围查</td><td>更新可能带来外存随机写成本</td></tr><tr><td>LSM-tree</td><td>写入较多的工作负载</td><td>读取可能跨层搜索，后台合并会增加读写放大</td></tr></tbody></table></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="写入　→　MemTable　→　Immutable MemTable　→　外存分层　→　后台合并"><span class="relation-term">写入</span><span class="relation-operator">→</span><span class="relation-term">MemTable</span><span class="relation-operator">→</span><span class="relation-term">Immutable MemTable</span><span class="relation-operator">→</span><span class="relation-term">外存分层</span><span class="relation-operator">→</span><span class="relation-term">后台合并</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>LSM-tree 以写入路径和后台合并换取吞吐，具体性能仍取决于负载和实现</p></div></div>
+    <div class="numeric-progress">7/13</div>
+    <div class="semantic-label">INDEX CHOICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.8462%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">文档模型保留嵌套结构</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>同一集合里的字段不同，就是坏数据吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">结构可演进，但解释、校验和迁移责任更多在应用</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-json">[
+  {"_id":"s1","name":"Wang","major":"IMIS"},
+  {"_id":"s2","name":"Li","phones":{"main":"..."}}
+]</code></pre></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>两个文档可以有不同字段；缺失字段不自动等于错误</p></div></div></div>
+    <div class="numeric-progress">8/13</div>
+    <div class="semantic-label">DOCUMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.5385%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">MongoDB 文档集群的三类服务器</h2>
+    <div class="slide-content"><p class="slide-lead">请求先由路由端定位目标分片，再返回单片结果或聚合结果</p>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="应用请求　→　路由服务器　→　目标分片读写　→　返回或聚合结果 配置服务器维护路由所需的集群元信息，不承载业务数据"><span class="relation-term">应用请求</span><span class="relation-operator">→</span><span class="relation-term">路由服务器</span><span class="relation-operator">→</span><span class="relation-term">目标分片读写</span><span class="relation-operator">→</span><span class="relation-term">返回或聚合结果 配置服务器维护路由所需的集群元信息，不承载业务数据</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>分片服务器</h3><p>保存数据子集；实际部署可由副本集承载</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>配置服务器</h3><p>保存分片范围和集群元信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>路由服务器</h3><p>接收请求、转发并聚合结果；本身不保存业务数据</p></article></div></div></div>
+    <div class="numeric-progress">9/13</div>
+    <div class="semantic-label">MONGODB CLUSTER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.2308%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
+    <h2 class="slide-title">模式自由仍需应用维护结构</h2>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.c78a923d637f.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>没有固定模式，应用就不必维护结构</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">集合像表、文档像记录只是帮助理解的类比，不是严格等价</p>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="字段变化　→　文档结构灵活　→　应用解释与校验　→　版本兼容、索引和迁移责任上升"><span class="relation-term">字段变化</span><span class="relation-operator">→</span><span class="relation-term">文档结构灵活</span><span class="relation-operator">→</span><span class="relation-term">应用解释与校验</span><span class="relation-operator">→</span><span class="relation-term">版本兼容、索引和迁移责任上升</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>文档数据库适合结构变化快或嵌套内容多的场景；关键事务与一致性仍需单独评估</p></div></div>
+    <div class="numeric-progress">10/13</div>
+    <div class="semantic-label">SCHEMA FLEXIBILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.9231%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">数据形态、访问模式与系统代价</h2>
+    <div class="slide-content"><p class="slide-lead">选择键值或文档模型要先明确访问方式、写入方式和扩展需求</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>4V 与压力</h3><p>数据量、类型、速度和价值改变存储、建模、响应与服务要求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>键值接口</h3><p>GET、SET、SCAN、DELETE 把点查、更新和范围访问直接呈现出来</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>索引取舍</h3><p>哈希、有序索引和 LSM-tree 分别回应点查、范围查和写入压力</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>文档与集群</h3><p>嵌套灵活性、应用维护和路由分片共同决定系统边界</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据形态 → 访问模式 → 模型与索引 → 集群路由与系统代价</p></div></div>
+    <div class="numeric-progress">11/13</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.6154%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-15-1/mindmap-15-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">12/13</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.3077%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单、日志、资料、传感器数据分别体现哪些 4V 压力？</span></li><li><span class="question-no">02</span><span class="question-text">学生记录如何选择键和值？如何执行点查、更新和范围扫描？</span></li><li><span class="question-no">03</span><span class="question-text">点查与时间范围扫描分别优先哪类索引？为什么？</span></li><li><span class="question-no">04</span><span class="question-text">档案字段变化且文档结构不同，模式灵活带来什么收益与责任？</span></li><li><span class="question-no">05</span><span class="question-text">MongoDB 请求中，路由服务器、配置服务器和分片服务器各做什么？</span></li><li><span class="question-no">06</span><span class="question-text">高吞吐写入兼顾范围访问时，哈希、有序索引和 LSM-tree 如何取舍？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-14-3.html" title="上一节：14.3 分布式、云原生与数据库发展展望" aria-label="上一节：14.3 分布式、云原生与数据库发展展望">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">14.3</span>
+        <span class="nav-title">分布式云原生与展望</span>
+      </a>
+      <a class="exercise-link" href="dbpa-15-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-15-2.html" title="下一节：15.2 图数据库与关系的图化表达" aria-label="下一节：15.2 图数据库与关系的图化表达">
+        <span class="nav-title">图数据库</span>
+        <span class="nav-number">15.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">13/13</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

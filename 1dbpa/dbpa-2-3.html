@@ -1,260 +1,230 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 2.3 关系的完整性 | HUST</title>
+  <meta name="description" content="用实体完整性、参照完整性和用户定义完整性约束关系的合法状态">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="2-3">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-2-3/assets/dbpa-2-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 2.3</div>
+      <h1>关系的完整性</h1>
+      <p class="cover-description">让关系中的数据始终满足业务语义</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c23t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>2. 关系模型</h2>
-            <h3 style="text-align: center">2.3 关系的完整性</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c23t" data-rel-x="-800" data-rel-y="-400" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 关系的完整性
-
-- 对关系的约束条件
-- 使关系的值满足语义要求
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 关系的完整性约束
-
-- 实体完整性 (Entity Integrity)
-- 参照完整性 (Referential Integrity)
-- 用户定义的完整性 (User-defined Integrity)
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 实体完整性
-
-- 关系中的每个实体都有唯一标识
-- 又名主键约束或主码约束
-- 实体完整性约束是必须满足的
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="1200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 规则 2.1
-
-- 若属性 (或属性组) $A$ 是基本关系 $R$ 的主属性, 则 $A$ 的值不允许为空值, 且 $A$ 的值必须唯一
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 参照完整性
-
-- 维护关系之间的参照关系
-- 又名外键约束或外码约束
-- 当表相关时必须满足参照完整性
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="1200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 外码
-
-- 设 $F$ 是基本关系 $R$ 的一组属性, 但不是 $R$ 的主码
-- $K\_s$ 是基本关系 $S$ 的主码
-- 如果 $F$ 与 $K\_s$ 相对应, 则称 $F$ 是 $R$ 的外码 (foreign key)
-- $R$ 是参照关系 (referencing relation), $S$ 是被参照关系 (referenced relation) 或目标关系 (target relation)
-- 关系 $R$ 和 $S$ 不一定是不同的关系
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 参照完整性规则
-
-- 若属性 (或属性组) $F$ 是基本关系 $R$ 的外码, 它与基本关系 $S$ 的主码 $K\_s$ 相对应, 对于 $R$ 中每个元组在 $F$ 上的值必须满足以下条件:
-- 或者取空值 ($F$ 的每个属性值均为空值)
-- 或者等于 $S$ 中某个元组的主码值
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 用户定义的完整性
-
-- 应用领域特定的约束条件
-- 体现具体领域中的语义约束
-- 由用户根据应用需求自定义
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 用户定义的完整性
-
-- 如: 某属性的唯一性
-- 如: 某非主属性的非空性
-- 关系模型提供机制来定义和验证这些完整性约束
-
-        </div>
-
-        <div id="mm23" class="step" data-rel-to="c21t" data-rel-x="0" data-rel-y="-3000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c02/mindmap-2-3.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c23q" class="step markdown" data-rel-to="c23t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 2.3 关系的完整性
-
-- 什么是关系的完整性约束, 它包含哪几种类型?
-- 实体完整性是什么? 主键约束如何确保实体完整性?
-- 参照完整性的含义是什么?
-- 什么是外码?
-- 参照关系和被参照关系的概念是什么?
-- 用户定义的完整性是什么意思?
-
-            ----
-
-            [ 2.2 关系操作](dbpa-2-2.html#/overview)
-            [| 练习 |](dbpa-exec.html)
-            [ 2.4 关系代数](dbpa-2-4.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本节重点是约束判断。先给出错误数据，再用实体、参照和用户定义三类完整性解释为什么错误。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完整性约束限制关系值的合法状态，关系数据库系统负责定义和检查这些约束</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释完整性约束为什么是对关系值的语义限制</span></li><li><span class="list-marker">02</span><span class="list-text">说明实体完整性为什么要求主码值唯一且主码中的每个主属性不能取空值</span></li><li><span class="list-marker">03</span><span class="list-text">识别外码、参照关系和被参照关系</span></li><li><span class="list-marker">04</span><span class="list-text">用“整体为空或完整匹配已有主码值”判断参照完整性是否满足</span></li><li><span class="list-marker">05</span><span class="list-text">区分用户定义完整性与模型必需完整性</span></li><li><span class="list-marker">06</span><span class="list-text">根据异常数据判断违反了哪一类约束</span></li><li><span class="list-marker">07</span><span class="list-text">说明关系数据库系统如何统一定义和检查完整性约束</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3</div>
+    <h2 class="slide-title">完整性约束限制关系值的合法状态</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>这三条异常，错在同一种规则吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">完整性约束是对关系值的语义限制；关系值变化时，始终应满足相应规则</p>
+<div class="slide-main-content"><div class="component component-text text-open"><p>先判断：<code>Student.Sno=NULL</code>　｜　<code>SC.Cno</code> 不存在于 <code>Course</code>　｜　<code>Grade=135</code></p></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>实体完整性</h3><p>每个元组能够被唯一识别</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>参照完整性</h3><p>关系之间的引用能够找到真实目标</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户定义完整性</h3><p>数据符合具体应用领域的规则</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据“能存进去”不等于数据“符合关系语义”</p></div></div>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">INTEGRITY CONSTRAINTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.1</div>
+    <h2 class="slide-title">实体完整性：主码唯一、主属性非空</h2>
+    <div class="slide-content"><p class="slide-lead">主码让每个基本关系元组都能被唯一识别</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">唯一</h3><div class="key-value-value"><p>任意两个元组不能有相同的主码值</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">非空</h3><div class="key-value-value"><p>主码中的每个主属性都不能取空值</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">结果</h3><div class="key-value-value"><p>否则无法确定元组代表哪个实体</p></div></div></div></div></div>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">ENTITY INTEGRITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.1</div>
+    <h2 class="slide-title">复合主码的每个属性都不能取空值</h2>
+    <div class="slide-content"><p class="slide-lead"><code>SC</code> 中的 <code>(Sno，Cno)</code> 共同标识一条选课记录</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>同一学生同一课程只登记一次；不考虑重修、跨学期重复或多个教学班</p></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>数据</th><th>是否满足实体完整性</th><th>原因</th></tr></thead><tbody><tr><td>Sno=20180001，Cno=81002</td><td>满足</td><td>复合主码完整且可定位元组</td></tr><tr><td>Sno=NULL，Cno=81002</td><td>不满足</td><td>主码属性不能取空值</td></tr><tr><td>Sno=20180001，Cno=NULL</td><td>不满足</td><td>主码属性不能取空值</td></tr><tr><td>两条记录使用相同 Sno 与 Cno</td><td>不满足</td><td>主码值不能重复</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">COMPOSITE KEY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.2</div>
+    <h2 class="slide-title">外码把参照关系的属性对应到目标主码</h2>
+    <div class="slide-content"><p class="slide-lead">F 是参照关系 R 中与被参照关系 S 的主码 Ks 相对应的属性或属性组</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>外码 F</h3><p>R 中对应 S.Ks 的属性或属性组。F 本身不是 R 的完整码，但可以是 R 复合主码的一部分</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>参照关系 R</h3><p>保存外码并提出引用的关系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>被参照关系 S</h3><p>提供被引用主码的目标关系</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>外码与相应主码必须定义在同一个域或同一组域上</p></div></div>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">FOREIGN KEY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.2</div>
+    <h2 class="slide-title">参照完整性要求外码指向合法目标</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>选课记录已经写进 SC，引用当然成立吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">外码的全部属性必须整体为空，或等于目标关系中已有的完整主码值</p>
+<div class="slide-main-content"><div class="component component-text text-open"><p>F 的全部属性：要么整体为空，要么等于 S 中某个元组的完整主码 Ks</p>
+<p>复合外码不能只空其中一部分</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>外码不能指向一个不存在的对象</p></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">REFERENTIAL RULE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.2</div>
+    <h2 class="slide-title">SC 同时参照 Student 与 Course</h2>
+    <div class="slide-content"><p class="slide-lead">一条选课记录必须能够找到对应的学生和课程</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 42% 28%"><colgroup><col style="width:30%"><col style="width:42%"><col style="width:28%"></colgroup><thead><tr><th>参照关系</th><th>外码 F（在 SC 中的身份）</th><th>被参照关系及主码 Ks</th></tr></thead><tbody><tr><td>SC</td><td>Sno：外码，也是 SC 复合主码属性</td><td>Student.Sno</td></tr><tr><td>SC</td><td>Cno：外码，也是 SC 复合主码属性</td><td>Course.Cno</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>当 <code>(Sno，Cno)</code> 是 SC 的复合主码时，<code>Sno</code> 和 <code>Cno</code> 同时是 SC 的两个单属性外码，所以二者不能取空值；它们还必须分别匹配目标关系中的已有主码</p></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">STUDENT COURSE REFERENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.2</div>
+    <h2 class="slide-title">一个关系也可以引用自身</h2>
+    <div class="slide-content"><p class="slide-lead">课程的先修课用 <code>Cpno</code> 引用同一个 Course 关系的 <code>Cno</code></p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>关系角色</th><th>关系</th><th>属性</th></tr></thead><tbody><tr><td>参照关系</td><td>Course</td><td>Cpno 是外码</td></tr><tr><td>被参照关系</td><td>Course</td><td>Cno 是主码</td></tr><tr><td>合法取值</td><td>Course</td><td>空值或已有课程号</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>参照关系和被参照关系可以是同一关系；规则仍是“空值或已有主码值”</p></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">SELF REFERENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.3</div>
+    <h2 class="slide-title">用户定义完整性表达具体业务规则</h2>
+    <div class="slide-content"><p class="slide-lead">关系模型提供机制，具体应用决定还需要哪些语义限制</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>取值范围</h3><p>成绩必须在 0—100 之间，订单金额不能为负</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>非空要求</h3><p>学生姓名或订单创建时间不能为空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>非主码属性的业务唯一性</h3><p>业务编号或其他特定属性不能重复；它不等同于主码唯一性</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户定义完整性在实体、参照完整性之外，补充具体业务规则</p></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">USER DEFINED INTEGRITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.3</div>
+    <h2 class="slide-title">示例：从异常数据定位完整性约束</h2>
+    <div class="slide-content"><p class="slide-lead">先找出异常，再判断它违反实体、参照还是用户定义完整性</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 22% 40%"><colgroup><col style="width:38%"><col style="width:22%"><col style="width:40%"></colgroup><thead><tr><th>异常数据</th><th>类型</th><th>判断依据</th></tr></thead><tbody><tr><td>两个 Student 使用同一 Sno</td><td>实体完整性</td><td>主码值重复</td></tr><tr><td>Student 的 Sno 为空</td><td>实体完整性</td><td>主属性不能取空值</td></tr><tr><td>SC 的 Cno 不存在于 Course</td><td>参照完整性</td><td>外码无对应主码</td></tr><tr><td>Course 的 Cpno 不存在于 Course</td><td>参照完整性</td><td>自引用目标不存在</td></tr><tr><td>Grade=135</td><td>用户定义完整性</td><td>违反成绩范围规则</td></tr><tr><td>复合外码只空其中一项</td><td>参照完整性</td><td>外码不能部分为空</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">INTEGRITY DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3 <span>|</span> 2.3.3</div>
+    <h2 class="slide-title">订单系统中的三类完整性错误</h2>
+    <div class="slide-content"><p class="slide-lead">订单数据同时受对象标识、关系引用和业务规则约束</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p><code>Order(OrderNo，…)</code> 中 <code>OrderNo</code> 是主码；<code>OrderItem.OrderNo</code> 外码参照 <code>Order.OrderNo</code>，<code>OrderItem.ProductNo</code> 外码参照 <code>Product.ProductNo</code></p></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>对象不明</h3><p><code>OrderNo</code> 为空或重复，无法唯一识别订单</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>引用断裂</h3><p><code>OrderItem</code> 引用不存在的订单或商品</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务越界</h3><p>订单金额为负或支付状态不是规定值</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据库系统应统一定义和检查关键约束，避免每个应用各自维护一套规则</p></div></div>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.8f78a688337c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>规则放在数据库里，不同应用才能得到同样判断</p></div></div></div></aside>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3</div>
+    <h2 class="slide-title">按标识、引用和业务语义判断完整性</h2>
+    <div class="slide-content"><p class="slide-lead">完整性约束让每一时刻的关系值符合现实业务语义</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>实体完整性</h3><p>主码值唯一且主码中的每个主属性不能取空值</p></article><article class="content-card emphasis-card" tabindex="0"><h3>参照完整性</h3><p>外码与主码同域或同组域；外码整体为空，或完整匹配被参照关系的主码；复合外码不能部分为空</p></article><article class="content-card emphasis-card" tabindex="0"><h3>用户定义完整性</h3><p>在实体、参照完整性之外补充具体领域的取值、非空和唯一等业务规则，由数据库系统统一定义和检查</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断完整性时，先看对象标识，再看关系引用，最后看业务语义</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-3/mindmap-2-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">完整性约束为什么是对关系值的语义限制？</span></li><li><span class="question-no">02</span><span class="question-text">主码值为什么必须唯一？主码中的每个主属性为什么不能取空值？</span></li><li><span class="question-no">03</span><span class="question-text">已知 <code>F</code> 是 <code>R</code> 的外码、<code>Ks</code> 是 <code>S</code> 的主码，怎样判断 <code>R</code>、<code>S</code> 的角色、<code>F</code> 与 <code>Ks</code> 的同域关系和 <code>F</code> 的合法取值？</span></li><li><span class="question-no">04</span><span class="question-text">复合外码为什么不能部分为空？</span></li><li><span class="question-no">05</span><span class="question-text">如何根据异常数据和 <code>SC</code> 或 <code>Course.Cpno</code> 判断三类完整性及参照关系？</span></li><li><span class="question-no">06</span><span class="question-text">用户定义完整性为什么不替代实体/参照完整性？为什么应由数据库系统统一定义和检查？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-2-2.html" title="上一节：2.2 关系操作" aria-label="上一节：2.2 关系操作">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">2.2</span>
+        <span class="nav-title">关系操作</span>
+      </a>
+      <a class="exercise-link" href="dbpa-2-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-2-4.html" title="下一节：2.4 关系代数" aria-label="下一节：2.4 关系代数">
+        <span class="nav-title">关系代数</span>
+        <span class="nav-number">2.4</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

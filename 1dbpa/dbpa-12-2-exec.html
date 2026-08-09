@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>12.2 死锁、可串行性与两段锁协议｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 12.2</div><h1>死锁、可串行性与两段锁协议</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将并发分析图与边的含义匹配</h2><div class="matching-grid"><label class="matching-row"><span>等待图</span><select class="matching-select" data-answer="请求锁的事务指向持有冲突锁的事务" name="q1"><option value="">请选择</option><option value="先执行冲突操作的事务指向后执行者">先执行冲突操作的事务指向后执行者</option><option value="请求锁的事务指向持有冲突锁的事务">请求锁的事务指向持有冲突锁的事务</option></select></label><label class="matching-row"><span>优先图</span><select class="matching-select" data-answer="先执行冲突操作的事务指向后执行者" name="q1"><option value="">请选择</option><option value="先执行冲突操作的事务指向后执行者">先执行冲突操作的事务指向后执行者</option><option value="请求锁的事务指向持有冲突锁的事务">请求锁的事务指向持有冲突锁的事务</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>等待图 → 请求锁的事务指向持有冲突锁的事务；优先图 → 先执行冲突操作的事务指向后执行者</p><p>等待图用于诊断当前锁等待死锁，优先图用于判断一个调度是否冲突可串行化</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="single" data-answer="环上的事务形成循环等待，即发生死锁" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 单选题</div><h2>等待图中出现有向环通常表示什么？</h2><div class="choices"><label class="choice"><input type="radio" name="q2" value="环上的事务形成循环等待，即发生死锁" aria-keyshortcuts="1"><span>环上的事务形成循环等待，即发生死锁</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q2" value="调度一定不是冲突可串行化" aria-keyshortcuts="2"><span>调度一定不是冲突可串行化</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>环上的事务形成循环等待，即发生死锁</p><p>等待图和优先图的节点虽然都是事务，但边的含义不同，不能混用结论</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="ordering" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 排序题</div><h2>按死锁检测与解除流程排列</h2><ol class="ordering-list" data-answer="[&quot;根据不相容锁请求构造或更新等待图&quot;, &quot;检测等待图中是否存在有向环&quot;, &quot;在环上按代价和公平策略选择牺牲事务&quot;, &quot;回滚牺牲事务并释放其锁&quot;, &quot;唤醒可继续执行的等待事务并避免长期饥饿&quot;]"><li class="ordering-item"><span>根据不相容锁请求构造或更新等待图</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“根据不相容锁请求构造或更新等待图”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“根据不相容锁请求构造或更新等待图”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>检测等待图中是否存在有向环</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“检测等待图中是否存在有向环”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“检测等待图中是否存在有向环”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>唤醒可继续执行的等待事务并避免长期饥饿</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“唤醒可继续执行的等待事务并避免长期饥饿”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“唤醒可继续执行的等待事务并避免长期饥饿”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>在环上按代价和公平策略选择牺牲事务</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“在环上按代价和公平策略选择牺牲事务”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“在环上按代价和公平策略选择牺牲事务”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>回滚牺牲事务并释放其锁</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“回滚牺牲事务并释放其锁”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“回滚牺牲事务并释放其锁”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>根据不相容锁请求构造或更新等待图 → 检测等待图中是否存在有向环 → 在环上按代价和公平策略选择牺牲事务 → 回滚牺牲事务并释放其锁 → 唤醒可继续执行的等待事务并避免长期饥饿</p><p>检测负责发现回路，解除通过回滚打破回路，还要考虑重复牺牲造成的活锁</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="multiple" data-answer="[&quot;不同事务的读—写&quot;, &quot;不同事务的写—读&quot;, &quot;不同事务的写—写&quot;]" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 多选题</div><h2>对同一数据项的操作中，哪些属于冲突操作？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q4" value="不同事务的读—写" aria-keyshortcuts="1"><span>不同事务的读—写</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q4" value="不同事务的写—读" aria-keyshortcuts="2"><span>不同事务的写—读</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q4" value="不同事务的写—写" aria-keyshortcuts="3"><span>不同事务的写—写</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q4" value="不同事务的读—读" aria-keyshortcuts="4"><span>不同事务的读—读</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q4" value="对不同数据项的两个读操作" aria-keyshortcuts="5"><span>对不同数据项的两个读操作</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不同事务的读—写、不同事务的写—读、不同事务的写—写</p><p>冲突要求不同事务访问同一数据项且至少一个操作是写，交换顺序可能改变可见结果</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="single" data-answer="不遵守，事务进入收缩阶段后不能再申请新锁" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 单选题</div><h2>一个封锁序列在第一次释放锁之后又申请新锁，是否遵守普通两段锁协议？</h2><div class="choices"><label class="choice"><input type="radio" name="q5" value="不遵守，事务进入收缩阶段后不能再申请新锁" aria-keyshortcuts="1"><span>不遵守，事务进入收缩阶段后不能再申请新锁</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q5" value="遵守，只要新锁和旧锁属于不同数据项" aria-keyshortcuts="2"><span>遵守，只要新锁和旧锁属于不同数据项</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不遵守，事务进入收缩阶段后不能再申请新锁</p><p>2PL 把事务分为只扩张锁集合和只收缩锁集合的两段，第一次解锁标志进入收缩阶段</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="matching" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 匹配题</div><h2>将协议与保证或边界匹配</h2><div class="matching-grid"><label class="matching-row"><span>普通 2PL</span><select class="matching-select" data-answer="保证冲突可串行化，但锁可在提交前逐步释放" name="q6"><option value="">请选择</option><option value="通常把写锁保持到提交或回滚，减少级联回滚风险">通常把写锁保持到提交或回滚，减少级联回滚风险</option><option value="保证冲突可串行化，但锁可在提交前逐步释放">保证冲突可串行化，但锁可在提交前逐步释放</option><option value="仍可能因不同加锁顺序形成死锁">仍可能因不同加锁顺序形成死锁</option></select></label><label class="matching-row"><span>严格 2PL</span><select class="matching-select" data-answer="通常把写锁保持到提交或回滚，减少级联回滚风险" name="q6"><option value="">请选择</option><option value="通常把写锁保持到提交或回滚，减少级联回滚风险">通常把写锁保持到提交或回滚，减少级联回滚风险</option><option value="保证冲突可串行化，但锁可在提交前逐步释放">保证冲突可串行化，但锁可在提交前逐步释放</option><option value="仍可能因不同加锁顺序形成死锁">仍可能因不同加锁顺序形成死锁</option></select></label><label class="matching-row"><span>2PL 的共同边界</span><select class="matching-select" data-answer="仍可能因不同加锁顺序形成死锁" name="q6"><option value="">请选择</option><option value="通常把写锁保持到提交或回滚，减少级联回滚风险">通常把写锁保持到提交或回滚，减少级联回滚风险</option><option value="保证冲突可串行化，但锁可在提交前逐步释放">保证冲突可串行化，但锁可在提交前逐步释放</option><option value="仍可能因不同加锁顺序形成死锁">仍可能因不同加锁顺序形成死锁</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>普通 2PL → 保证冲突可串行化，但锁可在提交前逐步释放；严格 2PL → 通常把写锁保持到提交或回滚，减少级联回滚风险；2PL 的共同边界 → 仍可能因不同加锁顺序形成死锁</p><p>可串行化保证与无死锁是两个不同目标，2PL 只直接保证前者</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>构造一个两个事务都遵守 2PL 却发生死锁的最小情形，并解释为什么不矛盾</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>T1 先取得 X(A)，T2 先取得 X(B)；随后 T1 请求 X(B) 等待 T2，T2 请求 X(A) 等待 T1。两者都仍处于扩张阶段，没有解锁后再加锁，因此遵守 2PL；但加锁顺序相反形成循环等待。2PL 保证调度的可串行化性质，不保证死锁不会发生</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

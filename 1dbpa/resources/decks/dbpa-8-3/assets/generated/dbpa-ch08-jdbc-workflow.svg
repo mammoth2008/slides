@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">JDBC 五步访问流程</title>
+  <desc id="desc">驱动加载、建立连接、执行 SQL、处理结果和释放资源五个步骤，异常路径也回到资源释放。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .box { stroke: #c8d3df; stroke-width: 2; rx: 20; }
+      .step1 { fill: #e8f3ff; }
+      .step2 { fill: #eef8ed; }
+      .step3 { fill: #fff1dc; }
+      .step4 { fill: #f0eaff; }
+      .step5 { fill: #e8f3ff; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 25px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .detail { font: 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 17px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .error { stroke: #b96f58; stroke-width: 3; fill: none; stroke-dasharray: 9 8; marker-end: url(#arrow); }
+      .error-text { font: 700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #a95d47; }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="56" y="62">一条可检查的 JDBC 访问路径</text>
+
+  <rect class="box step1" x="45" y="145" width="190" height="180"/>
+  <rect class="box step2" x="275" y="145" width="190" height="180"/>
+  <rect class="box step3" x="505" y="145" width="190" height="180"/>
+  <rect class="box step4" x="735" y="145" width="190" height="180"/>
+  <rect class="box step5" x="965" y="145" width="190" height="180"/>
+
+  <text class="label" x="140" y="205">1 加载</text>
+  <text class="detail" x="140" y="245">发现或注册</text>
+  <text class="detail" x="140" y="274">目标驱动</text>
+
+  <text class="label" x="370" y="205">2 连接</text>
+  <text class="detail" x="370" y="245">URL + 凭据</text>
+  <text class="detail" x="370" y="274">得到 Connection</text>
+
+  <text class="label" x="600" y="205">3 执行</text>
+  <text class="detail" x="600" y="245">Statement</text>
+  <text class="detail" x="600" y="274">发送 SQL</text>
+
+  <text class="label" x="830" y="205">4 处理</text>
+  <text class="detail" x="830" y="245">ResultSet</text>
+  <text class="detail" x="830" y="274">映射与业务逻辑</text>
+
+  <text class="label" x="1060" y="205">5 释放</text>
+  <text class="detail" x="1060" y="245">结果集 → 语句</text>
+  <text class="detail" x="1060" y="274">→ 连接</text>
+
+  <path class="arrow" d="M235 235 H270"/>
+  <path class="arrow" d="M465 235 H500"/>
+  <path class="arrow" d="M695 235 H730"/>
+  <path class="arrow" d="M925 235 H960"/>
+
+  <path class="error" d="M600 325 V470 H1060 V335"/>
+  <text class="error-text" x="640" y="510">任一步失败，也要进入释放资源的收束路径</text>
+  <text class="small" x="56" y="635">try-with-resources 可让 Java 在成功和异常路径自动关闭已声明的资源</text>
+</svg>

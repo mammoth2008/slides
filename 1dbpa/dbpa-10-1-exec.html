@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>10.1 查询处理与操作算法｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 10.1</div><h1>查询处理与操作算法</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="ordering"><div class="question-kicker">第 1 题 / 共 7 题 · 排序题</div><h2>按查询处理的四个主要阶段排列</h2><ol class="ordering-list" data-answer="[&quot;查询分析，把 SQL 转换为内部表示&quot;, &quot;查询检查，验证对象、类型、权限和语义约束&quot;, &quot;查询优化，生成并比较等价候选计划&quot;, &quot;查询执行，按选定计划调用物理操作算法&quot;]"><li class="ordering-item"><span>查询检查，验证对象、类型、权限和语义约束</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“查询检查，验证对象、类型、权限和语义约束”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“查询检查，验证对象、类型、权限和语义约束”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>查询优化，生成并比较等价候选计划</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“查询优化，生成并比较等价候选计划”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“查询优化，生成并比较等价候选计划”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>查询分析，把 SQL 转换为内部表示</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“查询分析，把 SQL 转换为内部表示”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“查询分析，把 SQL 转换为内部表示”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>查询执行，按选定计划调用物理操作算法</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“查询执行，按选定计划调用物理操作算法”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“查询执行，按选定计划调用物理操作算法”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>查询分析，把 SQL 转换为内部表示 → 查询检查，验证对象、类型、权限和语义约束 → 查询优化，生成并比较等价候选计划 → 查询执行，按选定计划调用物理操作算法</p><p>查询从声明式文本进入 DBMS 后，要经过理解、合法性检查、选路和实际执行</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 匹配题</div><h2>将扫描方式与主要代价特征匹配</h2><div class="matching-grid"><label class="matching-row"><span>全表扫描</span><select class="matching-select" data-answer="按块读取表并检查每个候选元组，适合高命中比例或无有效索引" name="q2"><option value="">请选择</option><option value="按块读取表并检查每个候选元组，适合高命中比例或无有效索引">按块读取表并检查每个候选元组，适合高命中比例或无有效索引</option><option value="所需列都在索引中时可能减少回表访问">所需列都在索引中时可能减少回表访问</option><option value="先沿索引定位记录指针，再访问数据块，适合较高选择性的条件">先沿索引定位记录指针，再访问数据块，适合较高选择性的条件</option></select></label><label class="matching-row"><span>索引扫描</span><select class="matching-select" data-answer="先沿索引定位记录指针，再访问数据块，适合较高选择性的条件" name="q2"><option value="">请选择</option><option value="按块读取表并检查每个候选元组，适合高命中比例或无有效索引">按块读取表并检查每个候选元组，适合高命中比例或无有效索引</option><option value="所需列都在索引中时可能减少回表访问">所需列都在索引中时可能减少回表访问</option><option value="先沿索引定位记录指针，再访问数据块，适合较高选择性的条件">先沿索引定位记录指针，再访问数据块，适合较高选择性的条件</option></select></label><label class="matching-row"><span>覆盖索引扫描</span><select class="matching-select" data-answer="所需列都在索引中时可能减少回表访问" name="q2"><option value="">请选择</option><option value="按块读取表并检查每个候选元组，适合高命中比例或无有效索引">按块读取表并检查每个候选元组，适合高命中比例或无有效索引</option><option value="所需列都在索引中时可能减少回表访问">所需列都在索引中时可能减少回表访问</option><option value="先沿索引定位记录指针，再访问数据块，适合较高选择性的条件">先沿索引定位记录指针，再访问数据块，适合较高选择性的条件</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>全表扫描 → 按块读取表并检查每个候选元组，适合高命中比例或无有效索引；索引扫描 → 先沿索引定位记录指针，再访问数据块，适合较高选择性的条件；覆盖索引扫描 → 所需列都在索引中时可能减少回表访问</p><p>是否使用索引取决于完整 I/O 代价，不是存在索引就一定更快</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="single" data-answer="索引定位后大量随机回表可能比连续读取全表更贵" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 单选题</div><h2>一个条件会返回表中 80% 的记录，为什么全表扫描可能比索引扫描更合适？</h2><div class="choices"><label class="choice"><input type="radio" name="q3" value="索引定位后大量随机回表可能比连续读取全表更贵" aria-keyshortcuts="1"><span>索引定位后大量随机回表可能比连续读取全表更贵</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q3" value="索引只能用于返回一条记录的查询" aria-keyshortcuts="2"><span>索引只能用于返回一条记录的查询</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>索引定位后大量随机回表可能比连续读取全表更贵</p><p>高选择率在本节语境中表示命中比例高，索引带来的额外树访问和随机 I/O 可能失去优势</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="matching" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 匹配题</div><h2>将连接算法与适用条件或风险匹配</h2><div class="matching-grid"><label class="matching-row"><span>嵌套循环连接</span><select class="matching-select" data-answer="通用且实现直接，但外表和内表较大时比较次数可能很高" name="q4"><option value="">请选择</option><option value="输入已排序或排序后可顺序合并，并适合等值或部分范围语义">输入已排序或排序后可顺序合并，并适合等值或部分范围语义</option><option value="等值连接且较小输入可建立哈希表时常有利">等值连接且较小输入可建立哈希表时常有利</option><option value="内表连接列有合适索引且外表结果较小时有利">内表连接列有合适索引且外表结果较小时有利</option><option value="通用且实现直接，但外表和内表较大时比较次数可能很高">通用且实现直接，但外表和内表较大时比较次数可能很高</option></select></label><label class="matching-row"><span>索引嵌套循环连接</span><select class="matching-select" data-answer="内表连接列有合适索引且外表结果较小时有利" name="q4"><option value="">请选择</option><option value="输入已排序或排序后可顺序合并，并适合等值或部分范围语义">输入已排序或排序后可顺序合并，并适合等值或部分范围语义</option><option value="等值连接且较小输入可建立哈希表时常有利">等值连接且较小输入可建立哈希表时常有利</option><option value="内表连接列有合适索引且外表结果较小时有利">内表连接列有合适索引且外表结果较小时有利</option><option value="通用且实现直接，但外表和内表较大时比较次数可能很高">通用且实现直接，但外表和内表较大时比较次数可能很高</option></select></label><label class="matching-row"><span>排序—合并连接</span><select class="matching-select" data-answer="输入已排序或排序后可顺序合并，并适合等值或部分范围语义" name="q4"><option value="">请选择</option><option value="输入已排序或排序后可顺序合并，并适合等值或部分范围语义">输入已排序或排序后可顺序合并，并适合等值或部分范围语义</option><option value="等值连接且较小输入可建立哈希表时常有利">等值连接且较小输入可建立哈希表时常有利</option><option value="内表连接列有合适索引且外表结果较小时有利">内表连接列有合适索引且外表结果较小时有利</option><option value="通用且实现直接，但外表和内表较大时比较次数可能很高">通用且实现直接，但外表和内表较大时比较次数可能很高</option></select></label><label class="matching-row"><span>哈希连接</span><select class="matching-select" data-answer="等值连接且较小输入可建立哈希表时常有利" name="q4"><option value="">请选择</option><option value="输入已排序或排序后可顺序合并，并适合等值或部分范围语义">输入已排序或排序后可顺序合并，并适合等值或部分范围语义</option><option value="等值连接且较小输入可建立哈希表时常有利">等值连接且较小输入可建立哈希表时常有利</option><option value="内表连接列有合适索引且外表结果较小时有利">内表连接列有合适索引且外表结果较小时有利</option><option value="通用且实现直接，但外表和内表较大时比较次数可能很高">通用且实现直接，但外表和内表较大时比较次数可能很高</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>嵌套循环连接 → 通用且实现直接，但外表和内表较大时比较次数可能很高；索引嵌套循环连接 → 内表连接列有合适索引且外表结果较小时有利；排序—合并连接 → 输入已排序或排序后可顺序合并，并适合等值或部分范围语义；哈希连接 → 等值连接且较小输入可建立哈希表时常有利</p><p>连接算法依赖块数、内存、排序、索引和连接条件，不能只看关系名称</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="multiple" data-answer="[&quot;输入关系的块数和元组数&quot;, &quot;条件选择率与数据分布&quot;, &quot;可用内存&quot;, &quot;索引、排序和聚簇状态&quot;, &quot;连接条件类型&quot;]" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 多选题</div><h2>比较候选执行算法时，应考虑哪些信息？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q5" value="输入关系的块数和元组数" aria-keyshortcuts="1"><span>输入关系的块数和元组数</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q5" value="条件选择率与数据分布" aria-keyshortcuts="2"><span>条件选择率与数据分布</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q5" value="可用内存" aria-keyshortcuts="3"><span>可用内存</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q5" value="索引、排序和聚簇状态" aria-keyshortcuts="4"><span>索引、排序和聚簇状态</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q5" value="连接条件类型" aria-keyshortcuts="5"><span>连接条件类型</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q5" value="只比较 SQL 文本长度" aria-keyshortcuts="6"><span>只比较 SQL 文本长度</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>输入关系的块数和元组数、条件选择率与数据分布、可用内存、索引、排序和聚簇状态、连接条件类型</p><p>物理代价来自数据和资源条件，SQL 写法相似并不代表执行成本相同</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="single" data-answer="否，多个结果等价的计划可以使用不同扫描顺序和连接算法" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 单选题</div><h2>同一条 SQL 是否只能对应一种正确执行策略？</h2><div class="choices"><label class="choice"><input type="radio" name="q6" value="是，SQL 子句顺序唯一决定物理算法" aria-keyshortcuts="1"><span>是，SQL 子句顺序唯一决定物理算法</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q6" value="否，多个结果等价的计划可以使用不同扫描顺序和连接算法" aria-keyshortcuts="2"><span>否，多个结果等价的计划可以使用不同扫描顺序和连接算法</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>否，多个结果等价的计划可以使用不同扫描顺序和连接算法</p><p>非过程化 SQL 描述目标结果，优化器可以在语义等价的候选计划中选择较小代价路径</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>Student 很小，SC 很大；查询先把 SC 筛到某一门课且 Cno 上有高选择性索引，再与 Student 连接。说明一个合理候选计划及其适用条件</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>可先用 Cno 索引筛选 SC，显著减少输入，再以筛选后的 Sno 连接 Student；若 Student.Sno 有索引，可用索引嵌套循环，若两个输入适合构建哈希且为等值连接，也可比较哈希连接。若该课程覆盖大部分 SC、回表成本高，筛选索引未必有利。最终要用块数、选择率、内存和统计信息估算</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">并发调度与串行结果的比较</title>
+  <desc id="desc">T1 读 B 写 A，T2 读 A 写 B，两个串行次序得到不同但正确的结果；并发结果只有等价于其中一个串行次序才正确。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .serial { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .mix { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 11; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">可串行化不是要求“真的串行”，而是结果等价于某个串行次序</text>
+  <rect class="panel" x="45" y="105" width="1110" height="470"/>
+  <text class="label" x="110" y="155">事务</text><text class="label" x="450" y="155">操作顺序</text><text class="label" x="930" y="155">结果</text>
+
+  <text class="label" x="110" y="235">T1 → T2</text>
+  <rect class="serial" x="260" y="190" width="385" height="75"/><text class="label" x="452" y="222">R1(B) W1(A) R2(A) W2(B)</text><text class="text" x="452" y="247">先完成 T1，再完成 T2</text>
+  <rect class="serial" x="770" y="190" width="300" height="75"/><text class="label" x="920" y="222">A=3，B=4</text><text class="text" x="920" y="247">正确参照</text>
+
+  <text class="label" x="110" y="345">T2 → T1</text>
+  <rect class="serial" x="260" y="300" width="385" height="75"/><text class="label" x="452" y="332">R2(A) W2(B) R1(B) W1(A)</text><text class="text" x="452" y="357">先完成 T2，再完成 T1</text>
+  <rect class="serial" x="770" y="300" width="300" height="75"/><text class="label" x="920" y="332">A=4，B=3</text><text class="text" x="920" y="357">正确参照</text>
+
+  <text class="label" x="110" y="455">交错调度</text>
+  <rect class="mix" x="260" y="410" width="385" height="75"/><text class="label" x="452" y="442">操作交错执行</text><text class="text" x="452" y="467">结果需等价于上面一行</text>
+  <rect class="mix" x="770" y="410" width="300" height="75"/><text class="label" x="920" y="442">等价 → 正确</text><text class="text" x="920" y="467">否则 → 错误</text>
+  <text class="text" x="600" y="535">串行次序可以不同，关键是并发结果必须落在某个正确参照上</text>
+</svg>

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 18.3 区块链与数据库的对比与融合 | HUST</title>
+  <meta name="description" content="以目标、数据和技术边界判断区块链数据库融合方案">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="18-3">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-18-3/assets/dbpa-18-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 18.3</div>
+      <h1>区块链与数据库的对比与融合</h1>
+      <p class="cover-description">可信共享与高效管理需要不同的技术取舍</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元用目标、数据、架构和证据四条轴比较区块链与关系数据库，再讨论两条反向融合路径。封面图只作概念引导，不代表技术演进或固定架构。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>区块链的工作机制、架构和准入模式决定比较基线；融合方案还要明确数据、责任和性能边界</p></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较两类系统的设计目标、信任环境和错误模型</span></li><li><span class="list-marker">02</span><span class="list-text">区分链式交易历史、节点状态库和关系表，并说明各自的事务边界</span></li><li><span class="list-marker">03</span><span class="list-text">解释副本、协调、提交以及查询和状态组织的差异</span></li><li><span class="list-marker">04</span><span class="list-text">在一致验证条件下说明数据库技术如何缓解区块链瓶颈</span></li><li><span class="list-marker">05</span><span class="list-text">说明链式日志和签名如何提供数据库的可验证审计证据</span></li><li><span class="list-marker">06</span><span class="list-text">用信任、吞吐、历史证据和复杂查询判断数据库、区块链或融合方案</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/12</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">区块链与关系数据库的设计目标和信任假设不同</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>区块链天生更安全，关系数据库天生更快？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">两类系统的典型取向不是绝对二分；许可链和分布式数据库可能处于中间</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-blockchain-image2.png" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-blockchain-image2.png" alt="区块链全章概念总览：业务输入、Merkle 汇总、链式记录、多节点副本、状态查询与可信性和效率取舍" tabindex="0" role="button" aria-label="放大图片：区块链全章概念总览：业务输入、Merkle 汇总、链式记录、多节点副本、状态查询与可信性和效率取舍" decoding="async"><figcaption>概念总览图展示业务输入、链式记录、状态查询以及可信性和效率取舍</figcaption></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>维度</th><th>区块链</th><th>关系数据库</th></tr></thead><tbody><tr><td>典型设计重点</td><td>强调改动可检测、可追溯和多主体验证</td><td>强调响应、吞吐、完整功能和事务并发</td></tr><tr><td>典型错误模型</td><td>需要处理恶意节点、分歧和开放网络协调</td><td>重点处理宕机、故障、非法访问和组织治理</td></tr><tr><td>典型运行环境</td><td>开放或多主体，也可采用许可网络</td><td>受控组织，也可处于分布式多方环境</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>两类系统都需要完整性、可用性和性能；差异在于优先级、信任假设和协调边界</p></div></div>
+    <div class="numeric-progress">3/12</div>
+    <div class="semantic-label">DESIGN GOALS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">链式历史、状态库与关系表保存不同事实</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>链上的区块，不就是数据库的 WAL 吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">三者都能承载结构化信息，但保存的事实、可执行操作和事务边界不同</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>链式交易历史</h3><p>区块保存已接受的追加式交易及其顺序；它不等于业务当前表，也不等于数据库 WAL</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>节点状态库</h3><p>根据链上历史物化出的本地可查询状态，常见键值结构但不限定为一种实现</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>关系表与 SQL</h3><p>按关系模式组织当前或历史业务数据；SQL 支持增删改查和事务并发，表不必只保存当前数据</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>链式历史回答“接受了哪些操作”；状态库回答“节点当前可查询什么”；关系表回答“业务如何组织和操作数据”</p></div></div>
+    <div class="numeric-progress">4/12</div>
+    <div class="semantic-label">DATA AND OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">副本与协调边界决定请求如何处理</h2>
+    <div class="slide-content"><p class="slide-lead">副本位置、验证、提交和协调责任比“中心”或“去中心化”标签更能说明架构差异</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>历史与副本</h3><p>区块链的全节点、轻节点、归档节点职责不同；分布式数据库也可分片、复制或保留控制平面</p></article><article class="content-card emphasis-card" tabindex="0"><h3>验证与提交</h3><p>节点按协议验证和接受历史；关系数据库按事务与协调机制提交，具体架构依系统而异</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询与状态</h3><p>区块链常由状态库提供当前查询；关系系统用表、索引和查询执行组织业务状态</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>架构比较应说明副本范围、请求协调、提交边界和查询路径</p></div></div>
+    <div class="numeric-progress">5/12</div>
+    <div class="semantic-label">ARCHITECTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">数据库技术可缓解部分链上性能瓶颈</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>加上分片和 MVCC，共识瓶颈就消失了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">技术要对应具体瓶颈；跨片协调、冲突回滚、索引维护和一致验证仍然存在</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-sharding-concurrency.svg" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-sharding-concurrency.svg" alt="区块链通过分片、并发执行、索引和 Bloom Filter 减少全网处理与区块扫描" tabindex="0" role="button" aria-label="放大图片：区块链通过分片、并发执行、索引和 Bloom Filter 减少全网处理与区块扫描" decoding="async"><figcaption>分片、并发、索引和 Bloom Filter 可以组合使用；它们不是固定流水线，每片仍需一致验证</figcaption></figure>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">分片：不同片处理不同事务；跨片事务仍需协调，每片仍需满足安全和数据可用性要求</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">并发：STM 或 MVCC 利用多核并行；系统仍需进行冲突检测、回滚和确定性验证</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">索引：辅助定位区块和交易；索引维护不等于共识数据本身</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">布隆过滤器 Bloom Filter：可排除不可能命中的区块，可能假阳性；命中仍需实际验证</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据库技术可以改变处理与查询路径，但不能替代跨片协调、冲突处理和一致验证</p></div></div>
+    <div class="numeric-progress">6/12</div>
+    <div class="semantic-label">DATABASE INTO BLOCKCHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">链式日志与签名提供可验证审计</h2>
+    <div class="slide-content"><p class="slide-lead">关系库保存业务状态，链式日志保存操作证据；两者需要绑定事务 ID 并共同设计恢复路径</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-db-audit-log.svg" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-db-audit-log.svg" alt="关系数据库保存当前业务状态，链式操作日志保存时间、摘要和签名证据，分层支持可验证审计" tabindex="0" role="button" aria-label="放大图片：关系数据库保存当前业务状态，链式操作日志保存时间、摘要和签名证据，分层支持可验证审计" decoding="async"><figcaption>链式日志保存操作证据，不是业务表本身；虚线表示审计、校验或补偿路径，不是普通查询路径</figcaption></figure></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>关系表　＋　链式操作日志　＋　数字签名　→　可验证审计；签名不自动证明现实事实，按时点回溯数据仍需完整事件、同步和恢复设计</p></div></div>
+    <div class="numeric-progress">7/12</div>
+    <div class="semantic-label">TRUST INTO DATABASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">两条反向路径可以组合，但不自动相加</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>把两套组件叠在一起，能力不就自动相加了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">两条路径的数据位置与验证责任不同，组合时要分别说明链上和库内的边界</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 22% 30% 24%"><colgroup><col style="width:24%"><col style="width:22%"><col style="width:30%"><col style="width:24%"></colgroup><thead><tr><th>示意路线</th><th>方向</th><th>数据位置与验证边界</th><th>可能收益与代价</th></tr></thead><tbody><tr><td>数据库技术进入区块链</td><td>数据库 → 区块链</td><td>分片、并发、索引辅助处理；跨片与一致验证仍需保留</td><td>可能改善扩展或查询；增加协调、维护和确定性执行成本</td></tr><tr><td>区块链特征进入数据库</td><td>区块链 → 数据库</td><td>关系库保存业务状态，链式日志保存摘要、时间和签名证据</td><td>可能增强审计与追溯；同步、恢复和隐私边界仍需设计</td></tr><tr><td>代表性融合思路</td><td>分层组合</td><td>BigchainDB、ChainSQL 类或共享数据库可作为案例，具体实现各异</td><td>收益取决于日志内容、提交绑定、查询路径和治理，不能由产品名称直接保证</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>融合不是把所有组件叠加；必须说明数据位置、验证责任、同步恢复和查询代价</p></div></div>
+    <div class="numeric-progress">8/12</div>
+    <div class="semantic-label">FUSION EXAMPLES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
+    <h2 class="slide-title">四个维度决定单一或融合方案的选择</h2>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.8f78a688337c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>选单一还是融合，要先说清目标、数据和治理边界</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">多机构物流需要同时权衡信任、写入、历史证据和查询并发；组件堆叠本身不是方案</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>四个判断轴</h3><p>判断轴包括参与者与治理、写入吞吐与延迟、可验证且改动成本高的历史证据，以及复杂查询、更新与事务并发</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>关系数据库</h3><p>单一可信主体、复杂查询、低延迟和可修改数据优先；仍需普通审计、备份和权限治理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>区块链／分布式账本</h3><p>多主体需要独立验证追加历史时可能合适；需承担共识、同步、隐私和运维成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>融合方案</h3><p>业务查询与跨组织审计并存时，可让关系库保存状态、链式日志保存证据；必须设计事务绑定、恢复和治理</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>“可能合适”不是自动保证；最终选择还要核对数据真实性、权限、最终性、同步失败和密钥管理</p></div></div>
+    <div class="numeric-progress">9/12</div>
+    <div class="semantic-label">CHOOSE THE SYSTEM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">区块链与数据库的融合需要明确责任与代价</h2>
+    <div class="slide-content"><p class="slide-lead">两类系统各有目标和边界；融合方案仍需明确同步、恢复、治理与性能代价</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>目标与环境</h3><p>安全、可追溯、性能和完整功能都重要；优先级取决于信任与协调假设</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据对象</h3><p>链式交易历史、节点状态库和关系表保存不同事实，操作与事务边界不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>两条路径</h3><p>数据库技术可以进入区块链，链式日志、签名和审计证据也可以进入数据库</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>选择边界</h3><p>方案选择应按信任、吞吐、历史证据、复杂查询、同步恢复和治理判断</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>融合方案只有明确数据位置、验证责任、同步恢复和查询代价，才便于评估</p></div></div>
+    <div class="numeric-progress">10/12</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-18-3/mindmap-18-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">11/12</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定业务场景，区块链与关系数据库的信任假设和设计目标有何不同？</span></li><li><span class="question-no">02</span><span class="question-text">如何区分链式交易历史、节点状态库、关系表以及数据库 WAL／审计日志？</span></li><li><span class="question-no">03</span><span class="question-text">分片、STM／MVCC、索引分别缓解什么瓶颈，又留下哪些协调或验证代价？</span></li><li><span class="question-no">04</span><span class="question-text">布隆过滤器能排除什么、不能证明什么，命中后为什么仍需实际验证？</span></li><li><span class="question-no">05</span><span class="question-text">链式日志和数字签名能提供哪些可验证审计证据，何时仍不能完成时点回溯？</span></li><li><span class="question-no">06</span><span class="question-text">在单一可信中心、多方协作、混合审计三个场景中如何选择方案并说明理由？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-18-2.html" title="上一节：18.2 区块链发展阶段、准入模式与技术架构" aria-label="上一节：18.2 区块链发展阶段、准入模式与技术架构">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">18.2</span>
+        <span class="nav-title">区块链架构与模式</span>
+      </a>
+      <a class="exercise-link" href="dbpa-18-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="#map" title="课程全景" aria-label="课程全景">
+        <span class="nav-title">课程全景</span>
+        <span class="nav-number">MAP</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">12/12</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 15.2 图数据库与关系的图化表达 | HUST</title>
+  <meta name="description" content="从强关联场景理解属性图与路径查询">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="15-2">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-15-2/assets/dbpa-15-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 15.2</div>
+      <h1>图数据库与关系的图化表达</h1>
+      <p class="cover-description">当联系本身成为查询对象</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元用学生选课图说明顶点、边、属性和路径查询。
+封面图用于建立数据与联系网络化的主题，不代表某个实际产品架构。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">根据查询是否依赖多跳关系判断图数据库是否合适</span></li><li><span class="list-marker">02</span><span class="list-text">用选课案例区分顶点、边、标签、属性和属性值</span></li><li><span class="list-marker">03</span><span class="list-text">比较图匹配、图导航和图关系复合操作</span></li><li><span class="list-marker">04</span><span class="list-text">比较邻接访问与关系连接在邻居查询上的路径差异</span></li><li><span class="list-marker">05</span><span class="list-text">读懂 Cypher 中的变量、标签、属性、MATCH、WHERE 和 RETURN</span></li><li><span class="list-marker">06</span><span class="list-text">说明属性图、RDF 三元组图与查询语言并非一一对应</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/12</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">学生选课图把联系本身变成查询对象</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>把外键画成线，就是图数据库了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">属性图把学生、课程和选课关系表示为顶点、边与属性</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-2/assets/generated/dbpa-ch15-property-graph.svg" data-full-src="resources/decks/dbpa-15-2/assets/generated/dbpa-ch15-property-graph.svg" alt="学生王林与课程英语通过一条带成绩和日期属性的选课边连接" tabindex="0" role="button" aria-label="放大图片：学生王林与课程英语通过一条带成绩和日期属性的选课边连接" decoding="async"><figcaption>单个边实例示意：王林与英语的一条选课关系，边上挂有成绩和日期属性</figcaption></figure>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="顶点　＋　边　＋　属性　→　关系可以被匹配与导航"><span class="relation-term">顶点　＋　边　＋　属性</span><span class="relation-operator">→</span><span class="relation-term">关系可以被匹配与导航</span></div></div></div></div>
+    <div class="numeric-progress">3/12</div>
+    <div class="semantic-label">GRAPH DATA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">属性图用对象、关系和描述表达业务语义</h2>
+    <div class="slide-content"><p class="slide-lead">选课案例把形式元素映射到学生能复述的业务对象</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>顶点 V</h3><p>业务对象：王林、英语等学生和课程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>边 E</h3><p>业务关系：SC 选课，连接王林与英语</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>标签 L</h3><p>类型分类：Student、Course、SC</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>属性 A/T</h3><p>字段和值：Score=90、Date=2020-09-01</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例只需理解图元素与业务语义的对应关系</p></div></div>
+    <div class="numeric-progress">4/12</div>
+    <div class="semantic-label">PROPERTY GRAPH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">关系可以带属性并成为查询对象</h2>
+    <div class="slide-content"><p class="slide-lead">图模型把联系作为独立对象表达，是否采用图数据库仍取决于查询和约束需求</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="王林　—[SC {Score=90，Date=2020-09-01}]→　英语"><span class="relation-term">王林　—[SC {Score</span><span class="relation-operator">=</span><span class="relation-term">90，Date</span><span class="relation-operator">=</span><span class="relation-term">2020-09-01}]</span><span class="relation-operator">→</span><span class="relation-term">英语</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 70%"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>表达方式</th><th>直观含义</th></tr></thead><tbody><tr><td>关系模型</td><td>通过 <code>Student ⋈ SC ⋈ Course</code> 组合业务事实</td></tr><tr><td>图模型</td><td>直接匹配并导航 <code>Student — SC — Course</code> 路径</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>查询谁选了什么课以及成绩时，图中的边是查询对象；关系系统也能表达同一事实</p></div></div>
+    <div class="numeric-progress">5/12</div>
+    <div class="semantic-label">STUDENT COURSE GRAPH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">图查询的匹配、导航与复合</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>匹配、导航和过滤只能三选一吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先分清每一步处理的对象，再判断它们如何组合</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>图匹配</h3><p>找出 Student—SC→Course 模式，例如王林选过的课程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>图导航</h3><p>沿学生→课程→教师寻找两跳关系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>复合操作</h3><p>先匹配，再按成绩过滤并返回结果</p></article></div></div></div>
+    <div class="numeric-progress">6/12</div>
+    <div class="semantic-label">GRAPH OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">常见图语言各有模型与表达侧重</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.c35e2d766676.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Cypher 是所有图数据库的统一 SQL 吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">SPARQL、Cypher 和 Gremlin 侧重不同模型与表达方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>语言</th><th>常见对象</th><th>直观方式</th></tr></thead><tbody><tr><td>SPARQL</td><td>RDF 三元组图</td><td>三元组匹配</td></tr><tr><td>Cypher</td><td>属性图</td><td>模式和路径表达</td></tr><tr><td>Gremlin</td><td>属性图</td><td>程序化遍历</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>SPARQL、Cypher 和 Gremlin 分属不同图模型与语言生态，尚未形成所有系统共同采用的统一语言</p></div></div>
+    <div class="numeric-progress">7/12</div>
+    <div class="semantic-label">QUERY LANGUAGES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">Cypher 用图形符号表达选课路径</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="68" data-character-exposure="60" data-character-scale="0.9" style="--character-along:68%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>谁负责找路径，谁负责筛选和输出？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">括号表示顶点，中括号表示关系，WHERE 过滤属性</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">CYPHER</span><pre tabindex="0" aria-label="CYPHER code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-cypher">MATCH (n:Student)-[e:SC]-&gt;(c:Course)
+WHERE n.Sname = "王林"
+RETURN c.Cname, e.Score</code></pre></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>n、e、c 是变量；Student、SC、Course 是标签；Sname、Score 是属性</p>
+<p>MATCH 找模式；WHERE 过滤；RETURN 输出</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>预期结果是课程英语与成绩 90</p></div></div>
+    <div class="numeric-progress">8/12</div>
+    <div class="semantic-label">CYPHER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
+    <h2 class="slide-title">以 Neo4j 为例，邻接存储有利于邻居遍历</h2>
+    <div class="slide-content"><p class="slide-lead">顶点记录可维护邻接信息，但实现各异</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="顶点记录　→　相邻边或邻居地址　→　邻居顶点"><span class="relation-term">顶点记录</span><span class="relation-operator">→</span><span class="relation-term">相邻边或邻居地址</span><span class="relation-operator">→</span><span class="relation-term">邻居顶点</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 70%"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>访问路径</th><th>直观过程</th></tr></thead><tbody><tr><td>关系系统</td><td>索引定位记录，再通过连接找到邻居</td></tr><tr><td>原生图存储</td><td>从顶点记录沿邻接关系定位邻居</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>Neo4j 作为代表性实现可支持事务；事务能力不等于所有图数据库的统一契约</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>图数据库是否更快取决于数据布局与查询模式是否匹配</p></div></div>
+    <div class="numeric-progress">9/12</div>
+    <div class="semantic-label">NATIVE TRAVERSAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">图数据库判断链</h2>
+    <div class="slide-content"><p class="slide-lead">图数据库适合关系密集、路径有意义的任务；关系数据库仍适合其他负载</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>数据结构</h3><p>顶点、边、标签、属性把业务网络表达出来</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询操作</h3><p>匹配、导航、复合操作分别回答不同路径问题</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>语言表达</h3><p>SPARQL、Cypher、Gremlin 各有模型与生态侧重</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>实现边界</h3><p>邻接存储有利于邻居访问；事务、报表与约束仍需按负载评估</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>强关联场景 → 属性图元素 → 图匹配与导航 → 查询语言 → 邻接存储与访问取舍</p></div></div>
+    <div class="numeric-progress">10/12</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-15-2/mindmap-15-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">11/12</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">学生选课、社交关系和交通路径中，哪些更适合图模型，为什么？</span></li><li><span class="question-no">02</span><span class="question-text">在选课案例中，顶点、边、标签、属性和属性值分别是什么？</span></li><li><span class="question-no">03</span><span class="question-text">找成绩大于 90 的选课和找两个学生之间的两跳关系分别属于哪类操作？</span></li><li><span class="question-no">04</span><span class="question-text">如何用 <code>MATCH</code>、<code>WHERE</code>、<code>RETURN</code> 查询王林的课程和成绩？</span></li><li><span class="question-no">05</span><span class="question-text">为什么 Neo4j 的邻接存储不能推出所有图查询都比关系查询快？</span></li><li><span class="question-no">06</span><span class="question-text">RDF 三元组图、属性图和程序化遍历分别更接近哪种语言生态？为什么图查询语言仍未完全统一？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-15-1.html" title="上一节：15.1 大数据特征与键值文档数据库" aria-label="上一节：15.1 大数据特征与键值文档数据库">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">15.1</span>
+        <span class="nav-title">大数据与键值文档</span>
+      </a>
+      <a class="exercise-link" href="dbpa-15-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-15-3.html" title="下一节：15.3 时序数据库与时间窗口查询" aria-label="下一节：15.3 时序数据库与时间窗口查询">
+        <span class="nav-title">时序数据库</span>
+        <span class="nav-number">15.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">12/12</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

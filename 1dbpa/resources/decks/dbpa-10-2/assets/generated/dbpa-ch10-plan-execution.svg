@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">查询计划的两种执行方向</title>
+  <desc id="desc">自顶向下由根节点请求元组，自底向上由叶节点主动生产元组，缓冲区连接算子之间的流动。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 18; }
+      .node { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .leaf { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .root { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 12; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8d7bb8; stroke-width: 3; fill: none; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">执行器可以“拉取”结果，也可以“生产”结果</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="235"/>
+  <text class="label" x="245" y="150">自顶向下：需求驱动</text>
+  <rect class="root" x="160" y="205" width="170" height="70"/><rect class="node" x="475" y="205" width="170" height="70"/><rect class="leaf" x="790" y="205" width="170" height="70"/>
+  <text class="label" x="245" y="245">根算子</text><text class="label" x="560" y="245">中间算子</text><text class="label" x="875" y="245">叶算子</text>
+  <path class="dash" d="M475 240 H335"/><path class="dash" d="M790 240 H650"/>
+  <text class="text" x="245" y="310">请求下一个结果</text><text class="text" x="560" y="310">向孩子继续请求</text><text class="text" x="875" y="310">读取数据并返回</text>
+
+  <rect class="panel" x="45" y="390" width="1110" height="235"/>
+  <text class="label" x="245" y="435">自底向上：主动生产</text>
+  <rect class="leaf" x="160" y="490" width="170" height="70"/><rect class="node" x="475" y="490" width="170" height="70"/><rect class="root" x="790" y="490" width="170" height="70"/>
+  <text class="label" x="245" y="530">叶算子</text><text class="label" x="560" y="530">中间算子</text><text class="label" x="875" y="530">根算子</text>
+  <path class="arrow" d="M335 525 H470"/><path class="arrow" d="M650 525 H785"/>
+  <text class="text" x="245" y="595">生成元组放入缓冲</text><text class="text" x="560" y="595">取走并继续计算</text><text class="text" x="875" y="595">产生最终结果</text>
+</svg>

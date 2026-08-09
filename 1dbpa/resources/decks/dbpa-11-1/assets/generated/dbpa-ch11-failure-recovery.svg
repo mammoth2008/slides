@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">故障范围与恢复方向</title>
+  <desc id="desc">事务故障撤销单个未完成事务，系统故障同时撤销未完成事务并重做已提交事务，介质故障先恢复副本再重做。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 15; }
+      .fault { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 10; }
+      .action { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .safe { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">先判断故障影响范围，再确定恢复动作</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="150"/>
+  <text class="label" x="70" y="145">事务故障</text>
+  <rect class="fault" x="225" y="135" width="210" height="70"/><rect class="action" x="505" y="135" width="210" height="70"/><rect class="safe" x="785" y="135" width="190" height="70"/>
+  <text class="text" x="330" y="165">一个事务未完成</text><text class="text" x="330" y="188">部分更新可能已写入</text><text class="text" x="610" y="165">UNDO 该事务</text><text class="text" x="610" y="188">撤销更新前值</text><text class="text" x="880" y="165">其他事务不受影响</text>
+  <path class="arrow" d="M435 170 H500"/><path class="arrow" d="M715 170 H780"/>
+
+  <rect class="panel" x="45" y="285" width="1110" height="170"/>
+  <text class="label" x="70" y="325">系统故障</text>
+  <rect class="fault" x="225" y="315" width="210" height="90"/><rect class="action" x="505" y="300" width="210" height="60"/><rect class="action" x="505" y="375" width="210" height="60"/><rect class="safe" x="785" y="330" width="190" height="70"/>
+  <text class="text" x="330" y="348">主存和缓冲区丢失</text><text class="text" x="330" y="376">磁盘通常仍可信</text><text class="text" x="610" y="338">未完成事务 → UNDO</text><text class="text" x="610" y="413">已提交事务 → REDO</text><text class="text" x="880" y="360">磁盘回到一致状态</text>
+  <path class="arrow" d="M435 360 H500"/><path class="arrow" d="M715 330 H780"/><path class="arrow" d="M715 405 C750 405 750 370 780 370"/>
+
+  <rect class="panel" x="45" y="485" width="1110" height="150"/>
+  <text class="label" x="70" y="525">介质故障</text>
+  <rect class="fault" x="225" y="515" width="210" height="70"/><rect class="action" x="505" y="515" width="210" height="70"/><rect class="safe" x="785" y="515" width="190" height="70"/>
+  <text class="text" x="330" y="545">数据库或日志损坏</text><text class="text" x="330" y="568">原介质不再可信</text><text class="text" x="610" y="545">重装最近副本</text><text class="text" x="610" y="568">再 REDO 已提交事务</text><text class="text" x="880" y="545">恢复到已知一致状态</text>
+  <path class="arrow" d="M435 550 H500"/><path class="arrow" d="M715 550 H780"/>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">行处理、列处理与向量化查询</title>
+  <desc id="desc">对 Price、Quantity 和 Tax 计算表达式时，行处理逐条访问记录属性，列处理整列访问并生成中间结果，向量化按 Cache 与工作负载选择数据块。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 14; }
+      .row { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 10; }
+      .col { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 10; }
+      .vec { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 10; }
+      .result { fill: #eeeafa; stroke: #b7a9d8; stroke-width: 2; rx: 10; }
+      .title { font: 700 28px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 13px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .line { stroke: #b7c7d8; stroke-width: 2; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="58">同一个表达式，处理模型决定重复开销和临时空间</text>
+  <text class="text" x="55" y="87">Price × Quantity × (1 − Tax)</text>
+
+  <rect class="panel" x="40" y="110" width="1120" height="155"/>
+  <text class="label" x="70" y="150">行处理</text>
+  <rect class="row" x="70" y="170" width="190" height="60"/><text class="text" x="93" y="195">记录 1：取值、访问属性</text><text class="small" x="110" y="218">重复调用</text>
+  <rect class="row" x="285" y="170" width="190" height="60"/><text class="text" x="308" y="195">记录 2：取值、访问属性</text><text class="small" x="325" y="218">重复调用</text>
+  <rect class="row" x="500" y="170" width="190" height="60"/><text class="text" x="523" y="195">记录 3：取值、访问属性</text><text class="small" x="540" y="218">重复调用</text>
+  <path class="arrow" d="M705 200 H800"/><rect class="result" x="820" y="170" width="240" height="60"/><text class="text" x="853" y="205">结果逐条累加</text>
+
+  <rect class="panel" x="40" y="285" width="1120" height="175"/>
+  <text class="label" x="70" y="325">列处理</text>
+  <rect class="col" x="70" y="345" width="170" height="80"/><text class="label" x="120" y="378">Price</text><text class="small" x="105" y="405">整列访问与计算</text>
+  <rect class="col" x="265" y="345" width="170" height="80"/><text class="label" x="310" y="378">Quantity</text><text class="small" x="300" y="405">整列访问与计算</text>
+  <rect class="col" x="460" y="345" width="170" height="80"/><text class="label" x="515" y="378">Tax</text><text class="small" x="495" y="405">整列访问与计算</text>
+  <path class="arrow" d="M640 385 H730"/><rect class="result" x="750" y="345" width="300" height="80"/><text class="text" x="790" y="378">中间列 ToPrice、Results</text><text class="small" x="810" y="405">临时空间更大</text>
+
+  <rect class="panel" x="40" y="480" width="1120" height="175"/>
+  <text class="label" x="70" y="520">向量化处理</text>
+  <rect class="vec" x="70" y="540" width="250" height="80"/><text class="label" x="138" y="573">向量 1</text><text class="small" x="105" y="600">按 Cache 与工作负载选择</text>
+  <rect class="vec" x="350" y="540" width="250" height="80"/><text class="label" x="418" y="573">向量 2</text><text class="small" x="385" y="600">按 Cache 与工作负载选择</text>
+  <rect class="vec" x="630" y="540" width="250" height="80"/><text class="label" x="698" y="573">向量 3</text><text class="small" x="665" y="600">按 Cache 与工作负载选择</text>
+  <path class="arrow" d="M890 580 H950"/><text class="text" x="970" y="574">函数调用被摊薄</text><text class="text" x="970" y="600">中间结果留在近处</text>
+</svg>

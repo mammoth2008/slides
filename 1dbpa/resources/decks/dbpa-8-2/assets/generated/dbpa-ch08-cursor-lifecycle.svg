@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">游标从声明到关闭的四步生命周期</title>
+  <desc id="desc">声明把游标名与查询关联但不执行查询，打开执行查询并准备结果集，提取逐行推进，关闭释放结果集和其他资源。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .title { font-size: 31px; font-weight: 700; }
+      .note { font-size: 18px; fill: #60758a; }
+      .step { font-size: 25px; font-weight: 700; }
+      .small-title { font-size: 20px; font-weight: 650; }
+      .small { font-size: 17px; fill: #60758a; }
+      .state { font-size: 18px; font-weight: 700; fill: #397447; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="30" fill="#fbfcfe"/>
+  <text class="label title" x="64" y="62">游标四步生命周期：定义查询、取得结果、逐行推进、释放资源</text>
+  <text class="label note" x="64" y="98">最容易漏掉的是 FETCH 的结束状态和异常路径上的 CLOSE</text>
+
+  <rect x="62" y="176" width="1076" height="284" rx="24" fill="#eef8ed" stroke="#7890a5" stroke-width="2"/>
+  <rect x="94" y="250" width="212" height="126" rx="20" fill="#e8f3ff" stroke="#7890a5" stroke-width="2"/>
+  <text class="label step" x="200" y="292" text-anchor="middle">DECLARE</text>
+  <text class="label small-title" x="200" y="329" text-anchor="middle">关联游标与 SELECT</text>
+  <text class="label small" x="200" y="357" text-anchor="middle">此时不执行查询</text>
+
+  <line x1="312" y1="313" x2="376" y2="313" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="386" y="250" width="212" height="126" rx="20" fill="#fff1dc" stroke="#7890a5" stroke-width="2"/>
+  <text class="label step" x="492" y="292" text-anchor="middle">OPEN</text>
+  <text class="label small-title" x="492" y="329" text-anchor="middle">执行查询并准备结果集</text>
+  <text class="label small" x="492" y="357" text-anchor="middle">指针在第一行之前</text>
+
+  <line x1="604" y1="313" x2="668" y2="313" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="678" y="250" width="212" height="126" rx="20" fill="#f0eaff" stroke="#7890a5" stroke-width="2"/>
+  <text class="label step" x="784" y="292" text-anchor="middle">FETCH</text>
+  <text class="label small-title" x="784" y="329" text-anchor="middle">推进并读取当前行</text>
+  <text class="label small" x="784" y="357" text-anchor="middle">结束状态退出循环</text>
+
+  <line x1="896" y1="313" x2="960" y2="313" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="970" y="250" width="136" height="126" rx="20" fill="#ffffff" stroke="#7890a5" stroke-width="2"/>
+  <text class="label step" x="1038" y="292" text-anchor="middle">CLOSE</text>
+  <text class="label small" x="1038" y="329" text-anchor="middle">释放结果集</text>
+  <text class="label small" x="1038" y="357" text-anchor="middle">和资源</text>
+
+  <rect x="170" y="520" width="860" height="108" rx="22" fill="#ffffff" stroke="#c8d3df" stroke-width="2"/>
+  <text class="label state" x="600" y="558" text-anchor="middle">FETCH 之后要检查“还有没有行”</text>
+  <text class="label note" x="600" y="594" text-anchor="middle">没有新行时退出循环；正常结束和异常结束都应释放游标资源</text>
+</svg>

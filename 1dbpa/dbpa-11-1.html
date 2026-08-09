@@ -1,409 +1,183 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 11.1 事务、故障与恢复策略 | HUST</title>
+  <meta name="description" content="用事务边界和故障分类理解 UNDO 与 REDO">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="11-1">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-11-1/assets/dbpa-11-1.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 11.1</div>
+      <h1>事务、故障与恢复策略</h1>
+      <p class="cover-description">让数据库从错误状态回到一致状态</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c111t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>11. 数据库恢复技术</h2>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c111t" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 主要内容
-
-- 事务的基本概念
-- 数据库恢复概述
-- 故障的种类
-- 恢复的实现技术
-- 恢复策略
-- 具有检查点的恢复技术
-- 数据库镜像
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="c111t" data-rel-x="-2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 事务的基本概念
-
-- 用户定义的一个数据库操作序列
-- 不可分割的工作单位
-- 要么全做, 要么全不做 (All or nothing)
-- SQL 语句:
-- `BEGIN TRANSACTION`: 事务开始
-- `COMMIT`: 提交, 将所有更新写入物理数据库
-- `ROLLBACK`: 回滚, 撤销已完成的操作, 回复到开始状态
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 事务的 ACID 特性
-
-- 原子性 (Atomicity): 事务是逻辑工作单位, 操作要么全做, 要么全不做
-- 一致性 (Consistency): 执行结果必须使数据库从一个一致性状态变到另一个一致性状态
-- 隔离性 (Isolation): 一个事务的执行不能被其他事务干扰
-- 持续性 (Durability): 事务一旦提交, 对数据的改变是永久性的
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 转账示例
-
-- 场景: 从账号 A 取出一万元存入账号 B
-- 一致性破坏 (Consistency Violation):
-- 操作 1: A 减去一万元 (完成)
-- 故障发生
-- 操作 2: B 加入一万元 (未完成)
-- 结果: 数据库处于不一致状态 (Inconsistent State)
-- 结论: 一致性与原子性密切相关
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库恢复
-
-- 把数据库从错误状态恢复到某一已知的正确状态
-- 涉及系统可靠性 (System Reliability)
-- 涉及系统运行效率 (System Efficiency)
-- 恢复子系统是 DBMS 的重要组成部分, 占代码量 10% 以上
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="c111t" data-rel-x="2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 事务内部的故障
-
-- 逻辑错误, 运算溢出, 死锁 (Deadlock), 违反完整性约束
-- 部分可由程序发现, 大多是非预期的
-- 处理: 事务撤销 (UNDO)
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 系统故障
-
-- 软故障
-- CPU 故障, 断电. 缓冲区内容丢失
-- 处理: 撤销 (UNDO) 未完成事务, 重做 (REDO) 已提交事务
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 介质故障
-
-- 硬故障
-- 磁盘损坏, 磁头碰撞, 强磁场干扰
-- 破坏全部或部分数据库
-- 发生概率小, 但破坏性最大
-- 处理: 重装数据库副本 + 重做事务
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="c111t" data-rel-x="4200" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 恢复的实现技术
-
-- 核心原理: 建立冗余数据
-- 数据转储 (Data Dumping)
-- 登记日志文件 (Logging)
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据转储
-
-- DBA 定期将整个数据库复制到存储介质
-- 后备副本: 转储产生的数据副本
-- 恢复过程:
-- 1. 重装后备副本
-- 2. 重新运行自转储后的所有更新事务
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 按状态分
-
-- 静态转储 (Static Dumping): 无运行事务时进行, 保证一致性, 但降低可用性
-- 动态转储 (Dynamic Dumping): 允许并发操作, 需配合日志文件使用, 因为副本可能不一致
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 按数量分
-
-- 海量转储 (Full Dumping): 转储全部数据库
-- 增量转储 (Incremental Dumping): 只转储更新过的数据
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 登记日志文件
-
-- 记录事务对数据库的更新操作
-- 以记录为单位: 记录事务标识, 操作类型, 对象, 旧值, 新值
-- 以数据块为单位: 记录受影响的整个数据块
-- 处理事务故障 & 系统故障
-- 协助动态转储恢复
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 先写日志文件原则
-
-- 先写日志文件, 后写数据库
-- 两个写操作之间可能发生故障
-- 若先写数据库未写日志: 无法恢复 (无法撤销)
-- 若先写日志未写数据库: 只需多执行一次 UNDO, 不影响正确性
-- 是保证数据库可恢复性的关键原则
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="c111t" data-rel-x="-4200" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 事务故障恢复:
-
-- 操作: 撤销 (UNDO)
-- 步骤: 反向扫描日志 -\> 对更新操作执行逆操作 -\> 直至事务开始标记
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 系统故障恢复
-
-- 操作: 撤销 (UNDO) 未完成事务, 重做 (REDO) 已提交事务
-- 1. 正向扫描建立 UNDO-LIST 和 REDO-LIST
-- 2. 对 UNDO-LIST 执行撤销
-- 3. 对 REDO-LIST 执行重做
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 介质故障的恢复
-
-- 1. 重装副本: 装入最新的数据库后备副本
-- 2. 重做事务: 装入相关的日志文件副本, 重做已完成的事务
-- 需要 DBA 介入 (重装介质)
-- 但具体恢复由 DBMS 完成
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 具有检查点的恢复技术
-
-- 搜索整个日志耗时; 重做已做事务浪费时间
-- 增加检查点 (Checkpoint) 记录
-- 记录建立时刻所有正在执行的事务清单
-- 记录这些事务最近日志记录的地址
-- 重新开始文件: 记录检查点在日志中的地址
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 利用检查点的恢复策略
-
-- 分类处理: 根据事务在检查点和故障点之间的状态
-- $T\_1$ (检查点前提交): 不需恢复
-- $T\_2, T\_4$ (故障前提交): 重做 (REDO)
-- $T\_3, T\_5$ (故障时未完成): 撤销 (UNDO)
-- 优点: 显著提高恢复效率
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="c111t" data-rel-x="0" data-rel-y="2400" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库镜像
-
-- 自动把整个数据库或关键数据复制到另一个磁盘
-- 主数据库更新时, DBMS 自动更新镜像数据
-- 介质故障恢复: 镜像磁盘继续提供服务, 自动恢复, 无需停机
-- 并发操作: 可用于读取, 提高性能
-- 代价: 降低更新效率 (需写两份)
-- 通常只镜像关键数据
-
-        </div>
-
-        <div id="mm111" class="step" data-rel-to="c111t" data-rel-x="0" data-rel-y="-2000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c11/mindmap-11-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c111q" class="step markdown" data-rel-to="c111t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 11. 数据库恢复技术
-
-- 阐述事务的四个特性 (ACID).
-- "先写数据库, 后写日志" 在发生故障时会产生什么具体的后果?
-- 日志文件在数据库恢复技术中起到了什么作用?
-- 为什么要建立重做队列和撤销队列?
-- 阐述介质故障的恢复流程.
-- 在用日志文件恢复时, 为什么对撤销队列中的事务要做反向扫描?
-
-            ----
-
-            [ 7.2 数据库设计](dbpa-7-2.html#/overview)
-            [| 练习 |](dbpa-exec.html)
-            [ 12 并发控制](dbpa-12-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本单元以转账中断为入口，建立事务、ACID、故障分类和 UNDO／REDO 的恢复方向。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">事务边界、ACID 和故障范围共同决定恢复方向</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明事务边界和提交回滚语义</span></li><li><span class="list-marker">02</span><span class="list-text">解释 ACID 四个特性</span></li><li><span class="list-marker">03</span><span class="list-text">区分三类故障的影响范围</span></li><li><span class="list-marker">04</span><span class="list-text">说明恢复为什么依赖冗余数据</span></li><li><span class="list-marker">05</span><span class="list-text">根据故障影响范围、事务状态和介质可信性选择 UNDO、REDO 或副本恢复</span></li><li><span class="list-marker">06</span><span class="list-text">区分恢复和并发控制的职责</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/11</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">事务把相关操作绑定为不可分割的单位</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>COMMIT</code> 返回成功，就说明每个数据页都已经写回磁盘了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一个程序可以包含多个事务；一个事务要么全部提交，要么全部撤销</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.png" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.png" alt="事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" tabindex="0" role="button" aria-label="放大图片：事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" decoding="async"></figure>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEGIN TRANSACTION　→　数据库操作序列　→　COMMIT 或 ROLLBACK"><span class="relation-term">BEGIN TRANSACTION</span><span class="relation-operator">→</span><span class="relation-term">数据库操作序列</span><span class="relation-operator">→</span><span class="relation-term">COMMIT 或 ROLLBACK</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不等于。<code>COMMIT</code> 接受事务结果并承诺持久保存，日志、缓冲和存储实现共同兑现这一承诺</p></div></div>
+    <div class="numeric-progress">3/11</div>
+    <div class="semantic-label">TRANSACTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">ACID 把可靠事务拆成四个相互支撑的目标</h2>
+    <div class="slide-content"><p class="slide-lead">转账案例能同时展示原子性和一致性</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>原子性</h3><p>全做或全不做，防止半套更新</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一致性</h3><p>遵守约束并从一致状态到一致状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>隔离性</h3><p>并发控制可见性和交错影响</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>持续性</h3><p>提交结果在故障后仍应保留</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复直接支撑原子性、一致性和持续性；隔离性主要由并发控制保证</p></div></div>
+    <div class="numeric-progress">4/11</div>
+    <div class="semantic-label">ACID</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">转账不能提交“只扣款未入账”</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.ce9e907da191.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>A 已扣款、B 还没入账，恢复能只保留第一步吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">事务边界把两个更新绑定在一起，未提交暂态不应对外可见</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 24% 31% 27%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:31%"><col style="width:27%"></colgroup><thead><tr><th>时刻</th><th>余额示意</th><th>事务语义</th><th>对外状态</th></tr></thead><tbody><tr><td>开始</td><td>A=100，B=50</td><td>事务已开始</td><td>一致状态</td></tr><tr><td>中间</td><td>A=90，B=50</td><td>未提交事务内部暂态</td><td>对外不可见</td></tr><tr><td>提交</td><td>A=90，B=60</td><td>结果被接受并承诺持久</td><td>新的一致状态</td></tr><tr><td>故障</td><td>可能停在中间</td><td>未完成事务</td><td>按故障状态恢复</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。未提交的半套更新必须撤销，转账事务只能整体提交或整体回滚</p></div></div>
+    <div class="numeric-progress">5/11</div>
+    <div class="semantic-label">TRANSFER EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">恢复：回到已知可信的一致状态</h2>
+    <div class="slide-content"><p class="slide-lead">恢复子系统利用系统中保存的冗余信息</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="故障状态　→　后备副本、日志或镜像　→　已知可信的一致状态"><span class="relation-term">故障状态</span><span class="relation-operator">→</span><span class="relation-term">后备副本、日志或镜像</span><span class="relation-operator">→</span><span class="relation-term">已知可信的一致状态</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复目标不一定是故障发生前的最新时刻，而是可以验证的一致状态；日志、检查点和镜像把恢复方向落实为具体实现</p></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复的基本原理是用别处保存的数据重建被破坏或不正确的部分</p></div></div>
+    <div class="numeric-progress">6/11</div>
+    <div class="semantic-label">RECOVERY GOAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">按范围、事务状态和介质可信性分类故障</h2>
+    <div class="slide-content"><p class="slide-lead">故障范围不同，恢复动作也不同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>故障</th><th>影响</th><th>典型来源</th></tr></thead><tbody><tr><td>事务故障（事务内部故障）</td><td>一个事务未正常结束</td><td>溢出、死锁、约束违约</td></tr><tr><td>系统故障</td><td>主存、缓冲区和运行事务丢失，磁盘通常仍可信</td><td>断电、操作系统或 DBMS 崩溃</td></tr><tr><td>介质故障</td><td>磁盘或日志被破坏，原介质不再可信</td><td>磁盘损坏、恶意加密</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">7/11</div>
+    <div class="semantic-label">FAILURE TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
+    <h2 class="slide-title">故障范围决定 UNDO、REDO 或副本恢复</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>系统故障后，为什么既要 UNDO 又可能要 REDO？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">恢复方向来自事务是否完成、更新是否写入，以及哪一份介质仍然可信</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" alt="三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" tabindex="0" role="button" aria-label="放大图片：三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>情况</th><th>动作</th><th>目标</th></tr></thead><tbody><tr><td>事务未完成且更新已写入</td><td>UNDO</td><td>撤销未完成更新</td></tr><tr><td>系统故障后未完成／已提交事务</td><td>未完成 UNDO；已提交 REDO</td><td>处理缓冲区丢失造成的两类缺口</td></tr><tr><td>介质数据损坏</td><td>重装可信副本并结合相关日志按状态 UNDO／REDO</td><td>从可信状态重建</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>未完成事务可能已有写入，需要 UNDO；已提交事务的数据页可能尚未落盘，需要 REDO。介质恢复还要根据副本状态结合日志判断恢复动作</p></div></div>
+    <div class="numeric-progress">8/11</div>
+    <div class="semantic-label">RECOVERY ACTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">用事务状态和故障范围选择恢复动作</h2>
+    <div class="slide-content"><p class="slide-lead">事务定义一致性边界，恢复把故障后的数据库带回一致状态</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>事务</h3><p>用边界、提交与回滚定义逻辑工作单位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>目标</h3><p>ACID 职责边界：恢复支撑原子性、一致性和持续性，并发控制支撑隔离性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>恢复</h3><p>按故障范围选择 UNDO、REDO 或副本恢复</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>日志、检查点和镜像把冗余数据落实为可执行的恢复证据</p></div></div>
+    <div class="numeric-progress">9/11</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-11-1/mindmap-11-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">10/11</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">转账中 A 已扣款、B 未入账时，为什么这是未提交事务内部暂态？</span></li><li><span class="question-no">02</span><span class="question-text">ACID 四个特性分别防范什么风险？恢复和并发控制各负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">事务 T1 未完成、T2 已提交时发生系统故障，分别选择什么恢复方向？</span></li><li><span class="question-no">04</span><span class="question-text">为什么系统故障通常保留可信磁盘，而介质故障需要可信副本？</span></li><li><span class="question-no">05</span><span class="question-text">为什么动态转储的介质恢复不能简单记成“只 REDO”？</span></li><li><span class="question-no">06</span><span class="question-text">为什么恢复技术依赖冗余数据？日志、检查点和镜像如何把冗余数据用于恢复？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-10-2.html" title="上一节：10.2 查询优化与执行计划" aria-label="上一节：10.2 查询优化与执行计划">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">10.2</span>
+        <span class="nav-title">查询优化与执行计划</span>
+      </a>
+      <a class="exercise-link" href="dbpa-11-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-11-2.html" title="下一节：11.2 日志、检查点与数据库镜像" aria-label="下一节：11.2 日志、检查点与数据库镜像">
+        <span class="nav-title">日志检查点与镜像</span>
+        <span class="nav-number">11.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">11/11</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

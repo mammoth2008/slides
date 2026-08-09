@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">区块链交易到状态更新的典型流程</title>
+  <desc id="desc">典型流程中，交易从用户广播到节点验证，由提议节点排序打包，网络按具体共识协议接受后执行状态转移并更新本地账本和节点状态；不同协议的顺序可能不同。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .step { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 14; }
+      .consensus { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 14; }
+      .result { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 14; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .line { stroke: #b7c7d8; stroke-width: 2; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="60">共识不是“再写一次”，而是让不同节点接受同一个状态转移</text>
+  <rect class="panel" x="40" y="110" width="1120" height="430"/>
+
+  <rect class="step" x="75" y="250" width="180" height="105"/>
+  <text class="label" x="128" y="292">用户请求</text><text class="text" x="105" y="326">签名交易</text>
+  <rect class="step" x="315" y="250" width="180" height="105"/>
+  <text class="label" x="362" y="292">节点验证</text><text class="text" x="340" y="326">格式、签名、状态规则</text>
+  <rect class="step" x="555" y="250" width="180" height="105"/>
+  <text class="label" x="600" y="292">排序打包</text><text class="text" x="580" y="326">提议新区块</text>
+  <rect class="consensus" x="795" y="210" width="180" height="185"/>
+  <text class="label" x="832" y="252">共识</text><text class="text" x="823" y="288">验证区块</text><text class="text" x="823" y="318">投票或计算竞争</text><text class="small" x="818" y="356">按协议决定接受</text>
+  <rect class="result" x="1015" y="250" width="115" height="105"/>
+  <text class="label" x="1033" y="292">本地提交</text><text class="small" x="1028" y="326">账本与状态</text>
+
+  <path class="arrow" d="M255 302 H305"/><path class="arrow" d="M495 302 H545"/><path class="arrow" d="M735 302 H785"/><path class="arrow" d="M975 302 H1005"/>
+  <path class="line" d="M405 390 C405 475 895 475 895 405"/>
+  <text class="small" x="500" y="465">验证失败或共识未通过的请求不会提交；具体顺序依协议而异</text>
+
+  <rect class="panel" x="75" y="590" width="1055" height="58"/>
+  <text class="label" x="105" y="628">数据库视角</text>
+  <text class="text" x="300" y="628">区块是追加日志，共识决定接受顺序，状态数据库保存节点本地可查询的当前结果</text>
+</svg>

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 14.2 关系系统扩展与 SQL、NoSQL、NewSQL | HUST</title>
+  <meta name="description" content="比较关系扩展与三类大数据数据库路线">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="14-2">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-14-2/assets/dbpa-14-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 14.2</div>
+      <h1>关系系统扩展与 SQL、NoSQL、NewSQL</h1>
+      <p class="cover-description">从数据表达、事务一致性和扩展方式理解不同系统路线</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元先看关系扩展，再比较 SQL、NoSQL 与 NewSQL 的模型和一致性边界。
+封面图只用于引入数据库系统面向不同负载演进，不作为技术路线或历史时间线证据。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">关系扩展和数据库路线取决于负载、模型与系统取舍</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释 OLTP 与 OLAP 为什么分离，以及 ETL/ELT 如何把事务数据送入分析环境</span></li><li><span class="list-marker">02</span><span class="list-text">区分面向对象数据库、对象关系数据库与 XML 的表达能力</span></li><li><span class="list-marker">03</span><span class="list-text">按模型、接口、事务和一致性边界比较 SQL、NoSQL 与 NewSQL</span></li><li><span class="list-marker">04</span><span class="list-text">解释分片、副本和横向扩展分别改善什么，并指出协调成本</span></li><li><span class="list-marker">05</span><span class="list-text">区分 ACID 与 BASE 的关注点，说明 BASE 不是没有一致性</span></li><li><span class="list-marker">06</span><span class="list-text">根据负载、事务范围、模式稳定性和一致性要求选择候选路线</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/11</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">关系模型扩展的方向</h2>
+    <div class="slide-content"><p class="slide-lead">新的负载和数据形态暴露了单一关系系统的边界</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-2/assets/generated/dbpa-ch14-history-newdb-image2.png" data-full-src="resources/decks/dbpa-14-2/assets/generated/dbpa-ch14-history-newdb-image2.png" alt="数据库从文件、层次／网状、关系到分布式与多模型的演进示意" tabindex="0" role="button" aria-label="放大图片：数据库从文件、层次／网状、关系到分布式与多模型的演进示意" decoding="async"><figcaption>概念示意：关系扩展回应新的负载和数据形态</figcaption></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 28% 24%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:28%"><col style="width:24%"></colgroup><thead><tr><th>扩展方向</th><th>新压力</th><th>主要扩展</th><th>保留能力与代价</th></tr></thead><tbody><tr><td>数据仓库</td><td>OLTP 与 OLAP 互相干扰</td><td>ETL/ELT 后按主题组织历史、集成数据</td><td>保留关系基础，但存在数据延迟和额外处理链</td></tr><tr><td>面向对象／对象关系</td><td>复杂对象、用户自定义类型和操作</td><td>在关系与 SQL 基础上扩展对象表达</td><td>保留事务和工具链，但实现与语言更复杂</td></tr><tr><td>XML</td><td>半结构化交换与异构集成</td><td>树状、自描述数据表达</td><td>便于跨系统交换，但查询和约束语义需要额外机制</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">3/11</div>
+    <div class="semantic-label">RELATIONAL EXTENSIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">按负载组合多种数据库</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>既然一种系统装不下所有负载，关系数据库就已经不适用了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">不同负载需要不同模型、接口和一致性取舍</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="单一通用模型　→　承认不同负载的差异　→　多种互补系统按任务组合"><span class="relation-term">单一通用模型</span><span class="relation-operator">→</span><span class="relation-term">承认不同负载的差异</span><span class="relation-operator">→</span><span class="relation-term">多种互补系统按任务组合</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Fits All</h3><p>关系数据库和 SQL 试图覆盖大多数数据管理与事务需求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Does Not Fit All</h3><p>分析、复杂对象、半结构化数据、海量和分布式负载暴露单一系统的边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Fits a Bunch</h3><p>SQL、NoSQL、NewSQL 与数据仓库在不同负载中共存并相互借鉴</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>可以按负载组合互补系统：订单与库存采用关系型 SQL，历史报表进入数据仓库，结构变化快或高吞吐的访问再评估其他路线</p></div></div>
+    <div class="numeric-progress">4/11</div>
+    <div class="semantic-label">ONE SIZE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">关系数据库与 ACID 事务</h2>
+    <div class="slide-content"><p class="slide-lead">在正确配置事务、约束和隔离级别的前提下，订单与库存更新可保持清晰边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>模型</h3><p>关系模式和完整性约束使数据结构与可接受状态更明确</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>接口</h3><p>SQL 表达目标，不要求用户直接写出物理访问路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务</h3><p>ACID、并发控制与恢复支持订单和库存的整体更新</p></article></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="写入订单＋扣减库存　→　一个 ACID 事务　→　两步全部成功，或失败时整体回滚"><span class="relation-term">写入订单＋扣减库存</span><span class="relation-operator">→</span><span class="relation-term">一个 ACID 事务</span><span class="relation-operator">→</span><span class="relation-term">两步全部成功，或失败时整体回滚</span></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>原子性要求全做或全不做；一致性要求状态变化保持完整性约束；隔离性避免并发事务看到未定义的中间状态；持久性要求提交后故障恢复仍能保留结果</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>具体保证取决于事务边界、隔离级别和系统配置，跨节点协调可能增加扩展成本</p></div></div>
+    <div class="numeric-progress">5/11</div>
+    <div class="semantic-label">SQL DATABASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">NoSQL：模型与一致性取舍</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分片和副本，不都是把数据多放到几台机器上吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">典型系统在柔性、吞吐、可用性与一致性之间做不同组合</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 25% 30% 25%"><colgroup><col style="width:20%"><col style="width:25%"><col style="width:30%"><col style="width:25%"></colgroup><thead><tr><th>概念</th><th>解决的问题</th><th>得到什么</th><th>代价或边界</th></tr></thead><tbody><tr><td>数据模型</td><td>键值、宽表、文档、图</td><td>针对结构与访问模式提供选择</td><td>不同模型的关系语义和接口不统一</td></tr><tr><td>分片</td><td>把数据分到多个节点</td><td>扩大容量、并行处理和横向扩展</td><td>跨分片查询和事务需要协调</td></tr><tr><td>副本</td><td>同一分片保存多份</td><td>提高节点故障下的可用性，也可能支持读扩展</td><td>同步带来通信和一致性成本</td></tr><tr><td>BASE 与最终一致性</td><td>部分系统放宽即时一致性</td><td>换取特定负载下的可用性或吞吐；更新停止后副本可能收敛</td><td>BASE 不是所有 NoSQL 的统一契约，也不等于没有一致性</td></tr><tr><td>查询与事务</td><td>NoSQL 仍可提供查询和局部事务</td><td>由具体系统定义灵活边界</td><td>跨分片事务和全局关系语义可能受限</td></tr><tr><td>模式</td><td>模式较柔性，更多语义由应用解释</td><td>快速适应结构变化</td><td>数据质量由系统、应用和管道共同维护</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分片解决数据如何分布和扩展，副本解决节点故障下如何继续服务；最终一致性描述副本传播过程，不等于 BASE 适用于所有系统</p></div></div>
+    <div class="numeric-progress">6/11</div>
+    <div class="semantic-label">NOSQL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">NewSQL 的目标与代价</h2>
+    <div class="slide-content"><p class="slide-lead">它是多种系统路线的共同目标，不是单一产品或固定实现</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="SQL／关系接口　＋　分布式事务与一致性机制　＋　分片、多副本与横向扩展　→　NewSQL 路线"><span class="relation-term">SQL／关系接口　＋　分布式事务与一致性机制　＋　分片、多副本与横向扩展</span><span class="relation-operator">→</span><span class="relation-term">NewSQL 路线</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>保留</h3><p>SQL 接口、关系语义和事务开发接口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>吸收</h3><p>分片、多副本、横向扩展和分布式事务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>代价</h3><p>跨节点协调、延迟、故障处理、运维复杂度和一致性实现成本</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>NewSQL 的目标需要共识、分片、动态迁移和云原生支撑，具体机制会增加协调与运维成本</p></div></div>
+    <div class="numeric-progress">7/11</div>
+    <div class="semantic-label">NEWSQL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
+    <h2 class="slide-title">按负载选择数据库路线</h2>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.8f78a688337c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>模型、事务和一致性取舍要一起看</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先描述负载、事务范围、模式和一致性，再判断扩展方式与代价</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 22% 21% 18% 24%"><colgroup><col style="width:15%"><col style="width:22%"><col style="width:21%"><col style="width:18%"><col style="width:24%"></colgroup><thead><tr><th>路线</th><th>模型与接口</th><th>一致性／事务</th><th>扩展方式</th><th>典型负载与边界</th></tr></thead><tbody><tr><td>关系型 SQL</td><td>关系模式、SQL、完整性约束</td><td>通常强调 ACID</td><td>传统扩展或特定分布式方案</td><td>精细事务；极大规模扩展可能成本较高</td></tr><tr><td>NoSQL</td><td>键值、宽表、文档、图等</td><td>取舍多样，部分系统采用 BASE</td><td>分片和副本</td><td>海量、柔性或高吞吐负载；跨分片语义可能复杂</td></tr><tr><td>NewSQL</td><td>关系模型和 SQL</td><td>目标是保留分布式事务语义</td><td>分片、多副本、横向扩展</td><td>跨节点关系事务；协调和运维成本更高</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>一种可能的系统分工是：订单与库存先检查 ACID 和完整性约束；零部件目录与缓存先检查模型柔性、吞吐和横向扩展；历史报表先检查 OLAP 与数据仓库分工</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统分工取决于负载和约束，不能仅按业务名称固定选择</p></div></div>
+    <div class="numeric-progress">8/11</div>
+    <div class="semantic-label">CHOOSE BY WORKLOAD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">同一组织可以组合多条数据库路线，先描述负载和约束再判断代价</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>关系扩展</h3><p>OLTP 与分析分工；对象关系和 XML 扩展数据表达</p></article><article class="content-card emphasis-card" tabindex="0"><h3>SQL</h3><p>关系模式、SQL 和 ACID 适合边界清晰的精细事务</p></article><article class="content-card emphasis-card" tabindex="0"><h3>NoSQL 与 NewSQL</h3><p>NoSQL 以柔性模型、分片和副本应对特定负载；NewSQL 尝试保留 SQL 事务并扩展到分布式节点</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先看数据模型和负载，再看事务与一致性，最后判断分片、副本和横向扩展需求</p></div></div>
+    <div class="numeric-progress">9/11</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-14-2/mindmap-14-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">10/11</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单与月度分析为何分开？事务数据如何进入分析环境？</span></li><li><span class="question-no">02</span><span class="question-text">对象关系数据库与 XML 各解决什么问题？</span></li><li><span class="question-no">03</span><span class="question-text">分片与副本各解决什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">订单扣库存属于 ACID 的哪一性质？副本未同步体现 BASE 的哪一特点？</span></li><li><span class="question-no">05</span><span class="question-text">NewSQL 为何适合跨节点 SQL 事务？协调代价是什么？</span></li><li><span class="question-no">06</span><span class="question-text">订单、事件、跨节点 SQL 事务如何选择路线？各自边界是什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-14-1.html" title="上一节：14.1 数据库发展动力与发展简史" aria-label="上一节：14.1 数据库发展动力与发展简史">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">14.1</span>
+        <span class="nav-title">数据库发展简史</span>
+      </a>
+      <a class="exercise-link" href="dbpa-14-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-14-3.html" title="下一节：14.3 分布式、云原生与数据库发展展望" aria-label="下一节：14.3 分布式、云原生与数据库发展展望">
+        <span class="nav-title">分布式云原生与展望</span>
+        <span class="nav-number">14.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">11/11</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

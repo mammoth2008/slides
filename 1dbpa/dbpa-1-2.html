@@ -1,550 +1,445 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 1.2 数据模型 | HUST</title>
+  <meta name="description" content="从现实世界的抽象出发，理解概念模型、典型数据模型与关系模型基础术语">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="1-2">
+  <meta name="version" content="2608">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-1-2/assets/data-model-cover.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 1.2</div>
+      <h1>数据模型</h1>
+      <p class="cover-description">从真实世界转向计算机世界</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 "cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide, class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c12t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-            <!-- 修改标题 -->
-            <h2>1. 绪论</h2>
-            <h3 style="text-align: center">1.2 数据模型</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c12t" data-rel-x="-740" data-rel-y="-240" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 模型
-
-- 对真实世界的合理简化和模仿
-- 地图, 游戏, 手办, 乐高都是模型
-
-        </div>
-
-        <div id="a1p" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![model](img/c01/model0.jpg)
-#### 地图是一种模型
-
-        </div>
-
-
-        <div id="a1p1" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![model](img/c01/model1.jpeg)
-#### 乐高是一种模型
-
-        </div>
-
-        <div id="a1p2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![model](img/c01/model2.jpg)
-#### 设计原型图是一种模型
-
-        </div>
-
-        <div id="a1p3" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![model](img/c01/model3.jpeg)
-#### 游戏也是一种模型
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="700" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据模型
-
-- 对现实世界数据和信息的抽象, 表示和处理
-- 要能够比较真实地模拟现实世界
-- 要容易被人理解
-- 要便于在计算机上实现
-
-        </div>
-
-        <div id="a2p" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![data model](img/c01/data-model0.png)
-
-        </div>
-
-        <div id="a2p1" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="0" data-rel-z="10"
-            data-rotate-y="0" data-scale="2">
-
-![data model](img/c01/data-model1.png)
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 模型的分类
-
-- 根据模型应用的目的分类
-- 概念模型 (信息模型): 按照用户的观点对数据和信息建模
-- 逻辑模型: 按照计算机系统的观点对数据和信息建模
-
-        </div>
-
-        <div id="a3a" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![数据模型](img/c01/data-model.png)
-#### 数据模型
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="c12t" data-rel-x="1200" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 现实世界
-### 信息世界
-### 机器世界
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="600" data-rel-y="-500" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 信息世界的基本概念
-
-- 实体 (entity): 客观存在并可以相互区别的事物
-- 属性 (attribute): 实体具有的某一特性
-- 码 (key): 唯一标识实体的属性集
-- 域 (domain): 属性的取值范围称作该属性的域
-- 实体型 (entity type): 用实体名及其属性名集合来抽象和刻画同类实体, 称为实体型
-- 实体集 (entity set): 同型实体的集合称为实体集
-- 联系 (relationship): 实体之间的相关, 或者组成实体的各属性之间的相关
-
-        </div>
-
-        <!-- 在数据库中的域基本上可以看做是属性的数据类型 -->
-        <!-- 码 (Key) 由关系的一组属性集组成, 通过定义码可以保证关系实例上任何两个元组的值在定义码的属性集上取值不同 -->
-        <!-- 形成码的属性集的值对于关系的所有实例都有唯一性 -->
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 联系的类型
-
-- 一对一联系 (1:1)
-- 一对多联系 (1:n)
-- 多对多联系 (m:n)
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="800" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 实体-联系图 (E-R 图)
-
-- 实体型: 用矩形表示, 矩形框内写明实体名
-- 属性: 用椭圆形表示, 并用无向边将其与相应的实体连接起来
-- 联系: 用菱形表示, 菱形框内写明联系名, 并用无向边分别与有关实体连接起来, 同时在无向边旁标上联系的类型 (1:1, 1:n 或 m:n)
-
-        </div>
-
-        <div id="a11a" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![ERD](img/c01/erd.png)
-#### E-R 图
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 模型的要素
-
-- 数据结构
-- 数据操作
-- 完整性约束
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="100" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 数据结构
-
-- 描述系统的静态特性
-- 描述数据库的组成对象以及对象之间的联系
-- 例: 层次模型, 网络模型, 关系模型
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="400" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 数据操作
-
-- 描述系统的动态特性
-- 是对数据库中各种对象的实例允许**执行的操作**集合
-- 例: 增删查改 (CRUD, Create Retrieve Update Delete)
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="400" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 完整性约束
-
-- 是一组完整性规则的集合
-- 数据模型中数据及其联系所具有的**制约和依存规则**
-- 例: 姓名不能为空, 性别只能是男或女
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="c12t" data-rel-x="-2400" data-rel-y="-2000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 层次模型 (Hierarchical Model)
-
-- 只有一个结点没有父结点, 这个结点叫做根结点
-- 除根结点外, 每个结点都有且只有一个父结点
-
-        </div>
-
-        <div id="a12a" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![层次模型](img/c01/hieratchical.png)
-#### 层次模型 (Hierarchical Model)
-
-        </div>
-
-        <div id="a12b" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![树状结构](img/c01/tree.png)
-#### 树状结构
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据结构 (HM)
-
-- 每个结点表示一个记录类型, 每个记录类型可以包含若干个字段
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 操纵与完整性约束 (HM)
-
-- 查询, 插入, 删除, 更新 (CRUD)
-- 如果没有相应的父结点, 就不能插入子结点
-- 如果删除父结点, 子结点也会相应被删除
-- 更新时, 应更新所有记录, 避免数据不一致
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="700" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 优缺点 (HM)
-
-- 优点: 易用, 性能高, 完整性支持良好
-- 缺点: 不适合表示多对多联系, 对插入和删除操作的限制较多, 必须按顺序查找, 命令趋于程序化
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="c12t" data-rel-x="0" data-rel-y="-3000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 网状模型 (Network Model)
-
-- 允许多个结点没有父结点
-- 允许结点有多个父结点
-- 允许两个结点之间有多种联系
-
-        </div>
-
-        <div id="a16a" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![网状模型](img/c01/network.png)
-#### 网状模型 (Network Model)
-
-        </div>
-
-        <div id="a16c" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![网状模型](img/c01/network.webp)
-#### 网络结构
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据结构 (NM)
-
-- 每个结点表示一个记录类型, 每个记录类型可以包含若干个字段
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 操纵与完整性约束 (NM)
-
-- 查询, 插入, 删除, 更新 (CRUD)
-- 可以在没有相应的父结点的情况下, 插入子结点
-- 可以单独删除父结点, 子结点不会被删除
-- 更新时, 只更新指定记录即可
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 优缺点 (NM)
-
-- 优点: 更好地描述现实世界, 性能良好
-- 缺点: 数据操纵语言复杂, 数据独立性差
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="c12t" data-rel-x="3000" data-rel-y="-3300" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 关系模型 (Relational Model)
-
-- 由一张二维表构成
-- 二维表由行和列构成
-
-        </div>
-
-        <div id="a20a" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Edgar F. Codd](img/c01/e_f_codd.jpg)
-#### Edgar F. Codd, ACM Turing Award (1981)
-
-        </div>
-
-        <div id="a20b" class="step markdown" data-rel-to="a20a" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![关系模型](img/c01/relational.png)
-#### 关系模型 (Relational Model)
-
-        </div>
-
-        <div id="a20b" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![关系模型](img/c01/relation.png)
-#### 关系表
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="0" data-rel-y="900" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据结构 (RM)
-
-- 关系 (relation): 整张二维表
-- 元组 (tuple): 表中的一行
-- 属性 (attribute): 表中的一列
-- 码 (key): 可以唯一确定一个元组的属性组
-- 域 (domain): 属性的取值范围
-- 分量 (component): 元组中的一个属性值
-- 关系模式 (relation schema): 对关系的描述, 通常表示为**关系名 (属性 1, 属性 2, 属性 3 等等)**
-
-        </div>
-
-        <!-- 关系是元组的集合, 不是元组的列表 -->
-        <!-- 始终记牢关系是集合, 对关系的操作是集合运算 -->
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 操纵与完整性约束 (RM)
-
-- 查询, 插入, 删除, 更新 (CRUD)
-- 需要满足完整性约束条件
-- 操纵的对象和结果都是关系, 而不是单条记录
-- 存取路径对用户透明
-
-        </div>
-
-        <div id="a23" class="step markdown" data-rel-to="a22" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 存储结构 (RM)
-
-- 表以文件形式存储
-
-        </div>
-
-        <div id="a24" class="step markdown" data-rel-to="a23" data-rel-x="0" data-rel-y="600" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 优缺点 (RM)
-
-- 优点: 数学概念严格, 概念简单易懂, 数据独立性高, 安全性高
-- 缺点: 查询效率较低
-
-        </div>
-
-        <!-- 本节思维导图 -->
-
-        <div id="mm12" class="step" data-rel-to="c12t" data-rel-x="-2000" data-rel-y="-3000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c01/mindmap-1-2.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c12q" class="step markdown" data-rel-to="c12t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 1.2 数据模型
-
-- 什么是模型?
-- 什么是数据模型?
-- 数据模型由哪些要素组成?
-- 对比层次数据模型, 网络数据模型和关系数据模型.
-- 为什么常用的数据库采用关系模型?
-
-            ----
-
-            [ 1.1 数据库系统概述 ](dbpa-1-1.html)
-            [| 练习 |](dbpa-exec.html)
-            [ 1.3 数据库系统的三级模式结构 ](dbpa-1-3.html)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">实体和联系决定数据模型如何组织、操作和约束数据</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">理解数据建模需要经过两次抽象</span></li><li><span class="list-marker">02</span><span class="list-text">区分实体、属性、码、实体型、实体集和联系</span></li><li><span class="list-marker">03</span><span class="list-text">读懂并初步绘制简单 E-R 图</span></li><li><span class="list-marker">04</span><span class="list-text">用数据结构、数据操纵和完整性约束比较数据模型</span></li><li><span class="list-marker">05</span><span class="list-text">比较层次模型、网状模型和关系模型的主要差异</span></li><li><span class="list-marker">06</span><span class="list-text">根据数据类型和应用需求，初步判断哪类数据模型更适用</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/32</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:6.2500%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.1</div>
+    <h2 class="slide-title">模型基于用途保留重要特征</h2>
+    <div class="slide-content"><p class="slide-lead">同一对象用于不同目的时，往往需要保留不同特征</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/model-map.webp" data-full-src="resources/decks/dbpa-1-2/assets/model-map.jpg" data-full-width="2200" data-full-height="1982" alt="地图作为现实地理的模型" tabindex="0" role="button" aria-label="放大图片：地图作为现实地理的模型" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>保留</h3><p>导航地图保留道路走向、交叉关系和地标位置，帮助人们规划路线</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>省略</h3><p>在只用于规划路线的地图中，建筑材料、窗户数量和行人衣着等信息可以省略</p></article></div></div></div>
+    <div class="numeric-progress">3/32</div>
+    <div class="semantic-label">MODEL AND ABSTRACTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.3750%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.1</div>
+    <h2 class="slide-title">数据模型说明记录什么、如何组织和操作</h2>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-neutral" data-character-edge="right" data-character-along="57.841" data-character-exposure="59.688" data-character-scale="0.9" style="--character-along:57.841%;--character-exposure:59.688;--character-hidden:40.312%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-neutral.3f046a37fc6e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>数据的操作有四种：添加、修改、删除、查询</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">数据建模把现实对象及其联系抽象为 DBMS 支持的数据模型</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22.502% 28.441% 49.057%"><colgroup><col style="width:22.502%"><col style="width:28.441%"><col style="width:49.057%"></colgroup><thead><tr><th>数据模型的任务</th><th>回答的问题</th><th>游戏对局中的例子</th></tr></thead><tbody><tr><td>描述数据</td><td>需要记录什么特征</td><td>玩家、英雄、对局、时间和战绩</td></tr><tr><td>组织数据</td><td>数据怎样关联</td><td>玩家参加对局，并在对局中使用英雄</td></tr><tr><td>操作数据</td><td>能够执行什么操作</td><td>查询玩家战绩或更新对局结果</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据模型组织经过抽象的数据，并规定可以对数据执行哪些操作</p></div></div>
+    <div class="numeric-progress">4/32</div>
+    <div class="semantic-label">DATA MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.1</div>
+    <h2 class="slide-title">数据建模通常经过两次抽象</h2>
+    <div class="slide-content"><p class="slide-lead">两个抽象阶段分别连接业务语义与数据库管理系统的实现</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="现实世界 —第一次抽象→ 概念模型 —第二次抽象→ 数据模型"><span class="relation-term">现实世界 —第一次抽象</span><span class="relation-operator">→</span><span class="relation-term">概念模型 —第二次抽象</span><span class="relation-operator">→</span><span class="relation-term">数据模型</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18.638% 36.892% 44.47%"><colgroup><col style="width:18.638%"><col style="width:36.892%"><col style="width:44.47%"></colgroup><thead><tr><th>抽象阶段</th><th>关注点</th><th>学生选课中的结果</th></tr></thead><tbody><tr><td>概念模型</td><td>业务对象与联系</td><td>学生、课程、选课联系及其成绩</td></tr><tr><td>数据模型</td><td>DBMS 支持的数据结构</td><td>Student、Course 和 SC 三个关系</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>概念模型表达业务语义，数据模型规定数据的组织和操作方式</p></div></div>
+    <div class="numeric-progress">5/32</div>
+    <div class="semantic-label">TWO ABSTRACTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.6250%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">概念模型用于沟通业务语义</h2>
+    <div class="slide-content"><p class="slide-lead">概念模型明确需要管理的对象、属性和联系</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>表达业务含义</h3><p>表达业务中的对象、属性和联系</p>
+<p>例如：订单明细记录商品、数量和成交价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>简单清晰</h3><p>用户和设计人员都能阅读并讨论</p>
+<p>例如：业务人员能够读懂“玩家参加对局”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>独立于具体实现</h3><p>概念模型不依赖具体的数据库管理系统</p>
+<p>例如：概念模型不决定数据库选型</p></article></div>
+<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>讨论学生选课功能时，先明确“学生选修课程，选课记录包含成绩”的业务含义，不必立即决定细节</p></div></div></div></div>
+    <div class="numeric-progress">6/32</div>
+    <div class="semantic-label">CONCEPTUAL MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">概念模型的基本概念</h2>
+    <div class="slide-content"><p class="slide-lead">要管理的对象、属性和联系</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="29.954% 70.046%" style="--key-value-columns:minmax(0,29.954fr) minmax(0,70.046fr)"><div class="key-value-item substep"><h3 class="key-value-key">实体 Entity</h3><div class="key-value-value"><p>客观存在并可相互区别的事物</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">属性 Attribute</h3><div class="key-value-value"><p>实体具有的某一特性</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">码 Key</h3><div class="key-value-value"><p>唯一标识实体的属性集</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">实体型 Entity Type</h3><div class="key-value-value"><p>用实体名和属性名集合描述一类实体</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">实体集 Entity Set</h3><div class="key-value-value"><p>属于同一实体型的实体集合</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">联系 Relationship</h3><div class="key-value-value"><p>不同实体型的实体之间或同实体型内部实体之间的联系</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>对象要有独立身份，且能够单独区分和管理，才适合作为实体</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-explain" data-character-edge="right" data-character-along="52.531" data-character-exposure="74.659" data-character-scale="0.9" style="--character-along:52.531%;--character-exposure:74.659;--character-hidden:25.341%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-explain.4440ff0a88e1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>数据库管理的是实体</p></div></div></div></aside>
+    <div class="numeric-progress">7/32</div>
+    <div class="semantic-label">CORE CONCEPTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.8750%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">区分实体、实体型和实体集</h2>
+    <div class="slide-content"><p class="slide-lead">实体应可区分且可单独管理；实体型描述一类实体；实体集是具体实体的集合</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 52%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:52%"></colgroup><thead><tr><th>概念</th><th>回答的问题</th><th>学生业务中的例子</th></tr></thead><tbody><tr><td>实体</td><td>具体是谁</td><td>学号为 20260001 的李明</td></tr><tr><td>实体型</td><td>这一类怎样描述</td><td>学生（学号，姓名，专业，年级）</td></tr><tr><td>实体集</td><td>这一类有哪些成员</td><td>学校当前登记的全体学生</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“某游戏中的龙”、“该游戏中所有龙”、“游戏内部编号为 D017 的龙”</p></div></div>
+    <div class="numeric-progress">8/32</div>
+    <div class="semantic-label">ENTITY LEVELS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">码 Key 必须能够唯一标识实体</h2>
+    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-explain" data-character-edge="top" data-character-along="80.075" data-character-exposure="60.604" data-character-scale="0.9" style="--character-along:80.075%;--character-exposure:60.604;--character-hidden:39.396%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-explain.693ca258a9f1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>在一些书中，“码”也被叫做“键”</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">还要考虑取值是否稳定、可用</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 24% 24% 30%"><colgroup><col style="width:22%"><col style="width:24%"><col style="width:24%"><col style="width:30%"></colgroup><thead><tr><th>候选属性</th><th>是否唯一</th><th>是否稳定</th><th>判断</th></tr></thead><tbody><tr><td>学号</td><td>学校要求唯一</td><td>在校期间稳定</td><td>适合作为码</td></tr><tr><td>姓名</td><td>可能出现同名</td><td>通常稳定</td><td>不能保证唯一</td></tr><tr><td>手机号</td><td>当前可能唯一</td><td>可能更换或缺失</td><td>不宜作为主要标识</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>码不能只看当前是否重复，还要考虑规则能否长期保证唯一</p></div></div>
+    <div class="numeric-progress">9/32</div>
+    <div class="semantic-label">KEY SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.1250%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">联系基数区分 1:1、1:n 和 m:n</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="62.718" data-character-exposure="61.515" data-character-scale="0.9" style="--character-along:62.718%;--character-exposure:61.515;--character-hidden:38.485%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>还有其他联系基数吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一端的一个实体最多可与另一端多少个实体建立联系</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>One-to-One 1:1</h3><p>一个学生最多对应一张当前使用的校园卡，一张校园卡最多属于一个学生</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>One-to-Many 1:n</h3><p>一个学院可以包含多个专业，一个专业最多属于一个学院</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Many-to-Many m:n</h3><p>一个学生可以选修多门课程，一门课程也可以由多个学生选修</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一个 1:n 联系反向读就是 n:1：班级 → 学生是 1:n，学生 → 班级是 n:1</p></div></div>
+    <div class="numeric-progress">10/32</div>
+    <div class="semantic-label">RELATIONSHIP TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
+  </section>
+<section id="b7" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">实体—联系图（E-R 图）</h2>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-explain" data-character-edge="right" data-character-along="37.683" data-character-exposure="51.613" data-character-scale="0.9" style="--character-along:37.683%;--character-exposure:51.613;--character-hidden:48.387%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-explain.4440ff0a88e1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>以后我们还会继续学习 E-R 图</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">阅读 E-R 图时，先识别实体型、属性和联系，再理解图形符号</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/er-diagram-example.webp" data-full-src="resources/decks/dbpa-1-2/assets/er-diagram-example.png" data-full-width="780" data-full-height="434" alt="学生选课实体联系图示例" tabindex="0" role="button" aria-label="放大图片：学生选课实体联系图示例" decoding="async"></figure>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">学生和课程是两个实体型</span></li><li><span class="list-marker">■</span><span class="list-text">“选修”是学生与课程之间的联系</span></li><li><span class="list-marker">■</span><span class="list-text">学生可选修多门课程，一门课程也可由多名学生选修，二者构成多对多联系</span></li></ul></div></div></div>
+    <div class="numeric-progress">11/32</div>
+    <div class="semantic-label">ER DIAGRAM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.3750%"></div></div>
+  </section>
+<section id="b6" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">E-R 图表示业务语义</h2>
+    <div class="slide-content"><p class="slide-lead">矩形、椭圆和菱形分别表示实体型、属性和联系，基数标记表示联系基数</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>矩形</h3><p>表示实体型，矩形中写实体型名</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>椭圆</h3><p>表示属性，连接到所属实体型或联系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>菱形</h3><p>表示联系，菱形中写联系名</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>基数标记</h3><p>标出 1:1、1:n 或 m:n 等联系基数</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>读 E-R 图时，先找实体型，再看属性，最后沿联系检查联系名称和基数</p></div></div>
+    <div class="numeric-progress">12/32</div>
+    <div class="semantic-label">ER NOTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b8" class="step slide-surface role-content layout-split axis-horizontal order-list-media"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.2</div>
+    <h2 class="slide-title">练习：将业务规则表示为 E-R 图</h2>
+    <div class="slide-content"><p class="slide-lead">一次“参赛”联系关联一个玩家、一场对局和一个英雄，并带有战绩属性</p>
+<div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>识别实体型</h3><p>玩家、对局、英雄</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>命名联系</h3><p>“参赛”</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>标注基数</h3><p>玩家端、对局端为 N，英雄端为 1；每个玩家在一场对局中对应一个英雄</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>添加属性</h3><p>战绩是“参赛”的属性</p></div></div></div></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/game-participation-er.svg" data-full-src="resources/decks/dbpa-1-2/assets/game-participation-er.svg" alt="玩家、对局和英雄的 E-R 图练习结果示意" tabindex="0" role="button" aria-label="放大图片：玩家、对局和英雄的 E-R 图练习结果示意" decoding="async"></figure></div></div>
+    <div class="numeric-progress">13/32</div>
+    <div class="semantic-label">ER EXERCISE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.6250%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.3</div>
+    <h2 class="slide-title">数据模型的三个要素</h2>
+    <div class="slide-content"><p class="slide-lead">数据结构说明对象及联系，数据操纵规定操作及规则，完整性约束限定合法状态及变化</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22.003% 28.778% 49.219%"><colgroup><col style="width:22.003%"><col style="width:28.778%"><col style="width:49.219%"></colgroup><thead><tr><th>模型要素</th><th>回答的问题</th><th>订单业务中的例子</th></tr></thead><tbody><tr><td>数据结构 Data Structure</td><td>数据如何组织</td><td>用户、订单、商品和订单项怎样关联</td></tr><tr><td>数据操纵 Data Manipulation</td><td>可以执行哪些操作</td><td>创建订单、查询订单、修改订单状态</td></tr><tr><td>完整性约束 Integrity Constraint</td><td>哪些状态和变化合法</td><td>库存不能为负，订单属于某个用户</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据结构、数据操纵和完整性约束共同构成数据模型</p></div></div>
+    <div class="numeric-progress">14/32</div>
+    <div class="semantic-label">MODEL ELEMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.3</div>
+    <h2 class="slide-title">练习：判断描述属于哪个模型要素</h2>
+    <div class="slide-content"><p class="slide-lead">判断每条描述属于数据结构、数据操纵还是完整性约束</p>
+<div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">学生表包含学号、姓名和专业</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">一个学生可以选修多门课程</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">查询某学生的全部成绩</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">把订单状态从待支付修改为已支付</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">成绩必须在 0 到 100 之间</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">删除用户前必须处理该用户的订单</span></li></ul></div></div></div></div>
+    <div class="numeric-progress">15/32</div>
+    <div class="semantic-label">ELEMENT EXERCISE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.8750%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.4</div>
+    <h2 class="slide-title">层次模型 Hierarchical Model</h2>
+    <div class="slide-content"><p class="slide-lead">每个非根结点只有一个双亲结点，适合表达一对多层级结构</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/hierarchical-model.webp" data-full-src="resources/decks/dbpa-1-2/assets/hierarchical-model.png" data-full-width="3656" data-full-height="1506" alt="层次模型的树形结构" tabindex="0" role="button" aria-label="放大图片：层次模型的树形结构" decoding="async"></figure>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">有且只有一个根结点</span></li><li><span class="list-marker">■</span><span class="list-text">根以外的结点有且只有一个双亲结点</span></li><li><span class="list-marker">■</span><span class="list-text">记录之间的联系形成固定的存取路径</span></li></ul></div></div></div>
+    <div class="numeric-progress">16/32</div>
+    <div class="semantic-label">HIERARCHICAL MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.4</div>
+    <h2 class="slide-title">层次模型的操纵限制</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="61.207" data-character-exposure="56.95" data-character-scale="0.9" style="--character-along:61.207%;--character-exposure:56.95;--character-hidden:43.05%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>有没有让你想起数据结构中的……</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">子女记录依赖双亲记录；插入、更新、删除和查询通常沿路径进行</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="22% 78%" style="--key-value-columns:minmax(0,22fr) minmax(0,78fr)"><div class="key-value-item"><h3 class="key-value-key">插入</h3><div class="key-value-value"><p>没有相应双亲记录时，不能直接插入子女记录</p></div></div><div class="key-value-item"><h3 class="key-value-key">删除</h3><div class="key-value-value"><p>删除双亲记录会同时删除其全部子女记录</p></div></div><div class="key-value-item"><h3 class="key-value-key">查询</h3><div class="key-value-value"><p>访问子女记录通常要沿双亲到子女的路径进行</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若学院—专业—学生形成固定路径，学生记录就不能脱离专业记录独立存在</p></div></div>
+    <div class="numeric-progress">17/32</div>
+    <div class="semantic-label">HIERARCHICAL RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.1250%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-split axis-horizontal order-cards-media"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.4</div>
+    <h2 class="slide-title">层次模型适合天然具备层级的结构</h2>
+    <div class="slide-content"><p class="slide-lead">层级越接近树，层次模型越容易表达；多对多联系难以自然表示</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>优势</h3><p>结构简单清晰</p>
+<p>沿固定路径访问时效率较高</p>
+<p>父子层级约束明确</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>局限</h3><p>难以自然表达多对多和多双亲联系</p>
+<p>应用程序依赖访问路径</p></article></div>
+<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/tree-data-structure-opaque.webp" data-full-src="resources/decks/dbpa-1-2/assets/tree-data-structure-opaque.png" data-full-width="1200" data-full-height="1200" alt="二叉树结构" tabindex="0" role="button" aria-label="放大图片：二叉树结构" decoding="async"></figure></div></div>
+    <div class="numeric-progress">18/32</div>
+    <div class="semantic-label">HIERARCHICAL TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+  </section>
+<section id="e1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.5</div>
+    <h2 class="slide-title">网状模型 Network Model</h2>
+    <div class="slide-content"><p class="slide-lead">允许结点有多个双亲，能更直接地表达复杂联系</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/network-model.webp" data-full-src="resources/decks/dbpa-1-2/assets/network-model.png" data-full-width="3278" data-full-height="1370" alt="网状模型中结点之间的多种联系" tabindex="0" role="button" aria-label="放大图片：网状模型中结点之间的多种联系" decoding="async"></figure>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">允许多个结点没有双亲</span></li><li><span class="list-marker">■</span><span class="list-text">允许一个结点有多个双亲</span></li><li><span class="list-marker">■</span><span class="list-text">允许两个结点之间存在多种联系</span></li></ul></div></div></div>
+    <div class="numeric-progress">19/32</div>
+    <div class="semantic-label">NETWORK MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.3750%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-cards-media"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.5</div>
+    <h2 class="slide-title">更能表达复杂联系，但结构和程序更复杂</h2>
+    <div class="slide-content"><p class="slide-lead">沿明确路径访问数据时效率较高，但应用程序需要选择存取路径</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>优势</h3><p>能够直接表示多个双亲结点和多种联系</p>
+<p>沿明确路径存取时效率较高</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>局限</h3><p>数据定义语言和数据操纵语言复杂</p>
+<p>应用程序需要选择具体存取路径</p></article></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/graph-data-structure.webp" data-full-src="resources/decks/dbpa-1-2/assets/graph-data-structure.webp" data-full-width="1366" data-full-height="768" alt="数据结构课程中的图结构" tabindex="0" role="button" aria-label="放大图片：数据结构课程中的图结构" decoding="async"></figure></div></div>
+    <div class="numeric-progress">20/32</div>
+    <div class="semantic-label">NETWORK TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="e3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.5</div>
+    <h2 class="slide-title">类比为树和图</h2>
+    <div class="slide-content"><p class="slide-lead">两种模型都用记录之间的联系组织数据，但结构不同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>比较维度</th><th>层次模型</th><th>网状模型</th></tr></thead><tbody><tr><td>结构直觉</td><td>有根树</td><td>网状结构</td></tr><tr><td>双亲数量</td><td>非根结点只有一个双亲</td><td>一个结点可以有多个双亲</td></tr><tr><td>复杂联系</td><td>表达笨拙</td><td>表达更直接</td></tr><tr><td>使用代价</td><td>路径固定</td><td>路径选择更复杂</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>层次模型适合结构稳定的场景，网状模型适合联系复杂的场景</p></div></div>
+    <div class="numeric-progress">21/32</div>
+    <div class="semantic-label">TREE AND NETWORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.6250%"></div></div>
+  </section>
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">关系模型 Relational Model</h2>
+    <div class="slide-content"><p class="slide-lead">用统一的关系结构组织数据，用户只需说明所需操作</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/edgar-f-codd.webp" data-full-src="resources/decks/dbpa-1-2/assets/edgar-f-codd.jpg" data-full-width="394" data-full-height="578" alt="关系模型提出者 Edgar F. Codd" tabindex="0" role="button" aria-label="放大图片：关系模型提出者 Edgar F. Codd" decoding="async"></figure>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>1970 年</h3><p>Edgar F. Codd 提出数据库系统的关系模型</p>
+<p>用严格数学概念描述关系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>存取路径对用户透明</h3><p>用户只需要说明要做什么</p>
+<p>数据库管理系统决定如何查找</p></article></div></div></div>
+    <div class="numeric-progress">22/32</div>
+    <div class="semantic-label">RELATIONAL MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">关系通常用规范化二维表表示</h2>
+    <div class="slide-content"><p class="slide-lead">关系必须满足规范化要求，例如每个分量都应是不可分的数据项</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/relation-table.webp" data-full-src="resources/decks/dbpa-1-2/assets/relation-table.png" data-full-width="3058" data-full-height="1286" alt="关系模型中的学生关系表" tabindex="0" role="button" aria-label="放大图片：关系模型中的学生关系表" decoding="async"></figure>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="55% 45%" style="--key-value-columns:minmax(0,55fr) minmax(0,45fr)"><div class="key-value-item substep"><h3 class="key-value-key">关系 Relation</h3><div class="key-value-value"><p>具有相同属性结构的一组元组，通常表示为规范化二维表</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">元组 Tuple</h3><div class="key-value-value"><p>表中的一行</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">属性 Attribute</h3><div class="key-value-value"><p>表中的一列</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">分量 Component</h3><div class="key-value-value"><p>元组中的一个属性值</p></div></div></div></div></div>
+    <div class="numeric-progress">23/32</div>
+    <div class="semantic-label">RELATIONAL TERMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.8750%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">码、域和关系模式</h2>
+    <div class="slide-content"><p class="slide-lead">如何唯一标识元组、属性可以取哪些值、关系的结构是怎样的</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17.755% 34.257% 47.988%"><colgroup><col style="width:17.755%"><col style="width:34.257%"><col style="width:47.988%"></colgroup><thead><tr><th>术语</th><th>作用</th><th>Student 关系中的例子</th></tr></thead><tbody><tr><td>码 Key</td><td>唯一确定一个元组</td><td>Sno 学号</td></tr><tr><td>域 Domain</td><td>限定属性的取值范围</td><td>Smajor 的取值范围是学生所在学院设置的专业名称集合</td></tr><tr><td>关系模式 Relation Schema</td><td>描述关系名和属性结构</td><td>Student（Sno，Sname，Smajor）</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“关系模式”描述关系的结构，而“关系”是该结构在某一时刻的元组集合</p></div></div>
+    <div class="numeric-progress">24/32</div>
+    <div class="semantic-label">RELATION DESCRIPTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="f4" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:4fr;--split-b:1fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">规范化要求分量保持原子性</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="77.793" data-character-exposure="71.474" data-character-scale="0.9" style="--character-along:77.793%;--character-exposure:71.474;--character-hidden:28.526%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>怎样设计生日数据才能保持原子性？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">每个分量都必须是在当前关系语义下不可再分的原子数据项</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/normalization-comparison.webp" data-full-src="resources/decks/dbpa-1-2/assets/normalization-comparison.png" data-full-width="1600" data-full-height="900" alt="个人信息表中一个联系方式单元格包含手机、邮箱和微信，与拆成三个原子属性的对比" tabindex="0" role="button" aria-label="放大图片：个人信息表中一个联系方式单元格包含手机、邮箱和微信，与拆成三个原子属性的对比" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每个属性值只包含一个不可再分的数据项</p></div></div>
+    <div class="numeric-progress">25/32</div>
+    <div class="semantic-label">NORMALIZATION INTUITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.1250%"></div></div>
+  </section>
+<section id="f5" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">关系运算以关系为对象</h2>
+    <div class="slide-content"><p class="slide-lead">用户说明要做什么，数据库管理系统负责实现</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/relation-operation.svg" data-full-src="resources/decks/dbpa-1-2/assets/relation-operation.svg" alt="学生关系经过专业条件选择后得到新关系" tabindex="0" role="button" aria-label="放大图片：学生关系经过专业条件选择后得到新关系" decoding="async"></figure>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">操作对象</h3><div class="key-value-value"><p>查询、插入、删除和修改都以关系为对象</p></div></div><div class="key-value-item"><h3 class="key-value-key">操作结果</h3><div class="key-value-value"><p>关系运算的结果依然是关系；插入、删除、修改会改变关系中的元组</p></div></div><div class="key-value-item"><h3 class="key-value-key">存取路径</h3><div class="key-value-value"><p>用户说明做什么，DBMS 决定如何访问关系中的数据</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>存取路径“对用户透明”：用户看不到实际存取路径</p></div></div>
+    <div class="numeric-progress">26/32</div>
+    <div class="semantic-label">RELATIONAL OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+  </section>
+<section id="f6" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.6</div>
+    <h2 class="slide-title">关系模型有效简化用户的数据操作</h2>
+    <div class="slide-content"><p class="slide-lead">统一关系结构和数据独立性，减少了用户对底层实现的依赖</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-2/assets/previews/relation-table.webp" data-full-src="resources/decks/dbpa-1-2/assets/relation-table.png" data-full-width="3058" data-full-height="1286" alt="典型的学生关系数据表" tabindex="0" role="button" aria-label="放大图片：典型的学生关系数据表" decoding="async"></figure>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>理论基础</h3><p>关系、运算和约束都有严格定义</p></article><article class="content-card emphasis-card" tabindex="0"><h3>数据结构</h3><p>用统一的关系组织数据；复合信息需要拆分到多个关系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>存取路径</h3><p>对用户透明；DBMS 负责选择和优化</p></article></div></div></div>
+    <div class="numeric-progress">27/32</div>
+    <div class="semantic-label">RELATIONAL TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.3750%"></div></div>
+  </section>
+<section id="g1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.7</div>
+    <h2 class="slide-title">其他数据模型</h2>
+    <div class="slide-content"><p class="slide-lead">根据数据产生方式、关联方式以及最常见的查询方式选择合适模型</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="40.26% 59.74%" style="--key-value-columns:minmax(0,40.26fr) minmax(0,59.74fr)"><div class="key-value-item substep"><h3 class="key-value-key">键值模型 Key-Value</h3><div class="key-value-value"><p>快速查找缓存、会话和购物车</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">文档模型 Document</h3><div class="key-value-value"><p>保存字段结构和数量可变的半结构化详情和文档</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">图模型 Graph</h3><div class="key-value-value"><p>表达社交关系、知识图谱以及路径与关联分析</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">时序模型 Time-Series</h3><div class="key-value-value"><p>处理按时间持续产生的股票行情和监控数据</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">时空模型 Spatiotemporal</h3><div class="key-value-value"><p>处理车辆轨迹、位置变化和地图分析</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">对象关系模型 Object-Relational</h3><div class="key-value-value"><p>在关系模型上扩展复杂数据类型</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不同业务需求会影响数据结构、查询方式和适用的数据模型</p></div></div>
+    <div class="numeric-progress">28/32</div>
+    <div class="semantic-label">EMERGING MODELS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="g2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="7840" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2 <span>|</span> 1.2.7</div>
+    <h2 class="slide-title">一个业务系统可能组合多种模型</h2>
+    <div class="slide-content"><p class="slide-lead">模型选择取决于具体数据和操作需求</p>
+<div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 32% 40%"><colgroup><col style="width:28%"><col style="width:32%"><col style="width:40%"></colgroup><thead><tr><th>电商数据</th><th>初步模型选择</th><th>主要判断依据</th></tr></thead><tbody><tr><td>订单与支付</td><td>关系模型</td><td>结构稳定且事务约束明确</td></tr><tr><td>商品详情</td><td>文档模型</td><td>不同类别的字段差异较大</td></tr><tr><td>用户会话</td><td>键值模型</td><td>需要按键快速读写</td></tr><tr><td>物流轨迹</td><td>时序或时空模型</td><td>位置随时间持续变化</td></tr><tr><td>商品关联</td><td>图模型</td><td>关注多跳关系和路径</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一个系统可以组合多种模型，选择时要看数据形态、主要操作和约束要求</p></div></div>
+    <div class="numeric-progress">29/32</div>
+    <div class="semantic-label">MODEL SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.6250%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="3000" data-y="7840" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2</div>
+    <h2 class="slide-title">从数据抽象到模型选择</h2>
+    <div class="slide-content"><p class="slide-lead">数据建模把现实世界抽象为概念模型，再转换为具体数据模型</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>抽象现实</h3><p>把现实世界抽象为用户能够理解的概念模型</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>表达业务</h3><p>用实体、属性、码、联系和 E-R 图组织语义</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>定义模型</h3><p>用数据结构、数据操纵和完整性约束描述数据模型</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>选择模型</h3><p>根据数据形态、主要操作和约束要求选择关系模型或其他数据模型</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="62.482" data-character-exposure="59.553" data-character-scale="0.9" style="--character-along:62.482%;--character-exposure:59.553;--character-hidden:40.447%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>为什么需要两次抽象？</p></div></div></div></aside>
+    <div class="numeric-progress">30/32</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="7840" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2</div>
+    <h2 class="slide-title">数据建模知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-1-2/mindmap-1-2.html" title="数据建模知识地图"></iframe></div></div>
+    <div class="numeric-progress">31/32</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.8750%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="7840" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">数据建模为什么需要经历两次抽象？</span></li><li><span class="question-no">02</span><span class="question-text">实体、实体型和实体集有什么区别？</span></li><li><span class="question-no">03</span><span class="question-text">怎样判断一个联系是一对一、一对多还是多对多？</span></li><li><span class="question-no">04</span><span class="question-text">为什么数据模型必须同时规定数据结构、数据操纵和完整性约束？</span></li><li><span class="question-no">05</span><span class="question-text">层次模型、网状模型和关系模型的核心差异是什么？</span></li><li><span class="question-no">06</span><span class="question-text">面对新的数据需求时，应该依据什么选择数据模型？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-1-1.html" title="上一节：1.1 数据库系统概述" aria-label="上一节：1.1 数据库系统概述">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.1</span>
+        <span class="nav-title">数据库系统概述</span>
+      </a>
+      <a class="exercise-link" href="dbpa-1-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-1-3.html" title="下一节：1.3 数据库系统的结构" aria-label="下一节：1.3 数据库系统的结构">
+        <span class="nav-title">数据库系统结构</span>
+        <span class="nav-number">1.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">32/32</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">DML 的逐步束缚过程</title>
+  <desc id="desc">DML 从 SQL 经过词法语法分析生成语法树，再进行名称、权限、完整性和视图检查，经过优化后变成记录存取调用。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .sql { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 11; }
+      .check { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .plan { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .op { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 11; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">逐步束缚：把“要什么”翻译成“怎样逐条取到”</text>
+  <rect class="panel" x="45" y="105" width="1110" height="430"/>
+  <rect class="sql" x="85" y="235" width="180" height="110"/><text class="label" x="175" y="275">DML</text><text class="text" x="175" y="304">SELECT ... FROM ...</text>
+  <rect class="check" x="325" y="190" width="210" height="200"/><text class="label" x="430" y="235">分析与检查</text><text class="text" x="430" y="270">词法、语法</text><text class="text" x="430" y="298">名称和语义</text><text class="text" x="430" y="326">权限、完整性</text><text class="text" x="430" y="354">视图消解</text>
+  <rect class="plan" x="595" y="215" width="210" height="150"/><text class="label" x="700" y="260">查询优化</text><text class="text" x="700" y="294">选择存取路径</text><text class="text" x="700" y="322">确定执行方案</text>
+  <rect class="op" x="865" y="190" width="230" height="200"/><text class="label" x="980" y="235">记录原语</text><text class="text" x="980" y="270">FIND / NEXT / GET</text><text class="text" x="980" y="298">INSERT / DELETE</text><text class="text" x="980" y="326">REPLACE</text><text class="text" x="980" y="354">调用存取层</text>
+  <path class="arrow" d="M265 290 H315"/><path class="arrow" d="M535 290 H585"/><path class="arrow" d="M805 290 H855"/>
+  <text class="small" x="85" y="475">数据字典参与名称、权限、约束和视图检查</text>
+  <text class="small" x="660" y="475">优化器利用统计信息、索引和存储信息选路径</text>
+  <rect class="panel" x="45" y="570" width="1110" height="75"/>
+  <text class="label" x="190" y="616">集合操作</text><text class="text" x="430" y="616">由用户表达结果目标</text><text class="label" x="760" y="616">单元组操作</text><text class="text" x="1000" y="616">由存取层逐条执行</text>
+</svg>

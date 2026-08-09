@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">四种连接算法的依赖条件</title>
+  <desc id="desc">同一个 Student 与 SC 等值连接可以使用嵌套循环、排序合并、索引连接或哈希连接，各自依赖不同的物理条件。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .r { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 9; }
+      .s { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 9; }
+      .accent { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 9; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .center { text-anchor: middle; }
+      .arrow { stroke: #7890a5; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">同一个等值连接，物理条件不同就会走不同路径</text>
+
+  <rect class="panel" x="45" y="100" width="535" height="250"/><rect class="panel" x="620" y="100" width="535" height="250"/>
+  <text class="label" x="70" y="140">嵌套循环：外表的每个块反复扫内表</text>
+  <rect class="r" x="95" y="190" width="130" height="55"/><rect class="s" x="300" y="190" width="130" height="55"/>
+  <text class="text center" x="160" y="222">Student 外表</text><text class="text center" x="365" y="222">SC 内表</text>
+  <path class="arrow" d="M225 218 H295"/><path class="arrow" d="M365 250 C365 285 160 285 160 250"/>
+  <text class="text" x="95" y="310">通用，可处理非等值连接</text>
+  <text class="label" x="645" y="140">排序—合并：两个输入按 Sno 有序</text>
+  <rect class="r" x="675" y="190" width="180" height="55"/><rect class="s" x="930" y="190" width="180" height="55"/>
+  <text class="text center" x="765" y="222">Student：01 03 08</text><text class="text center" x="1020" y="222">SC：01 03 08</text>
+  <path class="arrow" d="M855 218 H925"/>
+  <text class="text" x="675" y="310">已排序时只需同步扫描；未排序要先付排序成本</text>
+
+  <rect class="panel" x="45" y="390" width="535" height="250"/><rect class="panel" x="620" y="390" width="535" height="250"/>
+  <text class="label" x="70" y="430">索引连接：外表值查内表索引</text>
+  <rect class="r" x="95" y="480" width="145" height="55"/><rect class="s" x="335" y="480" width="145" height="55"/>
+  <text class="text center" x="167" y="512">Student.Sno</text><text class="text center" x="407" y="512">SC.Sno 索引</text>
+  <path class="arrow" d="M240 507 H330"/>
+  <text class="text" x="95" y="600">内表连接属性已有索引时，逐值定位</text>
+  <text class="label" x="645" y="430">哈希连接：小表建桶，大表按同函数匹配</text>
+  <rect class="accent" x="675" y="480" width="150" height="55"/><rect class="s" x="930" y="480" width="150" height="55"/>
+  <text class="text center" x="750" y="512">Student → 桶</text><text class="text center" x="1005" y="512">SC → 同桶</text>
+  <path class="arrow" d="M825 507 H925"/>
+  <text class="text" x="675" y="600">等值连接，构建阶段的小表能放入内存</text>
+</svg>

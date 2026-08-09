@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">三个等价查询计划的代价差异</title>
+  <desc id="desc">同一个查询可以先做笛卡儿积、先连接或先筛选 SC；教材示例显示中间结果和块读写代价逐级降低。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 15; }
+      .bad { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 10; }
+      .mid { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .good { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .cost { font: 700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .arrow { stroke: #7890a5; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">同一个结果，操作顺序不同会制造数量级差异</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="150"/>
+  <text class="label" x="70" y="145">Q1 先笛卡儿积</text>
+  <rect class="bad" x="230" y="135" width="210" height="70"/><rect class="bad" x="510" y="135" width="210" height="70"/><rect class="bad" x="790" y="135" width="180" height="70"/>
+  <text class="text" x="335" y="165">Student × SC</text><text class="text" x="335" y="188">10⁷ 个中间元组</text><text class="text" x="615" y="165">再做选择</text><text class="text" x="615" y="188">写出巨大中间文件</text><text class="text" x="880" y="165">投影 Sname</text>
+  <path class="arrow" d="M440 170 H505"/><path class="arrow" d="M720 170 H785"/><text class="cost" x="1055" y="165">≈ 2,002,100</text><text class="text" x="1055" y="190">块读写</text>
+
+  <rect class="panel" x="45" y="280" width="1110" height="150"/>
+  <text class="label" x="70" y="320">Q2 先连接再选择</text>
+  <rect class="mid" x="230" y="310" width="210" height="70"/><rect class="mid" x="510" y="310" width="210" height="70"/><rect class="mid" x="790" y="310" width="180" height="70"/>
+  <text class="text" x="335" y="340">Student ⋈ SC</text><text class="text" x="335" y="363">10⁴ 个连接结果</text><text class="text" x="615" y="340">再做选择</text><text class="text" x="615" y="363">中间结果变小</text><text class="text" x="880" y="340">投影 Sname</text>
+  <path class="arrow" d="M440 345 H505"/><path class="arrow" d="M720 345 H785"/><text class="cost" x="1055" y="340">≈ 4,100</text><text class="text" x="1055" y="365">块读写</text>
+
+  <rect class="panel" x="45" y="455" width="1110" height="190"/>
+  <text class="label" x="70" y="495">Q3 先筛选 SC</text>
+  <rect class="good" x="230" y="485" width="210" height="100"/><rect class="good" x="510" y="485" width="210" height="100"/><rect class="good" x="790" y="485" width="180" height="100"/>
+  <text class="text" x="335" y="520">σ Cno='81003'(SC)</text><text class="text" x="335" y="548">只保留 50 条</text><text class="text" x="335" y="572">约 100 块或更少</text><text class="text" x="615" y="520">Student ⋈ 小结果</text><text class="text" x="615" y="548">只处理相关元组</text><text class="text" x="880" y="520">投影 Sname</text><path class="arrow" d="M440 535 H505"/><path class="arrow" d="M720 535 H785"/><text class="cost" x="1055" y="520">≈ 200</text><text class="text" x="1055" y="548">块读写</text><text class="text" x="1055" y="575">有索引时还可更少</text>
+</svg>

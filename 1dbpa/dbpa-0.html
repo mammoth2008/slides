@@ -1,549 +1,650 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
-</head>
-
-<body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!-- logo 颜色是 #027cf7 -->
-    <!-- 链接也使用同样颜色  -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
-    </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 "cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide, class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="15">
-
-        </div>
-
-        <!-- What,Why,and How -->
-
-        <div id="what" class="step" data-x="-1500" data-y="-6000" data-scale="1">
-
-            <ul>
-                <li>
-                    <h3>数据库原理与应用: WHAT?</h3>
-                    <ul>
-                        <li class="substep">数据的存储与使用方法</li>
-                        <li class="substep">计算机专业的核心课程</li>
-                        <li class="substep">把数据库系统作为工程系统来理解与使用</li>
-                    </ul>
-                </li>
-            </ul>
-
-        </div>
-
-        <div id="why" class="step" data-rel-to="what" data-rel-x="1500" data-scale="1">
-
-            <ul>
-                <li>
-                    <h3>数据库原理与应用: WHY?</h3>
-                    <ul>
-                        <li class="substep">编写程序的底层能力</li>
-                        <li class="substep">计算思维的有效训练</li>
-                        <li class="substep">面向工程岗位和研究的必备能力</li>
-                    </ul>
-                </li>
-            </ul>
-
-        </div>
-
-        <div id="how" class="step" data-rel-to="why" data-rel-x="1500" data-scale="1">
-
-            <ul>
-                <li>
-                    <h3>数据库原理与应用: HOW?</h3>
-                    <ul>
-                        <li class="substep">多阅读, 多练习</li>
-                        <li class="substep">先归纳, 再演绎</li>
-                        <li class="substep">做项目, 刷真题</li>
-                    </ul>
-                </li>
-            </ul>
-
-        </div>
-
-        <!-- 标题 -->
-        <div id="title" class="step" data-x="0" data-y="0" data-scale="5"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overview c1m how processgroup">
-
-            <h5 style="text-align: center">数据存储和使用的最佳实践</h5><br />
-            <h1 style="text-align: center; font-size: 84pt">数据库原理与应用</h1><br />
-            <h5 style="text-align: center">Database Principles and Applications</h5>
-            <br />
-            <p class="footnote">
-                <inlinecode style="font-size: 24px">
-                    Powered by
-                    <a href="https://github.com/impress/impress.js/" style="text-shadow: 0 0 0 rgb(0, 0, 0, 0);">
-                        impress.js
-                    </a>
-                    <span><img class="icon" src="../favicon.png"
-                            style="width:16px;height:16px;vertical-align: 8px;"></span>
-                    <br />
-                    Ver. 2602
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <!-- 概述 -->
-
-        <div id="t1" class="step markdown" data-rel-to="title" data-rel-x="1280" data-rel-y="2400" data-z="-10"
-            data-rotate-z="90" data-scale="4">
-
-### 程序 = 数据结构 + 算法
-### 软件 = 程序 + 数据(库)
-
-        </div>
-
-        <div id="t2" class="step markdown" data-rel-to="title" data-rel-x="-400" data-rel-y="2100" data-z="-10"
-            data-rotate-z="0" data-scale="4">
-
-### 数据结构与算法
-
-- 表 List
-- 串 String
-- 树 Tree
-- 图 Graph
-- 搜索 Search
-- 排序 Sort
-
-        </div>
-
-        <div id="t3" class="step markdown" data-rel-to="title" data-rel-x="400" data-rel-y="2380" data-z="-10"
-            data-rotate-z="0" data-scale="3">
-
-### 数据库
-
-- 关系型数据库 Relation
-- 关系理论 Theory
-- 数据库操作 Operation
-- 数据库设计 Design
-- 数据库安全 Security
-
-        </div>
-
-        <div id="big" data-rel-to="title" class="step" data-rel-x="3200" data-rotate-z="-90" data-scale="5">
-
-            <h2 style="font-size:54pt"><span class="point">DATA</span>base</h2>
-            <h2 style="font-size:54pt"><span class="point">DATA</span> Structure</h2>
-
-        </div>
-
-        <div id="tiny" class="step markdown" data-rel-to="big" class="step" data-z="-3000" data-rotate-z="360"
-            data-scale="0.5">
-
-            什么是数据 (Data)?
-
-        </div>
-
-        <div id="pro" class="step" data-rel-to="title" data-rel-x="-3000" data-rel-y="1000" data-z="0" data-rotate="90"
-            data-scale="6">
-
-            <p>数据是<span class="point">描述事物</span>的<b class="point">符号</b>记录</p>
-
-        </div>
-
-        <div id="d1" class="step markdown" data-rel-to="title" data-rel-x="0" data-rel-y="-1800" data-z="0"
-            data-rotate="180" data-scale="5">
-
-- 数据库是长期存储在计算机中的, 有组织的, 可共享的大量数据的集合
-
-        </div>
-
-        <div id="d1p" class="step markdown" data-rel-to="title" data-rel-x="0" data-rel-y="-1800" data-z="10"
-            data-rotate="180" data-scale="5">
-
-![database](img/c01/database.jpg)
-
-        </div>
-
-        <div id="d2" class="step markdown" data-rel-to="title" data-rel-x="0" data-rel-y="-2600" data-z="0"
-            data-rotate="180" data-scale="5">
-
-- 数据库管理系统是操作系统和应用程序之间的用于管理数据的软件
-
-        </div>
-
-        <div id="d3" class="step markdown" data-rel-to="title" data-rel-x="0" data-rel-y="-3400" data-z="0"
-            data-rotate="180" data-scale="5">
-
-- 数据库系统由硬件、软件、数据库、人构成
-
-        </div>
-
-        <div id="d3p" class="step markdown" data-rel-to="title" data-rel-x="0" data-rel-y="-3400" data-z="10"
-            data-rotate="180" data-scale="5">
-
-![dbs](img/c01/DBMS-OGImage.jpg)
-
-        </div>
-
-        <div id="overviewmiddle" class="step" data-rel-to="title" data-x="0" data-y="0" data-z="-1000" data-scale="15">
-
-        </div>
-
-        <!-- 目录,共 13 章 -->
-
-        <div id="c1m" class="step" data-rel-to="title" data-rel-x="-1770" data-rel-y="-4680" data-rotate-y="-15.96"
-            data-rotate-x="42.08" data-rotate="-200.77" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle overviewmiddle c2m">
-
-            <h3>1. 绪论</h3>
-            <p>
-                <a href="dbpa-1-1.html" target="_blank">1. 数据库系统概述</a><br />
-                <a href="dbpa-1-2.html" target="_blank">2. 数据模型</a><br />
-                <a href="dbpa-1-3.html" target="_blank">3. 数据库系统的三级模式结构</a><br />
-                <a href="dbpa-1-4.html" target="_blank">4. 数据库系统的组成</a>
-            </p>
-
-        </div>
-
-        <div id="c2m" class="step" data-rel-to="title" data-rel-x="-3740" data-rel-y="-3320" data-rotate-y="-33.68"
-            data-rotate-x="29.84" data-rotate="-228.46" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c1m c3m">
-
-            <h3>2. 关系模型</h3>
-            <p>
-                <a href="dbpa-2-1.html" target="_blank">1. 关系模型的数据结构及形式化定义</a><br />
-                <a href="dbpa-2-2.html" target="_blank">2. 关系操作</a><br />
-                <a href="dbpa-2-3.html" target="_blank">3. 关系的完整性</a><br />
-                <a href="dbpa-2-4.html" target="_blank">4. 关系代数</a>
-            </p>
-
-        </div>
-
-        <div id="c3m" class="step" data-rel-to="title" data-rel-x="-4850" data-rel-y="-1200" data-rotate-y="-43.69"
-            data-rotate-x="10.77" data-rotate="-256.15" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c2m c4m">
-
-            <h3>3. 关系数据库标准语言 SQL</h3>
-            <p>
-                <a href="dbpa-3-1.html" target="_blank">1. SQL 概述</a><br />
-                <a href="dbpa-3-2.html" target="_blank">2. 王者荣耀数据库</a><br />
-                <a href="dbpa-3-3.html" target="_blank">3. 数据定义</a><br />
-                <a href="dbpa-3-4.html" target="_blank">4. 数据查询</a><br />
-                <a href="dbpa-3-5.html" target="_blank">5. 数据更新</a><br />
-                <a href="dbpa-3-6.html" target="_blank">6. 视图</a>
-            </p>
-
-        </div>
-
-        <div id="c4m" class="step" data-rel-to="title" data-rel-x="-4850" data-rel-y="1200" data-rotate-y="-43.69"
-            data-rotate-x="-10.77" data-rotate="-283.85" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c3m c5m">
-
-            <h3>4. 数据库安全性</h3>
-            <p>
-                <a href="dbpa-4-1.html" target="_blank">1. 数据库安全性概述</a><br />
-                <a href="dbpa-4-1.html#/a7" target="_blank">2. 数据库安全性控制</a><br />
-                <a href="dbpa-4-3.html#/a26" target="_blank">3. 视图机制</a><br />
-                <a href="dbpa-4-4.html#/a28" target="_blank">4. 审计</a><br />
-                <a href="dbpa-4-5.html#/a32" target="_blank">5. 数据加密</a>
-            </p>
-
-        </div>
-
-        <div id="c5m" class="step" data-rel-to="title" data-rel-x="-3740" data-rel-y="3320" data-rotate-y="-33.68"
-            data-rotate-x="-29.84" data-rotate="-311.54" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c4m c6m">
-
-            <h3>5. 数据库完整性</h3>
-            <p>
-                <a href="dbpa-5-1.html" target="_blank">1. 数据库完整性概述</a><br />
-                <a href="dbpa-5-2.html" target="_blank">2. 实体完整性</a><br />
-                <a href="dbpa-5-3.html" target="_blank">3. 参照完整性</a><br />
-                <a href="dbpa-5-4.html" target="_blank">4. 用户定义完整性</a><br />
-                <a href="dbpa-5-5.html" target="_blank">5. 完整性约束命名子句</a><br />
-                <a href="dbpa-5-6.html" target="_blank">6. 触发器</a>
-            </p>
-
-        </div>
-
-        <div id="c6m" class="step" data-rel-to="title" data-rel-x="-1770" data-rel-y="4680" data-rotate-y="-15.96"
-            data-rotate-x="-42.08" data-rotate="-339.23" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c5m c7m">
-
-            <h3>6. 关系数据理论</h3>
-            <p>
-                <a href="dbpa-6-1.html" target="_blank">1. 问题的提出</a><br />
-                <a href="dbpa-6-2.html" target="_blank">2. 规范化</a><br />
-                <a href="dbpa-6-3.html" target="_blank">3. 数据依赖的公理系统</a><br />
-                <a href="dbpa-6-4.html" target="_blank">4. 保持函数依赖的模式分解</a>
-            </p>
-
-        </div>
-
-        <div id="c7m" class="step" data-rel-to="title" data-rel-x="600" data-rel-y="4960" data-rotate-y="5.42"
-            data-rotate-x="-44.67" data-rotate="-366.92" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c6m c8m">
-
-            <h3>7. 数据库设计</h3>
-            <p>
-                <a href="dbpa-7-1.html" target="_blank">1. 数据库设计概述</a><br />
-                <a href="dbpa-7-2.html" target="_blank">2. 需求分析</a><br />
-                <a href="dbpa-7-3.html" target="_blank">3. 概念结构设计</a><br />
-                <a href="dbpa-7-4.html" target="_blank">4. 逻辑结构设计</a><br />
-                <a href="dbpa-7-5.html" target="_blank">5. 物理结构设计</a><br />
-                <a href="dbpa-7-6.html" target="_blank">6. 数据库的实施和维护</a>
-            </p>
-
-        </div>
-
-        <div id="c8m" class="step" data-rel-to="title" data-rel-x="2840" data-rel-y="4110" data-rotate-y="25.56"
-            data-rotate-x="-37.03" data-rotate="-394.62" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c7m c9m">
-
-            <h3>8. 关系查询处理和查询优化</h3>
-            <p>
-                <a href="dbpa-8-1.html" target="_blank">1. 关系数据库管理系统的查询处理</a><br />
-                <a href="dbpa-8-2.html" target="_blank">2. 关系数据库管理系统的查询优化</a><br />
-                <a href="dbpa-8-3.html" target="_blank">3. 代数优化</a><br />
-                <a href="dbpa-8-4.html" target="_blank">4. 物理优化</a>
-            </p>
-
-        </div>
-
-        <div id="c9m" class="step" data-rel-to="title" data-rel-x="4430" data-rel-y="2320" data-rotate-y="39.85"
-            data-rotate-x="-20.91" data-rotate="-422.31" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c8m c10m">
-
-            <h3>9. 数据库恢复技术</h3>
-            <p>
-                <a href="dbpa-9-1.html" target="_blank">1. 事务的基本概念</a><br />
-                <a href="dbpa-9-2.html" target="_blank">2. 数据库恢复概述</a><br />
-                <a href="dbpa-9-3.html" target="_blank">3. 故障的种类</a><br />
-                <a href="dbpa-9-4.html" target="_blank">4. 恢复的实现技术</a><br />
-                <a href="dbpa-9-5.html" target="_blank">5. 恢复策略</a><br />
-                <a href="dbpa-9-6.html" target="_blank">6. 具有检查点的恢复技术</a><br />
-                <a href="dbpa-9-7.html" target="_blank">7. 数据库镜像</a>
-            </p>
-
-        </div>
-
-        <div id="c10m" class="step" data-rel-to="title" data-rel-x="5000" data-rel-y="0" data-rotate-y="45"
-            data-rotate-x="0" data-rotate="-450" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c9m c11m">
-
-            <h3>10. 并发控制</h3>
-            <p>
-                <a href="dbpa-10-1.html" target="_blank">1. 并发控制概述</a><br />
-                <a href="dbpa-10-2.html" target="_blank">2. 事务的隔离级别</a><br />
-                <a href="dbpa-10-3.html" target="_blank">3. 封锁</a><br />
-                <a href="dbpa-10-4.html" target="_blank">4. 封锁协议</a><br />
-                <a href="dbpa-10-5.html" target="_blank">5. 活锁与死锁</a><br />
-                <a href="dbpa-10-6.html" target="_blank">6. 并发调度的可串行性</a><br />
-                <a href="dbpa-10-7.html" target="_blank">7. 两段锁协议</a><br />
-                <a href="dbpa-10-8.html" target="_blank">8. 封锁的粒度</a>
-            </p>
-
-        </div>
-
-        <div id="c11m" class="step" data-rel-to="title" data-rel-x="4430" data-rel-y="-2320" data-rotate-y="39.85"
-            data-rotate-x="20.91" data-rotate="-477.69" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c10m c12m">
-
-            <h3>11. 数据库发展概述</h3>
-            <p>
-                <a href="dbpa-11-1.html" target="_blank">1. 数据库系统发展概述</a><br />
-                <a href="dbpa-11-2.html" target="_blank">2. 数据库系统发展简史</a><br />
-                <a href="dbpa-11-3.html" target="_blank">3. 计算机技术对数据库系统发展的支撑作用</a><br />
-                <a href="dbpa-11-4.html" target="_blank">4. 数据库发展展望</a>
-            </p>
-
-        </div>
-
-        <div id="c12m" class="step" data-rel-to="title" data-rel-x="2840" data-rel-y="-4110" data-rotate-y="25.56"
-            data-rotate-x="37.03" data-rotate="-505.38" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c11m c13m">
-
-            <h3>12. 内存数据库系统</h3>
-            <p>
-                <a href="dbpa-12-1.html" target="_blank">1. 内存数据库概述</a><br />
-                <a href="dbpa-12-2.html" target="_blank">2. 新硬件技术推动内存数据库技术发展</a><br />
-                <a href="dbpa-12-3.html" target="_blank">3. 内存数据库的若干关键实现技术</a>
-            </p>
-
-        </div>
-
-        <div id="c13m" class="step" data-rel-to="title" data-rel-x="600" data-rel-y="-4960" data-rotate-y="5.42"
-            data-rotate-x="44.67" data-rotate="-533.08" data-rel-z="-0.5w" data-scale="2"
-            data-goto-key-list="ArrowUp ArrowDown ArrowLeft ArrowRight"
-            data-goto-next-list="overviewmiddle overviewmiddle c12m overviewmiddle">
-
-            <h3>13. 区块链与数据库</h3>
-            <p>
-                <a href="dbpa-13-1.html" target="_blank">1. 区块链的概念与工作原理</a><br />
-                <a href="dbpa-13-2.html" target="_blank">2. 区块系统的技术架构与关键技术</a><br />
-                <a href="dbpa-13-3.html" target="_blank">3. 区块链与数据库</a>
-            </p>
-
-        </div>
-
-        <div id="resources" class="step" data-rel-to="title" data-rel-x="3500" data-rel-y="3500" data-rotate-y="0"
-            data-rotate-x="0" data-rotate="0" data-rel-z="0" data-scale="5">
-
-            <h3 style="text-align:center">
-                <a href="dbpa-src.html" target="_blank">课程资源</a>
-            </h3>
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="数据库原理与应用课程全景图：从认识数据与系统到数据库技术演进，覆盖 18 章 52 个单元。">
+  <title>DBPA 课程全景 | 数据库原理与应用</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #fbfcfa;
+      --stage: #e8eef1;
+      --surface: #ffffff;
+      --surface-muted: #f2f6f8;
+      --ink: #15232d;
+      --ink-soft: #3f5663;
+      --primary: #185b91;
+      --primary-soft: #e7f0f6;
+      --auxiliary: #a8542b;
+      --auxiliary-soft: #fbf1ea;
+      --line: #aebdc6;
+      --line-soft: #d4dde2;
+      --shadow: rgba(30, 48, 58, .16);
+      --page-width: 1220px;
+      --sans: "Course Source Han Sans", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --serif: "Course Source Han Serif", "Source Han Serif CN", "Songti SC", STSong, serif;
     }
-    </script>
-    -->
 
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
+    * { box-sizing: border-box; }
+
+    html { background: var(--stage); scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      color: var(--ink);
+      background:
+        linear-gradient(90deg, transparent 0 49.94%, rgba(24, 91, 145, .035) 49.94% 50.06%, transparent 50.06%),
+        var(--background);
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.55;
+    }
+
+    button, a { font: inherit; }
+    a { color: inherit; }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      min-height: 68px;
+      padding: 0 max(24px, calc((100vw - var(--page-width)) / 2));
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(251, 252, 250, .94);
+    }
+
+    .brand {
+      display: flex;
+      align-items: baseline;
+      gap: 14px;
+      font-weight: 700;
+      letter-spacing: .04em;
+    }
+
+    .brand strong { color: var(--primary); font-size: 1.1rem; }
+    .brand span { color: var(--ink-soft); font-size: .88rem; font-weight: 500; }
+
+    .header-note {
+      color: var(--ink-soft);
+      font-size: .78rem;
+      letter-spacing: .1em;
+    }
+
+    main {
+      width: min(calc(100% - 40px), var(--page-width));
+      margin: 0 auto;
+      padding: 54px 0 34px;
+    }
+
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 310px;
+      gap: 48px;
+      align-items: end;
+      margin-bottom: 38px;
+    }
+
+    h1 {
+      max-width: 850px;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: clamp(2.8rem, 5.2vw, 5rem);
+      line-height: 1.04;
+      letter-spacing: -.045em;
+    }
+
+    h1 span { color: var(--primary); }
+
+    .intro-copy {
+      margin: 0 0 4px;
+      padding: 14px 0 14px 20px;
+      border-left: 4px solid var(--auxiliary);
+      color: var(--ink-soft);
+      font-size: .98rem;
+    }
+
+    .system-shell {
+      position: relative;
+      padding: 26px 22px 22px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      box-shadow: 0 18px 42px -34px var(--shadow);
+    }
+
+    .system-shell::before,
+    .system-shell::after {
+      position: absolute;
+      top: -1px;
+      width: 22%;
+      height: 4px;
+      content: "";
+    }
+
+    .system-shell::before { left: -1px; background: var(--primary); }
+    .system-shell::after { right: -1px; background: var(--auxiliary); }
+
+    .map-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 18px;
+      color: var(--ink-soft);
+      font-size: .78rem;
+      letter-spacing: .08em;
+    }
+
+    .map-caption strong { color: var(--ink); font-weight: 700; }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 12px;
+      counter-reset: stage;
+    }
+
+    .stage-card {
+      position: relative;
+      min-height: 242px;
+      padding: 17px 15px 15px;
+      border: 1px solid var(--line-soft);
+      border-top: 4px solid var(--primary);
+      border-radius: 0;
+      color: var(--ink);
+      background: var(--surface-muted);
+      text-align: left;
+      cursor: pointer;
+      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+    }
+
+    .stage-card:nth-child(5),
+    .stage-card:nth-child(6) { border-top-color: var(--auxiliary); }
+
+    .stage-card:not(:last-child)::after {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      right: -16px;
+      width: 19px;
+      height: 2px;
+      content: "";
+      background: var(--primary);
+      box-shadow: 8px -4px 0 -3px var(--primary), 8px 4px 0 -3px var(--primary);
+    }
+
+    .stage-card:hover,
+    .stage-card:focus-visible,
+    .stage-card[aria-pressed="true"] {
+      z-index: 3;
+      border-color: var(--primary);
+      outline: none;
+      transform: translateY(-6px);
+      box-shadow: 0 14px 24px -18px var(--shadow);
+    }
+
+    .stage-number {
+      display: inline-grid;
+      width: 28px;
+      height: 28px;
+      place-items: center;
+      margin-bottom: 13px;
+      color: #fff;
+      background: var(--primary);
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stage-card:nth-child(5) .stage-number,
+    .stage-card:nth-child(6) .stage-number { background: var(--auxiliary); }
+
+    .stage-card h2 {
+      min-height: 3.15em;
+      margin: 0;
+      font-family: var(--serif);
+      font-size: 1.17rem;
+      line-height: 1.42;
+      letter-spacing: -.02em;
+    }
+
+    .stage-card p {
+      margin: 8px 0 0;
+      color: var(--ink-soft);
+      font-size: .75rem;
+      line-height: 1.5;
+    }
+
+    .stage-diagram {
+      display: grid;
+      min-height: 58px;
+      margin-top: 15px;
+      place-items: center;
+      border-top: 1px solid var(--line-soft);
+      border-bottom: 1px solid var(--line-soft);
+      color: var(--primary);
+      background: rgba(255, 255, 255, .72);
+    }
+
+    .data-dots { display: flex; gap: 5px; align-items: end; }
+    .data-dots i { display: block; width: 8px; background: currentColor; }
+    .data-dots i:nth-child(1) { height: 14px; opacity: .45; }
+    .data-dots i:nth-child(2) { height: 26px; opacity: .7; }
+    .data-dots i:nth-child(3) { height: 38px; }
+    .data-dots i:nth-child(4) { height: 22px; opacity: .6; }
+    .data-dots i:nth-child(5) { height: 31px; opacity: .8; }
+
+    .model-nodes { display: grid; grid-template-columns: 32px 28px 32px; align-items: center; }
+    .model-nodes span { height: 24px; border: 2px solid currentColor; }
+    .model-nodes i { display: block; height: 2px; background: currentColor; }
+
+    .mini-table { width: 78%; border: 2px solid currentColor; }
+    .mini-table i { display: block; height: 9px; border-bottom: 1px solid currentColor; opacity: .75; }
+    .mini-table i:last-child { border: 0; }
+
+    .query-lines { width: 80%; }
+    .query-lines i { display: block; height: 3px; margin: 6px 0; background: currentColor; }
+    .query-lines i:nth-child(2) { width: 74%; }
+    .query-lines i:nth-child(3) { width: 88%; opacity: .55; }
+
+    .constraints { display: flex; gap: 7px; align-items: center; }
+    .constraints span { width: 22px; height: 30px; border: 2px solid currentColor; }
+    .constraints b { font-size: 1.2rem; }
+
+    .database-icon { position: relative; width: 52px; height: 42px; border: 2px solid currentColor; border-radius: 50% / 16%; }
+    .database-icon::before,
+    .database-icon::after { position: absolute; left: -2px; width: 50px; height: 12px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 50% 50%; content: ""; }
+    .database-icon::before { top: 9px; }
+    .database-icon::after { top: 22px; }
+
+    .case-rail {
+      display: grid;
+      grid-template-columns: 150px repeat(3, 1fr);
+      margin-top: 16px;
+      border: 1px solid var(--line-soft);
+      background: var(--background);
+    }
+
+    .case-title,
+    .case-item { padding: 16px 18px; }
+    .case-title { display: grid; place-items: center start; color: var(--primary); background: var(--primary-soft); font-family: var(--serif); font-weight: 700; }
+    .case-item { border-left: 1px solid var(--line-soft); }
+    .case-item strong { display: block; margin-bottom: 3px; color: var(--auxiliary); }
+    .case-item span { color: var(--ink-soft); font-size: .76rem; }
+
+    .outcome-band {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1.55fr;
+      gap: 1px;
+      margin-top: 24px;
+      border: 1px solid var(--line-soft);
+      background: var(--line-soft);
+    }
+
+    .capability,
+    .endpoint { min-height: 118px; padding: 20px; background: var(--surface); }
+    .capability span { display: block; margin-bottom: 8px; color: var(--primary); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
+    .capability strong { font-family: var(--serif); font-size: 1.04rem; }
+    .endpoint { color: #fff; background: var(--primary); }
+    .endpoint span { display: block; margin-bottom: 8px; color: rgba(255, 255, 255, .72); font-size: .72rem; letter-spacing: .12em; }
+    .endpoint strong { font-family: var(--serif); font-size: 1.08rem; line-height: 1.55; }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 24px;
+      width: min(calc(100% - 40px), var(--page-width));
+      margin: 0 auto;
+      padding: 16px 0 26px;
+      border-top: 1px solid var(--line-soft);
+      color: var(--ink-soft);
+      font-size: .72rem;
+    }
+
+    dialog {
+      width: min(900px, calc(100vw - 40px));
+      max-height: calc(100vh - 40px);
+      padding: 0;
+      border: 0;
+      color: var(--ink);
+      background: var(--surface);
+      box-shadow: 0 34px 80px rgba(21, 35, 45, .28);
+    }
+
+    dialog::backdrop { background: rgba(21, 35, 45, .7); backdrop-filter: blur(3px); }
+    .dialog-shell { position: relative; border-top: 7px solid var(--primary); }
+    .dialog-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border: 1px solid var(--line); color: var(--ink); background: var(--surface); cursor: pointer; font-size: 1.35rem; line-height: 1; }
+    .dialog-close:hover, .dialog-close:focus-visible { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
+    .dialog-head { padding: 34px 76px 26px 34px; border-bottom: 1px solid var(--line-soft); background: var(--surface-muted); }
+    .dialog-index { color: var(--primary); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
+    .dialog-head h2 { margin: 8px 0 8px; font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.7rem); line-height: 1.15; }
+    .dialog-question { margin: 0; color: var(--ink-soft); }
+    .dialog-body { display: grid; grid-template-columns: 1.1fr .9fr; gap: 0; max-height: calc(100vh - 180px); overflow-y: auto; }
+    .dialog-section { padding: 28px 34px; }
+    .dialog-section + .dialog-section { border-left: 1px solid var(--line-soft); }
+    .dialog-section h3 { margin: 0 0 14px; color: var(--primary); font-size: .78rem; letter-spacing: .12em; }
+    .lesson-list { display: grid; gap: 9px; }
+    .lesson-row { display: grid; grid-template-columns: 78px 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 64px; padding: 9px 11px; border: 1px solid var(--line-soft); text-decoration: none; }
+    a.lesson-row:hover, a.lesson-row:focus-visible { border-color: var(--primary); outline: none; background: var(--primary-soft); }
+    .lesson-cover { display: block; width: 78px; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-soft); background: var(--surface-muted); }
+    .lesson-number { color: var(--primary); font-weight: 800; }
+    .lesson-title { min-width: 0; }
+    .lesson-status { color: var(--ink-soft); font-size: .7rem; white-space: nowrap; }
+    a.lesson-row .lesson-status { color: var(--auxiliary); }
+    .detail-block + .detail-block { margin-top: 24px; }
+    .detail-block h4 { margin: 0 0 6px; font-family: var(--serif); font-size: 1rem; }
+    .detail-block p { margin: 0; color: var(--ink-soft); font-size: .88rem; }
+
+    @media (max-width: 1050px) {
+      .intro { grid-template-columns: 1fr; gap: 22px; }
+      .intro-copy { max-width: 620px; }
+      .pipeline { grid-template-columns: repeat(3, 1fr); }
+      .stage-card:not(:last-child)::after { display: none; }
+      .case-rail { grid-template-columns: 1fr 1fr 1fr; }
+      .case-title { grid-column: 1 / -1; }
+      .case-item:first-of-type { border-left: 0; }
+      .outcome-band { grid-template-columns: repeat(3, 1fr); }
+      .endpoint { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 680px) {
+      .site-header { min-height: 58px; padding: 0 18px; }
+      .brand span, .header-note { display: none; }
+      main { width: min(calc(100% - 24px), var(--page-width)); padding-top: 34px; }
+      h1 { font-size: clamp(2.35rem, 12vw, 3.5rem); }
+      .system-shell { padding: 20px 12px 14px; }
+      .map-caption { display: block; }
+      .map-caption span { display: block; margin-top: 4px; }
+      .pipeline { grid-template-columns: 1fr; }
+      .stage-card { min-height: 0; }
+      .stage-card h2 { min-height: 0; }
+      .case-rail { grid-template-columns: 1fr; }
+      .case-title { grid-column: auto; }
+      .case-item { border-top: 1px solid var(--line-soft); border-left: 0; }
+      .outcome-band { grid-template-columns: 1fr; }
+      .endpoint { grid-column: auto; }
+      .dialog-body { grid-template-columns: 1fr; }
+      .dialog-section + .dialog-section { border-top: 1px solid var(--line-soft); border-left: 0; }
+      .lesson-row { grid-template-columns: 64px 48px minmax(0, 1fr); }
+      .lesson-cover { width: 64px; }
+      .lesson-status { grid-column: 3; white-space: normal; }
+      footer { display: block; width: calc(100% - 24px); }
+      footer span { display: block; margin-top: 4px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .stage-card { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="brand"><strong>DBPA</strong><span>数据库原理与应用</span></div>
+    <div class="header-note">课程全景 · 18 章 · 51 个单元</div>
+  </header>
+
+  <main>
+    <section class="intro" aria-labelledby="page-title">
+      <h1 id="page-title">让数据进入系统，<br><span>让系统值得信赖</span></h1>
+      <p class="intro-copy">从认识数据与系统出发，经由关系模型、SQL、设计与运行机制，走向多样数据库技术；课程把业务问题、数据结构、系统实现和技术选择连成一条主线。</p>
+    </section>
+
+    <section class="system-shell" aria-labelledby="map-title">
+      <div class="map-caption"><strong id="map-title">数据库知识怎样从基础组装到技术选择</strong><span>选择一个阶段，查看核心问题与已完成课程范围</span></div>
+      <div class="pipeline">
+        <button class="stage-card" type="button" data-stage="1" aria-pressed="false">
+          <span class="stage-number">1</span><h2>认识数据与系统</h2><p>理解数据库为何出现，以及模型、结构和组成如何协同</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="data-dots"><i></i><i></i><i></i><i></i><i></i></span></span>
+        </button>
+        <button class="stage-card" type="button" data-stage="2" aria-pressed="false">
+          <span class="stage-number">2</span><h2>关系组织数据</h2><p>用关系模型、完整性和关系代数表达可计算的数据结构</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="model-nodes"><span></span><i></i><span></span></span></span>
+        </button>
+        <button class="stage-card" type="button" data-stage="3" aria-pressed="false">
+          <span class="stage-number">3</span><h2>SQL 操作数据</h2><p>定义、查询、更新数据，并处理空值与视图</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="mini-table"><i></i><i></i><i></i><i></i></span></span>
+        </button>
+        <button class="stage-card" type="button" data-stage="4" aria-pressed="false">
+          <span class="stage-number">4</span><h2>设计保证正确</h2><p>用安全、完整性、规范化和设计过程控制结构质量</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="query-lines"><i></i><i></i><i></i></span></span>
+        </button>
+        <button class="stage-card" type="button" data-stage="5" aria-pressed="false">
+          <span class="stage-number">5</span><h2>运行形成可靠系统</h2><p>把编程、存储、优化、恢复、并发与 DBMS 结构连成运行机制</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="constraints"><span></span><b>✓</b><span></span></span></span>
+        </button>
+        <button class="stage-card" type="button" data-stage="6" aria-pressed="false">
+          <span class="stage-number">6</span><h2>技术演进与系统选择</h2><p>从数据库发展走向 NoSQL、数据仓库、内存数据库与区块链融合</p>
+          <span class="stage-diagram" aria-hidden="true"><span class="database-icon"></span></span>
+        </button>
+      </div>
+
+      <div class="case-rail" aria-label="贯穿课程的三个案例">
+        <div class="case-title">贯穿案例</div>
+        <div class="case-item"><strong>手机游戏</strong><span>玩家、资产、对局与排行怎样被正确保存和查询？</span></div>
+        <div class="case-item"><strong>学生教学</strong><span>学生、课程、选课与成绩怎样被多个角色共同使用？</span></div>
+        <div class="case-item"><strong>电子商务</strong><span>订单、支付、库存与履约怎样保持一致并可靠运行？</span></div>
+      </div>
+    </section>
+
+    <section class="outcome-band" aria-label="课程能力与终点">
+      <div class="capability"><span>01 · 表达</span><strong>把业务问题转化为数据模型与关系结构</strong></div>
+      <div class="capability"><span>02 · 操作</span><strong>使用 SQL 与程序接口处理数据</strong></div>
+      <div class="capability"><span>03 · 运行</span><strong>分析安全、约束、性能、恢复与并发</strong></div>
+      <div class="endpoint"><span>课程终点</span><strong>构建正确、安全、可靠、可维护的数据库系统，并在不同技术之间作出有依据的选择。</strong></div>
+    </section>
+  </main>
+
+  <footer><strong>数据库原理与应用 · 课程全景</strong><span>课程 manifest 已同步 18 章 52 个单元；链接指向已发布课件</span></footer>
+
+  <dialog id="stage-dialog" aria-labelledby="dialog-title">
+    <div class="dialog-shell">
+      <button class="dialog-close" type="button" aria-label="关闭阶段详情">×</button>
+      <div class="dialog-head">
+        <div class="dialog-index" id="dialog-index"></div>
+        <h2 id="dialog-title"></h2>
+        <p class="dialog-question" id="dialog-question"></p>
+      </div>
+      <div class="dialog-body">
+        <section class="dialog-section">
+          <h3>课程范围</h3>
+          <div class="lesson-list" id="lesson-list"></div>
+        </section>
+        <section class="dialog-section">
+          <h3>这一阶段要完成什么</h3>
+          <div class="detail-block"><h4>学习活动</h4><p id="dialog-activity"></p></div>
+          <div class="detail-block"><h4>阶段产出</h4><p id="dialog-output"></p></div>
+        </section>
+      </div>
     </div>
+  </dialog>
 
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
+  <script>
+    const completed = (number, title) => ({
+      number,
+      title,
+      status: "已发布",
+      href: `dbpa-${number.replace(".", "-")}.html`,
+      cover: `assets/covers/dbpa-${number.replace(".", "-")}${number === "1.5" ? ".svg" : ".webp"}`
+    });
 
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
+    const stages = {
+      1: {
+        title: "认识数据与系统",
+        question: "为什么需要数据库，数据模型和系统结构怎样把现实信息放进系统？",
+        activity: "从数据、数据库、DBMS 和数据库系统出发，比较人工管理、文件系统与数据库系统，再建立数据模型、模式、三级模式和系统组成的共同语言。",
+        output: "能够说明数据库系统解决了什么问题，并解释数据、模型、软件、应用和人在系统中的关系。",
+        lessons: [
+          completed("1.1", "数据库系统概述"),
+          completed("1.2", "数据模型"),
+          completed("1.3", "数据库系统的结构"),
+          completed("1.4", "数据库系统的组成"),
+          completed("1.5", "数据库系统的体系结构")
+        ]
+      },
+      2: {
+        title: "关系组织数据",
+        question: "关系数据库用什么结构和规则组织数据，又怎样形式化地表达数据操作？",
+        activity: "从关系、关系模式和关系完整性进入关系操作与关系代数，用选择、投影、连接等操作描述查询意图。",
+        output: "能够读懂关系模式，判断完整性规则，并用关系操作和关系代数解释查询过程。",
+        lessons: [
+          completed("2.1", "关系模型的数据结构及形式化定义"),
+          completed("2.2", "关系操作"),
+          completed("2.3", "关系的完整性"),
+          completed("2.4", "关系代数")
+        ]
+      },
+      3: {
+        title: "SQL 操作数据",
+        question: "怎样把数据定义、查询和更新意图写成数据库能够执行的语言？",
+        activity: "围绕持续案例练习 SQL 概述、数据定义、单表与多表查询、数据更新、空值和视图，把语句结果回扣到业务问题。",
+        output: "能够独立完成常见 SQL 任务，并解释查询结果与业务问题之间的对应关系。",
+        lessons: [
+          completed("3.1", "SQL 概述"),
+          completed("3.2", "数据定义"),
+          completed("3.3", "数据查询"),
+          completed("3.4", "数据更新"),
+          completed("3.5", "空值的处理"),
+          completed("3.6", "视图")
+        ]
+      },
+      4: {
+        title: "设计保证正确",
+        question: "怎样让数据库结构既能表达业务，又能避免不一致、冗余和难以维护的问题？",
+        activity: "把安全性、完整性、触发器、函数依赖、规范化、需求分析和概念—逻辑—物理设计放回完整设计过程。",
+        output: "能够从需求形成数据库方案，并用安全机制、约束和规范化理由说明设计选择。",
+        lessons: [
+          completed("4.1", "数据库安全性与存取控制"),
+          completed("4.2", "其他安全保护机制"),
+          completed("5.1", "数据库完整性与约束"),
+          completed("5.2", "触发器"),
+          completed("6.1", "函数依赖与规范化"),
+          completed("6.2", "依赖推理与模式分解"),
+          completed("7.1", "数据库设计总览与需求分析"),
+          completed("7.2", "概念结构设计与 E-R 模型"),
+          completed("7.3", "逻辑、物理设计与实施维护")
+        ]
+      },
+      5: {
+        title: "运行形成可靠系统",
+        question: "数据库怎样在真实负载、故障和并发条件下保持高效、一致和可维护？",
+        activity: "从过程化 SQL、JDBC 和应用开发进入存储、索引、查询优化，再用事务、日志、恢复、并发控制和 DBMS 结构解释可靠运行。",
+        output: "能够分析数据库运行问题，并说明程序、存储、性能、并发、安全和恢复机制怎样共同服务业务。",
+        lessons: [
+          completed("8.1", "SQL 扩展与过程化 SQL 基础"),
+          completed("8.2", "游标、存储过程与存储函数"),
+          completed("8.3", "JDBC 与 MVC 数据库应用开发"),
+          completed("9.1", "数据组织与基础索引"),
+          completed("9.2", "B+ 树、哈希与位图索引"),
+          completed("10.1", "查询处理与操作算法"),
+          completed("10.2", "查询优化与执行计划"),
+          completed("11.1", "事务、故障与恢复策略"),
+          completed("11.2", "日志、检查点与数据库镜像"),
+          completed("12.1", "并发异常、隔离级别与封锁协议"),
+          completed("12.2", "死锁、可串行性与两段锁协议"),
+          completed("12.3", "封锁粒度、意向锁与多版本并发控制"),
+          completed("13.1", "DBMS 功能、层次结构与运行过程"),
+          completed("13.2", "语言处理层与数据存取层"),
+          completed("13.3", "缓冲区管理与数据库物理组织")
+        ]
+      },
+      6: {
+        title: "技术演进与系统选择",
+        question: "数据库技术怎样回应新的硬件、数据形态、分析任务和可信协作需求？",
+        activity: "沿着数据库发展历史比较关系系统、NoSQL、NewSQL、数据仓库、内存数据库与区块链，判断不同技术的适用边界。",
+        output: "能够根据数据形态、负载、分析需求、一致性和治理边界，在不同数据库技术之间作出有依据的选择。",
+        lessons: [
+          completed("14.1", "数据库发展动力与发展简史"),
+          completed("14.2", "关系系统扩展与 SQL NoSQL NewSQL"),
+          completed("14.3", "分布式、云原生与数据库发展展望"),
+          completed("15.1", "大数据特征与键值文档数据库"),
+          completed("15.2", "图数据库与关系的图化表达"),
+          completed("15.3", "时序数据库与时间窗口查询"),
+          completed("16.1", "数据仓库与联机分析处理"),
+          completed("16.2", "HTAP 与大数据时代的新型数据仓库"),
+          completed("17.1", "内存数据库概述与新硬件"),
+          completed("17.2", "内存数据库实现、恢复与异构展望"),
+          completed("18.1", "区块链概念、区块结构与工作机制"),
+          completed("18.2", "区块链发展阶段、准入模式与技术架构"),
+          completed("18.3", "区块链与数据库的对比与融合")
+        ]
+      }
+    };
 
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
+    const dialog = document.querySelector("#stage-dialog");
+    const closeButton = dialog.querySelector(".dialog-close");
+    const lessonList = document.querySelector("#lesson-list");
+    let activeCard = null;
 
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
+    function localLessonHref(publishHref) {
+      const isSourcePreview = window.location.pathname.includes("/courses/dbpa/overview/");
+      const deckDirectory = publishHref.replace(/\.html$/, "");
+      if (isSourcePreview) {
+        return "../../../_build/slides/" + deckDirectory + "/" + publishHref;
+      }
+      return publishHref;
+    }
 
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+    function openStage(stageId, card) {
+      const stage = stages[stageId];
+      if (!stage) return;
+      document.querySelector("#dialog-index").textContent = `阶段 ${stageId} / 6`;
+      document.querySelector("#dialog-title").textContent = stage.title;
+      document.querySelector("#dialog-question").textContent = stage.question;
+      document.querySelector("#dialog-activity").textContent = stage.activity;
+      document.querySelector("#dialog-output").textContent = stage.output;
+      lessonList.replaceChildren();
+
+      stage.lessons.forEach((lesson) => {
+        const row = document.createElement(lesson.href ? "a" : "div");
+        row.className = "lesson-row";
+        if (lesson.href) row.href = localLessonHref(lesson.href);
+        const cover = document.createElement("img");
+        cover.className = "lesson-cover";
+        cover.src = lesson.cover;
+        cover.alt = `${lesson.number} ${lesson.title} 封面`;
+        cover.loading = "lazy";
+        const number = document.createElement("span");
+        number.className = "lesson-number";
+        number.textContent = lesson.number;
+        const title = document.createElement("span");
+        title.className = "lesson-title";
+        title.textContent = lesson.title;
+        const status = document.createElement("span");
+        status.className = "lesson-status";
+        status.textContent = lesson.status;
+        row.append(cover, number, title, status);
+        lessonList.append(row);
+      });
+
+      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
+      card.setAttribute("aria-pressed", "true");
+      activeCard = card;
+      dialog.showModal();
+    }
+
+    document.querySelectorAll(".stage-card").forEach((card) => {
+      card.addEventListener("click", () => openStage(card.dataset.stage, card));
+    });
+
+    function closeDialog() {
+      dialog.close();
+      if (activeCard) {
+        activeCard.setAttribute("aria-pressed", "false");
+        activeCard.focus();
+      }
+      activeCard = null;
+    }
+
+    closeButton.addEventListener("click", closeDialog);
+    dialog.addEventListener("click", (event) => {
+      const bounds = dialog.getBoundingClientRect();
+      const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
+      if (outside) closeDialog();
+    });
+    dialog.addEventListener("close", () => {
+      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
+    });
+  </script>
 </body>
-
 </html>
-
-<!--
-    DNNNNDDDD8888OOOOZOOOZZZZZZZZOOOOOOOO8888888888DDDDDDDNNNNNNNNNNNNNNNNNNNNNNNNNN
-    DNNDDDDD888OOOOZZZZZZ$$$$$Z$ZZZZZOOOOOO8888888888DDDDDDDNNNNNNNNNNNNNNNNNNNNNNNN
-    NNDDDDDD8OOOZZZ$$$$$$$$$$Z$$$$$ZZZZZOOOO888888888DD8DDDDDDNNNNNNNNNNNNNNNNNNNNNN
-    DDDDDDDDOOZZZ$$$$$$$$$?7$$$$$$$$ZZZ$ZOOO888888888888888DDDDDNNNNNNNNNNNNNNNNNNNN
-    DDDDDDD8OZZZ$$$$$$$$$$$$$$$$$$$$$$$$ZZZOOOOOOOOO88O88888DDDDDDDNNNNNNNNNNNNNNNNN
-    DDDDDD8OZZZ$$$$$$$$$$$$$$$$$$$$$$$$$ZZZZZZZOOOOOO88O888888DDDDDDNNNNNNNNNNNNNNNN
-    DDDDD88OZZ$$$$$$$$$$$$$$$$$$$$$$$$$$$Z$ZZZZZOOOOOO8O88888888DDDDDNNNNNNNNNNNNNNN
-    DDDDD8OZZZZ$7$$$$$$$$$$$$$$$88N7DZ$$$$$$$ZZZZZZZOOOOOO88888O88DDDDDNNNNNNNNNNNNN
-    DDDDD8OZZZ$$$$$$$$$$$$$$$$$$D++=Z7777$$$$888$ZZZZZZOOOOOO8888888DDDDNDNNNNNNNNNN
-    DDDD8OOZ$Z$$$$$$$$$$$$$$$$$7?===$7777777$N=DNZZZZZZZOOOOO8O8888888DDDDNNNNNNNNNN
-    DDDD8OZZZZ$$$$$$$$$$$$$$$$$7?===$77777777DN?.8NZZZZZZZZOOOOO8888888DDDDNNNNNNNNN
-    DDD88OZZZZZZZ$$$$$$$$$$$$$$$:.==N$7$$$77$$$M=.8D$ZZZZZZZZOOOOO8888888DDDNNNNNNNN
-    DDD8ZO8OZZZOZZZZ$$$$$$$$$$$$8,..+NNM++++=NNM+=.N$$ZZZZZZZZOOO8OO888888DDDNNNNNNN
-    DDD8888888OOOZZZZZZ$$$$$$$$$$D,..+==========N=,N$$$ZZZZZZZZZOO8O888888DDDDNNNNNN
-    DDD8D88888888888ZOZZ$$$$$$$$$DNN.===+=MM====+=NN$$?$ZZZZZZZZZOOOOO888888DDNNNNNN
-    D8888O88O8O8OOOOOOO88ZZ$ZZ$$$D====+=NMMMM+==++MN77$$$$ZZZZZZZZZOO8OO8888DDDNNNNN
-    8O8OOOOOOOOOOOOOOZOOOO88ZZZZZN++====NMMMM+==NMMM7777$$$ZZZZZZZZZOOOOO888888DDNNN
-    8OOOOOOOOOOZZZZZZZZZZZZ888OOON++=====MMM?===NMMM77777$$$ZZZZZZZZZZOOOO878888DNNN
-    OOOOOOOOZZZ$$$$$$7$7$$ZZ888OONN=====+=========MM777777$$$ZZZZZZZZZZZOOOO8888DDNN
-    OOZZZ$$$$$7777777777$O8OOOOOOOON+==~~:,,,,,.~~=NI777777$$$ZZZZZZZZZZOOOOO8888DDD
-    ZZ$$77IIIII7IIIIII7$ZZOOOOOOOOOOD=,,.  ......,DNII777777$$$$ZZZZZZZZZOOOOO8888DD
-    Z$77777$ZO88DDO$$OOOZOOOOMMMZZZOOODNMMMMMDNNNNI7II77777777$$$$ZZZZZZZZOOOOO8888D
-    $ZOO8OOOOOOOOOOODD8OOOZO8ZZZZMMMZZMM88M8M8MMII7IIIIII777777$$$ZZZZZZZZZZOOOO8888
-    8OOOOOOOOOOOOOOOO8OO8OZZOZMMOZZZMMZZOM888M8DIIIIIIIII777I777$$$$ZZZ$ZZZZZOOOO888
-    OO7OOOOOOOOOOOOOOOOOOMM.7ZZ$$$ZZZZMMZZM8.M8DM?IIIIIII777III7$$$$$IZZZZZZZZOOO888
-    OOOOOOOOOOOOOOOOOOOOOO8DM...MMMMNZZ.8O.MMMDM8N+IIIIIII77I777$$$$$$$$ZZZZZOOOI888
-    OOOOZZZZ$$$$$$ZZZZZZZZZ$M$ZO.....MMM.MMMMMMDDMI,M7IIII7777777$$$$$$$ZZZZZZZZOOO8
-    ZZ88$:DD$8888??II$$$$$$NMMMMZ$$.,NMMMMMMMMMMDI.,,:MMIII7777777$$$$$$$ZZZZZZZOOOO
-    ODDD=:88~D88+,,8O?=+I777IZZ=OOO+MMMMMMMMMMMMD?..DMMMM$II7I77777$$$$$$ZZZZZZZZOOO
-    O888~,O8,888,D8OOOO=$+IIII$+,??,MMMM M==.MMMD?MMM7$::,MM7I777777$$$$$$$ZZZZZZZZZ
-    +D887,,8+,O+78OO~~~~7$+?II7,?O?OMM.M~==~~M.M8????+IMM..MMMII7777$$$$$$$$ZZZ$ZZZZ
-    ~?OOZ=,,ZZO=7+=.,,I?$77+II7ZOI?Z=8MDDDMMDDONI??????I777MD7::7777$$$$$$$$ZZZZZZZZ
-    Z,:=$OOZ7++O,.,$$$$$$$$$?DNONNM8$$NZZNN..MMM,,N??????????I77MI7777$$$$$$ZZZZZZZZ
-    $O$,IO~,~,:8++++,,,,,,$DMDIIOOOO77MZZN..ZMMMOM???????????IIII7777777$$$$$ZZZZZZZ
-    :++=::=Z7=+==,,Z$Z?ZMMMMI777NOO77IZZZO.8M,NNNMN+??????????IIII777777$$$$$ZZZZZZZ
-    ~:::I$~,=$?=~??ZOMNNZMMM7D$7NOOII8ZZZZ.M..MDD.MM++++++?????IIII77777$$$$$ZZZZZZ$
-    ZZZ7+~::=,OI:DDMD888ZMMMI7DIZZ7..8ZZI..M..M.M8M=====++++??????II777I7$$$$$ZZZZZZ
-    ===~,:O+:8DD?NOZZ888ZDMM7787Z7..Z88Z...M,MO.D8M~~~======++????IIII7777$$$$$$ZZZZ
-    OZZZO8+,7MMMNOOZZ888Z8MMOD.DZ...888D..MMD..ZDMM:~~~~~~~==+++????IIIII7777$$$ZZZ?
-    OOZMMMM.MD8MMMOZ7IDD78MO,OMD:.8N7I8N..MMM.NMDM,:~~~~~~~~===+++???IIIII7777$$ZZZI
-    M77NDDOZN8OZMMZZZI8.+M...O88,...Z$N=.NMM.OM.D,,:~~~~~~~~~=====++???III77777$ZZZZ
-    D8MD88ION8MMDMZZZIDO7M..ZNZO,..+ZZZ.M..M.MMN:,,:~~~~~~~:~~~~===++???IIII777$$ZZZ
-    DDM888IO88MODMOZOOO7IZ8DDOO8...$....D..MDM.M:.,:~~~~~~~~~~~~~~===++??+III777$ZZZ
-    DD8M88IZ8DMODI$8ZZMM$IID7OO:,.IZ....D..M8.8M..,:~~~~~~~::~~~~~~~==++?+?III77$$$$
-    D8888888888OOOD8OZDM$OOOOO..,7ODZ....MM.D.OM.,,:~~~~~~~~::::::::~~==+???III7$$$$
-    D88888888MMOZI88OZ8M8O.OO.,,ODDD:.,MMM..M.M..,,::~~~~~::::::::::~~~==++???I7$$$$
-    N888NN88DMMZZZ?8:IDO..O8,88DZ778,,,.M..M.M...,,:::::::::::::::::::~~==++???I$$$$
-    D88ZZM8ZMMM$$.?D.?M..N..$,,,,8IO,,O...NM.M...,,,::::::::::::::::::::~~===+??I$$$
-    DD8?ZMOMIM $.Z.Z?+MIO.O=?.??,O?D.OO..MM.O...,,,::::::::::::::::::::,:~~~==+??777
-    ND8I+..ZIM,$,..8$.+....=+I======M==M=MM==M==O==M=$:::::~~~~~~:::::::::~~~==+??II
-    NDDDDDDDD8D8DDDDD88DD8888NI8DN=MM==M==M=MM+=M=~O+NOOOOOOOOOOOOOOOOOZOZOOOO888DDD
-    ---mengma2008---------yemengma.cn-------------Signture Made by GlassGiant.com---
--->

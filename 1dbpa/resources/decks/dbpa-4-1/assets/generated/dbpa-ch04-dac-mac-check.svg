@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">DAC 与 MAC 的双重检查</title>
+  <desc id="desc">数据库请求先检查用户是否拥有对象操作权限，再比较主体许可证级别和客体密级；两道检查都通过才允许访问。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#60758a"/></marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 30px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { stroke: #7890a5; stroke-width: 2; }
+      .blue { fill: #e8f3ff; } .green { fill: #eef8ed; } .orange { fill: #fff1dc; } .purple { fill: #f0eaff; } .gray { fill: #f3f5f7; }
+      .box-title { font-size: 24px; font-weight: 700; }
+      .small-title { font-size: 19px; font-weight: 650; }
+      .small { font-size: 17px; fill: #536979; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="62">同一请求要通过两道安全检查</text>
+  <text class="label note" x="65" y="95">DAC 看“有没有被授权”，MAC 看“密级规则是否允许”</text>
+
+  <rect class="box blue" x="70" y="185" width="220" height="155" rx="20"/>
+  <text class="label box-title" x="180" y="235" text-anchor="middle">请求</text>
+  <text class="label small" x="180" y="275" text-anchor="middle">主体：R1（教师角色）</text>
+  <text class="label small" x="180" y="305" text-anchor="middle">读取：成绩表</text>
+  <line x1="290" y1="262" x2="380" y2="262" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box green" x="380" y="145" width="250" height="235" rx="20"/>
+  <text class="label box-title" x="505" y="198" text-anchor="middle">DAC</text>
+  <text class="label small-title" x="505" y="245" text-anchor="middle">授权表 / 角色</text>
+  <text class="label small" x="505" y="285" text-anchor="middle">教师角色是否有</text>
+  <text class="label small" x="505" y="314" text-anchor="middle">SELECT 权限？</text>
+  <text class="label small" x="505" y="355" text-anchor="middle">用户或属主可授予</text>
+  <line x1="630" y1="262" x2="720" y2="262" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box orange" x="720" y="145" width="250" height="235" rx="20"/>
+  <text class="label box-title" x="845" y="198" text-anchor="middle">MAC</text>
+  <text class="label small-title" x="845" y="245" text-anchor="middle">许可证级别 vs 密级</text>
+  <text class="label small" x="845" y="285" text-anchor="middle">读：主体级别 ≥ 客体密级</text>
+  <text class="label small" x="845" y="314" text-anchor="middle">写：主体级别 ≤ 客体密级</text>
+  <text class="label small" x="845" y="355" text-anchor="middle">系统按策略强制检查</text>
+  <line x1="970" y1="262" x2="1060" y2="262" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box purple" x="1060" y="185" width="90" height="155" rx="18"/>
+  <text class="label box-title" x="1105" y="245" text-anchor="middle">放行</text>
+  <text class="label small" x="1105" y="285" text-anchor="middle">两者</text>
+  <text class="label small" x="1105" y="312" text-anchor="middle">都通过</text>
+
+  <rect class="box gray" x="185" y="475" width="830" height="105" rx="20"/>
+  <text class="label box-title" x="600" y="518" text-anchor="middle">任一道检查失败，数据库请求都不能执行</text>
+  <text class="label small" x="600" y="554" text-anchor="middle">MAC 不是用户可自行转授的普通权限，而是系统强制执行的安全策略</text>
+</svg>

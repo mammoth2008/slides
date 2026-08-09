@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 11.2 日志、检查点与数据库镜像 | HUST</title>
+  <meta name="description" content="用日志、检查点和镜像缩短故障恢复路径">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="11-2">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-11-2/assets/dbpa-11-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 11.2</div>
+      <h1>日志、检查点与数据库镜像</h1>
+      <p class="cover-description">用副本、日志、检查点和镜像缩短恢复路径</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+承接 11.1 已建立的事务、故障和 UNDO／REDO 方向，本单元解释副本和日志如何建立冗余，再用检查点和镜像缩短恢复时间和停机窗口
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分静态、动态、海量和增量转储</span></li><li><span class="list-marker">02</span><span class="list-text">说明日志记录的内容和先写日志原则</span></li><li><span class="list-marker">03</span><span class="list-text">按故障使用副本和日志恢复</span></li><li><span class="list-marker">04</span><span class="list-text">解释检查点和重新开始文件</span></li><li><span class="list-marker">05</span><span class="list-text">给定转储、检查点、故障时刻和介质可信性，选择副本、日志、UNDO、REDO 或镜像</span></li><li><span class="list-marker">06</span><span class="list-text">根据检查点构造初始恢复队列并比较数据库镜像的收益与代价</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">后备副本只能恢复到转储时刻</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>有了最近一次后备副本，就能直接恢复到故障前一刻吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">要恢复到故障前状态，还需要转储后的更新日志</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-dump-log-timeline.svg" data-full-src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-dump-log-timeline.svg" alt="后备副本、日志窗口和故障时刻之间的恢复证据链" tabindex="0" role="button" aria-label="放大图片：后备副本、日志窗口和故障时刻之间的恢复证据链" decoding="async"></figure></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>转储副本　→　重装　→　日志中的已提交更新　→　故障前一致状态</p></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。副本只提供恢复起点；动态转储或副本含未完成事务时，还要结合日志按状态执行 UNDO 和 REDO</p></div></div>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">BACKUP COPY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">用两个维度区分转储方式</h2>
+    <div class="slide-content"><p class="slide-lead">先判断转储时是否允许并发，再判断复制全部数据库还是只复制变化部分</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th></th><th>海量转储</th><th>增量转储</th></tr></thead><tbody><tr><td>静态转储</td><td>无并发写入，副本一致；复制全部数据库</td><td>无并发写入；只复制变化部分</td></tr><tr><td>动态转储</td><td>允许并发写入，需要日志校正全部副本</td><td>允许并发写入；需要基础副本、变化链和日志窗口</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>静态／动态描述运行状态，海量／增量描述复制范围；两个维度可以自由组合</p></div></div>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">DUMP TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">日志记录事务对数据库的更新</h2>
+    <div class="slide-content"><p class="slide-lead">日志让恢复系统知道应撤销哪些更新或重做哪些更新</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>日志信息</th><th>说明</th><th>恢复用途</th></tr></thead><tbody><tr><td>事务标识</td><td>哪个事务的操作</td><td>分类事务状态</td></tr><tr><td>开始与结束</td><td>BEGIN、COMMIT 或 ROLLBACK</td><td>判断是否完成</td></tr><tr><td>操作对象</td><td>插入、删除或修改对象</td><td>定位更新</td></tr><tr><td>旧值与新值</td><td>更新前后数据</td><td>执行 UNDO 或 REDO</td></tr></tbody></table></div>
+<div class="component component-code"><p>&lt;T1, UPDATE, Account[A], old=100, new=90&gt;</p></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="旧值　→　UNDO　｜　新值　→　REDO　｜　记录按并发执行次序登记"><span class="relation-term">旧值</span><span class="relation-operator">→</span><span class="relation-term">UNDO　｜　新值</span><span class="relation-operator">→</span><span class="relation-term">REDO　｜　记录按并发执行次序登记</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>块级日志会保存受影响数据块的前后内容；插入或删除时旧值、新值可能有一侧为空，记录级日志更容易直接说明“哪个事务改了哪个对象”</p></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">LOG RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">先写日志后写数据页是可恢复性的底线</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>数据页已经写盘，日志晚一点再稳定保存也可以吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">WAL 要求日志稳定后，相关数据页才可写入稳定存储</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="更新请求　→　日志记录稳定保存　→　受影响数据页写入稳定存储"><span class="relation-term">更新请求</span><span class="relation-operator">→</span><span class="relation-term">日志记录稳定保存</span><span class="relation-operator">→</span><span class="relation-term">受影响数据页写入稳定存储</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>日志先写</h3><p>日志已稳定保存而数据页尚未写入，恢复仍有依据；具体按事务状态执行 UNDO 或 REDO</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据先写</h3><p>数据页已写而日志未稳定保存，故障后可能无法可靠解释该修改</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不可以。WAL 先稳定保存恢复证据，再允许数据页落盘；提交确认还需要提交记录稳定保存</p></div></div>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">WRITE AHEAD LOG</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">按故障类型和事务状态选择恢复动作</h2>
+    <div class="slide-content"><p class="slide-lead">副本提供起点，日志按事务状态补齐或撤销更新</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>事务状态</th><th>队列</th><th>动作</th></tr></thead><tbody><tr><td>事务故障：未完成事务</td><td>相关日志</td><td>反向应用旧值执行 UNDO</td></tr><tr><td>系统故障：未完成／已提交事务</td><td>UNDO-LIST／REDO-LIST</td><td>未完成 UNDO，已提交 REDO</td></tr><tr><td>介质故障：原介质不可信</td><td>可信副本与相关日志</td><td>重装副本后按动态转储窗口和事务状态执行 UNDO／REDO</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>动态转储的介质恢复需要区分未完成事务和已提交事务；转储期间的未完成事务可能仍需 UNDO</p></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">FAILURE RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">检查点把恢复搜索起点移近故障位置</h2>
+    <div class="slide-content"><p class="slide-lead">恢复不必每次从日志文件开头扫描</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="日志缓冲刷入稳定存储　→　写检查点记录　→　数据缓冲区刷入数据库　→　把检查点日志地址写入重新开始文件"><span class="relation-term">日志缓冲刷入稳定存储</span><span class="relation-operator">→</span><span class="relation-term">写检查点记录</span><span class="relation-operator">→</span><span class="relation-term">数据缓冲区刷入数据库</span><span class="relation-operator">→</span><span class="relation-term">把检查点日志地址写入重新开始文件</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>检查点不是单纯的时间标签，而是一组已按顺序落盘的恢复证据和一个可定位的日志地址</p></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">检查点与重新开始文件定位恢复范围</h2>
+    <div class="slide-content"><p class="slide-lead">检查点保存活动事务状态，重新开始文件保存日志地址</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>对象</th><th>保存什么</th><th>恢复时怎么用</th></tr></thead><tbody><tr><td>检查点记录</td><td>活动事务及最近日志地址</td><td>建立初始事务队列</td></tr><tr><td>重新开始文件</td><td>检查点在日志中的地址</td><td>找到最后检查点</td></tr><tr><td>日志后续记录</td><td>新事务和提交标记</td><td>更新 UNDO／REDO 队列</td></tr></tbody></table></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="重新开始文件　→　最后检查点　→　ACTIVE-LIST　→　UNDO-LIST／REDO-LIST"><span class="relation-term">重新开始文件</span><span class="relation-operator">→</span><span class="relation-term">最后检查点</span><span class="relation-operator">→</span><span class="relation-term">ACTIVE-LIST</span><span class="relation-operator">→</span><span class="relation-term">UNDO-LIST／REDO-LIST</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>从检查点向后扫描：新事务先进入 UNDO；遇到 <code>COMMIT</code> 后移入 REDO，扫描结束后先执行 UNDO，再执行 REDO</p></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">RESTART FILE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">检查点与事务位置决定恢复动作</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>只看事务是否在检查点后开始，就能决定 UNDO 还是 REDO 吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">恢复动作要同时看事务提交时刻、最后检查点和故障位置</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-checkpoint-recovery.svg" data-full-src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-checkpoint-recovery.svg" alt="检查点前后五类事务的时间线和 UNDO REDO 分类" tabindex="0" role="button" aria-label="放大图片：检查点前后五类事务的时间线和 UNDO REDO 分类" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>T1：检查点前提交</h3><p>修改已在检查点建立前或建立时写入数据库，不必 REDO</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>T2、T4：检查点后提交</h3><p>修改在故障时可能尚未落盘，需要 REDO</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>T3、T5：故障时未完成</h3><p>事务未完成，必须撤销，需要 UNDO</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。要从最后检查点正向扫描：新事务先进入 UNDO，遇到 <code>COMMIT</code> 后移入 REDO，最后先 UNDO 再 REDO</p></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">CHECKPOINT STRATEGY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">镜像把当前关键数据复制到另一介质</h2>
+    <div class="slide-content"><p class="slide-lead">介质故障时可以缩短停机和重装时间，但不提供历史版本</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-mirror-failover.svg" data-full-src="resources/decks/dbpa-11-2/assets/generated/dbpa-ch11-mirror-failover.svg" alt="主数据库更新、镜像同步和介质故障后的服务切换" tabindex="0" role="button" aria-label="放大图片：主数据库更新、镜像同步和介质故障后的服务切换" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>镜像解决什么问题</h3><p>它把另一份当前数据放在不同介质上；镜像仍然一致且可用时，主介质损坏后可以继续服务，减少重装副本的停机时间</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>镜像不保存历史版本</h3><p>镜像保存另一份当前数据，不保存多个历史时点。错误更新通常也会被复制，因此仍需后备副本和日志保留恢复时点；并发控制仍负责并发隔离</p></article></div></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">DATABASE MIRROR</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2 <span>|</span> 11.2</div>
+    <h2 class="slide-title">镜像用复制写入成本换取可用性</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>镜像已经同步，误删数据时能直接找回删除前版本吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">通常只为关键数据和日志建立镜像</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>方面</th><th>镜像收益</th><th>镜像代价</th></tr></thead><tbody><tr><td>介质故障</td><td>可由另一介质继续服务</td><td>需要额外存储</td></tr><tr><td>恢复速度</td><td>减少重装和停机</td><td>依赖镜像仍一致且可用</td></tr><tr><td>并发读取</td><td>镜像可读且一致性策略允许时可分担读压力</td><td>复制写入会增加开销，具体取决于同步方式</td></tr><tr><td>范围选择</td><td>保护关键数据和日志</td><td>全库镜像成本更高</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。镜像解决当前数据的可用性和切换速度；历史恢复仍依赖后备副本与日志</p></div></div>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">MIRROR TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">可靠恢复是一条由副本、日志、检查点和镜像组成的证据链</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>副本</h3><p>副本提供可信的恢复起点</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>日志</h3><p>日志按 WAL 记录更新前后状态，支撑 UNDO／REDO 队列</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查点</h3><p>检查点记录恢复位置，缩短日志搜索范围</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>镜像</h3><p>镜像在介质故障时减少停机</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复链是：副本提供起点 → 日志补齐更新 → 检查点缩短搜索 → 镜像缩短停机；镜像不等于历史备份</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-11-2/mindmap-11-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定动态转储和故障时刻，如何选择副本以及相应日志？</span></li><li><span class="question-no">02</span><span class="question-text">给定事务状态和介质可信性，如何在 UNDO、REDO、副本重装和镜像切换之间选择？</span></li><li><span class="question-no">03</span><span class="question-text">数据页先写而日志未稳定保存时，故障后会留下什么恢复缺口？</span></li><li><span class="question-no">04</span><span class="question-text">根据最后检查点和 T1—T5 状态，如何构造 UNDO-LIST 与 REDO-LIST？</span></li><li><span class="question-no">05</span><span class="question-text">为什么动态转储的介质恢复可能同时需要 UNDO 和 REDO？</span></li><li><span class="question-no">06</span><span class="question-text">镜像、后备副本和并发控制分别承担什么职责？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-11-1.html" title="上一节：11.1 事务、故障与恢复策略" aria-label="上一节：11.1 事务、故障与恢复策略">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">11.1</span>
+        <span class="nav-title">事务故障与恢复</span>
+      </a>
+      <a class="exercise-link" href="dbpa-11-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-12-1.html" title="下一节：12.1 并发异常、隔离级别与封锁协议" aria-label="下一节：12.1 并发异常、隔离级别与封锁协议">
+        <span class="nav-title">并发异常与封锁协议</span>
+        <span class="nav-number">12.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

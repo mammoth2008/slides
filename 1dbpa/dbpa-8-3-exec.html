@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8.3 JDBC 与 MVC 数据库应用开发｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 8.3</div><h1>JDBC 与 MVC 数据库应用开发</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将 JDBC 执行接口与适用场景匹配</h2><div class="matching-grid"><label class="matching-row"><span>Statement</span><select class="matching-select" data-answer="执行没有外部参数且不重复的固定 SQL" name="q1"><option value="">请选择</option><option value="调用存储过程或存储函数接口">调用存储过程或存储函数接口</option><option value="执行没有外部参数且不重复的固定 SQL">执行没有外部参数且不重复的固定 SQL</option><option value="执行带输入参数、需要绑定并可能重复运行的 SQL">执行带输入参数、需要绑定并可能重复运行的 SQL</option></select></label><label class="matching-row"><span>PreparedStatement</span><select class="matching-select" data-answer="执行带输入参数、需要绑定并可能重复运行的 SQL" name="q1"><option value="">请选择</option><option value="调用存储过程或存储函数接口">调用存储过程或存储函数接口</option><option value="执行没有外部参数且不重复的固定 SQL">执行没有外部参数且不重复的固定 SQL</option><option value="执行带输入参数、需要绑定并可能重复运行的 SQL">执行带输入参数、需要绑定并可能重复运行的 SQL</option></select></label><label class="matching-row"><span>CallableStatement</span><select class="matching-select" data-answer="调用存储过程或存储函数接口" name="q1"><option value="">请选择</option><option value="调用存储过程或存储函数接口">调用存储过程或存储函数接口</option><option value="执行没有外部参数且不重复的固定 SQL">执行没有外部参数且不重复的固定 SQL</option><option value="执行带输入参数、需要绑定并可能重复运行的 SQL">执行带输入参数、需要绑定并可能重复运行的 SQL</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>Statement → 执行没有外部参数且不重复的固定 SQL；PreparedStatement → 执行带输入参数、需要绑定并可能重复运行的 SQL；CallableStatement → 调用存储过程或存储函数接口</p><p>PreparedStatement 通过参数绑定分离 SQL 结构与数据，CallableStatement 面向数据库端存储程序</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="ordering" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 排序题</div><h2>按 JDBC 访问数据库的主要步骤排列</h2><ol class="ordering-list" data-answer="[&quot;获取数据源或驱动并建立 Connection&quot;, &quot;创建 Statement、PreparedStatement 或 CallableStatement&quot;, &quot;绑定输入参数并执行&quot;, &quot;读取 ResultSet、更新行数或输出参数&quot;, &quot;按逆序关闭结果、语句和连接资源&quot;]"><li class="ordering-item"><span>读取 ResultSet、更新行数或输出参数</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“读取 ResultSet、更新行数或输出参数”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“读取 ResultSet、更新行数或输出参数”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>绑定输入参数并执行</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“绑定输入参数并执行”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“绑定输入参数并执行”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>创建 Statement、PreparedStatement 或 CallableStatement</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“创建 Statement、PreparedStatement 或 CallableStatement”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“创建 Statement、PreparedStatement 或 CallableStatement”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>获取数据源或驱动并建立 Connection</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“获取数据源或驱动并建立 Connection”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“获取数据源或驱动并建立 Connection”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>按逆序关闭结果、语句和连接资源</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“按逆序关闭结果、语句和连接资源”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“按逆序关闭结果、语句和连接资源”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>获取数据源或驱动并建立 Connection → 创建 Statement、PreparedStatement 或 CallableStatement → 绑定输入参数并执行 → 读取 ResultSet、更新行数或输出参数 → 按逆序关闭结果、语句和连接资源</p><p>连接、执行、结果处理和释放构成完整闭环，成功和失败路径都必须释放资源</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="matching" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 匹配题</div><h2>将 JDBC 方法与数据流方向匹配</h2><div class="matching-grid"><label class="matching-row"><span>setXXX</span><select class="matching-select" data-answer="把 Java 值绑定到 SQL 参数占位符" name="q3"><option value="">请选择</option><option value="把 Java 值绑定到 SQL 参数占位符">把 Java 值绑定到 SQL 参数占位符</option><option value="执行预期返回 ResultSet 的查询">执行预期返回 ResultSet 的查询</option><option value="按 SQL／Java 类型映射读取当前行列值">按 SQL／Java 类型映射读取当前行列值</option><option value="把 ResultSet 游标移动到下一行并报告是否存在">把 ResultSet 游标移动到下一行并报告是否存在</option><option value="为存储程序声明应用要接收的输出参数">为存储程序声明应用要接收的输出参数</option></select></label><label class="matching-row"><span>executeQuery</span><select class="matching-select" data-answer="执行预期返回 ResultSet 的查询" name="q3"><option value="">请选择</option><option value="把 Java 值绑定到 SQL 参数占位符">把 Java 值绑定到 SQL 参数占位符</option><option value="执行预期返回 ResultSet 的查询">执行预期返回 ResultSet 的查询</option><option value="按 SQL／Java 类型映射读取当前行列值">按 SQL／Java 类型映射读取当前行列值</option><option value="把 ResultSet 游标移动到下一行并报告是否存在">把 ResultSet 游标移动到下一行并报告是否存在</option><option value="为存储程序声明应用要接收的输出参数">为存储程序声明应用要接收的输出参数</option></select></label><label class="matching-row"><span>next</span><select class="matching-select" data-answer="把 ResultSet 游标移动到下一行并报告是否存在" name="q3"><option value="">请选择</option><option value="把 Java 值绑定到 SQL 参数占位符">把 Java 值绑定到 SQL 参数占位符</option><option value="执行预期返回 ResultSet 的查询">执行预期返回 ResultSet 的查询</option><option value="按 SQL／Java 类型映射读取当前行列值">按 SQL／Java 类型映射读取当前行列值</option><option value="把 ResultSet 游标移动到下一行并报告是否存在">把 ResultSet 游标移动到下一行并报告是否存在</option><option value="为存储程序声明应用要接收的输出参数">为存储程序声明应用要接收的输出参数</option></select></label><label class="matching-row"><span>getXXX</span><select class="matching-select" data-answer="按 SQL／Java 类型映射读取当前行列值" name="q3"><option value="">请选择</option><option value="把 Java 值绑定到 SQL 参数占位符">把 Java 值绑定到 SQL 参数占位符</option><option value="执行预期返回 ResultSet 的查询">执行预期返回 ResultSet 的查询</option><option value="按 SQL／Java 类型映射读取当前行列值">按 SQL／Java 类型映射读取当前行列值</option><option value="把 ResultSet 游标移动到下一行并报告是否存在">把 ResultSet 游标移动到下一行并报告是否存在</option><option value="为存储程序声明应用要接收的输出参数">为存储程序声明应用要接收的输出参数</option></select></label><label class="matching-row"><span>registerOutParameter</span><select class="matching-select" data-answer="为存储程序声明应用要接收的输出参数" name="q3"><option value="">请选择</option><option value="把 Java 值绑定到 SQL 参数占位符">把 Java 值绑定到 SQL 参数占位符</option><option value="执行预期返回 ResultSet 的查询">执行预期返回 ResultSet 的查询</option><option value="按 SQL／Java 类型映射读取当前行列值">按 SQL／Java 类型映射读取当前行列值</option><option value="把 ResultSet 游标移动到下一行并报告是否存在">把 ResultSet 游标移动到下一行并报告是否存在</option><option value="为存储程序声明应用要接收的输出参数">为存储程序声明应用要接收的输出参数</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>setXXX → 把 Java 值绑定到 SQL 参数占位符；executeQuery → 执行预期返回 ResultSet 的查询；next → 把 ResultSet 游标移动到下一行并报告是否存在；getXXX → 按 SQL／Java 类型映射读取当前行列值；registerOutParameter → 为存储程序声明应用要接收的输出参数</p><p>参数绑定是应用到数据库，结果读取是数据库到应用，两种方向都要处理类型与 NULL</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="single" data-answer="因为执行可能产生 ResultSet、更新行数或存储程序输出，需要分别读取" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 单选题</div><h2>execute() 返回后，应用为什么还要判断结果类型？</h2><div class="choices"><label class="choice"><input type="radio" name="q4" value="因为执行可能产生 ResultSet、更新行数或存储程序输出，需要分别读取" aria-keyshortcuts="1"><span>因为执行可能产生 ResultSet、更新行数或存储程序输出，需要分别读取</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q4" value="因为 execute() 永远只返回第一列文本" aria-keyshortcuts="2"><span>因为 execute() 永远只返回第一列文本</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>因为执行可能产生 ResultSet、更新行数或存储程序输出，需要分别读取</p><p>通用执行接口不能假定结果形状，调用者应按 API 合同检查并取得相应结果</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将 MVC／DAO 层与教师回复业务中的职责匹配</h2><div class="matching-grid"><label class="matching-row"><span>Controller</span><select class="matching-select" data-answer="接收请求、校验路由并协调一次业务用例" name="q5"><option value="">请选择</option><option value="展示回复表单和处理结果">展示回复表单和处理结果</option><option value="封装 Feedback 数据的查询与持久化">封装 Feedback 数据的查询与持久化</option><option value="把数据库调用、参数和结果映射为应用对象">把数据库调用、参数和结果映射为应用对象</option><option value="执行教师是否可回复、状态转换等业务规则">执行教师是否可回复、状态转换等业务规则</option><option value="接收请求、校验路由并协调一次业务用例">接收请求、校验路由并协调一次业务用例</option></select></label><label class="matching-row"><span>Model／Service</span><select class="matching-select" data-answer="执行教师是否可回复、状态转换等业务规则" name="q5"><option value="">请选择</option><option value="展示回复表单和处理结果">展示回复表单和处理结果</option><option value="封装 Feedback 数据的查询与持久化">封装 Feedback 数据的查询与持久化</option><option value="把数据库调用、参数和结果映射为应用对象">把数据库调用、参数和结果映射为应用对象</option><option value="执行教师是否可回复、状态转换等业务规则">执行教师是否可回复、状态转换等业务规则</option><option value="接收请求、校验路由并协调一次业务用例">接收请求、校验路由并协调一次业务用例</option></select></label><label class="matching-row"><span>DAO／Repository</span><select class="matching-select" data-answer="封装 Feedback 数据的查询与持久化" name="q5"><option value="">请选择</option><option value="展示回复表单和处理结果">展示回复表单和处理结果</option><option value="封装 Feedback 数据的查询与持久化">封装 Feedback 数据的查询与持久化</option><option value="把数据库调用、参数和结果映射为应用对象">把数据库调用、参数和结果映射为应用对象</option><option value="执行教师是否可回复、状态转换等业务规则">执行教师是否可回复、状态转换等业务规则</option><option value="接收请求、校验路由并协调一次业务用例">接收请求、校验路由并协调一次业务用例</option></select></label><label class="matching-row"><span>JDBC／ORM</span><select class="matching-select" data-answer="把数据库调用、参数和结果映射为应用对象" name="q5"><option value="">请选择</option><option value="展示回复表单和处理结果">展示回复表单和处理结果</option><option value="封装 Feedback 数据的查询与持久化">封装 Feedback 数据的查询与持久化</option><option value="把数据库调用、参数和结果映射为应用对象">把数据库调用、参数和结果映射为应用对象</option><option value="执行教师是否可回复、状态转换等业务规则">执行教师是否可回复、状态转换等业务规则</option><option value="接收请求、校验路由并协调一次业务用例">接收请求、校验路由并协调一次业务用例</option></select></label><label class="matching-row"><span>View</span><select class="matching-select" data-answer="展示回复表单和处理结果" name="q5"><option value="">请选择</option><option value="展示回复表单和处理结果">展示回复表单和处理结果</option><option value="封装 Feedback 数据的查询与持久化">封装 Feedback 数据的查询与持久化</option><option value="把数据库调用、参数和结果映射为应用对象">把数据库调用、参数和结果映射为应用对象</option><option value="执行教师是否可回复、状态转换等业务规则">执行教师是否可回复、状态转换等业务规则</option><option value="接收请求、校验路由并协调一次业务用例">接收请求、校验路由并协调一次业务用例</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>Controller → 接收请求、校验路由并协调一次业务用例；Model／Service → 执行教师是否可回复、状态转换等业务规则；DAO／Repository → 封装 Feedback 数据的查询与持久化；JDBC／ORM → 把数据库调用、参数和结果映射为应用对象；View → 展示回复表单和处理结果</p><p>分层把界面、业务规则和数据访问解耦，避免 Controller 或 View 直接拼接数据库细节</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;最大连接数和等待超时&quot;, &quot;借用后及时归还连接&quot;, &quot;连接失效检测与泄漏监控&quot;, &quot;事务、会话状态和隔离级别复位&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>使用连接池时仍需治理哪些边界？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="最大连接数和等待超时" aria-keyshortcuts="1"><span>最大连接数和等待超时</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="借用后及时归还连接" aria-keyshortcuts="2"><span>借用后及时归还连接</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="连接失效检测与泄漏监控" aria-keyshortcuts="3"><span>连接失效检测与泄漏监控</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="事务、会话状态和隔离级别复位" aria-keyshortcuts="4"><span>事务、会话状态和隔离级别复位</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="每次请求都创建无限多物理连接" aria-keyshortcuts="5"><span>每次请求都创建无限多物理连接</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q6" value="连接池会自动修复所有慢 SQL" aria-keyshortcuts="6"><span>连接池会自动修复所有慢 SQL</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>最大连接数和等待超时、借用后及时归还连接、连接失效检测与泄漏监控、事务、会话状态和隔离级别复位</p><p>连接池复用物理连接，但容量、状态、泄漏和故障仍需明确管理</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>教师提交 Tno、TCno、Sno 和 Feedback 后，一次可靠的 MVC/JDBC 请求应怎样流动？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>Controller 接收并验证请求身份与基本输入，Model 或 Service 检查教师权限、教学班和学生关系及状态规则，DAO 使用 PreparedStatement 绑定参数并在事务中更新，JDBC 读取影响行数或结果并关闭资源，Service 决定提交或回滚，最后 View 展示成功或可理解的错误。日志中应避免泄露敏感数据，数据库约束继续作为最终保护边界</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

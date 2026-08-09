@@ -1,380 +1,247 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 7.1 数据库设计总览与需求分析 | HUST</title>
+  <meta name="description" content="从业务目标、需求调查和数据字典建立数据库设计输入">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="7-1">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-7-1/assets/dbpa-7-1.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 7.1</div>
+      <h1>数据库设计总览与需求分析</h1>
+      <p class="cover-description">从业务问题建立可追溯的设计输入</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c71t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>7. 数据库设计</h2>
-            <h3 style="text-align: center">7.1 数据库设计概述</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c71t" data-rel-x="-800" data-rel-y="-300" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计
-
-- 广义: 数据库及其应用系统的设计
-- 狭义: 设计数据库的各级模式并建立数据库
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计
-
-- 对于一个给定的应用环境
-- 构造 (设计) 优化数据库逻辑模式和物理结构
-- 并据此建立数据库及其应用系统
-- 使之能够有效地存储和管理数据
-- 满足各种用户的应用需求
-- 包括信息管理要求和数据操作要求
-- 数据库设计是面向管理问题的
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="-1200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 信息管理要求
-
-- 在数据库中应该存储和管理哪些数据对象
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="300" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 数据操作要求
-
-- 对数据对象需要进行哪些操作
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计的目标
-
-- 为用户和各种应用系统提供一个信息基础设施和高效的运行环境
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="-1200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 高效的运行环境
-
-- 数据库数据的存取效率
-- 数据库存储空间的利用率
-- 数据库系统运行管理的效率
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库建设的基本规律
-
-- 三分技术
-- 七分管理
-- 十二分基础数据
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="700" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 结构设计和行为设计相结合
-
-- 数据库设计和应用系统设计不可分割
-- 数据和业务不可分割
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="c71t" data-rel-x="1000" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计需要
-
-- 计算机的基础知识
-- 软件工程的原理和方法
-- 程序设计的方法和技巧
-- 数据库的基本知识
-- 数据库设计技术
-- 应用领域的知识
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 常见设计方法
-
-- 新奥尔良 (New Orleans) 方法
-- 基于 E-R 模型的设计方法
-- 3NF (第三范式) 的设计方法
-- 面向对象的数据库设计方法
-- 统一建模语言 (Unified Model Language, UML) 方法
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="c71t" data-rel-x="2200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计的阶段
-
-- 需求分析
-- 概念结构设计
-- 逻辑结构设计
-- 物理结构设计
-- 数据库实施
-- 数据库运行和维护
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Database Design](img/c07/database-design.svg)
-#### Database Design
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计开始之前
-
-- 选定设计人员
-- 系统分析人员
-- 数据库设计人员
-- 应用开发人员
-- 数据库管理员
-- 用户代表
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 需求分析阶段
-
-- 准确了解与分析用户需求
-- 是整个设计过程的基础
-- 是最困难和最耗费时间的一步
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="0" data-rel-y="900" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 概念结构设计阶段
-
-- 是整个数据库设计的关键
-- 综合, 归纳与抽象用户需求
-- 形成概念模型
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 逻辑结构设计阶段
-
-- 将概念结构转为数据库管理系统支持的数据模型
-- 并对其进行优化
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a14" data-rel-x="1400" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 物理结构设计阶段
-
-- 为逻辑数据模型选取最适合应用环境的物理结构
-- 包括存储结构和存取方法
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="960" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库实施阶段
-
-- 根据逻辑设计和物理设计的结果建立数据库
-- 编写与调试应用程序
-- 组织数据入库
-- 试运行
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 运行和维护阶段
-
-- 投入正式运行
-- 不断评估, 调整与修改
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="a19" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Database Design](img/c07/database-design.svg)
-#### Database Design
-
-        </div>
-
-        <div id="mm71" class="step" data-rel-to="c71t" data-rel-x="0" data-rel-y="-3000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c07/mindmap-7-1.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c71q" class="step markdown" data-rel-to="c71t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 7.1 数据库设计概述
-
-- 数据库设计的主要目标是什么?
-- "三分技术, 七分管理, 十二分基础数据" 是什么意思?
-- 描述数据库设计的整个过程.
-- 数据库设计开始之前应该选定哪些角色?
-- 物理结构设计阶段主要考虑哪些因素?
-
-            ----
-
-            [ 6.2 规范化](dbpa-6-2.html#/overview)
-            [| 练习 |](dbpa-exec.html)
-            [ 7.2 需求分析](dbpa-7-2.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+本单元先纠正“建表就是设计”的误解，再沿六阶段建立数据库设计的整体视角，最后把需求调查落到数据字典。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">数据库设计从业务目标、数据、处理和运行约束出发，逐步形成可验证的设计输入</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分数据库设计的广义、狭义含义及三类设计目标</span></li><li><span class="list-marker">02</span><span class="list-text">说明六个设计阶段的输入、任务、产出和 DBMS 边界</span></li><li><span class="list-marker">03</span><span class="list-text">解释基础数据、管理规则和应用处理如何共同影响设计</span></li><li><span class="list-marker">04</span><span class="list-text">设计需求调查路径，使用六种方法收集证据，并用结构化分析整理</span></li><li><span class="list-marker">05</span><span class="list-text">填写五类数据字典条目并追踪到概念、逻辑和物理设计</span></li><li><span class="list-marker">06</span><span class="list-text">让用户确认需求规格说明书和数据字典，记录边界、版本和未决项</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/16</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.1</div>
+    <h2 class="slide-title">导入 Excel 不等于完成数据库设计</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>把表导进数据库，业务规则也就自动设计好了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">设计要同时回答数据对象和业务处理</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="广义设计：数据库及其应用系统；狭义设计：各级模式与数据库本身"><span class="relation-term">广义设计：数据库及其应用系统；狭义设计：各级模式与数据库本身</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>设计视角</th><th>要回答的问题</th><th>典型结果</th></tr></thead><tbody><tr><td>信息管理</td><td>应存储和管理哪些数据对象</td><td>学生、课程、选课</td></tr><tr><td>数据操作</td><td>需要查询、增加、删除、修改什么</td><td>开课、选课、成绩登记</td></tr><tr><td>运行目标</td><td>如何平衡存取效率、空间利用率和运行维护效率</td><td>存储结构、存取方法和维护方案</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>表只是载体；业务语义、处理责任和运行目标仍需要设计</p></div></div>
+    <div class="numeric-progress">3/16</div>
+    <div class="semantic-label">DESIGN SCOPE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.1</div>
+    <h2 class="slide-title">数据库设计同时处理技术结构和业务责任</h2>
+    <div class="slide-content"><p class="slide-lead">基础数据、业务规则和事务活动共同决定模式能否长期使用</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>基础数据</h3><p>设计以选课、成绩等业务事实为基础，并持续收集、整理、组织和更新这些数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务管理</h3><p>教务规则和组织职责会塑造数据对象及其联系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结构与行为</h3><p>选课、退课、成绩登记等事务会影响模式和物理结构</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据库设计必须与应用、业务流程和运行维护同步推进</p></div></div>
+    <div class="numeric-progress">4/16</div>
+    <div class="semantic-label">DESIGN PRINCIPLES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.1</div>
+    <h2 class="slide-title">六个阶段让设计逐步收敛</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>试运行才发现性能不足，只修改“实施”阶段就够了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">每一阶段都留下可以复核的设计产出，后续证据也可能促使前面回退</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-7-1/assets/generated/dbpa-ch07-design-lifecycle-image2.png" data-full-src="resources/decks/dbpa-7-1/assets/generated/dbpa-ch07-design-lifecycle-image2.png" alt="需求、概念、逻辑、物理、实施与维护六阶段设计漏斗" tabindex="0" role="button" aria-label="放大图片：需求、概念、逻辑、物理、实施与维护六阶段设计漏斗" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 48% 32%"><colgroup><col style="width:20%"><col style="width:48%"><col style="width:32%"></colgroup><thead><tr><th>阶段</th><th>主要输入与任务</th><th>主要产出</th></tr></thead><tbody><tr><td>需求分析</td><td>业务目标、现有记录；调查并确认需求</td><td>需求规格、数据字典</td></tr><tr><td>概念结构</td><td>需求规格、数据字典；抽取对象和联系</td><td>E-R 图、概念模型</td></tr><tr><td>逻辑结构</td><td>概念模型、依赖和约束；转换并规范化</td><td>逻辑模式、外模式</td></tr><tr><td>物理结构</td><td>逻辑模式、负载约束；选择存储和存取方法</td><td>存储结构、索引、配置</td></tr><tr><td>实施</td><td>模式、程序和数据；构建、装载和测试</td><td>可运行系统、试运行结果</td></tr><tr><td>运行维护</td><td>运行反馈、故障和变化；评价、调整和备份</td><td>监控、重组或重构方案</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>需求与概念设计相对独立于 DBMS；逻辑与物理设计受目标 DBMS 影响，事务和应用设计与各阶段同步推进</p></div></div>
+    <div class="numeric-progress">5/16</div>
+    <div class="semantic-label">SIX PHASES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.1</div>
+    <h2 class="slide-title">数据库设计需要共同承担责任</h2>
+    <div class="slide-content"><p class="slide-lead">不同角色在不同阶段提供业务、结构、处理和运行证据</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 43% 35%"><colgroup><col style="width:22%"><col style="width:43%"><col style="width:35%"></colgroup><thead><tr><th>角色</th><th>主要责任</th><th>重点参与</th></tr></thead><tbody><tr><td>系统分析员</td><td>组织业务调查、梳理需求和边界</td><td>需求分析</td></tr><tr><td>数据库设计员</td><td>设计并维护概念、逻辑和物理结构</td><td>结构设计全过程</td></tr><tr><td>应用开发人员</td><td>把处理要求落实为事务和应用程序</td><td>实施与试运行</td></tr><tr><td>数据库管理员</td><td>管理运行环境、权限、备份和监控，并提出运行约束</td><td>需求、物理设计与运行维护</td></tr><tr><td>用户代表</td><td>持续提供业务语义、确认范围并反馈运行结果</td><td>需求分析、验收与运行反馈</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>各角色在自己负责的阶段提供证据；系统分析员与数据库设计员贯穿全过程，并与其他角色协作</p></div></div>
+    <div class="numeric-progress">6/16</div>
+    <div class="semantic-label">DESIGN ROLES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">需求分析的对象是数据和处理</h2>
+    <div class="slide-content"><p class="slide-lead">需求分析把业务语言整理为信息、处理、安全性和完整性要求</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="组织与业务　→　信息要求　＋　处理要求　＋　安全性要求　＋　完整性要求"><span class="relation-term">组织与业务</span><span class="relation-operator">→</span><span class="relation-term">信息要求　＋　处理要求　＋　安全性要求　＋　完整性要求</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 43% 35%"><colgroup><col style="width:22%"><col style="width:43%"><col style="width:35%"></colgroup><thead><tr><th>需求类别</th><th>高校选课示例</th><th>它回答什么</th></tr></thead><tbody><tr><td>信息</td><td>学生、教学班、选课记录、成绩</td><td>要保存和查询什么</td></tr><tr><td>处理</td><td>选课、退课、成绩登记、统计</td><td>要完成什么操作及其响应</td></tr><tr><td>安全性</td><td>学生只能查看自己的成绩</td><td>谁可以查看、修改或导出什么</td></tr><tr><td>完整性</td><td>成绩必须对应合法选课记录</td><td>哪些取值、联系和状态必须成立</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>需求还要说明未来扩充的可能性，以及新系统负责和不负责的边界</p></div></div>
+    <div class="numeric-progress">7/16</div>
+    <div class="semantic-label">REQUIREMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">需求调查要从组织和业务活动开始</h2>
+    <div class="slide-content"><p class="slide-lead">需求调查先核对真实流程，再与用户确认系统边界和职责</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">组织：调查部门职责、原有系统和记录，整理组织结构与信息流向</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">业务：跟踪输入、加工、输出、频率和高峰期，记录实际业务流程</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">共识：与用户确认信息、处理、安全性和完整性要求，整理待确认清单</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">边界：区分系统、人工和外部系统负责的活动，记录职责边界</span></li></ol></div></div></div>
+    <div class="numeric-progress">8/16</div>
+    <div class="semantic-label">USER SURVEY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">不同调查方法回答不同的证据问题</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>开一次访谈会，需求证据应该就齐了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">复杂业务通常需要组合使用多种调查方法</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>观察流程</h3><p>通过跟班作业和查阅记录了解实际流程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>澄清规则</h3><p>通过调查会、专人介绍和询问澄清业务规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>收集反馈</h3><p>通过问卷调查收集较大范围的反馈</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>六种调查方法按证据问题分组；调查完成后还要由用户确认需求规格</p></div></div>
+    <div class="numeric-progress">9/16</div>
+    <div class="semantic-label">SURVEY METHODS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">结构化分析逐层组织调查证据</h2>
+    <div class="slide-content"><p class="slide-lead">结构化分析自顶向下逐层分解，把组织问题落到可记录的数据和处理过程</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="组织　→　部门职责　→　业务活动　→　数据流／处理过程"><span class="relation-term">组织</span><span class="relation-operator">→</span><span class="relation-term">部门职责</span><span class="relation-operator">→</span><span class="relation-term">业务活动</span><span class="relation-operator">→</span><span class="relation-term">数据流／处理过程</span></div></div>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">从组织目标和系统边界确定分析范围</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">将部门职责分解为业务活动</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">把活动拆为输入、加工、输出、频率与责任</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">把结果交给数据字典与需求规格说明书</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>结构化分析整理调查证据，但不替代用户判断；组织层级和业务活动的实际分解会随系统变化</p></div></div>
+    <div class="numeric-progress">10/16</div>
+    <div class="semantic-label">STRUCTURED ANALYSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">数据字典记录的是数据的含义和边界</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>数据字典不就是字段名和类型的清单吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">它是需求分析的元数据成果，不是业务记录本身</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 43% 35%"><colgroup><col style="width:22%"><col style="width:43%"><col style="width:35%"></colgroup><thead><tr><th>条目</th><th>描述重点</th><th>后续用途</th></tr></thead><tbody><tr><td>数据项</td><td>不可再分；含义、别名、类型/长度、取值范围/含义、逻辑关系</td><td>属性、域和完整性约束</td></tr><tr><td>数据结构</td><td>数据项或子结构的业务组合，不是数组或链表</td><td>概念对象、联系和消息输入</td></tr><tr><td>数据流</td><td>数据结构的来源、去向、组成、平均与高峰流量</td><td>处理边界与事务频率</td></tr><tr><td>数据存储</td><td>手工文档或计算机存储；流入流出、数据量、频度和方式</td><td>逻辑对象与物理存储估算</td></tr><tr><td>处理过程</td><td>输入、输出、功能、频度和响应要求；描述做什么而非如何实现</td><td>事务、响应性能与物理设计输入</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据项之间的逻辑关系是后续函数依赖、完整性约束和逻辑模式优化的语义来源</p></div></div>
+    <div class="numeric-progress">11/16</div>
+    <div class="semantic-label">DATA DICTIONARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">从“选课申请”提取五类数据字典条目</h2>
+    <div class="slide-content"><p class="slide-lead">把同一业务事实拆开记录，为后续设计保留可追溯的来源</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="需求语句：开放选课期间，学生提交申请；系统校验资格、容量和时间冲突，成功后保存记录并返回结果 信息：要保存和查询什么　处理：校验、写入、返回　安全：谁可以提交或查看　完整性：申请必须对应合法学生和教学班"><span class="relation-term">需求语句：开放选课期间，学生提交申请；系统校验资格、容量和时间冲突，成功后保存记录并返回结果 信息：要保存和查询什么　处理：校验、写入、返回　安全：谁可以提交或查看　完整性：申请必须对应合法学生和教学班</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>条目</th><th>示例内容</th><th>设计提示</th></tr></thead><tbody><tr><td>数据项</td><td>学号、教学班号、申请时间、状态；值域和有效性规则</td><td>属性、域和完整性约束</td></tr><tr><td>数据结构</td><td>申请 = 学号＋教学班号＋申请时间＋状态</td><td>学生—教学班联系及其属性</td></tr><tr><td>数据流</td><td>学生端 → 选课处理 → 记录与结果</td><td>来源、去向和系统边界</td></tr><tr><td>数据存储</td><td>选课记录；数据量、频度和方式待调查</td><td>逻辑对象与物理存储估算</td></tr><tr><td>处理过程</td><td>资格、容量、冲突校验；成功或拒绝输出</td><td>事务、响应和异常分支</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>五类条目分别为概念对象与联系、逻辑键和约束、物理负载评估提供证据</p></div></div>
+    <div class="numeric-progress">12/16</div>
+    <div class="semantic-label">DICTIONARY EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="b6" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
+    <h2 class="slide-title">用户需要确认需求规格说明书</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>设计团队内部已经讨论一致，为什么还要用户确认？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">用户确认的是语义、范围和优先级，而不是替设计员决定表名</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">对照业务流程和数据字典，检查每项需求是否能追溯到调查证据</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">标出本系统负责、暂不负责和未来可能扩充的功能</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">由用户代表复核需求规格说明书及数据字典中的语义、范围、优先级和约束</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">记录确认版本、未决事项、变更原因和下一次确认时间</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>经用户确认的当前版本，才成为设计团队共同使用的依据；未决事项和后续变更仍需记录</p></div></div>
+    <div class="numeric-progress">13/16</div>
+    <div class="semantic-label">REQUIREMENTS CONFIRMATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
+    <h2 class="slide-title">用需求、字典和阶段追踪设计输入</h2>
+    <div class="slide-content"><p class="slide-lead">数据库设计从业务目标出发，在运行反馈中持续修正</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>范围与阶段</h3><p>区分广义与狭义设计，说明六个阶段和协作角色</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>调查与需求</h3><p>使用六种方法和结构化分析整理四类需求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>字典与确认</h3><p>用五类条目记录语义，由用户确认并追踪到后续设计</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>确认后的需求和数据字典为实体、属性、联系和约束设计提供输入</p></div></div>
+    <div class="numeric-progress">14/16</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-1/mindmap-7-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">15/16</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">“把 Excel 导入数据库”属于哪种设计范围，还缺少哪些设计工作？</span></li><li><span class="question-no">02</span><span class="question-text">为六个阶段各补一项输入和产出，并指出为什么可能回退？</span></li><li><span class="question-no">03</span><span class="question-text">将“选课申请”中的陈述分别归入信息、处理、安全性和完整性要求？</span></li><li><span class="question-no">04</span><span class="question-text">为一项业务问题选择调查方法，并描述结构化分析的逐层分解链？</span></li><li><span class="question-no">05</span><span class="question-text">为“选课申请”补写五类数据字典条目，并说明各自的后续设计去向？</span></li><li><span class="question-no">06</span><span class="question-text">将这条路径迁移到手机游戏赛季或电子商务退款，指出需要更换哪些调查证据？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-6-2.html" title="上一节：6.2 依赖推理与模式分解" aria-label="上一节：6.2 依赖推理与模式分解">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">6.2</span>
+        <span class="nav-title">依赖推理与分解</span>
+      </a>
+      <a class="exercise-link" href="dbpa-7-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-7-2.html" title="下一节：7.2 概念结构设计与 E-R 模型" aria-label="下一节：7.2 概念结构设计与 E-R 模型">
+        <span class="nav-title">概念结构与 E-R 模型</span>
+        <span class="nav-number">7.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">16/16</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

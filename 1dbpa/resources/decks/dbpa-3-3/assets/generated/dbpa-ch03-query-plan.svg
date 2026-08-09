@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">查询语义与执行计划</title>
+  <desc id="desc">同一个查询结果要求可以对应全表扫描、索引查找或不同连接次序，DBMS 根据数据和统计信息选择计划。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 29px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { stroke: #7890a5; stroke-width: 2; }
+      .white { fill: #ffffff; }
+      .blue { fill: #e8f3ff; }
+      .green { fill: #eef8ed; }
+      .orange { fill: #fff1dc; }
+      .purple { fill: #f0eaff; }
+      .box-title { font-size: 23px; font-weight: 700; }
+      .small-title { font-size: 19px; font-weight: 650; }
+      .small { font-size: 16px; fill: #536979; }
+      .map { font-size: 17px; font-weight: 650; fill: #536979; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="60">结果语义固定，执行计划可以变化</text>
+  <text class="label note" x="65" y="92">先判断查询是否正确，再用 EXPLAIN 观察当前数据和产品选择的路径</text>
+
+  <rect class="box blue" x="70" y="150" width="300" height="125" rx="20"/>
+  <text class="label box-title" x="220" y="198" text-anchor="middle">SQL 查询要求</text>
+  <text class="label small" x="220" y="235" text-anchor="middle">返回满足条件的结果关系</text>
+
+  <line x1="370" y1="212" x2="470" y2="212" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="390" y="190">同一语义</text>
+
+  <rect class="box green" x="470" y="125" width="280" height="175" rx="20"/>
+  <text class="label box-title" x="610" y="172" text-anchor="middle">DBMS 规划器</text>
+  <text class="label small" x="610" y="210" text-anchor="middle">比较统计信息、索引</text>
+  <text class="label small" x="610" y="240" text-anchor="middle">与连接代价</text>
+  <text class="label small" x="610" y="270" text-anchor="middle">选择一条执行计划</text>
+
+  <line x1="750" y1="180" x2="900" y2="150" stroke="#60758a" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="750" y1="212" x2="900" y2="260" stroke="#60758a" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <line x1="750" y1="245" x2="900" y2="370" stroke="#60758a" stroke-width="2.5" marker-end="url(#arrow)"/>
+
+  <rect class="box orange" x="900" y="105" width="230" height="90" rx="18"/>
+  <text class="label small-title" x="1015" y="143" text-anchor="middle">全表扫描</text>
+  <text class="label small" x="1015" y="171" text-anchor="middle">逐行检查条件</text>
+  <rect class="box purple" x="900" y="215" width="230" height="90" rx="18"/>
+  <text class="label small-title" x="1015" y="253" text-anchor="middle">索引查找</text>
+  <text class="label small" x="1015" y="281" text-anchor="middle">先定位再取行</text>
+  <rect class="box white" x="900" y="325" width="230" height="90" rx="18"/>
+  <text class="label small-title" x="1015" y="363" text-anchor="middle">另一种连接次序</text>
+  <text class="label small" x="1015" y="391" text-anchor="middle">结果语义仍相同</text>
+
+  <rect class="box white" x="135" y="450" width="930" height="125" rx="20"/>
+  <text class="label box-title" x="600" y="494" text-anchor="middle">用户负责什么，系统负责什么</text>
+  <text class="label small" x="600" y="532" text-anchor="middle">用户：目标列、条件、连接和分组语义　｜　系统：扫描、索引、连接算法与执行次序</text>
+</svg>

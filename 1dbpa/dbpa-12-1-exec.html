@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>12.1 并发异常、隔离级别与封锁协议｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 12.1</div><h1>并发异常、隔离级别与封锁协议</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将并发异常与最小操作特征匹配</h2><div class="matching-grid"><label class="matching-row"><span>丢失修改</span><select class="matching-select" data-answer="两个事务基于同一旧值写回，后写覆盖先写" name="q1"><option value="">请选择</option><option value="两个事务基于同一旧值写回，后写覆盖先写">两个事务基于同一旧值写回，后写覆盖先写</option><option value="同一事务重复执行范围查询时出现或消失满足条件的行">同一事务重复执行范围查询时出现或消失满足条件的行</option><option value="一个事务读取了另一未提交事务的修改">一个事务读取了另一未提交事务的修改</option><option value="同一事务两次读取同一行得到不同已提交值">同一事务两次读取同一行得到不同已提交值</option></select></label><label class="matching-row"><span>脏读</span><select class="matching-select" data-answer="一个事务读取了另一未提交事务的修改" name="q1"><option value="">请选择</option><option value="两个事务基于同一旧值写回，后写覆盖先写">两个事务基于同一旧值写回，后写覆盖先写</option><option value="同一事务重复执行范围查询时出现或消失满足条件的行">同一事务重复执行范围查询时出现或消失满足条件的行</option><option value="一个事务读取了另一未提交事务的修改">一个事务读取了另一未提交事务的修改</option><option value="同一事务两次读取同一行得到不同已提交值">同一事务两次读取同一行得到不同已提交值</option></select></label><label class="matching-row"><span>不可重复读</span><select class="matching-select" data-answer="同一事务两次读取同一行得到不同已提交值" name="q1"><option value="">请选择</option><option value="两个事务基于同一旧值写回，后写覆盖先写">两个事务基于同一旧值写回，后写覆盖先写</option><option value="同一事务重复执行范围查询时出现或消失满足条件的行">同一事务重复执行范围查询时出现或消失满足条件的行</option><option value="一个事务读取了另一未提交事务的修改">一个事务读取了另一未提交事务的修改</option><option value="同一事务两次读取同一行得到不同已提交值">同一事务两次读取同一行得到不同已提交值</option></select></label><label class="matching-row"><span>幻读</span><select class="matching-select" data-answer="同一事务重复执行范围查询时出现或消失满足条件的行" name="q1"><option value="">请选择</option><option value="两个事务基于同一旧值写回，后写覆盖先写">两个事务基于同一旧值写回，后写覆盖先写</option><option value="同一事务重复执行范围查询时出现或消失满足条件的行">同一事务重复执行范围查询时出现或消失满足条件的行</option><option value="一个事务读取了另一未提交事务的修改">一个事务读取了另一未提交事务的修改</option><option value="同一事务两次读取同一行得到不同已提交值">同一事务两次读取同一行得到不同已提交值</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>丢失修改 → 两个事务基于同一旧值写回，后写覆盖先写；脏读 → 一个事务读取了另一未提交事务的修改；不可重复读 → 同一事务两次读取同一行得到不同已提交值；幻读 → 同一事务重复执行范围查询时出现或消失满足条件的行</p><p>四类异常的区别在于被覆盖、读到未提交值、同行变化或结果集合成员变化</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 匹配题</div><h2>将标准隔离级别与其最低保证匹配</h2><div class="matching-grid"><label class="matching-row"><span>READ UNCOMMITTED</span><select class="matching-select" data-answer="可能出现脏读、不可重复读和幻读" name="q2"><option value="">请选择</option><option value="防止脏读和不可重复读，标准层面仍可能幻读">防止脏读和不可重复读，标准层面仍可能幻读</option><option value="可能出现脏读、不可重复读和幻读">可能出现脏读、不可重复读和幻读</option><option value="目标是让并发结果等价于某个串行次序">目标是让并发结果等价于某个串行次序</option><option value="防止脏读，但仍可能不可重复读和幻读">防止脏读，但仍可能不可重复读和幻读</option></select></label><label class="matching-row"><span>READ COMMITTED</span><select class="matching-select" data-answer="防止脏读，但仍可能不可重复读和幻读" name="q2"><option value="">请选择</option><option value="防止脏读和不可重复读，标准层面仍可能幻读">防止脏读和不可重复读，标准层面仍可能幻读</option><option value="可能出现脏读、不可重复读和幻读">可能出现脏读、不可重复读和幻读</option><option value="目标是让并发结果等价于某个串行次序">目标是让并发结果等价于某个串行次序</option><option value="防止脏读，但仍可能不可重复读和幻读">防止脏读，但仍可能不可重复读和幻读</option></select></label><label class="matching-row"><span>REPEATABLE READ</span><select class="matching-select" data-answer="防止脏读和不可重复读，标准层面仍可能幻读" name="q2"><option value="">请选择</option><option value="防止脏读和不可重复读，标准层面仍可能幻读">防止脏读和不可重复读，标准层面仍可能幻读</option><option value="可能出现脏读、不可重复读和幻读">可能出现脏读、不可重复读和幻读</option><option value="目标是让并发结果等价于某个串行次序">目标是让并发结果等价于某个串行次序</option><option value="防止脏读，但仍可能不可重复读和幻读">防止脏读，但仍可能不可重复读和幻读</option></select></label><label class="matching-row"><span>SERIALIZABLE</span><select class="matching-select" data-answer="目标是让并发结果等价于某个串行次序" name="q2"><option value="">请选择</option><option value="防止脏读和不可重复读，标准层面仍可能幻读">防止脏读和不可重复读，标准层面仍可能幻读</option><option value="可能出现脏读、不可重复读和幻读">可能出现脏读、不可重复读和幻读</option><option value="目标是让并发结果等价于某个串行次序">目标是让并发结果等价于某个串行次序</option><option value="防止脏读，但仍可能不可重复读和幻读">防止脏读，但仍可能不可重复读和幻读</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>READ UNCOMMITTED → 可能出现脏读、不可重复读和幻读；READ COMMITTED → 防止脏读，但仍可能不可重复读和幻读；REPEATABLE READ → 防止脏读和不可重复读，标准层面仍可能幻读；SERIALIZABLE → 目标是让并发结果等价于某个串行次序</p><p>隔离级别描述保证，不同 DBMS 的具体实现可能使用锁或多版本技术，不能只凭名称推断内部机制</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="multiple" data-answer="[&quot;已有 S 锁时，另一个事务请求 S 锁可以并发读取&quot;, &quot;已有 S 锁时，另一个事务请求 X 锁通常需要等待&quot;, &quot;已有 X 锁时，另一个事务请求 S 锁通常需要等待&quot;, &quot;已有 X 锁时，另一个事务请求 X 锁通常需要等待&quot;]" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 多选题</div><h2>下列关于 S／X 锁相容性的说法，哪些正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q3" value="已有 S 锁时，另一个事务请求 S 锁可以并发读取" aria-keyshortcuts="1"><span>已有 S 锁时，另一个事务请求 S 锁可以并发读取</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q3" value="已有 S 锁时，另一个事务请求 X 锁通常需要等待" aria-keyshortcuts="2"><span>已有 S 锁时，另一个事务请求 X 锁通常需要等待</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q3" value="已有 X 锁时，另一个事务请求 S 锁通常需要等待" aria-keyshortcuts="3"><span>已有 X 锁时，另一个事务请求 S 锁通常需要等待</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q3" value="已有 X 锁时，另一个事务请求 X 锁通常需要等待" aria-keyshortcuts="4"><span>已有 X 锁时，另一个事务请求 X 锁通常需要等待</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q3" value="已有 X 锁时，所有其他锁请求都自动获得授权" aria-keyshortcuts="5"><span>已有 X 锁时，所有其他锁请求都自动获得授权</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>已有 S 锁时，另一个事务请求 S 锁可以并发读取、已有 S 锁时，另一个事务请求 X 锁通常需要等待、已有 X 锁时，另一个事务请求 S 锁通常需要等待、已有 X 锁时，另一个事务请求 X 锁通常需要等待</p><p>S 锁共享读，X 锁保护写；不相容请求通常进入等待而不是立即同时执行</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="single" data-answer="让 T2 等待，直到冲突锁释放或事务被处理" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 单选题</div><h2>T1 已持有 S(A)，T2 请求 X(A)，系统通常应怎样处理？</h2><div class="choices"><label class="choice"><input type="radio" name="q4" value="让 T2 等待，直到冲突锁释放或事务被处理" aria-keyshortcuts="1"><span>让 T2 等待，直到冲突锁释放或事务被处理</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q4" value="立即让 T2 写入，因为写锁优先级更高" aria-keyshortcuts="2"><span>立即让 T2 写入，因为写锁优先级更高</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>让 T2 等待，直到冲突锁释放或事务被处理</p><p>X 与已有 S 不相容，封锁把潜在读写冲突转换为可管理的等待</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将三级封锁协议与主要规则匹配</h2><div class="matching-grid"><label class="matching-row"><span>一级封锁协议</span><select class="matching-select" data-answer="修改前加 X 锁并保持到事务结束，主要防止丢失修改" name="q5"><option value="">请选择</option><option value="读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读">读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读</option><option value="修改前加 X 锁并保持到事务结束，主要防止丢失修改">修改前加 X 锁并保持到事务结束，主要防止丢失修改</option><option value="在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读">在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读</option></select></label><label class="matching-row"><span>二级封锁协议</span><select class="matching-select" data-answer="在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读" name="q5"><option value="">请选择</option><option value="读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读">读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读</option><option value="修改前加 X 锁并保持到事务结束，主要防止丢失修改">修改前加 X 锁并保持到事务结束，主要防止丢失修改</option><option value="在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读">在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读</option></select></label><label class="matching-row"><span>三级封锁协议</span><select class="matching-select" data-answer="读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读" name="q5"><option value="">请选择</option><option value="读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读">读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读</option><option value="修改前加 X 锁并保持到事务结束，主要防止丢失修改">修改前加 X 锁并保持到事务结束，主要防止丢失修改</option><option value="在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读">在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>一级封锁协议 → 修改前加 X 锁并保持到事务结束，主要防止丢失修改；二级封锁协议 → 在一级基础上，读取前加 S 锁，读完可释放，进一步防止脏读；三级封锁协议 → 读取与修改都加相应锁并保持到事务结束，进一步防止不可重复读</p><p>协议差异不仅在是否加锁，还在锁的持有时间；幻读还涉及谓词或范围保护</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;业务能够容忍哪些异常&quot;, &quot;一致性错误的后果&quot;, &quot;读写冲突和并发需求&quot;, &quot;DBMS 对隔离级别的实际实现&quot;, &quot;事务长度和重试成本&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>选择隔离强度时应考虑哪些因素？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="业务能够容忍哪些异常" aria-keyshortcuts="1"><span>业务能够容忍哪些异常</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="一致性错误的后果" aria-keyshortcuts="2"><span>一致性错误的后果</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="读写冲突和并发需求" aria-keyshortcuts="3"><span>读写冲突和并发需求</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="DBMS 对隔离级别的实际实现" aria-keyshortcuts="4"><span>DBMS 对隔离级别的实际实现</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="事务长度和重试成本" aria-keyshortcuts="5"><span>事务长度和重试成本</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q6" value="隔离越强就一定没有任何性能代价" aria-keyshortcuts="6"><span>隔离越强就一定没有任何性能代价</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>业务能够容忍哪些异常、一致性错误的后果、读写冲突和并发需求、DBMS 对隔离级别的实际实现、事务长度和重试成本</p><p>隔离是在一致性保证、等待、版本成本和吞吐之间的业务取舍</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>两个售票事务都读到余票 16，分别减 1 后都写回 15。说明异常、所需隔离目标和一种控制办法</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>两次写入都基于同一旧值，后写覆盖先写，产生丢失修改，正确结果应为 14。可在读取并更新余票时取得足够强的写锁并保持到事务结束，或使用带条件的原子 UPDATE 和影响行数检查；也可采用能检测写写冲突并重试的并发机制。关键是让两个修改不能同时基于过期值成功提交</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

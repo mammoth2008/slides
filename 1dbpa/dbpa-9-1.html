@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 9.1 数据组织与基础索引 | HUST</title>
+  <meta name="description" content="从文件块记录理解关系表组织和基础索引">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="9-1">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-9-1/assets/dbpa-9-1.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 9.1</div>
+      <h1>数据组织与基础索引</h1>
+      <p class="cover-description">用文件、块和记录解释数据定位</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元对应教材 9.1 与 9.2.1—9.2.2，从一次查询需要多少块 I/O 开始，逐步建立记录、块、关系表组织和基础索引的对应关系。DBPA 9.2 再进入教材 9.2.3—9.2.5。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">一次查询可以沿逻辑表、文件、块和记录逐层定位数据</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">画出一次查询从逻辑表到文件、块和记录的访问路径</span></li><li><span class="list-marker">02</span><span class="list-text">说明定长、长度标记、偏移量和字段分离记录的取舍</span></li><li><span class="list-marker">03</span><span class="list-text">比较堆、顺序、多表聚簇、B+ 树和哈希存储</span></li><li><span class="list-marker">04</span><span class="list-text">解释索引减少 I/O 的机制及其空间、更新代价</span></li><li><span class="list-marker">05</span><span class="list-text">区分稠密、稀疏、多级和辅助索引的前提与路径</span></li><li><span class="list-marker">06</span><span class="list-text">根据访问与更新模式选择基础组织或索引</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">关系表背后是文件、块与记录</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>沿着一次查询，哪一步会真正触发块 I/O？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">逻辑层次与物理层次共同支撑数据访问</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-storage-index-image2.png" data-full-src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-storage-index-image2.png" alt="关系表向记录、块、文件和索引访问路径的物理展开" tabindex="0" role="button" aria-label="放大图片：关系表向记录、块、文件和索引访问路径的物理展开" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="逻辑组织：表空间　→　段　→　分区　→　块 物理组织：文件　→　块　→　记录"><span class="relation-term">逻辑组织：表空间</span><span class="relation-operator">→</span><span class="relation-term">段</span><span class="relation-operator">→</span><span class="relation-term">分区</span><span class="relation-operator">→</span><span class="relation-term">块 物理组织：文件</span><span class="relation-operator">→</span><span class="relation-term">块</span><span class="relation-operator">→</span><span class="relation-term">记录</span></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>表空间、段、分区是常见的管理层次示意；具体名称和落盘方式随 DBMS 变化，索引路径是表组织之外的附加访问结构</p></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>块是存储分配和 I/O 处理的基本单位</p></div></div></div></div>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">STORAGE LAYERS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">记录表示有不同的长度与定位机制</h2>
+    <div class="slide-content"><p class="slide-lead">记录格式会影响读取、修改、删除和迁移</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 40% 35%"><colgroup><col style="width:25%"><col style="width:40%"><col style="width:35%"></colgroup><thead><tr><th>记录方式</th><th>优势</th><th>代价</th></tr></thead><tbody><tr><td>定长记录</td><td>位置计算简单，字段访问直接</td><td>可能需要填充或预留空间</td></tr><tr><td>长度标记</td><td>读取时先知道记录／字段长度</td><td>需要解释长度信息</td></tr><tr><td>偏移量</td><td>用字段起止位置定位变长内容</td><td>修改后需要维护偏移量</td></tr><tr><td>字段分离</td><td>定长字段与变长字段分开存储</td><td>访问路径和管理更复杂</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">RECORD FORMAT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">块内组织：定位记录并回收空闲空间</h2>
+    <div class="slide-content"><p class="slide-lead">块头、偏移量表和空闲空间共同决定记录如何被找到</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-record-block.svg" data-full-src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-record-block.svg" alt="块头、偏移量和空闲空间如何组织定长与变长记录" tabindex="0" role="button" aria-label="放大图片：块头、偏移量和空闲空间如何组织定长与变长记录" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>插入</h3><p>插入记录时，先分配空闲空间并更新定位信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除</h3><p>删除记录时，标记空闲或压缩空间，并更新偏移量表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>变长更新</h3><p>变长记录原位置不足时，要迁移记录并同步相关定位信息</p></article></div></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">BLOCK ORGANIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">关系表的组织方式决定常见访问路径</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>表按 B+ 树组织，就等于另外建了一棵 B+ 树索引吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">同一份数据可以为不同事务选择不同物理形态</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>组织方式</th><th>适合的访问</th><th>主要代价</th></tr></thead><tbody><tr><td>堆</td><td>无序插入和不固定条件</td><td>查询可能需要全表扫描</td></tr><tr><td>顺序</td><td>按排序属性查找或范围访问</td><td>插入、修改可能迁移记录</td></tr><tr><td>多表聚簇</td><td>经常连接的相关记录</td><td>其他查询可能更分散</td></tr><tr><td>B+ 树存储</td><td>按键查找和范围访问</td><td>需要维护树结构</td></tr><tr><td>哈希存储</td><td>等值条件快速定位</td><td>范围访问和溢出处理较弱</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不等于。B+ 树／哈希表组织负责数据存放，B+ 树／哈希索引是表外的访问结构</p></div></div>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">TABLE ORGANIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="a6" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">多表聚簇像预连接，也可能分散其他查询</h2>
+    <div class="slide-content"><p class="slide-lead">物理邻近只对特定访问路径有利</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>任务</th><th>聚簇后的物理变化</th><th>查询或维护结果</th></tr></thead><tbody><tr><td>按 <code>Sno</code> 查学生选课</td><td><code>Student ⋈ SC</code> 的相关记录按 <code>Sno</code> 相邻</td><td>连接查询可能少读跨块 I/O</td></tr><tr><td>按专业和性别筛选学生</td><td>学生记录按学号聚簇，不保证同类记录相邻</td><td>可能读取更多数据块</td></tr><tr><td>新学期增加 <code>SC</code> 记录</td><td>为保持相邻关系而迁移或重新安排记录</td><td>更新和空间维护成本增加</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>聚簇键示意为 <code>Sno</code>；同一物理邻近关系会让不同工作负载得到不同结果</p></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">CLUSTER TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">索引是表之外的快速入口</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-thinking" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-thinking.805cd59526df.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>如果条件命中表中大多数记录，仍然一定要走索引吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">索引通常用较小的结构定位少量目标记录，但并非所有结果规模都适合索引访问</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="查询条件　→　索引项　→　记录指针　→　数据块"><span class="relation-term">查询条件</span><span class="relation-operator">→</span><span class="relation-term">索引项</span><span class="relation-operator">→</span><span class="relation-term">记录指针</span><span class="relation-operator">→</span><span class="relation-term">数据块</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>索引减少扫描但增加空间、建立和更新维护成本</p></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>选择性较高、返回记录较少时索引更有利；若条件命中大多数记录，顺序扫描可能更便宜</p></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">INDEX MOTIVATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">稠密主索引：每条记录都有入口</h2>
+    <div class="slide-content"><p class="slide-lead">基本表按 <code>Sno</code> 有序；查 <code>20180012</code> 时先查索引，再读数据块</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-index-io.svg" data-full-src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-index-io.svg" alt="稠密索引通过索引块和数据块定位目标记录，并与直接扫描比较 I/O" tabindex="0" role="button" aria-label="放大图片：稠密索引通过索引块和数据块定位目标记录，并与直接扫描比较 I/O" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 38% 34%"><colgroup><col style="width:28%"><col style="width:38%"><col style="width:34%"></colgroup><thead><tr><th>路径</th><th>索引项</th><th>访问结果</th></tr></thead><tbody><tr><td>稠密索引</td><td>每条记录一个值和指针</td><td>本例约 3 次 I/O</td></tr><tr><td>直接扫描</td><td>没有附加入口</td><td>本例约 6 次 I/O</td></tr><tr><td>代价</td><td>索引本身占空间</td><td>增删改时同步维护</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例的 3 次与 6 次 I/O 依赖块容量和记录分布，不是所有 DBMS 或工作负载的固定性能承诺</p></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">DENSE INDEX</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">稀疏索引要求基本表按索引属性有序</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>稀疏索引为什么要求基本表有序？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">通常每个物理块保留一个入口，定位后还要在目标块内顺序搜索</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="稀疏索引　→　小于等于目标值的最大入口　→　目标数据块　→　块内搜索"><span class="relation-term">稀疏索引</span><span class="relation-operator">→</span><span class="relation-term">小于等于目标值的最大入口</span><span class="relation-operator">→</span><span class="relation-term">目标数据块</span><span class="relation-operator">→</span><span class="relation-term">块内搜索</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>例如查找 <code>Sno = 20180012</code>，先选不超过目标值的最大入口，再在对应块内顺序搜索；若目标块和后续块的首键都已超过目标值，可判定不存在</p></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>只要不影响块首记录，部分块内更新可以不改稀疏入口；稀疏索引因此比稠密索引更小</p></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">SPARSE INDEX</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">多级索引把大索引继续分层</h2>
+    <div class="slide-content"><p class="slide-lead">从高层逐级下降到记录；分层可缩小大索引的查找范围</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="二级索引块 → 一级索引块 → 基本表记录指针 → 数据块 → `Sno = 20180014`"><span class="relation-term">二级索引块</span><span class="relation-operator">→</span><span class="relation-term">一级索引块</span><span class="relation-operator">→</span><span class="relation-term">基本表记录指针</span><span class="relation-operator">→</span><span class="relation-term">数据块</span><span class="relation-operator">→</span><span class="relation-term">`Sno</span><span class="relation-operator">=</span><span class="relation-term">20180014`</span></div></div>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">高层：通常用稀疏入口定位下一层索引块</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">一级：可以是稠密或稀疏索引，定位基本表入口项</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">数据块：沿记录指针找到目标记录</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>多级查找按层向下；第一级的稠密或稀疏选择取决于基本表和索引组织</p></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">MULTILEVEL INDEX</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1 <span>|</span> 9.1</div>
+    <h2 class="slide-title">辅助索引服务于非排序属性</h2>
+    <div class="slide-content"><p class="slide-lead">重复值通过指针桶连接到多条记录</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-secondary-pointer-bucket.svg" data-full-src="resources/decks/dbpa-9-1/assets/generated/dbpa-ch09-secondary-pointer-bucket.svg" alt="辅助索引通过指针桶定位重复值记录，并可对两个指针集合求交" tabindex="0" role="button" aria-label="放大图片：辅助索引通过指针桶定位重复值记录，并可对两个指针集合求交" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 36% 34%"><colgroup><col style="width:30%"><col style="width:36%"><col style="width:34%"></colgroup><thead><tr><th>特征</th><th>辅助索引的做法</th><th>设计意义</th></tr></thead><tbody><tr><td>非排序属性</td><td>通常建立稠密入口</td><td>多个访问路径</td></tr><tr><td>重复取值</td><td>引入指针桶</td><td>管理多条记录指针</td></tr><tr><td>多条件查询</td><td>多个指针集合求交</td><td>组合筛选</td></tr><tr><td>表更新</td><td>同步维护指针</td><td>额外写入代价</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>指针最终要定位基本表记录；当返回记录很多时，顺序扫描可能比辅助索引更便宜</p></div></div>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">SECONDARY INDEX</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">用组织和索引降低块访问代价</h2>
+    <div class="slide-content"><p class="slide-lead">数据组织和索引共同降低块访问代价，同时引入空间和维护成本</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>组织</h3><p>记录表示、块内空间和表组织决定数据如何存放</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>入口</h3><p>顺序表上的主索引提供稠密、稀疏和多级查找入口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>取舍</h3><p>辅助索引的选择取决于选择性和更新维护代价</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>逻辑／物理组织、顺序表索引和辅助索引构成基础；B+ 树、哈希和位图索引还需结合具体索引结构分析</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-9-1/mindmap-9-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">查询如何从逻辑表经过文件和块定位到记录？哪些层次会随 DBMS 变化？</span></li><li><span class="question-no">02</span><span class="question-text">定长、长度标记、偏移量和字段分离记录分别承担什么空间与定位代价？</span></li><li><span class="question-no">03</span><span class="question-text">用 <code>Student ⋈ SC</code>、<code>Sno</code>、专业／性别查询解释多表聚簇为何可能增加或减少 I/O？</span></li><li><span class="question-no">04</span><span class="question-text">在按 <code>Sno</code> 有序的表上，<code>20180012</code> 的稠密、稀疏和多级查找路径分别怎样走？</span></li><li><span class="question-no">05</span><span class="question-text"><code>Smajor</code> 重复时辅助索引和指针桶怎样工作？多条件如何求交？何时扫描更便宜，增删改需要维护哪些索引？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-8-3.html" title="上一节：8.3 JDBC 与 MVC 数据库应用开发" aria-label="上一节：8.3 JDBC 与 MVC 数据库应用开发">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">8.3</span>
+        <span class="nav-title">JDBC 与 MVC 应用开发</span>
+      </a>
+      <a class="exercise-link" href="dbpa-9-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-9-2.html" title="下一节：9.2 B+ 树、哈希与位图索引" aria-label="下一节：9.2 B+ 树、哈希与位图索引">
+        <span class="nav-title">B+ 树、哈希与位图</span>
+        <span class="nav-number">9.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

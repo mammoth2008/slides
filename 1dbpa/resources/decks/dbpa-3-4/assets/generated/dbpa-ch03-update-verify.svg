@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">更新前后验证流程</title>
+  <desc id="desc">先用 SELECT 预览目标集合，估计影响行数，执行变更，再查询关键列并检查约束结果。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#60758a"/></marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 30px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { stroke: #7890a5; stroke-width: 2; }
+      .blue { fill: #e8f3ff; } .green { fill: #eef8ed; } .orange { fill: #fff1dc; } .purple { fill: #f0eaff; }
+      .box-title { font-size: 23px; font-weight: 700; }
+      .small { font-size: 16px; fill: #536979; }
+      .map { font-size: 17px; font-weight: 650; fill: #536979; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="62">安全更新是一个可验证的闭环</text>
+  <text class="label note" x="65" y="94">不是“语句执行成功”就结束，而是要确认目标集合和关系状态</text>
+
+  <rect class="box blue" x="70" y="170" width="220" height="145" rx="20"/>
+  <text class="label box-title" x="180" y="215" text-anchor="middle">SELECT 预览</text>
+  <text class="label small" x="180" y="256" text-anchor="middle">目标主码与关键条件</text>
+  <line x1="290" y1="242" x2="355" y2="242" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="300" y="220">确认</text>
+
+  <rect class="box green" x="355" y="170" width="220" height="145" rx="20"/>
+  <text class="label box-title" x="465" y="215" text-anchor="middle">估计影响行数</text>
+  <text class="label small" x="465" y="256" text-anchor="middle">预期为 0、1 还是多行</text>
+  <line x1="575" y1="242" x2="640" y2="242" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box orange" x="640" y="170" width="220" height="145" rx="20"/>
+  <text class="label box-title" x="750" y="215" text-anchor="middle">执行变更</text>
+  <text class="label small" x="750" y="256" text-anchor="middle">INSERT、UPDATE 或 DELETE</text>
+  <line x1="860" y1="242" x2="925" y2="242" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box purple" x="925" y="170" width="220" height="145" rx="20"/>
+  <text class="label box-title" x="1035" y="215" text-anchor="middle">复查状态</text>
+  <text class="label small" x="1035" y="256" text-anchor="middle">影响行数、关键列、约束</text>
+
+  <rect class="box" x="160" y="420" width="880" height="130" rx="22" fill="#ffffff"/>
+  <text class="label box-title" x="600" y="467" text-anchor="middle">三条检查线</text>
+  <text class="label small" x="600" y="508" text-anchor="middle">数量：影响几行　｜　数据：新值是否正确　｜　关系：主码、非空、外码与业务规则是否保持</text>
+</svg>

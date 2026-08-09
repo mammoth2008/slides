@@ -1,338 +1,287 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 1.3 数据库系统的三级模式结构 | HUST</title>
+  <meta name="description" content="用三级模式和两级映像解释数据库系统如何隔离结构变化与存储变化">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="1-3">
+  <meta name="version" content="2608.1">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-1-3/assets/dbpa-1-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 1.3</div>
+      <h1>三级模式结构</h1>
+      <p class="cover-description">模式、映像与视图</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c13t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>1. 绪论</h2>
-            <h3 style="text-align: center">1.3 数据库系统的三级模式结构</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c13t" data-rel-x="-1100" data-rel-y="-500" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 从程序员员角度看
-
-- 外部模式 (视图)
-- 概念模式 (逻辑模型)
-- 内部模式 (物理模型)
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 从最终用户角度看
-
-- 单用户结构
-- 主从式结构
-- 分布式结构
-- 客户-服务器结构
-- 浏览器-应用服务器结构
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="c13t" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据模型中的型与值
-
-- 型 (Type) 是对某类数据的结构和属性的说明
-- 值 (Value) 是型的一个具体赋值
-- 类比于 Java 中的类定义和实例化
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库系统中的模式和实例
-
-- 模式 (Schema) 是对数据库中全体数据的逻辑结构和特征的描述
-- 反映的是数据的结构及其联系
-- 模式的一个具体值称为模式的一个实例 (Instance)
-- 反映的是数据库某一时刻的状态
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="c13t" data-rel-x="2100" data-rel-y="-500" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 三级模式结构
-
-- 模式 (Schema)
-- 外模式 (External Schema)
-- 内模式 (Internal Schema)
-- 模式间通过映像, 实现数据的转换和访问控制
-
-        </div>
-
-        <!-- Lecture: "逻辑" 和 "物理" 常常被用来区分两个级别的抽象.
-
-"物理" 则是指实际的, 具体的实现. 例如, "物理结构" 通常指的是数据在硬件上 (如硬盘) 的具体存储方式. 同样, "物理独立性" 指的是在数据库管理系统中, 可以改变硬件或者存储方式 (例如从磁盘存储转移到云存储) 而不影响到逻辑结构和应用程序的运行.
-
-"逻辑" 是指某种事物的概念或抽象层面, 它与特定的物理实现无关. 例如, 我们谈论 "逻辑结构" 时, 我们指的是数据如何在概念上组织, 而不是数据在硬盘上如何实际存储. 另一个例子是 "逻辑独立性" , 指的是在数据库管理系统中, 应用程序能够无视底层的物理存储结构改变而维持其对数据的访问方式不变, 即改变物理结构不会影响到逻辑结构.
-
-- 物理层 (physical level). 最低层次的抽象, 描述数据实际上是怎样存储的. 物理层详细描述复杂的底层数据结构.
-- 逻辑层 (logical level). 比物理层层次稍高的抽象, 描述数据库中存储什么数据及这些数据间存在什么关系. 这样逻辑层就通过少量相对简单的结构描述了整个数据库. 虽然逻辑层的简单结构的实现可能涉及复杂的物理层结构, 但逻辑层的用户不必知道这样的复杂性. 这称作物理数据独立性 (physical data independence). 数据库管理员使用抽象的逻辑层, 他必须确定数据库中应该保存哪些信息.
-- 视图层 (view level). 最高层次的抽象, 只描述整个数据库的某个部分. 尽管在逻辑层使用了比较简单的结构, 但由于一个大型数据库中所存信息的多样性, 仍存在一定程度的复杂性. 数据库系统的很多用户并不需要关心所有的信息, 而只需要访问数据库的一部分. 视图层抽象的定义正是为了使这样的用户与系统的交互更简单. 系统可以为同一数据库提供多个视图.
-
+<!-- speaker-notes
+本节要把 1.1 中的数据独立性直觉变成可追踪的结构。重点是变化发生在哪一层，以及哪一级映像可以吸收变化。
 -->
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="1000" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Schema](img/c01/schema.svg)
-#### 模式
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="1100" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 模式
-
-- 数据库的公共数据视图
-- 全体数据的逻辑结构, 联系, 安全性和完整性要求
-- 一个数据库只有一个模式
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 外模式
-
-- 也称为子模式 (Subschema) 或用户模式
-- 描述用户能使用的局部数据的逻辑结构和特征
-- 外模式是与某一特定应用有关的数据的逻辑表示
-- 外模式通常是模式的子集
-- 一个数据库可以有多个外模式
-- 外模式有助于确保数据库的安全性
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="a8" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 内模式
-
-- 也称为存储模式 (Storage Schema)
-- 描述了数据的物理结构和存储方式
-- 一个数据库只有一个内模式
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="800" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="1">
-
-### 内模式
-
-- 记录的存储方式
-- 索引的组织方式
-- 数据的压缩存储和加密
-- 存储记录的结构规定
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Schema](img/c01/schema.svg)
-#### 模式
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="c13t" data-rel-x="-1000" data-rel-y="-1200" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 二级映像
-
-- 外模式/模式映像
-- 模式/内模式映像
-- 两级映像保证逻辑独立性和物理独立性
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="1400" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 外模式/模式映像
-
-- 定义了外模式与模式之间的对应关系
-- 每个外模式都有一个外模式/模式映像
-- 当模式发生变化时, 外模式可以保持不变
-- 实现数据的逻辑独立性
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="1400" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 模式/内模式映像
-
-- 定义了全局逻辑结构与存储结构的对应关系
-- 模式/内模式映像是唯一的
-- 当数据库的存储结构改变时, 不需要修改模式
-- 保证了数据的物理独立性
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="a14" data-rel-x="1200" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Schema](img/c01/schema.svg)
-#### 模式
-
-        </div>
-
-        <div id="mm13" class="step" data-rel-to="c13t" data-rel-x="0" data-rel-y="-3000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c01/mindmap-1-3.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c13q" class="step markdown" data-rel-to="c13t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 1.3 数据库系统的三级模式结构
-
-- 什么是模式? 举例说明其作用.
-- 外模式和内模式的定义和主要区别是什么?
-- 从程序员角度看, 数据库系统可以分为哪三个部分?
-- 在数据库系统中, "型" 与 "值" 的区别是什么?
-
-            ----
-
-            [ 1.2 数据模型](dbpa-1-2.html#/overview)
-            [| 练习 |](dbpa-exec.html)
-            [ 1.4 数据库系统的组成](dbpa-1-4.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">三级模式和两级映像可以给数据库解耦</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分型与值、模式与实例</span></li><li><span class="list-marker">02</span><span class="list-text">说明外模式、模式和内模式分别描述什么，以及它们的数量关系</span></li><li><span class="list-marker">03</span><span class="list-text">解释两级映像怎样连接三级模式</span></li><li><span class="list-marker">04</span><span class="list-text">判断一个变化发生在哪一层、需要调整哪一级映像</span></li><li><span class="list-marker">05</span><span class="list-text">为什么在引入了映像后，应用有时候可以无需修改</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/18</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.1</div>
+    <h2 class="slide-title">结构描述和具体状态</h2>
+    <div class="slide-content"><p class="slide-lead">型规定可以怎样表示，值说明实际内容</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="46% 54%"><colgroup><col style="width:46%"><col style="width:54%"></colgroup><thead><tr><th>结构描述（型）</th><th>一次具体赋值（值）</th></tr></thead><tbody><tr><td>学生（学号、姓名、性别、生日）</td><td>（20180003、王敏、女、2001-08-01）</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>型 Type</h3><p>说明一类数据具有怎样的结构和属性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>值 Value</h3><p>给某一类数据的一次具体赋值</p></article></div>
+<div class="component component-text text-inset"><p>“型-值”、“模式-实例”都体现了“结构-状态”的区别</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><strong>可以类比于 Java 语言的“类”和“对象”</strong></p></div></div>
+    <div class="numeric-progress">3/18</div>
+    <div class="semantic-label">TYPE AND VALUE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.1</div>
+    <h2 class="slide-title">模式描述结构，实例描述特定时刻的状态</h2>
+    <div class="slide-content"><p class="slide-lead">模式相对稳定，实例会随数据库更新而变化</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>模式 Schema</h3><p>描述数据库中全体数据的逻辑结构、联系以及安全性与完整性要求</p>
+<p>例如，模式规定 Student、Course 等关系的结构、联系与约束</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>实例 Instance</h3><p>是模式的一个具体值，它是数据库在某一时刻的数据状态</p>
+<p>例如，2026 年秋季的学生、课程和选课记录是一个实例，它会变化</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>模式相对稳定，实例随更新变化</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="59.021" data-character-exposure="57.084" data-character-scale="0.9" style="--character-along:59.021%;--character-exposure:57.084;--character-hidden:42.916%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.32696cc0518d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>一个是定义，一个是实现</p></div></div></div></aside>
+    <div class="numeric-progress">4/18</div>
+    <div class="semantic-label">SCHEMA AND INSTANCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.1</div>
+    <h2 class="slide-title">判断：实例更新还是模式修改</h2>
+    <div class="slide-content"><p class="slide-lead">看数据库的结构描述有没有改变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 20% 38%"><colgroup><col style="width:42%"><col style="width:20%"><col style="width:38%"></colgroup><thead><tr><th>变化情境</th><th>判断</th><th>需要检查什么</th></tr></thead><tbody><tr><td>新增一条选课记录</td><td>实例更新</td><td>模式和映像不变</td></tr><tr><td>修改一名学生的成绩</td><td>实例更新</td><td>模式和映像不变</td></tr><tr><td>全局模式新增培养方案关系</td><td>模式修改</td><td>检查相关外模式/模式映像</td></tr><tr><td>全局模式新增一个属性</td><td>模式修改</td><td>检查相关外模式/模式映像</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一个模式可以有许多不同实例；实例更新不等于模式修改</p></div></div>
+    <div class="numeric-progress">5/18</div>
+    <div class="semantic-label">SCHEMA STABILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.7778%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.2</div>
+    <h2 class="slide-title">模式承担不同的结构层次</h2>
+    <div class="slide-content"><p class="slide-lead">外模式面向用户，模式组织全局逻辑结构，内模式描述物理存储</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-3/assets/previews/dbpa-ch01-three-schema-image2.webp" data-full-src="resources/decks/dbpa-1-3/assets/dbpa-ch01-three-schema-image2.png" data-full-width="1672" data-full-height="941" alt="Three-schema architecture connecting external schemas, the conceptual schema, and the internal schema" tabindex="0" role="button" aria-label="放大图片：Three-schema architecture connecting external schemas, the conceptual schema, and the internal schema" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-inset"><p>外模式 → 外模式/模式映像 → 模式 → 模式/内模式映像 → 内模式</p></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三级模式分别描述用户视图、全局逻辑结构和内部存储方式</p></div></div></div></div>
+    <div class="numeric-progress">6/18</div>
+    <div class="semantic-label">THREE SCHEMA LEVELS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.2</div>
+    <h2 class="slide-title">模式 Schema 组织全局逻辑结构</h2>
+    <div class="slide-content"><p class="slide-lead">模式把不同应用需要的数据组织成一个不依赖具体存储的全局逻辑整体</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>数据库中的关系 Student、Course、Teaching、Enrollment 是模式中的业务对象结构，不是四个模式</p></div>
+<div class="component component-text text-inset"><p>模式负责全局要求：数据结构、数据操作和数据完整性</p></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>一个数据库对应一个模式</h3><p>全体数据的逻辑结构、联系和约束</p></article><article class="content-card emphasis-card" tabindex="0"><h3>不负责物理细节</h3><p>不规定记录如何写入物理存储器</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一个模式可以理解成一个数据库的型</p></div></div>
+    <div class="numeric-progress">7/18</div>
+    <div class="semantic-label">CONCEPTUAL SCHEMA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.8889%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.2</div>
+    <h2 class="slide-title">外模式 External Schema</h2>
+    <div class="slide-content"><p class="slide-lead">面向具体用户和应用，描述局部数据的逻辑结构</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>提供不同视图</h3><p>学生看到自己的课表与成绩</p>
+<p>教师看到所授教学班</p>
+<p>教务处看到更完整的业务数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>外模式不是摘录</h3><p>在不同外模式中，同一数据可能有不同的名称、结构、类型、长度或保密级别</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>是应用的逻辑入口</h3><p>一个应用往往依据一个外模式工作</p>
+<p>同一外模式也可以供多个应用使用</p>
+<p>外模式可以缩小可见范围，有助于安全</p></article></div></div></div>
+    <div class="numeric-progress">8/18</div>
+    <div class="semantic-label">EXTERNAL SCHEMA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.2</div>
+    <h2 class="slide-title">内模式 Internal Schema 描述物理存储</h2>
+    <div class="slide-content"><p class="slide-lead">描述记录、索引和物理页在数据库内部怎样组织</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>如何组织记录</h3><p>采用堆存储、顺序存储还是聚簇存储</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>如何组织索引</h3><p>采用 B+ 树索引还是哈希索引</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>物理表示是怎样的</h3><p>记录是否压缩或加密，怎样安排物理页</p></article></div>
+<div class="component component-text text-inset"><p>内模式解决数据库内部如何组织和表示数据的问题</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一个数据库只有一个内模式，用户不必直接管理存储细节</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="59.475" data-character-exposure="57.175" data-character-scale="0.9" style="--character-along:59.475%;--character-exposure:57.175;--character-hidden:42.825%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>谁来管理内模式呢？</p></div></div></div></aside>
+    <div class="numeric-progress">9/18</div>
+    <div class="semantic-label">INTERNAL SCHEMA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.2</div>
+    <h2 class="slide-title">区分三级模式</h2>
+    <div class="slide-content"><p class="slide-lead">说明每一级模式描述什么、面向谁以及有多少个</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 36% 24% 20%"><colgroup><col style="width:20%"><col style="width:36%"><col style="width:24%"><col style="width:20%"></colgroup><thead><tr><th>层次</th><th>描述什么</th><th>面向谁</th><th>数量</th></tr></thead><tbody><tr><td>外模式</td><td>局部数据的逻辑结构</td><td>用户与应用</td><td>多个</td></tr><tr><td>模式</td><td>全体数据的逻辑结构与联系</td><td>所有用户共享</td><td>一个</td></tr><tr><td>内模式</td><td>数据的物理结构与存储方式</td><td>DBMS 与 DBA</td><td>一个</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“用户要看什么”，“整体逻辑是怎样的”，“怎样存储和管理”</p></div></div>
+    <div class="numeric-progress">10/18</div>
+    <div class="semantic-label">SCHEMA COMPARISON</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.3</div>
+    <h2 class="slide-title">两层映像</h2>
+    <div class="slide-content"><p class="slide-lead">外模式/模式映像连接外模式与模式；模式/内模式映像连接模式与内模式</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="外模式 → 模式 → 内模式"><span class="relation-term">外模式</span><span class="relation-operator">→</span><span class="relation-term">模式</span><span class="relation-operator">→</span><span class="relation-term">内模式</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>外模式/模式映像</h3><p>每个外模式与全局逻辑结构的对应</p>
+<p>模式变化时，原外模式尽量保持稳定</p>
+<p>一个外模式对一个外模式/模式映像</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>模式/内模式映像</h3><p>定义全局逻辑结构与内部存储结构之间的对应关系</p>
+<p>内模式变化时，让模式保持稳定</p></article></div></div></div>
+    <div class="numeric-progress">11/18</div>
+    <div class="semantic-label">TWO MAPPINGS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.1111%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.3</div>
+    <h2 class="slide-title">模式变化时</h2>
+    <div class="slide-content"><p class="slide-lead">只要原外模式仍能表达原应用需求，原应用就可能继续工作</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>模式变化</h3><p>全局模式增加新关系：培养方案</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>映像调整</h3><p>维护外模式/模式映像，原学生课表外模式继续对应模式</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>外模式稳定</h3><p>原外模式仍只提供课表和成绩</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>应用稳定</h3><p>原有程序不必因新增关系而重写</p></div></div></div>
+<div class="component component-text text-inset"><p>变化由映像吸收，而且没有改变原应用本身的业务需求</p></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="63.105" data-character-exposure="59.436" data-character-scale="0.9" style="--character-along:63.105%;--character-exposure:59.436;--character-hidden:40.564%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>外模式/模式映像究竟管理的是什么？</p></div></div></div></aside>
+    <div class="numeric-progress">12/18</div>
+    <div class="semantic-label">LOGICAL INDEPENDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.3</div>
+    <h2 class="slide-title">内模式变化时</h2>
+    <div class="slide-content"><p class="slide-lead">只要逻辑结构和应用需求不变，上层结构和应用就可以保持稳定</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>内模式变化</h3><p>为成绩查询增加 B+ 树索引</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>映像调整</h3><p>更新模式/内模式映像，让逻辑模式继续对应新的物理组织</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>模式稳定</h3><p>成绩查询的逻辑结构不变</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>应用稳定</h3><p>程序仍通过原外模式提交同样查询需求</p></div></div></div>
+<div class="component component-text text-inset"><p>物理细节由 DBMS 管理</p>
+<p>用户说明要做什么，数据库管理系统决定怎样找到和处理记录</p></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="61.376" data-character-exposure="59.449" data-character-scale="0.9" style="--character-along:61.376%;--character-exposure:59.449;--character-hidden:40.551%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>模式和内模式的对象有什么不同？</p></div></div></div></aside>
+    <div class="numeric-progress">13/18</div>
+    <div class="semantic-label">PHYSICAL INDEPENDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.2222%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.3</div>
+    <h2 class="slide-title">对照不同变化判断层次和映像</h2>
+    <div class="slide-content"><p class="slide-lead">先定位变化起点，再判断映像和稳定对象</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27.987% 19.86% 23.966% 28.187%"><colgroup><col style="width:27.987%"><col style="width:19.86%"><col style="width:23.966%"><col style="width:28.187%"></colgroup><thead><tr><th>情境</th><th>变化起点</th><th>调整位置</th><th>判断</th></tr></thead><tbody><tr><td>新增一条选课记录</td><td>实例</td><td>数据本身</td><td>不是模式变化</td></tr><tr><td>增加成绩索引</td><td>内模式</td><td>模式/内模式映像</td><td>物理独立性</td></tr><tr><td>新增培养方案关系</td><td>模式</td><td>外模式/模式映像</td><td>逻辑独立性</td></tr><tr><td>增加课程完成度功能</td><td>外模式与应用</td><td>新功能与视图</td><td>业务变化，修改应用</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据库发生变化时，先分析哪些模式发生了变化</p></div></div>
+    <div class="numeric-progress">14/18</div>
+    <div class="semantic-label">CHANGE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3 <span>|</span> 1.3.3</div>
+    <h2 class="slide-title">案例：电商系统同时发生三种变化</h2>
+    <div class="slide-content"><p class="slide-lead">同一组调整中，模式变化、存储变化和业务需求变化需要分开判断</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>先找变化起点，再找需要调整的映像，最后确认哪些对象保持稳定</p></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>全局结构变化</h3><p>订单新增售后工单数据，但对顾客不可见</p>
+<p>顾客仍然只需要原有订单摘要，顾客外模式和原应用保持不变</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内部存储变化</h3><p>订单时间和用户编号增加联合索引</p>
+<p>调整模式/内模式映像后，模式、外模式和应用不必改变</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务需求变化</h3><p>新增售后处理功能</p>
+<p>新的业务需求，需要新的或修改后的外模式与应用；原有映像不能吸收这个变化</p></article></div></div></div>
+    <div class="numeric-progress">15/18</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3</div>
+    <h2 class="slide-title">用层次和映像追踪数据库变化</h2>
+    <div class="slide-content"><p class="slide-lead">变化层次决定要检查的映像</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>模式与实例</h3><p>模式描述结构，实例描述某时刻的状态</p>
+<p>新增选课记录是实例变化为学生表添加一个新属性是模式变化，会影响所有实例</p></article><article class="content-card emphasis-card" tabindex="0"><h3>三级模式</h3><p>外模式面向用户，模式组织全局逻辑，内模式描述物理存储</p>
+<p>数量关系是多个外模式、一个模式、一个内模式</p></article><article class="content-card emphasis-card" tabindex="0"><h3>数据独立性</h3><p>映像能吸收不改变原应用需求的部分逻辑和存储变化</p>
+<p>判断变化层次、要调整的映像和依然保持稳定的对象</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三级模式分别描述不同关注点，两级映像吸收部分数据库变化</p></div></div>
+    <div class="numeric-progress">16/18</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-1-3/mindmap-1-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">17/18</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.4444%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">如何理解模式与实例的区别？</span></li><li><span class="question-no">02</span><span class="question-text">为什么一个数据库可以有多个外模式，却只有一个模式和一个内模式？</span></li><li><span class="question-no">03</span><span class="question-text">外模式、模式和内模式分别关注什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">外模式/模式映像与模式/内模式映像的作用是什么？</span></li><li><span class="question-no">05</span><span class="question-text">增加索引为什么属于物理独立性？</span></li><li><span class="question-no">06</span><span class="question-text">什么变化可以被映像吸收，什么不可以？为什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-1-2.html" title="上一节：1.2 数据模型" aria-label="上一节：1.2 数据模型">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.2</span>
+        <span class="nav-title">数据模型</span>
+      </a>
+      <a class="exercise-link" href="dbpa-1-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-1-4.html" title="下一节：1.4 数据库系统的组成" aria-label="下一节：1.4 数据库系统的组成">
+        <span class="nav-title">数据库系统组成</span>
+        <span class="nav-number">1.4</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">18/18</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

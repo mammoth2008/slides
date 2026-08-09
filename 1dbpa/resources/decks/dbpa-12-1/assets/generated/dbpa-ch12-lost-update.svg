@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">飞机订票中的丢失修改</title>
+  <desc id="desc">T1 和 T2 都读到余额 16，各自写回 15，结果卖出两张票但数据库只减少一张。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .read { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .write { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 10; }
+      .result { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 12; }
+      .expected { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .line { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8d7bb8; stroke-width: 3; stroke-dasharray: 8 7; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">两个售票点都读到 16，后写入的结果覆盖前写入的结果</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="340"/>
+  <text class="label" x="115" y="165">操作顺序</text>
+  <line x1="205" y1="210" x2="1030" y2="210" stroke="#c8d3df" stroke-width="3"/>
+  <line x1="205" y1="350" x2="1030" y2="350" stroke="#c8d3df" stroke-width="3"/>
+  <text class="label" x="145" y="215">T1</text><text class="label" x="145" y="355">T2</text>
+  <rect class="read" x="250" y="175" width="150" height="70"/><text class="label" x="325" y="205">R(A=16)</text><text class="text" x="325" y="228">读到余额 16</text>
+  <rect class="write" x="555" y="175" width="150" height="70"/><text class="label" x="630" y="205">W(A=15)</text><text class="text" x="630" y="228">卖出一张</text>
+  <rect class="read" x="370" y="315" width="150" height="70"/><text class="label" x="445" y="345">R(A=16)</text><text class="text" x="445" y="368">也读到 16</text>
+  <rect class="write" x="760" y="315" width="150" height="70"/><text class="label" x="835" y="345">W(A=15)</text><text class="text" x="835" y="368">又卖出一张</text>
+  <path class="line" d="M400 210 H545"/><path class="line" d="M520 350 H750"/>
+  <path class="dash" d="M325 250 C325 285 445 275 445 310"/><path class="dash" d="M630 250 C630 280 835 275 835 310"/>
+  <text class="small" x="245" y="420">两次读取都基于旧值 16</text><text class="small" x="700" y="420">两次写回都得到 15</text>
+
+  <rect class="panel" x="45" y="490" width="1110" height="150"/>
+  <rect class="result" x="190" y="525" width="250" height="75"/><text class="label" x="315" y="557">实际数据库余额</text><text class="text" x="315" y="582">15：只减少一张</text>
+  <rect class="expected" x="750" y="525" width="250" height="75"/><text class="label" x="875" y="557">若串行执行</text><text class="text" x="875" y="582">14：应减少两张</text>
+  <path class="line" d="M445 562 H740"/>
+  <text class="text" x="600" y="625">T1 的修改被 T2 后写回的 15 覆盖，这就是丢失修改</text>
+</svg>

@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 18.1 区块链概念、区块结构与工作机制 | HUST</title>
+  <meta name="description" content="从链式日志、共识和状态数据库理解区块链的数据库视角">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="18-1">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-18-1/assets/dbpa-18-1.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 18.1</div>
+      <h1>区块链概念、区块结构与工作机制</h1>
+      <p class="cover-description">区块链把链式记录、共识和状态数据库组合为分布式数据系统</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元从区块链的数据库视角开始，解释区块结构、节点流程和共识边界。封面图只作概念引导，不代表具体协议或固定分层架构。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分链式数据结构、分布式账本、共识和节点状态数据库</span></li><li><span class="list-marker">02</span><span class="list-text">解释区块头与区块体的作用</span></li><li><span class="list-marker">03</span><span class="list-text">说明父哈希和 Merkle 根如何让改动可检测，并提高历史重写成本</span></li><li><span class="list-marker">04</span><span class="list-text">描述节点验证到状态更新的流程</span></li><li><span class="list-marker">05</span><span class="list-text">比较工作量证明与 PBFT</span></li><li><span class="list-marker">06</span><span class="list-text">区分区块链技术组合与比特币业务系统，并判断应用边界</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块链组合了四类不同对象</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>一条带哈希链接的日志，就是完整区块链了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">链式结构、分布式账本、共识和状态数据库承担不同职责</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-blockchain-image2.png" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-blockchain-image2.png" alt="区块链由数据块、链式记录、共识和智能合约共同形成系统能力" tabindex="0" role="button" aria-label="放大图片：区块链由数据块、链式记录、共识和智能合约共同形成系统能力" decoding="async"><figcaption>概念总览图展示记录、Merkle 汇总、链和节点副本的关系；不对应具体协议或固定分层架构</figcaption></figure>
+<div class="cards-grid cards-compact reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>链式结构</h3><p>父哈希连接区块历史，使已接受记录的改动留下可检测证据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分布式账本</h3><p>多个节点保存并验证共同接受的历史副本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共识</h3><p>节点按协议决定接受哪一段历史及其状态结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>状态数据库</h3><p>节点执行账本记录后维护本地可查询的派生状态</p></article></div></div></div>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">DEFINITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块的元信息与交易记录</h2>
+    <div class="slide-content"><p class="slide-lead">区块头保存链接和协议证据，区块体保存交易；节点按协议验证区块</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-block-structure.svg" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-block-structure.svg" alt="比特币式区块的区块头保存父哈希和 Merkle 根，区块体保存交易，当前区块哈希供后继区块作为父哈希" tabindex="0" role="button" aria-label="放大图片：比特币式区块的区块头保存父哈希和 Merkle 根，区块体保存交易，当前区块哈希供后继区块作为父哈希" decoding="async"><figcaption>比特币式示例；其他区块链的字段和验证流程可能不同</figcaption></figure>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">区块头包含 Version、父区块哈希和 Merkle 根等元信息</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">父哈希把当前区块接入前一区块；当前区块哈希可供后继区块引用</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">Merkle 根承诺区块体交易集合，不负责判断交易是否合法</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">区块体保存交易；交易计数是编码中的计数项，不是区块头字段</span></li></ol></div></div></div>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">BLOCK STRUCTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块头保存链条证据</h2>
+    <div class="slide-content"><p class="slide-lead">字段职责随协议而变；比特币式区块的核心字段包括 Version、父哈希、Merkle 根、Timestamp、Bits 和 Nonce</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>父哈希</h3><p>父哈希把本区块接到上一区块</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Merkle 根</h3><p>承诺区块体中的交易集合；交易变化会传导到根</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Version / Timestamp</h3><p>Version 标记规则版本；Timestamp 是协议约束下的时间信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Bits / Nonce</h3><p>Bits 与 Nonce 服务比特币式工作量证明；不是所有区块链的通用字段</p></article></div>
+<div class="component component-text text-inset substep reveal-self"><p>区块头字段依协议而定；节点按协议验证交易合法性</p></div></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">BLOCK HEADER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">Merkle 根如何承诺交易集合</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Merkle 根会把交易内容加密起来吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">Merkle 根变化会传导到区块哈希</p>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="交易哈希　→　两两合并　→　Merkle 树根　→　区块头哈希"><span class="relation-term">交易哈希</span><span class="relation-operator">→</span><span class="relation-term">两两合并</span><span class="relation-operator">→</span><span class="relation-term">Merkle 树根</span><span class="relation-operator">→</span><span class="relation-term">区块头哈希</span></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>Merkle 根承诺的是本区块的交易集合；它不负责验证交易合法性，不等于共识、最终性或绝对不可篡改</p></div></div></div>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">MERKLE ROOT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">改写旧区块会留下可检测的链式证据</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>写进区块链，就绝对不能再修改了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">后续区块的父哈希和已同步节点的副本可能暴露不一致</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">交易变化使 Merkle 根不再匹配</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">区块头哈希随之改变</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">子孙区块保存的父哈希出现断链</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">已同步节点的副本可能与被改写链不一致</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>这提供改动可检测性并提高重写成本，不保证历史绝对不能改写；最终性和重组边界依协议而异</p></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">TAMPER EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-grid"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">P2P 传播与节点证据</h2>
+    <div class="slide-content"><p class="slide-lead">传播、副本和状态数据库承担不同职责；比特币式系统可见三类典型角色</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>P2P 传播</h3><p>节点发现邻居并传播交易或区块；网络传输本身不决定哪条历史被接受</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>全节点</h3><p>全节点通常保存并验证较完整的账本数据，也维护本地状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>轻节点</h3><p>轻节点通常只保存区块头或依赖证明查询，具体能力依系统而异</p></article></div></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">P2P NETWORK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">交易从验证到状态更新</h2>
+    <div class="slide-content"><p class="slide-lead">典型流程包括验证、排序、执行和提交；具体顺序依协议而异</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-consensus-flow.svg" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-consensus-flow.svg" alt="典型流程：交易验证、区块提议与打包、区块验证和共识接受，最后更新本地账本与状态数据库" tabindex="0" role="button" aria-label="放大图片：典型流程：交易验证、区块提议与打包、区块验证和共识接受，最后更新本地账本与状态数据库" decoding="async"><figcaption>状态数据库是节点本地可查询的派生结果，可能存在同步延迟；图示顺序不代表所有协议</figcaption></figure>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">节点收到交易并按协议验证格式、签名和业务状态</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">某节点提议、排序并打包新区块</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">节点验证区块，由共识协议决定是否接受</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">接受后执行状态转移，更新本地账本和状态数据库</span></li></ol></div></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">WORKFLOW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">PoW 与 PBFT 的参与和最终性边界</h2>
+    <div class="slide-content"><p class="slide-lead">两者都协调节点接受同一历史，但参与条件、代价和最终性不同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 25% 30% 25%"><colgroup><col style="width:20%"><col style="width:25%"><col style="width:30%"><col style="width:25%"></colgroup><thead><tr><th>方式</th><th>参与条件</th><th>达成接受的机制</th><th>主要代价与边界</th></tr></thead><tbody><tr><td>工作量证明（PoW）</td><td>开放节点；无需预先许可</td><td>竞争满足难度的计算结果，按协议选择历史</td><td>计算与能源开销；确认通常具有概率最终性</td></tr><tr><td>PBFT 类投票</td><td>已知身份的许可节点</td><td>按协议达到法定多数后接受；可容忍部分拜占庭故障</td><td>通信与投票开销；故障假设和节点规模受限</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c3a" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块链组合与比特币系统</h2>
+    <div class="slide-content"><p class="slide-lead">区块链机制可以适配其他业务，比特币只是一个具体系统</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>区块链技术组合</h3><p>链式记录、密码学链接、分布式网络、共识和可编程规则可以按业务重新组合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>比特币业务系统</h3><p>以数字货币为业务目标的具体系统；其区块字段、激励和共识安排是一个实例</p></article></div>
+<div class="component component-text text-inset substep reveal-self"><p>区块链的准入模式和架构应按业务适配；比特币参数不能直接作为通用答案</p></div></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">SYSTEM BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块链的适用边界</h2>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.c78a923d637f.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>节点都达成共识，现实输入就一定真实吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">是否适合区块链，取决于治理、数据真实性、延迟、删除修改和共识成本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>场景特征</th><th>适合程度</th><th>原因</th></tr></thead><tbody><tr><td>多方共同记账且缺少共同中心</td><td>可能适合</td><td>满足治理、接入和数据真实性条件时，可能减少重复对账</td></tr><tr><td>需要历史追溯</td><td>可能适合</td><td>链式证据支持追溯，但不自动保证现实输入真实</td></tr><tr><td>单一可信中心且只要求低延迟</td><td>未必适合</td><td>普通数据库可能更简单直接</td></tr><tr><td>极高频低延迟写入</td><td>谨慎</td><td>共识和广播有额外开销</td></tr><tr><td>需要删除或修改历史记录</td><td>谨慎</td><td>已接受的历史记录受删除、修改和隐私控制约束</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>预言机提供现实输入，但区块链只能保护已经写入并达成共识的记录的可追溯性，不能自动证明输入真实</p></div></div></div>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">USE CASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块链把结构、共识与状态更新连接起来</h2>
+    <div class="slide-content"><p class="slide-lead">链式结构记录历史，P2P 传播信息，共识决定接受哪条历史，状态数据库提供可查询状态</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>四个对象承担不同职责，区块链是它们的技术组合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结构证据</h3><p>父哈希连接历史，Merkle 根承诺交易集合；改动可检测不等于绝对不可改写</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>网络流程</h3><p>P2P 传播 → 验证与提议 → 共识接受 → 本地账本和状态更新</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用边界</h3><p>治理、真实性、延迟、删除修改和协议成本共同决定是否适合</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>区块链技术组合必须与业务治理、真实性、延迟和协议成本一起评估</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-18-1/mindmap-18-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">区块链、分布式账本、共识和节点状态数据库分别解决什么问题？</span></li><li><span class="question-no">02</span><span class="question-text">Merkle 根能承诺什么，不能负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">父区块哈希与 Merkle 根如何让旧区块改动留下链式证据？</span></li><li><span class="question-no">04</span><span class="question-text">交易从 P2P 广播到本地账本与状态更新经过哪些典型阶段？</span></li><li><span class="question-no">05</span><span class="question-text">PoW 与 PBFT 类的参与条件、故障假设和最终性有何不同？</span></li><li><span class="question-no">06</span><span class="question-text">为什么不能直接用比特币的业务逻辑判断区块链是否适合某个应用？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-17-2.html" title="上一节：17.2 内存数据库实现、恢复与异构展望" aria-label="上一节：17.2 内存数据库实现、恢复与异构展望">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">17.2</span>
+        <span class="nav-title">内存数据库实现与展望</span>
+      </a>
+      <a class="exercise-link" href="dbpa-18-1-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-18-2.html" title="下一节：18.2 区块链发展阶段、准入模式与技术架构" aria-label="下一节：18.2 区块链发展阶段、准入模式与技术架构">
+        <span class="nav-title">区块链架构与模式</span>
+        <span class="nav-number">18.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数据模型 · Mind Map</title>
+  <link rel="stylesheet" href="../../theme/fonts.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; }
+    html, body, #mindmap { width: 100%; height: 100%; background: #fff; }
+    html { font-synthesis: none; }
+    svg text, .markmap-foreign { font-family: "Course Source Han Sans", "Source Han Sans SC", sans-serif; color: #15232d; fill: #15232d; font-size: 24px; }
+    .markmap-foreign { line-height: 1.2; }
+    #mindmap .markmap-foreign strong { color: #a8542b; font-weight: inherit !important; }
+    .markmap-node > circle { fill: #a8542b; }
+    .markmap-link { stroke: rgba(21, 35, 45, .22); }
+  </style>
+</head>
+<body>
+  <svg id="mindmap"></svg>
+  <script src="../../../../resources/impress/vendor/markmap/d3.min.js"></script>
+  <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
+  <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
+  <script>
+    const tree = {"content":"数据模型","children":[{"content":"1.2.1 数据建模","children":[{"content":"模型取舍：基于用途保留重要特征并省略细节","children":[]},{"content":"数据模型任务：说明记录什么、如何组织以及如何操作","children":[]},{"content":"两次抽象：现实世界、概念模型、数据模型","children":[]},{"content":"两层分工：概念模型表达业务语义，数据模型规定组织和操作","children":[]}]},{"content":"1.2.2 概念模型","children":[{"content":"作用：表达业务含义、保持简单清晰并独立于具体实现","children":[]},{"content":"基本概念：实体、属性、码、实体型、实体集和联系","children":[]},{"content":"码的判据：能够唯一标识实体，且取值稳定、可用","children":[]},{"content":"联系基数：判断二元联系的 1:1、1:n、m:n","children":[]},{"content":"E-R 图：矩形表示实体型，椭圆表示属性，菱形表示联系，标记基数","children":[]}]},{"content":"1.2.3 数据模型的三要素","children":[{"content":"数据结构：描述对象及其联系","children":[]},{"content":"数据操纵：规定查询、插入、删除和修改等操作及规则","children":[]},{"content":"完整性约束：限定合法状态和变化","children":[]},{"content":"比较框架：用三要素统一比较不同数据模型","children":[]}]},{"content":"1.2.4 层次模型","children":[{"content":"树形约束：有且只有一个根，非根结点有且只有一个双亲","children":[]},{"content":"操纵限制：子女依赖双亲，插入、删除和查询通常沿路径进行","children":[]},{"content":"模型取舍：层级清晰、路径高效，但复杂联系表达困难","children":[]}]},{"content":"1.2.5 网状模型","children":[{"content":"网络结构：允许多个双亲、无双亲结点和多种联系","children":[]},{"content":"优势：直接表达复杂联系，沿明确路径存取效率较高","children":[]},{"content":"代价：数据语言和程序更复杂，应用需要选择存取路径","children":[]}]},{"content":"1.2.6 关系模型","children":[{"content":"表的结构：关系、元组、属性与分量组成规范化二维表","children":[]},{"content":"结构规则：码唯一确定元组，域限定取值范围，关系模式描述结构","children":[]},{"content":"规范化直觉：每个分量在当前关系语义下保持原子","children":[]},{"content":"关系运算：以关系为对象并生成关系，增删改改变其中的元组","children":[]},{"content":"路径透明：用户说明做什么，DBMS 决定如何访问和优化","children":[]}]},{"content":"1.2.7 其他数据模型","children":[{"content":"模型类型：键值、文档、图、时序、时空与对象关系","children":[]},{"content":"选择依据：数据形态、主要操作与约束需求","children":[]},{"content":"多模型组合：同一系统可以按业务需求组合不同模型","children":[]}]}]};
+    const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
+    const api = window.markmap;
+    window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);
+  </script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">转储与日志把恢复推进到故障前时刻</title>
+  <desc id="desc">转储在 Tb 形成后备副本，故障发生在 Tf，重装副本后需要利用 Tb 到 Tf 之间的日志重做已提交更新。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .copy { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .log { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 12; }
+      .fault { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 12; }
+      .safe { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .time { font: 700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .line { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8d7bb8; stroke-width: 3; stroke-dasharray: 9 8; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">后备副本是起点，日志把恢复推进到目标时刻</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="230"/>
+  <text class="label" x="95" y="155">时间线</text>
+  <line x1="160" y1="225" x2="1050" y2="225" stroke="#7890a5" stroke-width="3"/>
+  <line x1="210" y1="210" x2="210" y2="245" stroke="#7890a5" stroke-width="3"/>
+  <line x1="440" y1="210" x2="440" y2="245" stroke="#7890a5" stroke-width="3"/>
+  <line x1="685" y1="210" x2="685" y2="245" stroke="#7890a5" stroke-width="3"/>
+  <line x1="970" y1="210" x2="970" y2="245" stroke="#7890a5" stroke-width="3"/>
+  <text class="time" x="210" y="280">Tₐ</text><text class="text" x="210" y="305">开始转储</text>
+  <text class="time" x="440" y="280">Tᵦ</text><text class="text" x="440" y="305">副本完成</text>
+  <text class="time" x="685" y="280">Tᵈ</text><text class="text" x="685" y="305">更新继续发生</text>
+  <text class="time" x="970" y="280">T𝒇</text><text class="text" x="970" y="305">系统故障</text>
+  <rect class="copy" x="350" y="130" width="180" height="55"/><text class="label" x="440" y="164">得到 Tᵦ 副本</text>
+  <rect class="log" x="535" y="130" width="390" height="55"/><text class="label" x="730" y="164">保存 Tₐ～T𝒇 的相关日志</text>
+  <rect class="fault" x="935" y="130" width="70" height="55"/><text class="label" x="970" y="164">故障</text>
+
+  <rect class="panel" x="45" y="385" width="1110" height="245"/>
+  <text class="label" x="95" y="435">恢复路径</text>
+  <rect class="copy" x="170" y="490" width="210" height="75"/><text class="label" x="275" y="520">重装 Tᵦ 副本</text><text class="text" x="275" y="546">回到已知一致状态</text>
+  <rect class="log" x="495" y="490" width="210" height="75"/><text class="label" x="600" y="520">扫描相关日志</text><text class="text" x="600" y="546">只重做已提交更新</text>
+  <rect class="safe" x="820" y="490" width="210" height="75"/><text class="label" x="925" y="520">恢复到 T𝒇 前</text><text class="text" x="925" y="546">一致状态</text>
+  <path class="line" d="M380 527 H490"/><path class="line" d="M705 527 H815"/>
+  <text class="small" x="165" y="605">副本不能凭空包含 Tᵦ 之后的更新</text>
+  <text class="small" x="690" y="605">若是动态转储，还要覆盖转储期间的日志窗口</text>
+</svg>

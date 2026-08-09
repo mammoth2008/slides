@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">共享锁与排他锁的相容矩阵</title>
+  <desc id="desc">共享锁和共享锁相容，排他锁与共享锁或排他锁都不相容；不相容请求进入等待。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .head { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; }
+      .yes { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; }
+      .no { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">相容性决定请求能否马上继续：只有 S 与 S 相容</text>
+  <rect class="panel" x="45" y="105" width="1110" height="460"/>
+  <text class="label" x="250" y="170">T1 已持有的锁</text>
+  <text class="label" x="740" y="170">T2 请求的锁</text>
+  <rect class="head" x="180" y="205" width="220" height="75"/><text class="label" x="290" y="250">持有＼请求</text>
+  <rect class="head" x="400" y="205" width="220" height="75"/><text class="label" x="510" y="250">X 锁</text>
+  <rect class="head" x="620" y="205" width="220" height="75"/><text class="label" x="730" y="250">S 锁</text>
+  <rect class="head" x="840" y="205" width="220" height="75"/><text class="label" x="950" y="250">无锁</text>
+
+  <rect class="head" x="180" y="280" width="220" height="85"/><text class="label" x="290" y="332">X 锁</text>
+  <rect class="no" x="400" y="280" width="220" height="85"/><text class="label" x="510" y="320">N</text><text class="text" x="510" y="345">等待</text>
+  <rect class="no" x="620" y="280" width="220" height="85"/><text class="label" x="730" y="320">N</text><text class="text" x="730" y="345">等待</text>
+  <rect class="yes" x="840" y="280" width="220" height="85"/><text class="label" x="950" y="320">Y</text><text class="text" x="950" y="345">可申请</text>
+
+  <rect class="head" x="180" y="365" width="220" height="85"/><text class="label" x="290" y="417">S 锁</text>
+  <rect class="no" x="400" y="365" width="220" height="85"/><text class="label" x="510" y="405">N</text><text class="text" x="510" y="430">等待</text>
+  <rect class="yes" x="620" y="365" width="220" height="85"/><text class="label" x="730" y="405">Y</text><text class="text" x="730" y="430">可并发读</text>
+  <rect class="yes" x="840" y="365" width="220" height="85"/><text class="label" x="950" y="405">Y</text><text class="text" x="950" y="430">可申请</text>
+
+  <rect class="head" x="180" y="450" width="220" height="75"/><text class="label" x="290" y="495">无锁</text>
+  <rect class="yes" x="400" y="450" width="220" height="75"/><text class="label" x="510" y="495">Y</text>
+  <rect class="yes" x="620" y="450" width="220" height="75"/><text class="label" x="730" y="495">Y</text>
+  <rect class="yes" x="840" y="450" width="220" height="75"/><text class="label" x="950" y="495">Y</text>
+
+  <text class="small" x="90" y="610">X 锁：保护写入，也允许持有者读写</text>
+  <text class="small" x="650" y="610">S 锁：允许多个事务读，但排斥写入；不相容不是报错，而是进入等待</text>
+</svg>

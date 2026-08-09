@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">SELECT 查询块的逻辑理解路径</title>
+  <desc id="desc">FROM 提供输入关系，WHERE 筛选元组，SELECT 形成结果列；查询文本的书写顺序不等于这条语义理解路径。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 29px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { stroke: #7890a5; stroke-width: 2; }
+      .white { fill: #ffffff; stroke: #8ca1b3; stroke-width: 1.5; }
+      .blue { fill: #e8f3ff; }
+      .green { fill: #eef8ed; }
+      .orange { fill: #fff1dc; }
+      .purple { fill: #f0eaff; }
+      .box-title { font-size: 25px; font-weight: 700; }
+      .small-title { font-size: 20px; font-weight: 650; }
+      .small { font-size: 16px; fill: #536979; }
+      .map { font-size: 17px; font-weight: 650; fill: #536979; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="60">一个 SELECT 查询块怎样生成结果关系</text>
+  <text class="label note" x="65" y="92">这是理解结果语义的路径，不是要求 DBMS 按固定步骤执行</text>
+
+  <rect class="box blue" x="65" y="150" width="230" height="145" rx="20"/>
+  <text class="label box-title" x="180" y="195" text-anchor="middle">输入关系</text>
+  <text class="label small-title" x="180" y="235" text-anchor="middle">Student</text>
+  <text class="label small" x="180" y="266" text-anchor="middle">Sno | Sname | Smajor</text>
+
+  <line x1="295" y1="222" x2="380" y2="222" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="310" y="202">FROM</text>
+
+  <rect class="box green" x="380" y="150" width="230" height="145" rx="20"/>
+  <text class="label box-title" x="495" y="195" text-anchor="middle">筛选元组</text>
+  <text class="label small-title" x="495" y="235" text-anchor="middle">WHERE</text>
+  <text class="label small" x="495" y="266" text-anchor="middle">Smajor = '信息安全'</text>
+
+  <line x1="610" y1="222" x2="695" y2="222" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="625" y="202">SELECT</text>
+
+  <rect class="box orange" x="695" y="150" width="230" height="145" rx="20"/>
+  <text class="label box-title" x="810" y="195" text-anchor="middle">形成结果列</text>
+  <text class="label small-title" x="810" y="235" text-anchor="middle">Sname、Smajor</text>
+  <text class="label small" x="810" y="266" text-anchor="middle">可用表达式或别名</text>
+
+  <line x1="925" y1="222" x2="1010" y2="222" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="944" y="202">结果</text>
+
+  <rect class="box purple" x="1010" y="150" width="145" height="145" rx="20"/>
+  <text class="label box-title" x="1082" y="205" text-anchor="middle">结果</text>
+  <text class="label small" x="1082" y="245" text-anchor="middle">新关系</text>
+  <text class="label small" x="1082" y="271" text-anchor="middle">可继续组合</text>
+
+  <rect class="white" x="115" y="385" width="970" height="170" rx="20"/>
+  <text class="label box-title" x="600" y="430" text-anchor="middle">查询文本与语义理解</text>
+  <text class="label small-title" x="600" y="474" text-anchor="middle">文本通常写作：SELECT → FROM → WHERE</text>
+  <text class="label small" x="600" y="512" text-anchor="middle">理解结果时：先找 FROM 的输入，再用 WHERE 选行，最后看 SELECT 留下哪些列</text>
+</svg>

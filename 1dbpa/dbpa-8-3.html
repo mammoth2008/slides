@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 8.3 JDBC 与 MVC 数据库应用开发 | HUST</title>
+  <meta name="description" content="用标准接口和分层架构连接数据库与应用（对应教材 8.3 与 *8.4）">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="8-3">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-8-3/assets/dbpa-8-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 8.3</div>
+      <h1>JDBC 与 MVC 数据库应用开发</h1>
+      <p class="cover-description">把数据库访问接入可维护的应用结构</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元用课程评价任务贯穿 JDBC 五步工作流，先承接 8.2 的 `compGPA`，再用 MVC、DAO、ORM 和连接池降低直接访问的耦合。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">JDBC 接口、结果集处理和 MVC 分层可以组织成可检查的应用流程</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">选择 <code>Statement</code>、<code>PreparedStatement</code> 或 <code>CallableStatement</code></span></li><li><span class="list-marker">02</span><span class="list-text">写出 <code>ResultSet</code> 的最小遍历与类型读取结构</span></li><li><span class="list-marker">03</span><span class="list-text">按五步流程访问数据库并指出资源释放顺序</span></li><li><span class="list-marker">04</span><span class="list-text">区分参数绑定、结果读取和 SQL／Java 类型映射</span></li><li><span class="list-marker">05</span><span class="list-text">解释 MVC 的三层职责边界并追踪一条业务请求</span></li><li><span class="list-marker">06</span><span class="list-text">说明 DAO、ORM、连接池和异构迁移任务的边界</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/18</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">JDBC 用标准接口隔离应用与数据库平台</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>既然 JDBC 统一了接口，换数据库就不需要改任何东西了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">应用程序通过 JDBC API 访问数据，不直接接触数据库文件或厂商内部函数</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-jdbc-mvc-image2.png" data-full-src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-jdbc-mvc-image2.png" alt="应用经 JDBC API、驱动管理器和厂商驱动访问数据源" tabindex="0" role="button" aria-label="放大图片：应用经 JDBC API、驱动管理器和厂商驱动访问数据源" decoding="async"></figure>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="应用程序　→　JDBC API　→　驱动管理器／DataSource　→　厂商驱动　→　数据源"><span class="relation-term">应用程序</span><span class="relation-operator">→</span><span class="relation-term">JDBC API</span><span class="relation-operator">→</span><span class="relation-term">驱动管理器／DataSource</span><span class="relation-operator">→</span><span class="relation-term">厂商驱动</span><span class="relation-operator">→</span><span class="relation-term">数据源</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不等于完全可移植。URL、驱动、SQL 方言、类型映射、权限和模式仍可能需要适配</p></div></div>
+    <div class="numeric-progress">3/18</div>
+    <div class="semantic-label">JDBC ARCHITECTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">数据源是连接信息的抽象</h2>
+    <div class="slide-content"><p class="slide-lead">应用只需提供目标数据源所需的连接参数</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>位置</h3><p>服务器地址、端口和数据库名</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>身份</h3><p>用户名、密码和权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>类型</h3><p>目标 DBMS 和匹配驱动</p></article></div>
+<div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-text">DriverManager.getConnection(URL, user, password) → Connection
+DataSource.getConnection()                       → Connection</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>DataSource</code> 可以由应用服务器或连接池统一配置；应用代码不应把凭据散落在业务方法中</p></div></div>
+    <div class="numeric-progress">4/18</div>
+    <div class="semantic-label">DATA SOURCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">常用 API 把连接、执行和结果处理分开</h2>
+    <div class="slide-content"><p class="slide-lead">不同对象承担不同生命周期责任</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>API</th><th>主要职责</th><th>常见调用</th></tr></thead><tbody><tr><td><code>DriverManager</code>／<code>DataSource</code></td><td>取得连接</td><td><code>getConnection(...)</code></td></tr><tr><td><code>Connection</code></td><td>管理连接和事务边界</td><td><code>prepareStatement()</code>、<code>prepareCall()</code>、<code>close()</code></td></tr><tr><td><code>Statement</code></td><td>执行静态 SQL，不负责参数绑定</td><td>固定语句</td></tr><tr><td><code>PreparedStatement</code></td><td>执行参数化 SQL</td><td><code>?</code>、<code>setXXX()</code></td></tr><tr><td><code>CallableStatement</code></td><td>调用存储过程</td><td>输入输出参数</td></tr><tr><td><code>ResultSet</code></td><td>读取查询结果</td><td><code>next()</code>、<code>getXXX()</code></td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>getConnection()</code> 属于 <code>DriverManager</code> 或 <code>DataSource</code>；<code>Connection</code> 负责在连接建立后创建语句、管理事务和释放连接</p></div></div>
+    <div class="numeric-progress">5/18</div>
+    <div class="semantic-label">JDBC APIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.7778%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">执行方法决定应用接收什么结果</h2>
+    <div class="slide-content"><p class="slide-lead">先判断 SQL 的结果形态，再选择对应的 <code>execute</code> 方法</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 37% 35%"><colgroup><col style="width:28%"><col style="width:37%"><col style="width:35%"></colgroup><thead><tr><th>方法</th><th>适用场景</th><th>应用拿到的结果</th></tr></thead><tbody><tr><td><code>executeQuery()</code></td><td><code>SELECT</code> 等查询</td><td>一个 <code>ResultSet</code></td></tr><tr><td><code>executeUpdate()</code></td><td><code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>，以及部分 DDL</td><td>受影响的行数或产品定义的更新结果</td></tr><tr><td><code>execute()</code></td><td>可能产生多种结果的语句或过程调用</td><td>再取 <code>ResultSet</code>、更新行数或过程输出</td></tr></tbody></table></div>
+<div class="component component-code"><div class="code-frame"><span class="code-language">JAVA</span><pre tabindex="0" aria-label="JAVA code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-java">CallableStatement cs = conn.prepareCall("{CALL compGPA(?,?)}");
+cs.setString(1, sno);
+cs.registerOutParameter(2, Types.REAL);
+cs.execute();
+float gpa = cs.getFloat(2);</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>CallableStatement</code> 通过 JDBC 调用存储过程；具体占位符、类型和结果处理按目标 DBMS 与驱动核对</p></div></div>
+    <div class="numeric-progress">6/18</div>
+    <div class="semantic-label">EXECUTION METHODS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a6" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">JDBC 访问数据库包含五个主步骤</h2>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a2c3ff6dbab9.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>成功路径能完成查询，还要证明异常路径会释放资源</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">每一步都有输入、输出和失败时的处理边界</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-jdbc-workflow.svg" data-full-src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-jdbc-workflow.svg" alt="JDBC 五步访问流程以及异常路径回到资源释放" tabindex="0" role="button" aria-label="放大图片：JDBC 五步访问流程以及异常路径回到资源释放" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">加载：发现或注册目标 DBMS 的驱动</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">连接：构造 URL 或使用 <code>DataSource</code>，获取 <code>Connection</code></span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">执行：创建语句对象，绑定参数并执行查询、更新或过程调用</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">处理：读取 <code>ResultSet</code>、更新行数或过程输出，并执行业务逻辑</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">释放：按 <code>ResultSet → Statement → Connection</code> 逆序关闭或归还</span></li></ol></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>JDBC 4 以后驱动可能由服务机制自动发现；任一步异常都要进入资源释放路径，<code>try-with-resources</code> 可覆盖成功和异常路径</p></div></div></div></div>
+    <div class="numeric-progress">7/18</div>
+    <div class="semantic-label">JDBC WORKFLOW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.8889%"></div></div>
+  </section>
+<section id="a7" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">参数绑定和类型映射是两个方向</h2>
+    <div class="slide-content"><p class="slide-lead">输入值进入 SQL，查询结果再回到 Java 变量</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="输入：`?` → `setXXX()` → SQL 参数 输出：`ResultSet` → `next()` → `getXXX()` → Java 变量"><span class="relation-term">输入：<code>?</code></span><span class="relation-operator">→</span><span class="relation-term"><code>setXXX()</code></span><span class="relation-operator">→</span><span class="relation-term">SQL 参数 输出：<code>ResultSet</code></span><span class="relation-operator">→</span><span class="relation-term"><code>next()</code></span><span class="relation-operator">→</span><span class="relation-term"><code>getXXX()</code></span><span class="relation-operator">→</span><span class="relation-term">Java 变量</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 34% 33%"><colgroup><col style="width:33%"><col style="width:34%"><col style="width:33%"></colgroup><thead><tr><th>方向</th><th>负责什么</th><th>边界</th></tr></thead><tbody><tr><td>参数绑定</td><td>把 Java 值按类型传给 <code>?</code></td><td>不拼接 SQL 结构</td></tr><tr><td>类型映射</td><td>在 SQL 类型与 Java 类型间转换</td><td>选择匹配的 <code>setXXX</code>／<code>getXXX</code></td></tr><tr><td>结果读取</td><td>移动游标并读取当前行</td><td>先 <code>next()</code>，再 <code>getXXX()</code></td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>参数化可降低 SQL 注入风险，但不替代权限、业务校验和事务控制</p></div></div>
+    <div class="numeric-progress">8/18</div>
+    <div class="semantic-label">PARAMETERS AND TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
+  </section>
+<section id="a7b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">一个最小查询闭环：绑定、遍历、映射</h2>
+    <div class="slide-content"><p class="slide-lead">该代码展示参数绑定、遍历和类型读取的边界；完整 Web 项目还需要控制器、模型和视图</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JAVA</span><pre tabindex="0" aria-label="JAVA code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12</span><code class="language-java">String sql =
+    "SELECT Sno, CAtype FROM ClassAssess WHERE Tno = ?";
+
+try (PreparedStatement ps = conn.prepareStatement(sql)) {
+    ps.setString(1, tno);
+    try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+            String rowSno = rs.getString("Sno");
+            boolean type = rs.getBoolean("CAtype");
+        }
+    }
+}</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>setXXX</code> 是应用到 SQL 的输入绑定；<code>next() == true</code> 才有有效行；<code>getXXX</code> 是结果到 Java 的读取映射</p></div></div>
+    <div class="numeric-progress">9/18</div>
+    <div class="semantic-label">PREPARED QUERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">ResultSet：用游标把集合交给应用逻辑</h2>
+    <div class="slide-content"><p class="slide-lead">默认结果集游标从第一行之前开始，并按行向前移动；<code>next()</code> 返回布尔值</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="executeQuery　→　ResultSet　→　`next() == true`　→　`getXXX(列名／从 1 开始的列号)`　→　应用处理"><span class="relation-term">executeQuery</span><span class="relation-operator">→</span><span class="relation-term">ResultSet</span><span class="relation-operator">→</span><span class="relation-term">`next()</span><span class="relation-operator">=</span><span class="relation-operator">=</span><span class="relation-term">true`</span><span class="relation-operator">→</span><span class="relation-term"><code>getXXX(列名／从 1 开始的列号)</code></span><span class="relation-operator">→</span><span class="relation-term">应用处理</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>只有移动到有效行后才能读取列；ResultSet 游标由 JDBC 结果对象管理，过程化 SQL 游标由数据库程序定义和使用</p></div></div>
+    <div class="numeric-progress">10/18</div>
+    <div class="semantic-label">RESULT SET</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">资源释放要在成功和失败路径都成立</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.a1d9228bdfdd.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>业务异常已经抛出，资源来不及释放也只能算了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">频繁建连或忘记关闭都会拖累性能；<code>try-with-resources</code> 可覆盖异常路径</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>资源</th><th>关闭顺序</th><th>目的</th></tr></thead><tbody><tr><td><code>ResultSet</code></td><td>第一层</td><td>释放结果集资源</td></tr><tr><td>语句对象</td><td>第二层</td><td>释放执行资源</td></tr><tr><td><code>Connection</code></td><td>最后一层</td><td>关闭或归还连接</td></tr><tr><td>连接池中的 <code>Connection</code></td><td><code>close()</code> 后交回池</td><td>避免反复建立物理连接</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。资源通常按获取顺序的反向释放；池耗尽、连接泄漏和归还失败都需要监控</p></div></div>
+    <div class="numeric-progress">11/18</div>
+    <div class="semantic-label">RESOURCE SAFETY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.1111%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">MVC 把请求拆成三层职责</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>沿着一条教师回复请求，能说清每一层只负责什么吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">Controller 接收请求，Model 执行业务，View 呈现结果</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-mvc-request-loop.svg" data-full-src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-mvc-request-loop.svg" alt="用户请求经 Controller、Model 和 DAO/JDBC 访问数据库，再经 View 返回" tabindex="0" role="button" aria-label="放大图片：用户请求经 Controller、Model 和 DAO/JDBC 访问数据库，再经 View 返回" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">Controller：接收请求、解析参数并选择业务入口</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">Model：执行业务规则，通过 DAO（内部可使用 JDBC）或 ORM 访问数据库</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">View：把模型结果呈现给用户，不直接承担连接和业务判断</span></li></ol></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一 Model 可以服务网页、接口或其他呈现方式</p></div></div></div></div>
+    <div class="numeric-progress">12/18</div>
+    <div class="semantic-label">MVC SEPARATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">教师回复路径体现 MVC 职责边界</h2>
+    <div class="slide-content"><p class="slide-lead">教师回复一条课程评价时，Controller、Model、DAO 和 View 各自承担不同职责</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">输入：<code>Tno + TCno + Sno + Feedback</code></span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">控制：Controller 解析并检查参数，再调用 Model</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">业务：Model 执行 <code>replyFeedback</code>，交给 DAO／JDBC 更新 <code>ClassAssess</code></span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">呈现：View 展示更新后的评价和教师反馈</span></li></ol></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="学生评价的对称路径是 `Sno + TCno + Assess → Controller → Model → DAO／JDBC → ClassAssess`"><span class="relation-term">学生评价的对称路径是 `Sno</span><span class="relation-operator">+</span><span class="relation-term">TCno</span><span class="relation-operator">+</span><span class="relation-term">Assess</span><span class="relation-operator">→</span><span class="relation-term">Controller</span><span class="relation-operator">→</span><span class="relation-term">Model</span><span class="relation-operator">→</span><span class="relation-term">DAO／JDBC</span><span class="relation-operator">→</span><span class="relation-term">ClassAssess`</span></div></div></div></div>
+    <div class="numeric-progress">13/18</div>
+    <div class="semantic-label">FEEDBACK FLOW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.2222%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">DAO／ORM 减少业务代码中的数据库细节</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="72" data-character-exposure="58" data-character-scale="0.9" style="--character-along:72%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-astonished.2cd8778a2e2a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>用了 ORM，事务、权限和查询性能也会自动处理吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">DAO 和 ORM 降低重复和耦合，但不替代数据库判断</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>DAO</h3><p>把 SQL/JDBC 访问封装成查询或更新方法</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>ORM</h3><p>映射关系、列与业务对象，减少手写常规 CRUD SQL</p></article></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="`Model → DAO → JDBC → DBMS`　或　`Model → 持久层／DAO → ORM → DBMS`"><span class="relation-term">`Model</span><span class="relation-operator">→</span><span class="relation-term">DAO</span><span class="relation-operator">→</span><span class="relation-term">JDBC</span><span class="relation-operator">→</span><span class="relation-term">DBMS<code>　或　</code>Model</span><span class="relation-operator">→</span><span class="relation-term">持久层／DAO</span><span class="relation-operator">→</span><span class="relation-term">ORM</span><span class="relation-operator">→</span><span class="relation-term">DBMS`</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>事务、权限、查询性能和数据语义仍需要开发者负责</p></div></div>
+    <div class="numeric-progress">14/18</div>
+    <div class="semantic-label">DAO AND ORM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3 <span>|</span> 8.3</div>
+    <h2 class="slide-title">连接池复用物理连接，但需要治理边界</h2>
+    <div class="slide-content"><p class="slide-lead">在频繁或并发访问时可能减少连接建立开销；应用结束使用后把连接归还给池</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-connection-pool.svg" data-full-src="resources/decks/dbpa-8-3/assets/generated/dbpa-ch08-connection-pool.svg" alt="应用请求从连接池借用连接，完成数据库操作后归还" tabindex="0" role="button" aria-label="放大图片：应用请求从连接池借用连接，完成数据库操作后归还" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>方式</th><th>请求行为</th><th>性能影响</th></tr></thead><tbody><tr><td>每次新建</td><td>建立、使用、关闭</td><td>连接开销反复发生</td></tr><tr><td>连接池</td><td>借用、使用、归还</td><td>复用物理连接</td></tr><tr><td>池治理</td><td>上限、超时、健康检查、回收</td><td>泄漏或耗尽需要监控</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">15/18</div>
+    <div class="semantic-label">CONNECTION POOL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3</div>
+    <h2 class="slide-title">用 JDBC 接口和 MVC 分层组织应用</h2>
+    <div class="slide-content"><p class="slide-lead">可靠的数据库应用同时需要接口规范和结构解耦</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>JDBC</h3><p>使用驱动／数据源、参数绑定、类型映射和资源释放</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>调用链</h3><p><code>CallableStatement</code>、<code>ResultSet.next/getXXX</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分层与实验</h3><p>用 MVC、DAO／ORM 和连接池组织分层，并区分实验与迁移任务</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>实验 8.4 练 JDBC 连接与数据操纵；习题 8.4 讨论异构迁移；实验 8.5 承担综合应用</p></div></div>
+    <div class="numeric-progress">16/18</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-3/mindmap-8-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">17/18</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.4444%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">固定 SQL、带输入 SQL、8.2 <code>compGPA</code> 各选哪种 JDBC API？<code>?</code>、<code>setXXX</code>、<code>next()</code>、<code>getXXX</code> 分别负责什么方向？</span></li><li><span class="question-no">02</span><span class="question-text">JDBC 代码中未释放 <code>ResultSet</code>、语句或连接会有什么风险？资源应按什么顺序释放？</span></li><li><span class="question-no">03</span><span class="question-text"><code>execute()</code> 后如何判断并取得 <code>ResultSet</code>、更新行数或过程输出？</span></li><li><span class="question-no">04</span><span class="question-text">教师回复如何携带 <code>Tno、TCno、Sno、Feedback</code> 经过 Controller、Model、DAO／JDBC 和 View？</span></li><li><span class="question-no">05</span><span class="question-text">实验 8.4 的 JDBC、习题 8.4 的异构迁移与实验 8.5 的综合应用分别有什么边界？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-8-2.html" title="上一节：8.2 游标、存储过程与存储函数" aria-label="上一节：8.2 游标、存储过程与存储函数">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">8.2</span>
+        <span class="nav-title">游标与存储程序</span>
+      </a>
+      <a class="exercise-link" href="dbpa-8-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-9-1.html" title="下一节：9.1 数据组织与基础索引" aria-label="下一节：9.1 数据组织与基础索引">
+        <span class="nav-title">数据组织与基础索引</span>
+        <span class="nav-number">9.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">18/18</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

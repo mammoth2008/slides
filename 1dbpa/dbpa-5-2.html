@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 5.2 触发器 | HUST</title>
+  <meta name="description" content="用事件条件动作规则实现复杂完整性控制">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="5-2">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-5-2/assets/dbpa-5-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 5.2</div>
+      <h1>触发器</h1>
+      <p class="cover-description">让数据库服务器按规则自动响应数据变化</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元承接声明式约束，重点是事件—条件—动作规则、执行时机和副作用边界。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">触发器用事件—条件—动作规则自动响应数据变化，并补足声明式约束难以表达的动作</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用事件—条件—动作拆解一个触发器规则</span></li><li><span class="list-marker">02</span><span class="list-text">区分 BEFORE 与 AFTER，并说明事务提交边界</span></li><li><span class="list-marker">03</span><span class="list-text">用“影响 100 行”的 UPDATE 比较 ROW 与 STATEMENT</span></li><li><span class="list-marker">04</span><span class="list-text">按 INSERT、UPDATE、DELETE 判断 OLD／NEW 是否可用</span></li><li><span class="list-marker">05</span><span class="list-text">解释动作失败、同类排序和触发链的影响</span></li><li><span class="list-marker">06</span><span class="list-text">在声明式约束、触发器和应用流程之间选择</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/14</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
+    <h2 class="slide-title">触发器是事件—条件—动作规则</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要 UPDATE 发生，动作就一定执行吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">事件发生时先判断条件，再决定是否执行动作</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-5-2/assets/generated/dbpa-ch05-trigger-eca.svg" data-full-src="resources/decks/dbpa-5-2/assets/generated/dbpa-ch05-trigger-eca.svg" alt="触发器把事件、条件和动作连接成自动执行流程" tabindex="0" role="button" aria-label="放大图片：触发器把事件、条件和动作连接成自动执行流程" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>事件　→　条件　→　动作</p></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>事件</h3><p>事件可以是 INSERT、DELETE 或 UPDATE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p>标准示意可用 WHEN；MySQL 8.4 在动作体中使用 IF 或条件表达式</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>动作</h3><p>动作可以修正 NEW、拒绝操作、写入日志或联动其他对象</p></article></div></div></div></div>
+    <div class="numeric-progress">3/14</div>
+    <div class="semantic-label">ECA RULE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
+    <h2 class="slide-title">定义触发器要明确七个要素</h2>
+    <div class="slide-content"><p class="slide-lead">语法结构服务于事件、时机、粒度和动作语义</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>要素</th><th>需要说明</th><th>例子</th></tr></thead><tbody><tr><td>1 名称</td><td>如何识别和维护</td><td><code>SC_T</code></td></tr><tr><td>2 目标表</td><td>哪张基本表被监听</td><td><code>ON SC</code></td></tr><tr><td>3 事件</td><td>哪类变化激活</td><td><code>INSERT</code>、<code>DELETE</code>、<code>UPDATE</code></td></tr><tr><td>4 时机</td><td>变化前还是后</td><td><code>BEFORE</code>、<code>AFTER</code></td></tr><tr><td>5 粒度</td><td>一行还是一条语句</td><td><code>FOR EACH ROW</code>、<code>FOR EACH STATEMENT</code></td></tr><tr><td>6 引用与条件</td><td>读哪些值，何时执行</td><td><code>OLD</code>、<code>NEW</code>、<code>WHEN</code>、<code>IF</code></td></tr><tr><td>7 动作体</td><td>记录、修正或联动什么</td><td>日志插入或过程块</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>触发器只能直接定义在基本表上；标准与其他 DBMS 的语法不能直接当作 MySQL 8.4 脚本</p></div></div>
+    <div class="numeric-progress">4/14</div>
+    <div class="semantic-label">TRIGGER DEFINITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
+    <h2 class="slide-title">BEFORE／AFTER：每个触发器只有一个时机</h2>
+    <div class="slide-content"><p class="slide-lead">同一事件可以分别定义 BEFORE 与 AFTER 触发器，因此一次操作可能经过两个阶段</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEFORE（若定义）　→　目标行操作　→　AFTER（若定义）"><span class="relation-term">BEFORE（若定义）</span><span class="relation-operator">→</span><span class="relation-term">目标行操作</span><span class="relation-operator">→</span><span class="relation-term">AFTER（若定义）</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>BEFORE</h3><p>BEFORE 在 INSERT／UPDATE 写入前检查或调整 NEW，也可以拒绝操作；例如把工资下限修正为 4000</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>AFTER</h3><p>AFTER 在目标行操作成功后记录 OLD／NEW 或联动其他对象，但不等于事务已经提交</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>引用</h3><p>INSERT 通常只有 NEW，UPDATE 有 OLD／NEW，DELETE 通常只有 OLD</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>AFTER 表示目标行操作成功后执行；后续语句失败时，事务型表中的相关变化仍可能回滚</p></div></div>
+    <div class="numeric-progress">5/14</div>
+    <div class="semantic-label">BEFORE AND AFTER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
+    <h2 class="slide-title">行级与语句级决定触发次数</h2>
+    <div class="slide-content"><p class="slide-lead">一次批量更新不等于一次行级动作</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-sql">UPDATE SC
+SET Grade = Grade + 1
+WHERE Cno = 'C01';</code></pre></div></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="假设影响 100 行　→　FOR EACH ROW 约 100 次；FOR EACH STATEMENT 1 次"><span class="relation-term">假设影响 100 行</span><span class="relation-operator">→</span><span class="relation-term">FOR EACH ROW 约 100 次；FOR EACH STATEMENT 1 次</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>粒度</th><th>触发次数</th><th>适合场景</th></tr></thead><tbody><tr><td>行级</td><td>每影响一行一次</td><td>记录 OLD 与 NEW</td></tr><tr><td>语句级（标准／其他 DBMS）</td><td>每条 SQL 一次</td><td>统计整批变化</td></tr><tr><td>选择依据</td><td>单行事实或集合事实</td><td>与动作体需求一致</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>语句级触发器可使用 OLD TABLE／NEW TABLE 等变化集合，具体语法依 DBMS；MySQL 8.4 只支持 <code>FOR EACH ROW</code></p></div></div>
+    <div class="numeric-progress">6/14</div>
+    <div class="semantic-label">ROW AND STATEMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
+    <h2 class="slide-title">OLD 与 NEW 把变化前后连接起来</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果这次不是 UPDATE，OLD 和 NEW 还能同时出现吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">行级更新可以比较旧值和新值</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14
+15
+16</span><code class="language-sql">-- MySQL 8.4 结构示意，不是完整实验脚本
+-- 前置：SC、SC_U(Sno, Cno, OldGrade, NewGrade) 已预先创建
+-- BEGIN...END 执行时需由客户端设置 DELIMITER
+DELIMITER //
+CREATE TRIGGER SC_T
+AFTER UPDATE ON SC
+FOR EACH ROW
+BEGIN
+  IF OLD.Grade IS NOT NULL
+     AND NEW.Grade IS NOT NULL
+     AND NEW.Grade &gt;= 1.1 * OLD.Grade THEN
+    INSERT INTO SC_U(Sno, Cno, OldGrade, NewGrade)
+    VALUES (OLD.Sno, OLD.Cno, OLD.Grade, NEW.Grade);
+  END IF;
+END//
+DELIMITER ;</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>MySQL 8.4 用 <code>OLD</code>／<code>NEW</code> 与动作体中的 <code>IF</code>；INSERT、UPDATE、DELETE 可用引用不同，标准 SQL 的 <code>REFERENCING</code>／<code>WHEN</code> 不能直接复制</p></div></div>
+    <div class="numeric-progress">7/14</div>
+    <div class="semantic-label">OLD AND NEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
+    <h2 class="slide-title">触发器执行顺序会影响最终状态</h2>
+    <div class="slide-content"><p class="slide-lead">同一张表上的多个规则需要可观察、可测试</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEFORE（若定义）　→　原始 SQL／目标行变化　→　AFTER（若定义）"><span class="relation-term">BEFORE（若定义）</span><span class="relation-operator">→</span><span class="relation-term">原始 SQL／目标行变化</span><span class="relation-operator">→</span><span class="relation-term">AFTER（若定义）</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>原始事件</h3><p>INSERT、UPDATE 或 DELETE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>触发动作</h3><p>可能修改目标表之外的对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>后续事件</h3><p>动作可能再次激活其他触发器；该流程按每个受影响行表示简化顺序</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>MySQL 8.4 同一事件、同一时机的多个触发器默认按创建顺序执行；<code>FOLLOWS</code>／<code>PRECEDES</code> 用于创建时声明相对顺序</p></div></div>
+    <div class="numeric-progress">8/14</div>
+    <div class="semantic-label">EXECUTION ORDER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
+    <h2 class="slide-title">触发器失败或连锁激活会放大影响</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.a1d9228bdfdd.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>日志表写入失败，为什么原来的 UPDATE 也可能一起停下？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">触发器的自动动作也会带来隐式副作用</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="UPDATE SC　→　SC_T 写入 SC_U　→　SC_U 上的触发器写入 AuditLog"><span class="relation-term">UPDATE SC</span><span class="relation-operator">→</span><span class="relation-term">SC_T 写入 SC_U</span><span class="relation-operator">→</span><span class="relation-term">SC_U 上的触发器写入 AuditLog</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>动作体失败</h3><p>当前语句可能失败；事务型表在事务边界内通常一起回滚，需检查存储引擎和事务边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多个触发器</h3><p>同类规则的顺序会影响结果，需确认创建顺序或产品排序规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>触发链</h3><p>一个动作可能激活另一个规则，需检查循环与级联副作用</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>是否整体回滚取决于事务、存储引擎和外部副作用；外码级联动作不会激活 MySQL 触发器，触发器也不能修改正在被激活语句使用的同一张表</p></div></div>
+    <div class="numeric-progress">9/14</div>
+    <div class="semantic-label">FAILURE AND CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.3</div>
+    <h2 class="slide-title">触发器也是需要维护的数据库对象</h2>
+    <div class="slide-content"><p class="slide-lead">删除触发器前要确认依赖它的业务和测试</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">-- MySQL 8.4：实际产品语法
+DROP TRIGGER IF EXISTS SC_T;
+
+-- 标准 SQL 示意，不要直接当作 MySQL 脚本
+DROP TRIGGER SC_T ON SC;</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>MySQL 8.4 使用无 <code>ON</code> 的形式并需要关联表的 <code>TRIGGER</code> 权限；删除不会自动删除日志表，具体语法随 DBMS 变化</p></div></div>
+    <div class="numeric-progress">10/14</div>
+    <div class="semantic-label">DROP TRIGGER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">声明式约束优先表达直接完整性规则</h2>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a2c3ff6dbab9.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>判断标准不是“能不能写成触发器”，而是“这条隐式执行路径是否值得”</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">触发器补足需要动作、历史或跨表联动的规则，不应隐藏所有业务规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>需求</th><th>优先机制</th><th>触发器价值</th></tr></thead><tbody><tr><td>非空、范围、唯一</td><td><code>NOT NULL</code>、<code>CHECK</code>、<code>UNIQUE</code></td><td>不必增加隐式过程</td></tr><tr><td>主码、外码</td><td><code>PRIMARY KEY</code>、<code>FOREIGN KEY</code></td><td>DBMS 原生检查</td></tr><tr><td>记录变化历史</td><td>约束无法完成</td><td><code>AFTER</code> 动作写日志</td></tr><tr><td>写入前自动修正</td><td>约束难以表达</td><td><code>BEFORE</code> 动作调整值</td></tr><tr><td>批量统计变化</td><td>显式 SQL 或应用流程</td><td>MySQL 8.4 没有语句级触发器</td></tr><tr><td>复杂跨表联动</td><td>触发器或应用流程</td><td>评估事务边界、触发链、性能和可观察性</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>能用声明式约束表达的规则优先使用约束；触发器主要补足历史记录、自动修正和复杂联动</p></div></div>
+    <div class="numeric-progress">11/14</div>
+    <div class="semantic-label">CHOOSE THE MECHANISM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">用 ECA、时机和风险判断触发器</h2>
+    <div class="slide-content"><p class="slide-lead">触发器让数据库对事件自动反应，但使用时必须控制隐式复杂度</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>ECA</h3><p>触发器由事件、条件和动作组成</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>时机</h3><p>BEFORE／AFTER 决定执行时机，AFTER 不等于事务提交</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>粒度与引用</h3><p>ROW／STATEMENT 决定触发次数，INSERT、UPDATE、DELETE 对 OLD／NEW 的可用引用不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>风险与选择</h3><p>失败、触发链、性能和产品边界决定是否应优先使用声明式约束</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先判断声明式约束是否足够，再引入触发器；MySQL 8.4 只支持行级触发器</p></div></div>
+    <div class="numeric-progress">12/14</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-2/mindmap-5-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">13/14</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text"><code>SC.Grade</code> 从 60 变 70；若提高至少 10% 就写 SC_U，事件、条件、动作和时机各是什么？</span></li><li><span class="question-no">02</span><span class="question-text">UPDATE 影响 100 行时，ROW／STATEMENT 各触发几次？MySQL 8.4 支持哪种？三类 DML 中 OLD／NEW 各何时可用？</span></li><li><span class="question-no">03</span><span class="question-text">工资下限修正与成绩日志各选 BEFORE 还是 AFTER？AFTER 是否等于 COMMIT？</span></li><li><span class="question-no">04</span><span class="question-text">SC_T 写 SC_U，SC_U 的触发器失败时，原 UPDATE 可能怎样？</span></li><li><span class="question-no">05</span><span class="question-text">哪些规则应优先用 CHECK、PRIMARY KEY、FOREIGN KEY？标准 SQL 与 MySQL 8.4 语法有何差异？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-5-1.html" title="上一节：5.1 数据库完整性与约束" aria-label="上一节：5.1 数据库完整性与约束">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">5.1</span>
+        <span class="nav-title">完整性与约束</span>
+      </a>
+      <a class="exercise-link" href="dbpa-5-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-6-1.html" title="下一节：6.1 函数依赖与规范化" aria-label="下一节：6.1 函数依赖与规范化">
+        <span class="nav-title">函数依赖与规范化</span>
+        <span class="nav-number">6.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">14/14</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

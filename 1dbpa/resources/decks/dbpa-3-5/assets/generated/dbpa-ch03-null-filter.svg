@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">三值逻辑与 WHERE 筛选</title>
+  <desc id="desc">包含 NULL 的比较可能得到 UNKNOWN；WHERE 只保留 TRUE，FALSE 和 UNKNOWN 都被筛掉。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#60758a"/></marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 30px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { stroke: #7890a5; stroke-width: 2; }
+      .blue { fill: #e8f3ff; } .green { fill: #eef8ed; } .orange { fill: #fff1dc; } .purple { fill: #f0eaff; } .gray { fill: #f3f5f7; }
+      .box-title { font-size: 25px; font-weight: 700; }
+      .small-title { font-size: 20px; font-weight: 650; }
+      .small { font-size: 17px; fill: #536979; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="62">WHERE 只让 TRUE 通过</text>
+  <text class="label note" x="65" y="95">NULL 让比较结果变成 UNKNOWN；UNKNOWN 不是 FALSE，但也不能直接输出</text>
+
+  <rect class="box blue" x="70" y="160" width="260" height="135" rx="20"/>
+  <text class="label box-title" x="200" y="208" text-anchor="middle">Grade &lt; 60</text>
+  <text class="label small" x="200" y="250" text-anchor="middle">Grade = 75、40 或 NULL</text>
+  <line x1="330" y1="228" x2="420" y2="228" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect class="box green" x="420" y="125" width="300" height="205" rx="20"/>
+  <text class="label box-title" x="570" y="172" text-anchor="middle">比较结果</text>
+  <rect class="box blue" x="465" y="195" width="210" height="38" rx="12"/>
+  <text class="label small-title" x="570" y="221" text-anchor="middle">TRUE：40 &lt; 60</text>
+  <rect class="box gray" x="465" y="242" width="210" height="38" rx="12"/>
+  <text class="label small-title" x="570" y="268" text-anchor="middle">FALSE：75 &lt; 60</text>
+  <rect class="box orange" x="465" y="289" width="210" height="38" rx="12"/>
+  <text class="label small-title" x="570" y="315" text-anchor="middle">UNKNOWN：NULL &lt; 60</text>
+
+  <line x1="720" y1="228" x2="820" y2="228" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <rect class="box purple" x="820" y="125" width="300" height="205" rx="20"/>
+  <text class="label box-title" x="970" y="172" text-anchor="middle">WHERE 筛选</text>
+  <text class="label small-title" x="970" y="218" text-anchor="middle">TRUE → 保留</text>
+  <text class="label small-title" x="970" y="260" text-anchor="middle">FALSE → 舍弃</text>
+  <text class="label small-title" x="970" y="302" text-anchor="middle">UNKNOWN → 舍弃</text>
+
+  <rect class="box" x="155" y="435" width="890" height="130" rx="22" fill="#ffffff"/>
+  <text class="label box-title" x="600" y="480" text-anchor="middle">想把缺考纳入结果，必须写出另一个条件</text>
+  <text class="label small" x="600" y="525" text-anchor="middle">Grade &lt; 60 OR Grade IS NULL</text>
+</svg>

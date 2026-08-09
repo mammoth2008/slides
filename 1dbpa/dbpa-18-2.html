@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 18.2 区块链发展阶段、准入模式与技术架构 | HUST</title>
+  <meta name="description" content="从应用扩展、信任环境和功能责任理解区块链架构取舍">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="18-2">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-18-2/assets/dbpa-18-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 18.2</div>
+      <h1>区块链发展阶段、准入模式与技术架构</h1>
+      <p class="cover-description">应用规模与信任环境决定区块链的准入和架构</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元比较教材梳理的三个发展阶段、公有／联盟／私有链以及九层功能责任架构。封面图只作概念引导，不代表具体平台或协议。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>交易验证、共识和状态更新决定基础流程；应用规模和信任环境进一步决定准入、治理与系统架构</p></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释区块链三个发展阶段各自增加的能力与边界</span></li><li><span class="list-marker">02</span><span class="list-text">按准入、读写、记账权和治理比较公有、联盟和私有链</span></li><li><span class="list-marker">03</span><span class="list-text">将九层功能架构归并为五个责任组，并说明各组的抽象边界</span></li><li><span class="list-marker">04</span><span class="list-text">用事件—条件—动作解释智能合约，并说明外部输入与执行风险</span></li><li><span class="list-marker">05</span><span class="list-text">解释去中心化、安全和效率为何形成工程取舍</span></li><li><span class="list-marker">06</span><span class="list-text">说明吞吐、跨链、账本增长和合约安全的原因与后果</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/14</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">区块链能力可按三个阶段梳理</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>加入智能合约，就代表项目一定更成熟？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">应用范围扩大后，规则、参与者、治理和架构边界都会变化；三个阶段不是必经升级路线</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-2/assets/generated/dbpa-ch18-blockchain-image2.png" data-full-src="resources/decks/dbpa-18-2/assets/generated/dbpa-ch18-blockchain-image2.png" alt="区块链从分布式记账向智能合约和行业协作平台演进" tabindex="0" role="button" aria-label="放大图片：区块链从分布式记账向智能合约和行业协作平台演进" decoding="async"><figcaption>概念总览图连接区块链的工作机制与能力扩展；不表示历史时间轴、准入差异或固定架构</figcaption></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>第一阶段：数字货币记账</h3><p>以数字货币记账和链式历史为主要能力；边界是吞吐、确认延迟和开放网络协调</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>第二阶段：智能合约</h3><p>引入智能合约和可编程金融规则；边界是代码执行、治理和外部输入</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>第三阶段：行业协作</h3><p>扩展到社会治理与行业协作；边界是身份准入、跨组织治理和系统集成</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>三个阶段用于梳理能力扩展；不同项目可以并存或跳过阶段，不代表技术成熟度排名</p></div></div>
+    <div class="numeric-progress">3/14</div>
+    <div class="semantic-label">THREE STAGES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">准入机制与治理权限</h2>
+    <div class="slide-content"><p class="slide-lead">公有、联盟、私有链体现不同的信任与治理选择，不能按先进程度排序</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 23% 23% 20% 18%"><colgroup><col style="width:16%"><col style="width:23%"><col style="width:23%"><col style="width:20%"><col style="width:18%"></colgroup><thead><tr><th>模式</th><th>节点准入</th><th>读／写权限</th><th>记账与治理</th><th>代表性共识例子</th></tr></thead><tbody><tr><td>公有链</td><td>开放参与</td><td>规则通常公开；读写由协议约束</td><td>参与者竞争或按协议记账</td><td>PoW 等</td></tr><tr><td>联盟链</td><td>组织授权</td><td>可按成员与业务划分</td><td>受控记账，组织协商治理</td><td>PBFT 类等</td></tr><tr><td>私有链</td><td>单组织控制</td><td>组织决定读写范围</td><td>内部记账与治理</td><td>Raft／Paxos 等</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>联盟链与私有链合称许可链；共识名称只是代表性例子，具体平台的权限和协议可能不同</p></div></div></div>
+    <div class="numeric-progress">4/14</div>
+    <div class="semantic-label">ACCESS MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">准入模式的信任与成本</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>许可链有准入，所以一定比公有链快？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">许可链用受控身份和治理边界换取更可预测的协调条件；具体性能仍取决于系统设计</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>公有链</h3><p>适合开放参与和弱中心信任；代价是广播、共识和身份治理更难预测</p></article><article class="content-card emphasis-card" tabindex="0"><h3>联盟链</h3><p>适合多机构协作；需要成员准入、权限治理和共同规则，性能取决于具体系统</p></article><article class="content-card emphasis-card" tabindex="0"><h3>私有链</h3><p>适合组织内部协作；控制边界更清晰，但不再解决多个互不信任主体的共同治理</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>选择模式时，应按参与者、监管、数据边界、工作负载和管理成本评估；开放程度本身不代表先进程度</p></div></div>
+    <div class="numeric-progress">5/14</div>
+    <div class="semantic-label">TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">九层架构的功能责任</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>九层架构，就是九套系统从下到上依次部署？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">资源、节点、状态、业务和治理承担不同功能责任</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-2/assets/generated/dbpa-ch18-layered-architecture.svg" data-full-src="resources/decks/dbpa-18-2/assets/generated/dbpa-ch18-layered-architecture.svg" alt="区块链系统从基础设施、基础组件、账本、共识、智能合约、接口、管理、运维到应用分层组织" tabindex="0" role="button" aria-label="放大图片：区块链系统从基础设施、基础组件、账本、共识、智能合约、接口、管理、运维到应用分层组织" decoding="async"><figcaption>九层可归并为五个责任组；箭头表示资源、状态和调用依赖，不表示所有平台的严格流水线</figcaption></figure>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">资源组（基础设施）提供网络、存储和计算</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">节点基础组（基础组件）提供通信、密码和数据存储</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">可信状态组（账本、共识）负责收集、验证、追加和确定接受顺序</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">业务执行组（智能合约、接口）负责规则执行以及 RPC、SDK 调用</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">治理服务组（系统管理、运维、应用）负责身份、权限、监控、服务和业务入口</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>九层是功能责任抽象，不等于九套系统、九台服务器或固定部署流水线</p></div></div>
+    <div class="numeric-progress">6/14</div>
+    <div class="semantic-label">ARCHITECTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">账本、共识与跨链互操作</h2>
+    <div class="slide-content"><p class="slide-lead">规模增长后，归档、多链和跨链会改变查询、证明与追溯边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>账本</h3><p>收集、打包、验证并追加被接受的历史；它回答“记录了什么”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共识</h3><p>在协议和故障假设下决定哪些顺序或状态转移被接受；最终性依协议而异</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>规模与互操作</h3><p>归档保留历史但改变在线查询；多链分散状态；跨链还要验证身份、证明和一致性边界</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>账本保存历史，共识决定接受条件，查询索引服务可见数据；系统设计要同时说明历史保存、接受条件和可查询范围</p></div></div>
+    <div class="numeric-progress">7/14</div>
+    <div class="semantic-label">LEDGER AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">智能合约的 ECA 规则链</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="60" data-character-scale="0.9" style="--character-along:76%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>合约收到“货物已签收”，这个事件就一定真实？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">ECA 将事件、条件与动作连成执行规则；代码和外部输入受平台边界约束</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>Event 事件</h3><p>货物签收等外部事件进入系统；身份认证和数据真实性依赖可信接口或预言机</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Condition 条件</h3><p>双方签名、权限和业务规则满足；条件由平台按其执行语义判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Action 动作</h3><p>确认付款并追加账本记录；执行结果仍需按平台规则验证和达成共识</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>智能合约在功能上类似存储过程或触发器，把规则与数据操作绑定；多节点执行、代码错误和升级治理使它不等同于数据库对象</p></div></div>
+    <div class="numeric-progress">8/14</div>
+    <div class="semantic-label">SMART CONTRACT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">区块链服务的四层能力</h2>
+    <div class="slide-content"><p class="slide-lead">接口层封装底层能力；节点和密钥管理的责任取决于部署边界</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>层次</th><th>主要能力</th><th>对应用的意义</th></tr></thead><tbody><tr><td>接口层</td><td>RPC、SDK</td><td>简化调用和访问</td></tr><tr><td>管理层</td><td>身份、权限、节点</td><td>控制主体可执行的操作和可访问的数据</td></tr><tr><td>运维层</td><td>日志、监视、管理</td><td>支持运行和故障处理</td></tr><tr><td>应用／BaaS</td><td>业务服务与封装</td><td>降低接入门槛；BaaS 是服务形态，不是第十个架构层</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">9/14</div>
+    <div class="semantic-label">OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">不可能三角的工程取舍</h2>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.8f78a688337c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>不可能三角是工程权衡框架，不是一次性解法</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">去中心化、安全和效率要分别落实为参与、验证、吞吐、延迟和资源开销</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>去中心化</h3><p>更多主体参与和共同治理；协调、广播和身份管理成本可能上升</p></article><article class="content-card emphasis-card" tabindex="0"><h3>安全</h3><p>副本、验证和故障容忍提高篡改检测或可用性；存储、确认和隐私成本也会增加</p></article><article class="content-card emphasis-card" tabindex="0"><h3>效率</h3><p>吞吐、延迟和资源开销要求更短路径或更少协调；可能改变开放参与和信任假设</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>这是工程权衡框架，不是严格数学定理；不存在一次性把三个维度都无限增强的方案</p></div></div>
+    <div class="numeric-progress">10/14</div>
+    <div class="semantic-label">IMPOSSIBLE TRIANGLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2 <span>|</span> 18.2</div>
+    <h2 class="slide-title">区块链工程与治理难点</h2>
+    <div class="slide-content"><p class="slide-lead">系统规模会放大算法、网络、状态和治理的难点；各问题都有对应的原因、后果和边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>吞吐与确认</h3><p>广播和共识共同形成确认延迟；高并发会争用网络、节点和排序路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>跨链互操作</h3><p>不同链的身份、状态证明和最终性不一致；验证与失败处理增加复杂度</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>账本增长</h3><p>历史越长，存储、索引和查询压力越大；归档能降在线成本，却改变可查询范围</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>合约安全</h3><p>代码错误、权限和升级风险会在多节点执行中放大；开发、审计和治理成为系统边界</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>工程选择必须同时考虑准入模式、架构责任和业务治理，单个算法的局部性能不足以代表系统性能</p></div></div>
+    <div class="numeric-progress">11/14</div>
+    <div class="semantic-label">ENGINEERING PAINS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2</div>
+    <h2 class="slide-title">区块链架构取舍连接阶段、准入与工程边界</h2>
+    <div class="slide-content"><p class="slide-lead">发展阶段说明能力扩展，准入和架构决定责任边界，工程取舍决定适用条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>历史框架</h3><p>三个阶段分别扩展数字货币记账、智能合约和社会治理／行业协作；它们是历史框架，不是必经路线</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>准入取舍</h3><p>公有、联盟、私有链按参与、读写、记账权和治理选择；开放程度不代表先进程度</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>九层责任</h3><p>九层可归并为资源、节点基础、可信状态、业务执行和治理服务五组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>工程边界</h3><p>系统难点包括不可能三角、吞吐、跨链、账本增长和合约安全</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>区块链方案需要同时评估准入、架构责任、性能成本与业务治理</p></div></div>
+    <div class="numeric-progress">12/14</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-18-2/mindmap-18-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">13/14</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么三个发展阶段是历史梳理框架，而不是所有项目的必经路线？</span></li><li><span class="question-no">02</span><span class="question-text">给定一个多机构业务，如何分别判断节点准入、读写权和记账权？</span></li><li><span class="question-no">03</span><span class="question-text">账本、共识和跨链分别如何改变历史保存、接受条件和查询范围？</span></li><li><span class="question-no">04</span><span class="question-text">货物签收事件进入智能合约后，ECA 规则中的外部输入和代码执行分别处于什么边界？</span></li><li><span class="question-no">05</span><span class="question-text">不可能三角中的三个词分别对应哪些工程指标和成本？</span></li><li><span class="question-no">06</span><span class="question-text">吞吐、跨链、账本增长和合约安全各自面临什么困难，会造成什么后果？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-18-1.html" title="上一节：18.1 区块链概念、区块结构与工作机制" aria-label="上一节：18.1 区块链概念、区块结构与工作机制">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">18.1</span>
+        <span class="nav-title">区块链原理</span>
+      </a>
+      <a class="exercise-link" href="dbpa-18-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-18-3.html" title="下一节：18.3 区块链与数据库的对比与融合" aria-label="下一节：18.3 区块链与数据库的对比与融合">
+        <span class="nav-title">区块链与数据库融合</span>
+        <span class="nav-number">18.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">14/14</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

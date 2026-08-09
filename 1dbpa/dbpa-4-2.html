@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 4.2 其他安全保护机制 | HUST</title>
+  <meta name="description" content="用视图、审计、加密与隐私机制补足安全边界">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="4-2">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-4-2/assets/dbpa-4-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 4.2</div>
+      <h1>其他安全保护机制</h1>
+      <p class="cover-description">承接身份与授权：限制看见什么，记录做过什么，保护信息流</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元承接 4.1 的身份、权限和 DAC/MAC，讨论视图、审计、加密以及推理和隐私边界。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">视图、审计、加密、推理控制、隐私保护和分权分别限制数据访问、追踪行为与降低泄露风险</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用视图、授权和 CHECK OPTION 限制数据窗口</span></li><li><span class="list-marker">02</span><span class="list-text">区分权限检查与审计，记录成功或失败并追溯行为</span></li><li><span class="list-marker">03</span><span class="list-text">区分透明与非透明存储加密</span></li><li><span class="list-marker">04</span><span class="list-text">比较链路与端到端传输加密，说明证书不等于数据库授权</span></li><li><span class="list-marker">05</span><span class="list-text">用最小案例解释推理控制和隐蔽信道的风险</span></li><li><span class="list-marker">06</span><span class="list-text">从隐私生命周期和分权角度评价风险边界</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/17</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.7647%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.3</div>
+    <h2 class="slide-title">视图把授权边界放在用户可见的数据窗口</h2>
+    <div class="slide-content"><p class="slide-lead">视图先限制行列范围，再通过最小权限控制操作；示例采用标准 SQL 语义</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12
+13
+14</span><code class="language-sql">-- 标准 SQL 示意；账号与主机格式需按当前 DBMS 核对
+CREATE VIEW CS_Student
+AS
+SELECT Sno, Sname, Smajor
+FROM Student
+WHERE Smajor = '计算机科学与技术'
+WITH CHECK OPTION;
+
+GRANT SELECT
+ON CS_Student
+TO 王平;
+
+-- 王平只有 SELECT；若张明获写权限，越出 WHERE 的写入应被拒绝
+-- WITH CHECK OPTION 只约束通过该视图进行的写入</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>视图缩小可见范围，GRANT 决定能做什么；若同时授予 Student 直达权限，用户可绕过这个窗口</p></div></div>
+    <div class="numeric-progress">3/17</div>
+    <div class="semantic-label">VIEW SECURITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.3</div>
+    <h2 class="slide-title">视图安全仍需要其他机制配合</h2>
+    <div class="slide-content"><p class="slide-lead">一个数据窗口不能替代身份、授权、完整性和审计组成的安全控制链</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>视图</h3><p>视图隐藏不需要的行和列，但只有授予窗口权限时才形成有效边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GRANT 授权</h3><p>GRANT 限制 SELECT、INSERT、UPDATE、DELETE；基本表直达权限可能绕过窗口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>完整性与 CHECK OPTION</h3><p>基本表约束保证状态合法，CHECK OPTION 要求通过视图写入的数据仍满足视图谓词</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>身份鉴别与 DAC／MAC 决定谁能到达窗口；视图限制窗口，审计记录结果</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>把行列藏进视图，再授权视图，安全边界就完整了吧？</p></div></div></div></aside>
+    <div class="numeric-progress">4/17</div>
+    <div class="semantic-label">VIEW BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
+    <h2 class="slide-title">审计记录成功与失败的安全事件</h2>
+    <div class="slide-content"><p class="slide-lead">审计不负责放行，而是记录访问和控制结果，使事件能够追溯和分析</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="访问尝试　→　身份／授权检查　→　放行或拒绝　→　审计日志　→　分析与响应"><span class="relation-term">访问尝试</span><span class="relation-operator">→</span><span class="relation-term">身份／授权检查</span><span class="relation-operator">→</span><span class="relation-term">放行或拒绝</span><span class="relation-operator">→</span><span class="relation-term">审计日志</span><span class="relation-operator">→</span><span class="relation-term">分析与响应</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>记录谁</h3><p>审计可以记录普通用户、特权用户和认证失败中的尝试身份</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录什么</h3><p>审计可以记录登录、授权、DDL、DML、DCL 和对象访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录结果</h3><p>成功与失败都可能有价值，日志通常还要包含时间、对象和语句</p></article></div></div></div>
+    <div class="numeric-progress">5/17</div>
+    <div class="semantic-label">AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.4118%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
+    <h2 class="slide-title">审计分类要把责任范围与事件类型分开</h2>
+    <div class="slide-content"><p class="slide-lead">记录越多，追溯能力越强、资源成本越高；管理责任与事件类型是两个分类轴</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>分类轴</th><th>关注问题</th><th>例子</th></tr></thead><tbody><tr><td>责任范围</td><td>谁能设置、查看规则与日志</td><td>DBA 配置；审计员查阅</td></tr><tr><td>认证事件</td><td>谁尝试登录以及是否成功</td><td>密码错误、成功登录</td></tr><tr><td>特权／授权事件</td><td>谁改变了安全规则</td><td>GRANT、REVOKE、角色变化</td></tr><tr><td>语句与对象事件</td><td>对哪个对象做了什么</td><td>UPDATE SC、ALTER、SELECT</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">6/17</div>
+    <div class="semantic-label">AUDIT SCOPE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
+    <h2 class="slide-title">审计规则要能闭环验证并受到保护</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f0d43de25a1b.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>审计员既能查日志又能删日志，追责怎么成立？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">下例采用 KingbaseES 风格；具体语法与日志位置需要查产品手册</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-4-2/assets/generated/dbpa-ch04-audit-timeline.svg" data-full-src="resources/decks/dbpa-4-2/assets/generated/dbpa-ch04-audit-timeline.svg" alt="访问事件进入审计日志，再由审计员分析和响应" tabindex="0" role="button" aria-label="放大图片：访问事件进入审计日志，再由审计员分析和响应" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-sql">-- [KingbaseES]，非 MySQL 8.4 通用 SQL
+AUDIT ALTER, UPDATE ON SC BY ACCESS;
+-- 测试成功／失败 UPDATE；查日志中的用户、时间、对象、语句和结果
+NOAUDIT ALTER, UPDATE ON SC;</code></pre></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>审计规则的闭环包括开启规则、测试操作、核对日志和撤销规则；MySQL 8.4 需要按审计插件与部署核查，日志也需受到完整性、保密性和访问控制保护</p></div></div></div></div>
+    <div class="numeric-progress">7/17</div>
+    <div class="semantic-label">AUDIT CONFIGURATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.1765%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.5</div>
+    <h2 class="slide-title">加密保护数据在存储和传输中的形态</h2>
+    <div class="slide-content"><p class="slide-lead">明文经过算法变成密文，获得相应密钥的授权端再按规则解密</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="明文　→　加密算法与密钥　→　密文　→　解密　→　明文"><span class="relation-term">明文</span><span class="relation-operator">→</span><span class="relation-term">加密算法与密钥</span><span class="relation-operator">→</span><span class="relation-term">密文</span><span class="relation-operator">→</span><span class="relation-term">解密</span><span class="relation-operator">→</span><span class="relation-term">明文</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储加密</h3><p>存储加密保护磁盘、备份和其他存储介质中的数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>传输加密</h3><p>传输加密保护客户端与服务器之间传输的信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>密钥管理与成本</h3><p>密钥管理需要处理保管、轮换、性能与恢复；密钥访问不等于数据库 SELECT 权限</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>加密保护数据形态，不替代最小权限和审计</p></div></div>
+    <div class="numeric-progress">8/17</div>
+    <div class="semantic-label">ENCRYPTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.0588%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.5</div>
+    <h2 class="slide-title">四种加密方式的保护边界不同</h2>
+    <div class="slide-content"><p class="slide-lead">机制选择取决于需要保护的数据所在位置</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37.5% 37.5%"><colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup><thead><tr><th>方式</th><th>保护范围</th><th>应用影响</th></tr></thead><tbody><tr><td>透明存储加密</td><td>磁盘与存储层</td><td>应用通常无需改写</td></tr><tr><td>非透明存储加密</td><td>应用或数据库函数处理字段／值</td><td>需要改造应用并处理密钥</td></tr><tr><td>链路加密</td><td>每段链路的报头与报文</td><td>中间节点可能解密并重新加密</td></tr><tr><td>端到端加密</td><td>端点之间的报文内容</td><td>中间节点通常看不到内容；报头／元数据可能仍可见</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>这些描述是机制语义，不是当前 DBMS 的统一配置命令；产品、密钥位置和端点都要单独核对</p></div></div>
+    <div class="numeric-progress">9/17</div>
+    <div class="semantic-label">STORAGE AND TRANSPORT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.9412%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.5</div>
+    <h2 class="slide-title">可信传输先确认通信端点，再协商密钥</h2>
+    <div class="slide-content"><p class="slide-lead">这是 TLS／SSL 的概念流程，不等于数据库账户授权</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">按证书和配置验证服务器，必要时验证客户端身份</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">协商加密算法与会话密钥</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">加密传输并校验数据完整性</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>证书验证确认通信端点，不等于数据库已有 SELECT 权限；账户、视图和 GRANT 仍决定服务器端能读写什么，实际选项属于产品／部署配置</p></div></div>
+    <div class="numeric-progress">10/17</div>
+    <div class="semantic-label">TRUSTED TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
+    <h2 class="slide-title">合法查询的组合也可能越过权限边界</h2>
+    <div class="slide-content"><p class="slide-lead">推理控制关注用户能否从可见信息推出不应获得的结论</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="多次查询结果　＋　函数依赖与背景知识　→　未授权结论"><span class="relation-term">多次查询结果　＋　函数依赖与背景知识</span><span class="relation-operator">→</span><span class="relation-term">未授权结论</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>已知信息 A</h3><p>A：职务=教师，工资=3000（用户已知）</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询结果 B</h3><p>B：职务=教师，但工资字段受限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>推理前提</h3><p>本例假设业务规则 <code>职务 → 工资</code>，所以可能推出 B 的工资为 3000</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每条查询都可能获准，但组合关系仍可能越过边界；函数依赖是本例的明确假设，不是普遍事实</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>每条查询都合法，组合后为什么还会越过权限边界？</p></div></div></div></aside>
+    <div class="numeric-progress">11/17</div>
+    <div class="semantic-label">INFERENCE CONTROL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.7059%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
+    <h2 class="slide-title">成功与失败反馈也可能成为隐蔽信息通道</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-astonished.2cd8778a2e2a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>插入成功还是报错，竟然也能传递秘密？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">这是抽象安全模型，不是当前 Student／SC 的可执行脚本</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="高密级发送者决定是否先写入 `key=K`　→　低密级接收者再写入 `key=K`　→　成功=1／重复错误=0"><span class="relation-term">高密级发送者决定是否先写入 `key</span><span class="relation-operator">=</span><span class="relation-term">K`</span><span class="relation-operator">→</span><span class="relation-term">低密级接收者再写入 `key</span><span class="relation-operator">=</span><span class="relation-term">K`</span><span class="relation-operator">→</span><span class="relation-term">成功</span><span class="relation-operator">=</span><span class="relation-term">1／重复错误</span><span class="relation-operator">=</span><span class="relation-term">0</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>机制</th><th>发送者／接收者动作</th><th>反馈编码与风险</th></tr></thead><tbody><tr><td>唯一约束</td><td>高密级先写入或不写入 K；低密级再写 K</td><td>成功／重复错误传递 1 比特</td></tr><tr><td>查询结果</td><td>接收者请求带隐藏状态的查询</td><td>行数或错误差异暴露状态</td></tr><tr><td>操作时序</td><td>观察者比较不同路径的响应时间</td><td>快慢差异形成时序侧信道</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/17</div>
+    <div class="semantic-label">COVERT CHANNEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.5882%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
+    <h2 class="slide-title">隐私保护贯穿数据的全生命周期</h2>
+    <div class="slide-content"><p class="slide-lead">发布前要先识别准标识符和重新识别风险</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>收集与存储</h3><p>收集与存储阶段只保留必要数据，并控制保存和访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>处理阶段要限制推理、关联和二次使用风险</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>发布</h3><p>出生年、性别和邮编等可以组成准标识符；若组合只对应一人，重识别风险较高</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>k</code> 匿名让相同准标识符组合至少对应 k 条记录，但不保证绝对匿名；<code>l</code> 多样性和 <code>t</code> 临近是其他保护思路，匿名发布也不能替代授权、加密或审计</p></div></div>
+    <div class="numeric-progress">13/17</div>
+    <div class="semantic-label">DATA PRIVACY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.4706%"></div></div>
+  </section>
+<section id="d4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
+    <h2 class="slide-title">分权管理降低超级用户单点失控风险</h2>
+    <div class="slide-content"><p class="slide-lead">关键职责相互制约，安全操作更容易被复核</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="系统管理、数据管理和安全审计相互分离，可以分散高权限"><span class="relation-term">系统管理、数据管理和安全审计相互分离，可以分散高权限</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>角色</th><th>主要职责</th><th>不应独立拥有的动作</th></tr></thead><tbody><tr><td>系统管理员</td><td>账户、配置与平台维护</td><td>修改业务数据或删除审计记录</td></tr><tr><td>数据管理员</td><td>维护业务数据</td><td>独立修改安全策略或删除审计记录</td></tr><tr><td>审计员</td><td>读取并分析审计日志</td><td>修改业务数据或审计记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分权降低单点失控风险，同时增加流程和协调成本；它不能消除串通、账户失陷或紧急授权风险</p></div></div>
+    <div class="numeric-progress">14/17</div>
+    <div class="semantic-label">SEPARATION OF DUTIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.3529%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
+    <h2 class="slide-title">用保护目标和边界判断安全机制</h2>
+    <div class="slide-content"><p class="slide-lead">视图、审计、加密、隐私和分权分别保护数据范围、行为记录、信息形态、发布结果和管理职责，但都保留边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>视图 + GRANT</h3><p>视图和 GRANT 限制数据窗口与操作，但基本表直达权限会绕过窗口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>授权 + 审计</h3><p>授权决定放行或拒绝，审计记录成功与失败</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>加密</h3><p>加密保护数据在落盘或传输途中的形态，但不替代最小权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>其他机制</h3><p>推理控制、隐蔽信道控制、隐私保护和分权可以降低风险，但不能使风险归零</p></article></div></div></div>
+    <div class="numeric-progress">15/17</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-4-2/mindmap-4-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">16/17</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">视图、GRANT、CHECK OPTION 各限制什么？为何不能同时开放基本表直达权限？</span></li><li><span class="question-no">02</span><span class="question-text">审计怎样记录成功与失败？<code>AUDIT</code>／<code>NOAUDIT</code> 为何要标产品边界？</span></li><li><span class="question-no">03</span><span class="question-text">透明与非透明存储加密在应用改造、密钥管理上有何差异？</span></li><li><span class="question-no">04</span><span class="question-text">链路与端到端加密如何处理报头、内容和中间节点？证书验证为何不等于 SELECT 权限？</span></li><li><span class="question-no">05</span><span class="question-text">怎样用“职务 → 工资”解释推理泄露？怎样用唯一约束的成功／失败解释隐蔽信道？</span></li><li><span class="question-no">06</span><span class="question-text">出生年、性别、邮编为何是准标识符？分权为何不能消除串通风险？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-4-1.html" title="上一节：4.1 数据库安全性与存取控制" aria-label="上一节：4.1 数据库安全性与存取控制">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">4.1</span>
+        <span class="nav-title">安全性与存取控制</span>
+      </a>
+      <a class="exercise-link" href="dbpa-4-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-5-1.html" title="下一节：5.1 数据库完整性与约束" aria-label="下一节：5.1 数据库完整性与约束">
+        <span class="nav-title">完整性与约束</span>
+        <span class="nav-number">5.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">17/17</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

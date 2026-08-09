@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">事务画像决定物理存取方法</title>
+  <desc id="desc">范围和排序访问通常考虑 B+ 树，等值查找和等值连接通常考虑哈希，按同一键批量读取或连接时考虑聚簇；所有选择都要衡量更新和维护代价。</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .title { font-size: 31px; font-weight: 700; }
+      .note { font-size: 18px; fill: #60758a; }
+      .box-title { font-size: 24px; font-weight: 700; }
+      .small-title { font-size: 20px; font-weight: 650; }
+      .small { font-size: 17px; fill: #60758a; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="30" fill="#fbfcfe"/>
+  <text class="label title" x="64" y="62">事务画像决定存取方法，而不是字段名称单独决定</text>
+  <text class="label note" x="64" y="98">先看条件、频率、连接和响应目标，再比较访问收益与维护代价</text>
+
+  <rect x="62" y="164" width="340" height="430" rx="24" fill="#eef8ed" stroke="#7890a5" stroke-width="2"/>
+  <text class="label box-title" x="232" y="212" text-anchor="middle">事务画像</text>
+  <rect x="98" y="250" width="268" height="78" rx="18" fill="#ffffff" stroke="#8ca1b3"/>
+  <text class="label small-title" x="232" y="282" text-anchor="middle">范围、排序、聚集函数</text>
+  <text class="label small" x="232" y="307" text-anchor="middle">按学号区间、按日期、求最大值</text>
+  <rect x="98" y="360" width="268" height="78" rx="18" fill="#ffffff" stroke="#8ca1b3"/>
+  <text class="label small-title" x="232" y="392" text-anchor="middle">等值查找、等值连接</text>
+  <text class="label small" x="232" y="417" text-anchor="middle">学号 = ?、课程号 = ?</text>
+  <rect x="98" y="470" width="268" height="78" rx="18" fill="#ffffff" stroke="#8ca1b3"/>
+  <text class="label small-title" x="232" y="502" text-anchor="middle">按同一键批量读取</text>
+  <text class="label small" x="232" y="527" text-anchor="middle">读取同一学院的学生元组</text>
+
+  <line x1="410" y1="289" x2="558" y2="289" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="410" y1="399" x2="558" y2="399" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="410" y1="509" x2="558" y2="509" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <rect x="552" y="164" width="586" height="430" rx="24" fill="#fff7e8" stroke="#7890a5" stroke-width="2"/>
+  <text class="label box-title" x="845" y="212" text-anchor="middle">候选存取方法</text>
+  <rect x="600" y="250" width="490" height="78" rx="18" fill="#ffffff" stroke="#d9a55a"/>
+  <text class="label small-title" x="650" y="282">B+ 树</text>
+  <text class="label small" x="650" y="307">支持范围、排序、聚集函数和连接条件</text>
+  <rect x="600" y="360" width="490" height="78" rx="18" fill="#ffffff" stroke="#d9a55a"/>
+  <text class="label small-title" x="650" y="392">哈希</text>
+  <text class="label small" x="650" y="417">主要服务等值比较和等值连接</text>
+  <rect x="600" y="470" width="490" height="78" rx="18" fill="#ffffff" stroke="#d9a55a"/>
+  <text class="label small-title" x="650" y="502">聚簇</text>
+  <text class="label small" x="650" y="527">集中存放相同键元组，适合主要访问路径</text>
+
+  <rect x="220" y="630" width="760" height="46" rx="14" fill="#ffffff" stroke="#c8d3df" stroke-width="2"/>
+  <text class="label note" x="600" y="660" text-anchor="middle">索引更新、空间、元组移动和重建代价会改变最终选择</text>
+</svg>

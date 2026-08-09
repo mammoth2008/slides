@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>17.2 内存数据库实现、恢复与异构展望｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 17.2</div><h1>内存数据库实现、恢复与异构展望</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将内存数据布局或处理模型与主要取向匹配</h2><div class="matching-grid"><label class="matching-row"><span>行存</span><select class="matching-select" data-answer="一次访问完整记录的短事务" name="q1"><option value="">请选择</option><option value="以小批数据循环处理，提高 Cache 和函数调用效率">以小批数据循环处理，提高 Cache 和函数调用效率</option><option value="一次访问完整记录的短事务">一次访问完整记录的短事务</option><option value="只扫描少数属性的大规模分析">只扫描少数属性的大规模分析</option><option value="针对查询生成专用机器代码，减少解释与通用分支">针对查询生成专用机器代码，减少解释与通用分支</option></select></label><label class="matching-row"><span>列存</span><select class="matching-select" data-answer="只扫描少数属性的大规模分析" name="q1"><option value="">请选择</option><option value="以小批数据循环处理，提高 Cache 和函数调用效率">以小批数据循环处理，提高 Cache 和函数调用效率</option><option value="一次访问完整记录的短事务">一次访问完整记录的短事务</option><option value="只扫描少数属性的大规模分析">只扫描少数属性的大规模分析</option><option value="针对查询生成专用机器代码，减少解释与通用分支">针对查询生成专用机器代码，减少解释与通用分支</option></select></label><label class="matching-row"><span>向量化执行</span><select class="matching-select" data-answer="以小批数据循环处理，提高 Cache 和函数调用效率" name="q1"><option value="">请选择</option><option value="以小批数据循环处理，提高 Cache 和函数调用效率">以小批数据循环处理，提高 Cache 和函数调用效率</option><option value="一次访问完整记录的短事务">一次访问完整记录的短事务</option><option value="只扫描少数属性的大规模分析">只扫描少数属性的大规模分析</option><option value="针对查询生成专用机器代码，减少解释与通用分支">针对查询生成专用机器代码，减少解释与通用分支</option></select></label><label class="matching-row"><span>实时编译 JIT</span><select class="matching-select" data-answer="针对查询生成专用机器代码，减少解释与通用分支" name="q1"><option value="">请选择</option><option value="以小批数据循环处理，提高 Cache 和函数调用效率">以小批数据循环处理，提高 Cache 和函数调用效率</option><option value="一次访问完整记录的短事务">一次访问完整记录的短事务</option><option value="只扫描少数属性的大规模分析">只扫描少数属性的大规模分析</option><option value="针对查询生成专用机器代码，减少解释与通用分支">针对查询生成专用机器代码，减少解释与通用分支</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>行存 → 一次访问完整记录的短事务；列存 → 只扫描少数属性的大规模分析；向量化执行 → 以小批数据循环处理，提高 Cache 和函数调用效率；实时编译 JIT → 针对查询生成专用机器代码，减少解释与通用分支</p><p>行列布局决定数据邻近，向量化和 JIT 决定算子怎样执行，是两个层次的选择</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 匹配题</div><h2>将硬件敏感算法与主要优化目标匹配</h2><div class="matching-grid"><label class="matching-row"><span>CSB+ 树</span><select class="matching-select" data-answer="减少子指针和 Cache miss，改善内存索引遍历局部性" name="q2"><option value="">请选择</option><option value="按若干位分桶，使后续哈希或连接工作集适合 Cache">按若干位分桶，使后续哈希或连接工作集适合 Cache</option><option value="减少子指针和 Cache miss，改善内存索引遍历局部性">减少子指针和 Cache miss，改善内存索引遍历局部性</option><option value="让线程优先处理本地内存并减少远程访问">让线程优先处理本地内存并减少远程访问</option></select></label><label class="matching-row"><span>Radix 分区</span><select class="matching-select" data-answer="按若干位分桶，使后续哈希或连接工作集适合 Cache" name="q2"><option value="">请选择</option><option value="按若干位分桶，使后续哈希或连接工作集适合 Cache">按若干位分桶，使后续哈希或连接工作集适合 Cache</option><option value="减少子指针和 Cache miss，改善内存索引遍历局部性">减少子指针和 Cache miss，改善内存索引遍历局部性</option><option value="让线程优先处理本地内存并减少远程访问">让线程优先处理本地内存并减少远程访问</option></select></label><label class="matching-row"><span>NUMA-aware 排序合并</span><select class="matching-select" data-answer="让线程优先处理本地内存并减少远程访问" name="q2"><option value="">请选择</option><option value="按若干位分桶，使后续哈希或连接工作集适合 Cache">按若干位分桶，使后续哈希或连接工作集适合 Cache</option><option value="减少子指针和 Cache miss，改善内存索引遍历局部性">减少子指针和 Cache miss，改善内存索引遍历局部性</option><option value="让线程优先处理本地内存并减少远程访问">让线程优先处理本地内存并减少远程访问</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>CSB+ 树 → 减少子指针和 Cache miss，改善内存索引遍历局部性；Radix 分区 → 按若干位分桶，使后续哈希或连接工作集适合 Cache；NUMA-aware 排序合并 → 让线程优先处理本地内存并减少远程访问</p><p>算法用额外布局、分区或调度成本换取更好的 Cache 和 NUMA 局部性</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="matching" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 匹配题</div><h2>将并发控制方式与协调特点匹配</h2><div class="matching-grid"><label class="matching-row"><span>锁</span><select class="matching-select" data-answer="冲突访问在执行过程中等待" name="q3"><option value="">请选择</option><option value="读取事务快照，写入提交时检查写冲突">读取事务快照，写入提交时检查写冲突</option><option value="冲突访问在执行过程中等待">冲突访问在执行过程中等待</option><option value="用原子指令等避免传统互斥锁，但实现和证明复杂">用原子指令等避免传统互斥锁，但实现和证明复杂</option><option value="先执行，在验证或提交阶段检测冲突并可能重试">先执行，在验证或提交阶段检测冲突并可能重试</option></select></label><label class="matching-row"><span>乐观并发控制</span><select class="matching-select" data-answer="先执行，在验证或提交阶段检测冲突并可能重试" name="q3"><option value="">请选择</option><option value="读取事务快照，写入提交时检查写冲突">读取事务快照，写入提交时检查写冲突</option><option value="冲突访问在执行过程中等待">冲突访问在执行过程中等待</option><option value="用原子指令等避免传统互斥锁，但实现和证明复杂">用原子指令等避免传统互斥锁，但实现和证明复杂</option><option value="先执行，在验证或提交阶段检测冲突并可能重试">先执行，在验证或提交阶段检测冲突并可能重试</option></select></label><label class="matching-row"><span>无锁结构</span><select class="matching-select" data-answer="用原子指令等避免传统互斥锁，但实现和证明复杂" name="q3"><option value="">请选择</option><option value="读取事务快照，写入提交时检查写冲突">读取事务快照，写入提交时检查写冲突</option><option value="冲突访问在执行过程中等待">冲突访问在执行过程中等待</option><option value="用原子指令等避免传统互斥锁，但实现和证明复杂">用原子指令等避免传统互斥锁，但实现和证明复杂</option><option value="先执行，在验证或提交阶段检测冲突并可能重试">先执行，在验证或提交阶段检测冲突并可能重试</option></select></label><label class="matching-row"><span>快照隔离</span><select class="matching-select" data-answer="读取事务快照，写入提交时检查写冲突" name="q3"><option value="">请选择</option><option value="读取事务快照，写入提交时检查写冲突">读取事务快照，写入提交时检查写冲突</option><option value="冲突访问在执行过程中等待">冲突访问在执行过程中等待</option><option value="用原子指令等避免传统互斥锁，但实现和证明复杂">用原子指令等避免传统互斥锁，但实现和证明复杂</option><option value="先执行，在验证或提交阶段检测冲突并可能重试">先执行，在验证或提交阶段检测冲突并可能重试</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>锁 → 冲突访问在执行过程中等待；乐观并发控制 → 先执行，在验证或提交阶段检测冲突并可能重试；无锁结构 → 用原子指令等避免传统互斥锁，但实现和证明复杂；快照隔离 → 读取事务快照，写入提交时检查写冲突</p><p>内存速度缩短了数据访问，协调成本反而可能成为主要瓶颈</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="ordering" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 排序题</div><h2>内存数据库崩溃后的典型恢复链如何排列？</h2><ol class="ordering-list" data-answer="[&quot;装载最近一致检查点&quot;, &quot;读取检查点之后的持久日志&quot;, &quot;按依赖或分区并行重做已提交更新&quot;, &quot;优先恢复热点表或关键索引以尽快提供部分服务&quot;, &quot;完成其余数据和索引重建并验证一致性&quot;]"><li class="ordering-item"><span>按依赖或分区并行重做已提交更新</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“按依赖或分区并行重做已提交更新”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“按依赖或分区并行重做已提交更新”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>装载最近一致检查点</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“装载最近一致检查点”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“装载最近一致检查点”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>完成其余数据和索引重建并验证一致性</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“完成其余数据和索引重建并验证一致性”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“完成其余数据和索引重建并验证一致性”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>读取检查点之后的持久日志</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“读取检查点之后的持久日志”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“读取检查点之后的持久日志”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>优先恢复热点表或关键索引以尽快提供部分服务</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“优先恢复热点表或关键索引以尽快提供部分服务”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“优先恢复热点表或关键索引以尽快提供部分服务”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>装载最近一致检查点 → 读取检查点之后的持久日志 → 按依赖或分区并行重做已提交更新 → 优先恢复热点表或关键索引以尽快提供部分服务 → 完成其余数据和索引重建并验证一致性</p><p>检查点缩短日志范围，并行和热点优先改善恢复时间，但都必须保持事务依赖和可见性</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将内存数据库实现路线与主要边界匹配</h2><div class="matching-grid"><label class="matching-row"><span>磁盘系统的内存优化／混合路线</span><select class="matching-select" data-answer="迁移成本低但受原架构路径限制" name="q5"><option value="">请选择</option><option value="可全面重设布局与执行，但迁移、功能和生态成本较高">可全面重设布局与执行，但迁移、功能和生态成本较高</option><option value="加速适合算子，但受数据传输、调度和事务边界限制">加速适合算子，但受数据传输、调度和事务边界限制</option><option value="迁移成本低但受原架构路径限制">迁移成本低但受原架构路径限制</option></select></label><label class="matching-row"><span>独立内存数据库</span><select class="matching-select" data-answer="可全面重设布局与执行，但迁移、功能和生态成本较高" name="q5"><option value="">请选择</option><option value="可全面重设布局与执行，但迁移、功能和生态成本较高">可全面重设布局与执行，但迁移、功能和生态成本较高</option><option value="加速适合算子，但受数据传输、调度和事务边界限制">加速适合算子，但受数据传输、调度和事务边界限制</option><option value="迁移成本低但受原架构路径限制">迁移成本低但受原架构路径限制</option></select></label><label class="matching-row"><span>GPU／异构加速路线</span><select class="matching-select" data-answer="加速适合算子，但受数据传输、调度和事务边界限制" name="q5"><option value="">请选择</option><option value="可全面重设布局与执行，但迁移、功能和生态成本较高">可全面重设布局与执行，但迁移、功能和生态成本较高</option><option value="加速适合算子，但受数据传输、调度和事务边界限制">加速适合算子，但受数据传输、调度和事务边界限制</option><option value="迁移成本低但受原架构路径限制">迁移成本低但受原架构路径限制</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>磁盘系统的内存优化／混合路线 → 迁移成本低但受原架构路径限制；独立内存数据库 → 可全面重设布局与执行，但迁移、功能和生态成本较高；GPU／异构加速路线 → 加速适合算子，但受数据传输、调度和事务边界限制</p><p>路线选择要同时看性能目标、负载边界、可靠性和迁移成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;行式事务更新与列式分析副本的同步&quot;, &quot;提交结果何时对分析快照可见&quot;, &quot;长分析与短事务的 CPU、内存和带宽隔离&quot;, &quot;日志、检查点和恢复后副本一致&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>HTAP 在内存系统中仍需协调哪些问题？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="行式事务更新与列式分析副本的同步" aria-keyshortcuts="1"><span>行式事务更新与列式分析副本的同步</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="提交结果何时对分析快照可见" aria-keyshortcuts="2"><span>提交结果何时对分析快照可见</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="长分析与短事务的 CPU、内存和带宽隔离" aria-keyshortcuts="3"><span>长分析与短事务的 CPU、内存和带宽隔离</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="日志、检查点和恢复后副本一致" aria-keyshortcuts="4"><span>日志、检查点和恢复后副本一致</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="全部在内存就不再需要资源调度" aria-keyshortcuts="5"><span>全部在内存就不再需要资源调度</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q6" value="分析查询可以忽略事务隔离" aria-keyshortcuts="6"><span>分析查询可以忽略事务隔离</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>行式事务更新与列式分析副本的同步、提交结果何时对分析快照可见、长分析与短事务的 CPU、内存和带宽隔离、日志、检查点和恢复后副本一致</p><p>内存降低访问延迟，但不会消除同步、可见性、隔离和恢复责任</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>向量化为什么常比“整列一次处理”更节省中间空间，同时又比逐元组解释执行更高效？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>向量化把一小批连续值放入适合 Cache 的工作集，循环内对同一操作批量执行，减少逐元组函数调用和分支；又不必为整列或整个中间结果一次分配巨大空间。批大小需要结合 Cache、算子阻塞性和流水线测试，过大或过小都可能失去收益</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

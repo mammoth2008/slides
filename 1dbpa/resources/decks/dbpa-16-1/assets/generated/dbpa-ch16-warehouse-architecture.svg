@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">数据仓库系统的分层结构</title>
+  <desc id="desc">多个业务数据源经过抽取、清洗、转换和装载进入数据仓库，再由 OLAP 服务器和前台工具提供分析。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .source { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 12; }
+      .etl { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 14; }
+      .warehouse { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 14; }
+      .olap { fill: #eeeafa; stroke: #b7a9d8; stroke-width: 2; rx: 14; }
+      .front { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 14; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .dashed { stroke: #9aabba; stroke-width: 2; stroke-dasharray: 7 7; fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">数据从业务系统进入仓库，再被整理成分析视图</text>
+  <rect class="panel" x="40" y="100" width="1120" height="480"/>
+
+  <rect class="source" x="75" y="155" width="190" height="86"/>
+  <text class="label" x="117" y="192">订单系统</text>
+  <text class="small" x="103" y="219">日常事务与明细</text>
+  <rect class="source" x="75" y="300" width="190" height="86"/>
+  <text class="label" x="117" y="337">客户系统</text>
+  <text class="small" x="103" y="364">顾客与服务记录</text>
+  <rect class="source" x="75" y="445" width="190" height="86"/>
+  <text class="label" x="117" y="482">供应链系统</text>
+  <text class="small" x="103" y="509">商品与库存记录</text>
+
+  <rect class="etl" x="335" y="215" width="220" height="260"/>
+  <text class="label" x="404" y="258">ECTL / ETL</text>
+  <text class="text" x="388" y="302">Extract 抽取</text>
+  <text class="text" x="388" y="340">Clean 清洗</text>
+  <text class="text" x="388" y="378">Transform 转换</text>
+  <text class="text" x="388" y="416">Load 装载</text>
+  <path class="dashed" d="M370 438 H520"/>
+  <text class="small" x="380" y="461">统一字段、单位和口径</text>
+
+  <rect class="warehouse" x="620" y="155" width="220" height="320"/>
+  <text class="label" x="681" y="198">数据仓库</text>
+  <text class="text" x="664" y="250">当前细节</text>
+  <text class="text" x="664" y="294">早期细节</text>
+  <text class="text" x="664" y="338">轻度综合</text>
+  <text class="text" x="664" y="382">高度综合</text>
+  <path class="dashed" d="M655 412 H805"/>
+  <text class="small" x="656" y="444">保存历史并提供 SQL 接口</text>
+
+  <rect class="olap" x="905" y="190" width="180" height="105"/>
+  <text class="label" x="938" y="230">OLAP 服务器</text>
+  <text class="small" x="938" y="260">立方体与多维操作</text>
+  <rect class="front" x="905" y="350" width="180" height="105"/>
+  <text class="label" x="956" y="390">前台工具</text>
+  <text class="small" x="936" y="420">报表、仪表盘、分析</text>
+
+  <path class="arrow" d="M265 198 H325"/><path class="arrow" d="M265 343 H325"/><path class="arrow" d="M265 488 H325"/>
+  <path class="arrow" d="M555 345 H610"/>
+  <path class="arrow" d="M840 245 H895"/>
+  <path class="arrow" d="M995 305 V340"/>
+  <text class="small" x="66" y="625">业务源负责记录现在发生了什么</text>
+  <text class="small" x="405" y="625">ECTL 负责把不同来源变成可比较的数据</text>
+  <text class="small" x="866" y="625">OLAP 与前台工具负责提出和呈现分析问题</text>
+</svg>

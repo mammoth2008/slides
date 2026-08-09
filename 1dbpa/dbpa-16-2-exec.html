@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>16.2 HTAP 与大数据时代的新型数据仓库｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 16.2</div><h1>HTAP 与大数据时代的新型数据仓库</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="ordering"><div class="question-kicker">第 1 题 / 共 7 题 · 排序题</div><h2>在分离式架构中，一笔订单从提交到进入地区报表通常经历哪些环节？</h2><ol class="ordering-list" data-answer="[&quot;OLTP 系统提交并确认订单事务&quot;, &quot;复制、变化捕获或抽取订单数据&quot;, &quot;清洗转换并统一地区、金额等口径&quot;, &quot;装载或刷新分析存储&quot;, &quot;OLAP 查询读取新版本并更新报表&quot;]"><li class="ordering-item"><span>装载或刷新分析存储</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“装载或刷新分析存储”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“装载或刷新分析存储”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>复制、变化捕获或抽取订单数据</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“复制、变化捕获或抽取订单数据”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“复制、变化捕获或抽取订单数据”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>OLTP 系统提交并确认订单事务</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“OLTP 系统提交并确认订单事务”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“OLTP 系统提交并确认订单事务”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>清洗转换并统一地区、金额等口径</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“清洗转换并统一地区、金额等口径”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“清洗转换并统一地区、金额等口径”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>OLAP 查询读取新版本并更新报表</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“OLAP 查询读取新版本并更新报表”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“OLAP 查询读取新版本并更新报表”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>OLTP 系统提交并确认订单事务 → 复制、变化捕获或抽取订单数据 → 清洗转换并统一地区、金额等口径 → 装载或刷新分析存储 → OLAP 查询读取新版本并更新报表</p><p>订单已提交只代表事务系统可见，分析可见还要等待数据移动和处理链完成</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 匹配题</div><h2>将 HTAP 架构起点与主要取舍匹配</h2><div class="matching-grid"><label class="matching-row"><span>单引擎</span><select class="matching-select" data-answer="在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问" name="q2"><option value="">请选择</option><option value="在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问">在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问</option><option value="多个平台通过连接器交换数据，灵活但语义和副本治理更复杂">多个平台通过连接器交换数据，灵活但语义和副本治理更复杂</option><option value="事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本">事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本</option></select></label><label class="matching-row"><span>多引擎</span><select class="matching-select" data-answer="事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本" name="q2"><option value="">请选择</option><option value="在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问">在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问</option><option value="多个平台通过连接器交换数据，灵活但语义和副本治理更复杂">多个平台通过连接器交换数据，灵活但语义和副本治理更复杂</option><option value="事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本">事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本</option></select></label><label class="matching-row"><span>异构共存</span><select class="matching-select" data-answer="多个平台通过连接器交换数据，灵活但语义和副本治理更复杂" name="q2"><option value="">请选择</option><option value="在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问">在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问</option><option value="多个平台通过连接器交换数据，灵活但语义和副本治理更复杂">多个平台通过连接器交换数据，灵活但语义和副本治理更复杂</option><option value="事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本">事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>单引擎 → 在一个系统内组织事务与分析，减少跨系统移动但要隔离资源和行列访问；多引擎 → 事务与分析使用专业组件，性能边界清晰但承担同步、接口和一致口径成本；异构共存 → 多个平台通过连接器交换数据，灵活但语义和副本治理更复杂</p><p>没有脱离场景的最佳架构，选择来自新鲜度、隔离和移动成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="matching" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 匹配题</div><h2>将存储组织与更擅长的访问方式匹配</h2><div class="matching-grid"><label class="matching-row"><span>行存</span><select class="matching-select" data-answer="一次读取或修改完整业务记录的短事务" name="q3"><option value="">请选择</option><option value="扫描少量列并对大量记录聚集分析">扫描少量列并对大量记录聚集分析</option><option value="一次读取或修改完整业务记录的短事务">一次读取或修改完整业务记录的短事务</option></select></label><label class="matching-row"><span>列存</span><select class="matching-select" data-answer="扫描少量列并对大量记录聚集分析" name="q3"><option value="">请选择</option><option value="扫描少量列并对大量记录聚集分析">扫描少量列并对大量记录聚集分析</option><option value="一次读取或修改完整业务记录的短事务">一次读取或修改完整业务记录的短事务</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>行存 → 一次读取或修改完整业务记录的短事务；列存 → 扫描少量列并对大量记录聚集分析</p><p>HTAP 需要在行写、列扫、格式转换和副本同步之间作取舍</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="multiple" data-answer="[&quot;长分析与短事务的资源竞争&quot;, &quot;行列组织或副本之间的转换&quot;, &quot;提交结果何时对分析可见&quot;, &quot;分析快照与事务隔离&quot;]" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 多选题</div><h2>单引擎 HTAP 仍需处理哪些问题？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q4" value="长分析与短事务的资源竞争" aria-keyshortcuts="1"><span>长分析与短事务的资源竞争</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q4" value="行列组织或副本之间的转换" aria-keyshortcuts="2"><span>行列组织或副本之间的转换</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q4" value="提交结果何时对分析可见" aria-keyshortcuts="3"><span>提交结果何时对分析可见</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q4" value="分析快照与事务隔离" aria-keyshortcuts="4"><span>分析快照与事务隔离</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q4" value="同一软件会自动消除所有数据移动" aria-keyshortcuts="5"><span>同一软件会自动消除所有数据移动</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q4" value="不再需要容量和故障治理" aria-keyshortcuts="6"><span>不再需要容量和故障治理</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>长分析与短事务的资源竞争、行列组织或副本之间的转换、提交结果何时对分析可见、分析快照与事务隔离</p><p>单系统减少部分跨平台链路，但内部仍可能有多种数据布局和执行资源</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="ordering" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 排序题</div><h2>新增“退货原因”字段时，按分离式仓库链检查影响范围</h2><ol class="ordering-list" data-answer="[&quot;事务源定义和业务写入&quot;, &quot;变化捕获或抽取接口&quot;, &quot;清洗转换与统一编码规则&quot;, &quot;仓库事实或维度模式&quot;, &quot;OLAP 模型、报表和权限&quot;]"><li class="ordering-item"><span>事务源定义和业务写入</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“事务源定义和业务写入”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“事务源定义和业务写入”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>仓库事实或维度模式</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“仓库事实或维度模式”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“仓库事实或维度模式”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>清洗转换与统一编码规则</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“清洗转换与统一编码规则”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“清洗转换与统一编码规则”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>变化捕获或抽取接口</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“变化捕获或抽取接口”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“变化捕获或抽取接口”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>OLAP 模型、报表和权限</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“OLAP 模型、报表和权限”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“OLAP 模型、报表和权限”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>事务源定义和业务写入 → 变化捕获或抽取接口 → 清洗转换与统一编码规则 → 仓库事实或维度模式 → OLAP 模型、报表和权限</p><p>字段变化会沿数据血缘传导，连接器只移动数据，不会自动统一语义</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="matching" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 匹配题</div><h2>将场景要求与架构判断重点匹配</h2><div class="matching-grid"><label class="matching-row"><span>报表允许次日更新且分析复杂</span><select class="matching-select" data-answer="分离式仓库或多引擎是自然起点" name="q6"><option value="">请选择</option><option value="重点评估低延迟同步和资源隔离的 HTAP">重点评估低延迟同步和资源隔离的 HTAP</option><option value="分离式仓库或多引擎是自然起点">分离式仓库或多引擎是自然起点</option><option value="重点评估异构共存、连接器和统一治理">重点评估异构共存、连接器和统一治理</option></select></label><label class="matching-row"><span>订单提交后数秒内需分析且事务不能被拖慢</span><select class="matching-select" data-answer="重点评估低延迟同步和资源隔离的 HTAP" name="q6"><option value="">请选择</option><option value="重点评估低延迟同步和资源隔离的 HTAP">重点评估低延迟同步和资源隔离的 HTAP</option><option value="分离式仓库或多引擎是自然起点">分离式仓库或多引擎是自然起点</option><option value="重点评估异构共存、连接器和统一治理">重点评估异构共存、连接器和统一治理</option></select></label><label class="matching-row"><span>数据含日志、图片和多种平台结果</span><select class="matching-select" data-answer="重点评估异构共存、连接器和统一治理" name="q6"><option value="">请选择</option><option value="重点评估低延迟同步和资源隔离的 HTAP">重点评估低延迟同步和资源隔离的 HTAP</option><option value="分离式仓库或多引擎是自然起点">分离式仓库或多引擎是自然起点</option><option value="重点评估异构共存、连接器和统一治理">重点评估异构共存、连接器和统一治理</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>报表允许次日更新且分析复杂 → 分离式仓库或多引擎是自然起点；订单提交后数秒内需分析且事务不能被拖慢 → 重点评估低延迟同步和资源隔离的 HTAP；数据含日志、图片和多种平台结果 → 重点评估异构共存、连接器和统一治理</p><p>首先写清可见时间、事务隔离和数据移动成本，再选择候选架构</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>“订单提交成功但报表没有显示”一定是故障吗？怎样判断？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>不一定。先确认报表的新鲜度服务级别和数据链：事务是否已提交、变化是否捕获、转换是否成功、仓库是否刷新、查询是否读取正确快照。若仍在允许延迟内就是架构边界；若超过时限，应沿血缘定位阻塞、重试或语义错误，并检查是否会重复或漏处理</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

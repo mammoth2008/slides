@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">全表扫描与索引扫描的访问路径</title>
+  <desc id="desc">全表扫描依次读取数据块，索引扫描先读取索引入口再读取满足条件的记录块；选择率和记录分布决定哪条路径更划算。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 18; }
+      .scan { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 10; }
+      .idx { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .hit { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .caption { font: 700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">选择率决定“顺序读”还是“先找入口”更划算</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="230"/>
+  <text class="caption" x="75" y="150">全表扫描：选择率高或表很小，顺序读完所有块</text>
+  <rect class="scan" x="100" y="205" width="120" height="65"/><rect class="scan" x="250" y="205" width="120" height="65"/><rect class="scan" x="400" y="205" width="120" height="65"/><rect class="scan" x="550" y="205" width="120" height="65"/><rect class="scan" x="700" y="205" width="120" height="65"/><rect class="hit" x="850" y="205" width="120" height="65"/>
+  <text class="text" x="160" y="243">块 1</text><text class="text" x="310" y="243">块 2</text><text class="text" x="460" y="243">块 3</text><text class="text" x="610" y="243">块 4</text><text class="text" x="760" y="243">块 5</text><text class="text" x="910" y="243">块 6</text>
+  <path class="arrow" d="M220 238 H245"/><path class="arrow" d="M370 238 H395"/><path class="arrow" d="M520 238 H545"/><path class="arrow" d="M670 238 H695"/><path class="arrow" d="M820 238 H845"/>
+  <text class="text" x="1050" y="225">需要读</text><text class="text" x="1050" y="252">大多数块</text>
+
+  <rect class="panel" x="45" y="380" width="1110" height="250"/>
+  <text class="caption" x="75" y="425">索引扫描：选择率低，先读索引，再读少量数据块</text>
+  <rect class="idx" x="100" y="490" width="180" height="65"/><rect class="idx" x="350" y="490" width="180" height="65"/><rect class="hit" x="600" y="455" width="170" height="65"/><rect class="hit" x="600" y="545" width="170" height="65"/>
+  <text class="label" x="190" y="530">根 / 索引入口</text><text class="label" x="440" y="530">记录指针</text><text class="text" x="685" y="493">目标块 A</text><text class="text" x="685" y="583">目标块 B</text>
+  <path class="arrow" d="M280 522 H345"/><path class="arrow" d="M530 522 C570 522 575 488 595 488"/><path class="arrow" d="M530 522 C570 522 575 577 595 577"/>
+  <text class="text" x="955" y="500">低选择率</text><text class="text" x="955" y="528">少读目标块</text><text class="text" x="955" y="580">记录分散时</text><text class="text" x="955" y="608">随机 I/O 可能变贵</text>
+</svg>

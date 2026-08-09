@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 12.2 死锁、可串行性与两段锁协议 | HUST</title>
+  <meta name="description" content="从等待图和调度结果理解 2PL 的正确性保证">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="12-2">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-12-2/assets/dbpa-12-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 12.2</div>
+      <h1>死锁、可串行性与两段锁协议</h1>
+      <p class="cover-description">从等待图和调度结果判断并发控制</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元区分活锁与死锁，再用可串行性和 2PL 连接锁的运行时行为与调度正确性。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分活锁和死锁的等待结构</span></li><li><span class="list-marker">02</span><span class="list-text">比较死锁预防、检测和解除方法</span></li><li><span class="list-marker">03</span><span class="list-text">解释可串行化调度的正确性标准</span></li><li><span class="list-marker">04</span><span class="list-text">识别读写和写写冲突操作</span></li><li><span class="list-marker">05</span><span class="list-text">判断一个封锁序列是否遵守 2PL</span></li><li><span class="list-marker">06</span><span class="list-text">构造等待图和优先图，判断 2PL 与课程扩展的严格 2PL，并说明 2PL 为什么仍可能产生死锁</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/14</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">活锁：系统推进但事务持续饥饿</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.827a630e355d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>系统还在动，为什么 T2 仍然可能一直等不到？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">后来的请求不断插队，先来的请求持续等待</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>占用</h3><p>T1 持有当前请求所需的锁</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>等待</h3><p>先到达的 T2 进入等待队列</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>插队</h3><p>后到达的 T3 获准继续</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>重复</h3><p>后到达的 T4 也先于 T2 获准</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>饥饿</h3><p>系统持续推进，T2 却一直得不到锁</p></div></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>活锁表现为某事务持续饥饿而系统仍在推进；先来先服务可减少这种风险，但无环不能单独证明不存在饥饿</p></div></div>
+    <div class="numeric-progress">3/14</div>
+    <div class="semantic-label">LIVELOCK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">死锁是事务之间形成了循环等待</h2>
+    <div class="slide-content"><p class="slide-lead">每个事务都持有对方需要的锁</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-2/assets/generated/dbpa-ch12-wait-graph.svg" data-full-src="resources/decks/dbpa-12-2/assets/generated/dbpa-ch12-wait-graph.svg" alt="两个事务持锁并互相等待形成事务等待图回路" tabindex="0" role="button" aria-label="放大图片：两个事务持锁并互相等待形成事务等待图回路" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="等待边方向：请求者　→　锁持有者　｜　T1 → T2 → T1"><span class="relation-term">等待边方向：请求者</span><span class="relation-operator">→</span><span class="relation-term">锁持有者　｜　T1</span><span class="relation-operator">→</span><span class="relation-term">T2</span><span class="relation-operator">→</span><span class="relation-term">T1</span></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>等待图形成回路时构成死锁，事务不能靠彼此释放锁而继续</p></div></div></div></div>
+    <div class="numeric-progress">4/14</div>
+    <div class="semantic-label">DEADLOCK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">数据库通常通过检测回路诊断并解除死锁</h2>
+    <div class="slide-content"><p class="slide-lead">预防会更早限制事务，检测则根据动态请求处理</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>方法</th><th>做法</th><th>主要取舍</th></tr></thead><tbody><tr><td>一次封锁</td><td>一次申请全部数据</td><td>防死锁但降低并发且难预知</td></tr><tr><td>顺序封锁</td><td>按统一顺序申请</td><td>防回路但维护顺序困难</td></tr><tr><td>超时</td><td>等待过久即判定</td><td>简单但可能误判</td></tr><tr><td>等待图</td><td>检测有向图回路</td><td>准确但需要周期性检查</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>检测回路 → 选择代价较小的牺牲事务 → 回滚并释放锁 → 其他事务继续；是否重试由系统或应用决定</p></div></div>
+    <div class="numeric-progress">5/14</div>
+    <div class="semantic-label">DETECT AND RELEASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">正确的并发调度应等价于某个串行次序</h2>
+    <div class="slide-content"><p class="slide-lead">串行调度只提供结果参照，不要求并发执行真的按串行方式运行</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-12-2/assets/generated/dbpa-ch12-serializability.svg" data-full-src="resources/decks/dbpa-12-2/assets/generated/dbpa-ch12-serializability.svg" alt="两个事务的串行次序与交错调度结果比较" tabindex="0" role="button" aria-label="放大图片：两个事务的串行次序与交错调度结果比较" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>串行参照</h3><p>T1 先执行或 T2 先执行，都可能是正确参照，结果不一定相同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>并发判断</h3><p>交错执行的结果若等价于其中一个串行参照，就是可串行化调度</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>操作序列</h3><p><code>R1(A) → W1(A) → R2(A) → W2(A)</code> 是串行参照；<code>R1(A) → R2(A) → W1(A) → W2(A)</code> 需要进一步判断</p></article></div></div></div>
+    <div class="numeric-progress">6/14</div>
+    <div class="semantic-label">SERIALIZABILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">冲突操作的顺序可能改变可见状态</h2>
+    <div class="slide-content"><p class="slide-lead">不同事务访问同一数据且至少一方写入时不能随意交换</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>操作对</th><th>是否冲突</th><th>原因</th></tr></thead><tbody><tr><td><code>Ri(x)</code> 与 <code>Wj(x)</code></td><td>是</td><td>同一数据项、不同事务且一方写入</td></tr><tr><td><code>Wi(x)</code> 与 <code>Rj(x)</code></td><td>是</td><td>读到的值可能改变</td></tr><tr><td><code>Wi(x)</code> 与 <code>Wj(x)</code></td><td>是</td><td>最终写入者可能改变</td></tr><tr><td><code>Ri(x)</code> 与 <code>Rj(x)</code></td><td>否</td><td>都不改变数据</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>判断冲突要检查三个条件：不同事务、同一数据项、至少一方写入；可交换的是不冲突操作</p></div></div>
+    <div class="numeric-progress">7/14</div>
+    <div class="semantic-label">CONFLICTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">保持冲突次序，交换不冲突操作以判断可串行化</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只要最终结果看起来正确，就不用检查冲突次序吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">若能交换成某个串行调度，原调度称为冲突可串行化</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>建点</h3><p>把每个事务作为一个结点</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>连边</h3><p>若 <code>Ti</code> 的冲突操作先于 <code>Tj</code>，画边 <code>Ti → Tj</code></p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>判环</h3><p>优先图无环时，用拓扑序得到一个串行次序</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>定边界</h3><p>有环表示不是冲突可串行化，但不能据此否定其他可串行化可能</p></div></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>冲突可串行化是可串行化的充分条件，也是较容易检查的条件</p></div></div>
+    <div class="numeric-progress">8/14</div>
+    <div class="semantic-label">CONFLICT SERIALIZABILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">2PL 把事务的锁操作分成扩展和收缩两段</h2>
+    <div class="slide-content"><p class="slide-lead">读写前必须取得相应锁；一旦释放第一个锁，就不能再申请新锁</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>阶段</th><th>可以做</th><th>不可以做</th></tr></thead><tbody><tr><td>扩展阶段</td><td>申请并获得任何锁</td><td>释放锁</td></tr><tr><td>收缩阶段</td><td>释放任何锁</td><td>申请新锁</td></tr><tr><td>分界点</td><td>最后一次加锁</td><td>之后不得再加锁</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>严格 2PL 至少将所有 X 锁保持到 <code>COMMIT</code>／<code>ROLLBACK</code>；它仍属于 2PL，也仍可能死锁</p></div></div>
+    <div class="numeric-progress">9/14</div>
+    <div class="semantic-label">TWO PHASE LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">封锁序列可以直接判断 2PL</h2>
+    <div class="slide-content"><p class="slide-lead">解锁后再次加锁就违反 2PL</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>遵守 2PL</th><th>不遵守 2PL</th></tr></thead><tbody><tr><td><code>SLOCK A</code> → <code>SLOCK B</code> → <code>XLOCK C</code> → <code>UNLOCK B</code> → <code>UNLOCK A</code> → <code>UNLOCK C</code></td><td><code>SLOCK A</code> → <code>UNLOCK A</code> → <code>SLOCK B</code> → <code>XLOCK C</code></td></tr><tr><td>所有加锁都在第一次解锁之前</td><td>解锁后又申请新锁</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/14</div>
+    <div class="semantic-label">2PL EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2 <span>|</span> 12.2</div>
+    <h2 class="slide-title">2PL 保证可串行化但不保证无死锁</h2>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.c78a923d637f.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>既然调度可串行化，系统就不会再死锁吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">正确性和等待终止是两个不同问题</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="所有事务遵守 2PL　→　调度可串行化"><span class="relation-term">所有事务遵守 2PL</span><span class="relation-operator">→</span><span class="relation-term">调度可串行化</span></div></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="`T1: XLOCK A → 等待 B`　｜　`T2: XLOCK B → 等待 A`　→　两者都遵守 2PL 但形成死锁"><span class="relation-term">`T1: XLOCK A</span><span class="relation-operator">→</span><span class="relation-term">等待 B<code>　｜　</code>T2: XLOCK B</span><span class="relation-operator">→</span><span class="relation-term">等待 A`</span><span class="relation-operator">→</span><span class="relation-term">两者都遵守 2PL 但形成死锁</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>一次封锁法是 2PL 的特例，但一般 2PL 允许事务分阶段取得锁；严格 2PL 只改变 X 锁释放时机，不消除死锁</p></div></div>
+    <div class="numeric-progress">11/14</div>
+    <div class="semantic-label">GUARANTEE AND LIMIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">锁等待可能导致活锁或死锁；调度还要满足正确性条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>等待图</h3><p>等待图中请求者指向持有者；有环表示死锁</p></article><article class="content-card emphasis-card" tabindex="0"><h3>优先图</h3><p>优先图中的冲突边无环时，调度才是冲突可串行化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>正确性</h3><p>冲突可串行化是可串行化的充分条件</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2PL</h3><p>第一次解锁后不得再加锁；严格 2PL 仍可能死锁</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>等待图诊断死锁，优先图判断冲突可串行化，2PL 保证可串行化但仍可能死锁</p></div></div>
+    <div class="numeric-progress">12/14</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-12-2/mindmap-12-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">13/14</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定锁请求边，如何构造等待图并选择回滚的牺牲事务？</span></li><li><span class="question-no">02</span><span class="question-text">给定 <code>R/W</code> 调度，如何构造优先图并用拓扑序判断冲突可串行化？</span></li><li><span class="question-no">03</span><span class="question-text">如何区分等待图的环和优先图的环？</span></li><li><span class="question-no">04</span><span class="question-text">给定封锁序列，如何判断普通 2PL 或严格 2PL？</span></li><li><span class="question-no">05</span><span class="question-text">如何构造一个所有事务遵守 2PL 但仍形成死锁的调度？</span></li><li><span class="question-no">06</span><span class="question-text">2PL 的可串行化保证与死锁风险为什么可以同时存在？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-12-1.html" title="上一节：12.1 并发异常、隔离级别与封锁协议" aria-label="上一节：12.1 并发异常、隔离级别与封锁协议">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">12.1</span>
+        <span class="nav-title">并发异常与封锁协议</span>
+      </a>
+      <a class="exercise-link" href="dbpa-12-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-12-3.html" title="下一节：12.3 封锁粒度、意向锁与多版本并发控制" aria-label="下一节：12.3 封锁粒度、意向锁与多版本并发控制">
+        <span class="nav-title">粒度意向锁与 MVCC</span>
+        <span class="nav-number">12.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">14/14</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

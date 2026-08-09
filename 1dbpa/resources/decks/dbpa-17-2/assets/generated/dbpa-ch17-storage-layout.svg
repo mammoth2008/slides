@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">磁盘行存储与内存列存储、行组</title>
+  <desc id="desc">同一张 ORDER 表在磁盘中按页面和槽位保存，在内存中可以按列保存，也可以按行组切分以支持追加和局部压缩。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 14; }
+      .disk { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 10; }
+      .column { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 10; }
+      .group { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 10; }
+      .title { font: 700 28px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 13px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .line { stroke: #b7c7d8; stroke-width: 2; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="58">同一张 ORDER 表，存储布局决定访问路径</text>
+
+  <rect class="panel" x="40" y="95" width="1120" height="165"/>
+  <text class="label" x="70" y="135">磁盘行存储：page-slot</text>
+  <rect class="disk" x="70" y="155" width="765" height="75"/>
+  <text class="small" x="85" y="180">页面</text>
+  <line class="line" x1="145" y1="155" x2="145" y2="230"/><line class="line" x1="285" y1="155" x2="285" y2="230"/><line class="line" x1="425" y1="155" x2="425" y2="230"/><line class="line" x1="565" y1="155" x2="565" y2="230"/><line class="line" x1="705" y1="155" x2="705" y2="230"/>
+  <text class="small" x="165" y="181">slot 1</text><text class="small" x="305" y="181">slot 2</text><text class="small" x="445" y="181">slot 3</text><text class="small" x="585" y="181">slot 4</text><text class="small" x="725" y="181">slot 5</text>
+  <text class="text" x="165" y="211">整行记录</text><text class="text" x="305" y="211">整行记录</text><text class="text" x="445" y="211">整行记录</text><text class="text" x="585" y="211">整行记录</text><text class="text" x="725" y="211">整行记录</text>
+  <text class="text" x="885" y="180">访问先把页面调入缓冲区</text><text class="text" x="885" y="207">定位依赖块号和槽位</text>
+
+  <rect class="panel" x="40" y="285" width="1120" height="175"/>
+  <text class="label" x="70" y="325">内存列存储：按列直接访问</text>
+  <rect class="column" x="70" y="345" width="170" height="85"/><rect class="column" x="260" y="345" width="170" height="85"/><rect class="column" x="450" y="345" width="170" height="85"/><rect class="column" x="640" y="345" width="170" height="85"/>
+  <text class="label" x="128" y="382">OrderID</text><text class="label" x="322" y="382">Price</text><text class="label" x="510" y="382">Quantity</text><text class="label" x="705" y="382">Tax</text>
+  <text class="small" x="113" y="410">一列连续值</text><text class="small" x="314" y="410">一列连续值</text><text class="small" x="494" y="410">一列连续值</text><text class="small" x="689" y="410">一列连续值</text>
+  <text class="text" x="860" y="375">只读 Price、Quantity、Tax 时</text><text class="text" x="860" y="402">可以跳过 OrderID 等无关列</text>
+
+  <rect class="panel" x="40" y="485" width="1120" height="175"/>
+  <text class="label" x="70" y="525">行组：列存储中的可增长单元</text>
+  <rect class="group" x="70" y="545" width="285" height="82"/><rect class="group" x="385" y="545" width="285" height="82"/><rect class="group" x="700" y="545" width="285" height="82"/>
+  <text class="label" x="175" y="579">行组 1</text><text class="label" x="490" y="579">行组 2</text><text class="label" x="805" y="579">新增行组 3</text>
+  <text class="small" x="127" y="608">组内按列、可独立压缩</text><text class="small" x="442" y="608">组内按列、可独立压缩</text><text class="small" x="757" y="608">避免重分配整张表</text>
+  <path class="arrow" d="M1000 585 H1080"/>
+</svg>

@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8.1 SQL 扩展与过程化 SQL 基础｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 8.1</div><h1>SQL 扩展与过程化 SQL 基础</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将任务与最小的 SQL 表达路径匹配</h2><div class="matching-grid"><label class="matching-row"><span>把复杂查询拆成可命名的中间结果</span><select class="matching-select" data-answer="普通 WITH" name="q1"><option value="">请选择</option><option value="过程化 SQL 块">过程化 SQL 块</option><option value="递归 CTE">递归 CTE</option><option value="应用程序接口">应用程序接口</option><option value="普通 WITH">普通 WITH</option><option value="DBMS 内置函数">DBMS 内置函数</option></select></label><label class="matching-row"><span>沿课程先修关系逐层向上查找</span><select class="matching-select" data-answer="递归 CTE" name="q1"><option value="">请选择</option><option value="过程化 SQL 块">过程化 SQL 块</option><option value="递归 CTE">递归 CTE</option><option value="应用程序接口">应用程序接口</option><option value="普通 WITH">普通 WITH</option><option value="DBMS 内置函数">DBMS 内置函数</option></select></label><label class="matching-row"><span>计算日期窗口或字符串格式</span><select class="matching-select" data-answer="DBMS 内置函数" name="q1"><option value="">请选择</option><option value="过程化 SQL 块">过程化 SQL 块</option><option value="递归 CTE">递归 CTE</option><option value="应用程序接口">应用程序接口</option><option value="普通 WITH">普通 WITH</option><option value="DBMS 内置函数">DBMS 内置函数</option></select></label><label class="matching-row"><span>根据多种状态分支并循环累加</span><select class="matching-select" data-answer="过程化 SQL 块" name="q1"><option value="">请选择</option><option value="过程化 SQL 块">过程化 SQL 块</option><option value="递归 CTE">递归 CTE</option><option value="应用程序接口">应用程序接口</option><option value="普通 WITH">普通 WITH</option><option value="DBMS 内置函数">DBMS 内置函数</option></select></label><label class="matching-row"><span>与用户界面持续交互</span><select class="matching-select" data-answer="应用程序接口" name="q1"><option value="">请选择</option><option value="过程化 SQL 块">过程化 SQL 块</option><option value="递归 CTE">递归 CTE</option><option value="应用程序接口">应用程序接口</option><option value="普通 WITH">普通 WITH</option><option value="DBMS 内置函数">DBMS 内置函数</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>把复杂查询拆成可命名的中间结果 → 普通 WITH；沿课程先修关系逐层向上查找 → 递归 CTE；计算日期窗口或字符串格式 → DBMS 内置函数；根据多种状态分支并循环累加 → 过程化 SQL 块；与用户界面持续交互 → 应用程序接口</p><p>先识别任务边界，再选最小足够能力，避免把普通集合查询无故改成过程循环</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="single" data-answer="当前一条 SQL 语句" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 单选题</div><h2>普通 WITH 定义的命名结果通常能在多长范围内使用？</h2><div class="choices"><label class="choice"><input type="radio" name="q2" value="当前一条 SQL 语句" aria-keyshortcuts="1"><span>当前一条 SQL 语句</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q2" value="永久保存在数据库中，直到显式 DROP" aria-keyshortcuts="2"><span>永久保存在数据库中，直到显式 DROP</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>当前一条 SQL 语句</p><p>CTE 是当前语句中的命名中间结果，不等同于长期表、普通视图或物化结果</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="matching" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 匹配题</div><h2>将递归 CTE 的组成部分与作用匹配</h2><div class="matching-grid"><label class="matching-row"><span>种子项</span><select class="matching-select" data-answer="产生递归起点集合" name="q3"><option value="">请选择</option><option value="阻止无限扩张或限定深度与边界">阻止无限扩张或限定深度与边界</option><option value="决定是否去重以及重复路径的处理方式">决定是否去重以及重复路径的处理方式</option><option value="产生递归起点集合">产生递归起点集合</option><option value="引用当前结果并扩张下一层">引用当前结果并扩张下一层</option></select></label><label class="matching-row"><span>递归项</span><select class="matching-select" data-answer="引用当前结果并扩张下一层" name="q3"><option value="">请选择</option><option value="阻止无限扩张或限定深度与边界">阻止无限扩张或限定深度与边界</option><option value="决定是否去重以及重复路径的处理方式">决定是否去重以及重复路径的处理方式</option><option value="产生递归起点集合">产生递归起点集合</option><option value="引用当前结果并扩张下一层">引用当前结果并扩张下一层</option></select></label><label class="matching-row"><span>终止条件</span><select class="matching-select" data-answer="阻止无限扩张或限定深度与边界" name="q3"><option value="">请选择</option><option value="阻止无限扩张或限定深度与边界">阻止无限扩张或限定深度与边界</option><option value="决定是否去重以及重复路径的处理方式">决定是否去重以及重复路径的处理方式</option><option value="产生递归起点集合">产生递归起点集合</option><option value="引用当前结果并扩张下一层">引用当前结果并扩张下一层</option></select></label><label class="matching-row"><span>UNION／UNION ALL 策略</span><select class="matching-select" data-answer="决定是否去重以及重复路径的处理方式" name="q3"><option value="">请选择</option><option value="阻止无限扩张或限定深度与边界">阻止无限扩张或限定深度与边界</option><option value="决定是否去重以及重复路径的处理方式">决定是否去重以及重复路径的处理方式</option><option value="产生递归起点集合">产生递归起点集合</option><option value="引用当前结果并扩张下一层">引用当前结果并扩张下一层</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>种子项 → 产生递归起点集合；递归项 → 引用当前结果并扩张下一层；终止条件 → 阻止无限扩张或限定深度与边界；UNION／UNION ALL 策略 → 决定是否去重以及重复路径的处理方式</p><p>递归查询必须明确起点、扩张规则、停止条件和重复语义</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="ordering" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 排序题</div><h2>设计跨年生日窗口查询时按步骤排列</h2><ol class="ordering-list" data-answer="[&quot;明确窗口起点、终点以及端点是否包含&quot;, &quot;判断窗口是否跨越年份边界&quot;, &quot;选择目标 DBMS 的日期构造与比较函数&quot;, &quot;规定 NULL、2 月 29 日和时区等异常策略&quot;, &quot;用年末年初边界样例验证结果&quot;]"><li class="ordering-item"><span>选择目标 DBMS 的日期构造与比较函数</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“选择目标 DBMS 的日期构造与比较函数”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“选择目标 DBMS 的日期构造与比较函数”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>判断窗口是否跨越年份边界</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“判断窗口是否跨越年份边界”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“判断窗口是否跨越年份边界”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>明确窗口起点、终点以及端点是否包含</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“明确窗口起点、终点以及端点是否包含”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“明确窗口起点、终点以及端点是否包含”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>规定 NULL、2 月 29 日和时区等异常策略</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“规定 NULL、2 月 29 日和时区等异常策略”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“规定 NULL、2 月 29 日和时区等异常策略”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>用年末年初边界样例验证结果</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“用年末年初边界样例验证结果”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“用年末年初边界样例验证结果”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>明确窗口起点、终点以及端点是否包含 → 判断窗口是否跨越年份边界 → 选择目标 DBMS 的日期构造与比较函数 → 规定 NULL、2 月 29 日和时区等异常策略 → 用年末年初边界样例验证结果</p><p>日期函数只是实现手段，业务窗口和异常语义必须先定义</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="multiple" data-answer="[&quot;变量、常量及初值&quot;, &quot;条件分支和循环终止条件&quot;, &quot;输入、输出及作用域&quot;, &quot;异常捕获、业务响应和传播策略&quot;, &quot;事务提交或回滚责任&quot;]" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 多选题</div><h2>一个可检查的过程化 SQL 块通常需要明确哪些内容？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q5" value="变量、常量及初值" aria-keyshortcuts="1"><span>变量、常量及初值</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q5" value="条件分支和循环终止条件" aria-keyshortcuts="2"><span>条件分支和循环终止条件</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q5" value="输入、输出及作用域" aria-keyshortcuts="3"><span>输入、输出及作用域</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q5" value="异常捕获、业务响应和传播策略" aria-keyshortcuts="4"><span>异常捕获、业务响应和传播策略</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q5" value="事务提交或回滚责任" aria-keyshortcuts="5"><span>事务提交或回滚责任</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q5" value="让所有循环都依赖人工中断" aria-keyshortcuts="6"><span>让所有循环都依赖人工中断</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>变量、常量及初值、条件分支和循环终止条件、输入、输出及作用域、异常捕获、业务响应和传播策略、事务提交或回滚责任</p><p>过程控制增加了状态和失败路径，必须让终止、异常和事务边界可见</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="single" data-answer="不一定，捕获、业务响应、异常传播和事务回滚是需要分别设计的动作" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 单选题</div><h2>捕获数据库异常后向用户返回提示，是否意味着事务一定已经回滚？</h2><div class="choices"><label class="choice"><input type="radio" name="q6" value="是，任何异常处理都会自动回滚整个事务" aria-keyshortcuts="1"><span>是，任何异常处理都会自动回滚整个事务</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q6" value="不一定，捕获、业务响应、异常传播和事务回滚是需要分别设计的动作" aria-keyshortcuts="2"><span>不一定，捕获、业务响应、异常传播和事务回滚是需要分别设计的动作</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不一定，捕获、业务响应、异常传播和事务回滚是需要分别设计的动作</p><p>异常处理语句和事务控制可能由不同层负责，必须明确目标 DBMS 与应用的边界</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>GPA 计算为什么可能需要过程控制？在什么条件下仍应优先用集合 SQL？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>若计算包含按课程逐项判断、状态累加、特殊规则和异常分支，过程块可以显式组织变量与控制流；但如果规则能够用 SUM、CASE、GROUP BY 等集合表达清晰完成，应优先用集合 SQL，通常更简洁也便于优化。选择要比较语义清晰度、数据规模、数据库能力和测试成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

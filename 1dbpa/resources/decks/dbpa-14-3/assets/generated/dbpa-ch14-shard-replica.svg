@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">分片与多副本</title>
+  <desc id="desc">请求先由路由层定位分片，分片分布在不同节点，每个分片保留多个副本并通过共识保持提交状态一致。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .request { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 11; }
+      .router { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .shard { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .replica { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 11; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .replica-arrow { stroke: #d49a61; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">先把数据分片，再为每个分片保留可协调的副本</text>
+  <rect class="panel" x="45" y="105" width="1110" height="475"/>
+  <rect class="request" x="80" y="270" width="180" height="95"/>
+  <text class="label" x="170" y="307">客户端请求</text>
+  <text class="text" x="170" y="337">读写某个键</text>
+  <rect class="router" x="335" y="245" width="200" height="145"/>
+  <text class="label" x="435" y="290">路由层</text>
+  <text class="text" x="435" y="322">定位目标分片</text>
+  <text class="text" x="435" y="350">尽量本地处理</text>
+  <rect class="shard" x="650" y="145" width="190" height="125"/>
+  <text class="label" x="745" y="188">分片 A</text>
+  <text class="text" x="745" y="220">节点 1：主副本</text>
+  <text class="text" x="745" y="246">节点 2：副本</text>
+  <rect class="shard" x="650" y="340" width="190" height="125"/>
+  <text class="label" x="745" y="383">分片 B</text>
+  <text class="text" x="745" y="415">节点 2：主副本</text>
+  <text class="text" x="745" y="441">节点 3：副本</text>
+  <rect class="replica" x="930" y="145" width="170" height="125"/>
+  <text class="label" x="1015" y="188">多副本</text>
+  <text class="text" x="1015" y="220">共识提交</text>
+  <text class="text" x="1015" y="246">故障时按条件继续服务</text>
+  <rect class="replica" x="930" y="340" width="170" height="125"/>
+  <text class="label" x="1015" y="383">动态迁移</text>
+  <text class="text" x="1015" y="415">热点分片调整位置</text>
+  <text class="text" x="1015" y="441">平衡节点负载</text>
+  <path class="arrow" d="M260 318 H325"/>
+  <path class="arrow" d="M535 292 C590 292 590 207 640 207"/>
+  <path class="arrow" d="M535 343 C590 343 590 402 640 402"/>
+  <path class="replica-arrow" d="M840 207 H920"/>
+  <path class="replica-arrow" d="M840 402 H920"/>
+  <text class="small" x="560" y="188">按键或范围路由</text>
+  <rect class="panel" x="45" y="610" width="1110" height="58"/>
+  <text class="label" x="170" y="646">扩展性</text>
+  <text class="text" x="410" y="646">增加节点或迁移分片以承接规模</text>
+  <text class="label" x="760" y="646">可用性</text>
+  <text class="text" x="1000" y="646">副本和共识共同决定故障后的服务能力</text>
+</svg>

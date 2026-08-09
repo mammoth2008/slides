@@ -324,15 +324,23 @@
 
   <script>
     (function () {
-      var base = window.location.pathname.indexOf('/slides/') !== -1 ? '/slides/' : '/';
+      var isLocalFile = window.location.protocol === 'file:';
+      var isGitHubProjectSite = window.location.hostname.endsWith('.github.io')
+        && (window.location.pathname === '/slides' || window.location.pathname.indexOf('/slides/') === 0);
+      var base = isLocalFile
+        ? new URL('./', window.location.href)
+        : new URL(isGitHubProjectSite ? '/slides/' : '/', window.location.origin);
+      var resolveRoute = function (route) {
+        return new URL(route, base).href;
+      };
       document.querySelectorAll('[data-route]').forEach(function (link) {
-        link.href = base + link.getAttribute('data-route');
+        link.href = resolveRoute(link.getAttribute('data-route'));
       });
       var icon = document.querySelector('[data-root-asset]');
-      if (icon) icon.href = base + icon.getAttribute('data-root-asset');
+      if (icon) icon.href = resolveRoute(icon.getAttribute('data-root-asset'));
       document.getElementById('history-back').addEventListener('click', function () {
         if (window.history.length > 1) window.history.back();
-        else window.location.href = base + 'index.html';
+        else window.location.href = resolveRoute('index.html');
       });
     }());
   </script>

@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">一次 SELECT 穿过 DBMS 的层次</title>
+  <desc id="desc">应用发出 SELECT，语言处理层检查和优化，数据存取层生成记录操作，数据存储层处理缓冲区与页面，操作系统完成物理文件读取，结果再返回应用。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .app { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 12; }
+      .lang { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .access { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 12; }
+      .storage { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 12; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .return { stroke: #8d7bb8; stroke-width: 3; stroke-dasharray: 8 7; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">SQL 是入口，查询结果要经过多层转换才返回</text>
+  <rect class="panel" x="45" y="105" width="1110" height="400"/>
+  <rect class="app" x="80" y="235" width="170" height="110"/><text class="label" x="165" y="275">应用层</text><text class="text" x="165" y="304">SELECT + 条件</text>
+  <rect class="lang" x="315" y="190" width="210" height="200"/><text class="label" x="420" y="235">语言处理层</text><text class="text" x="420" y="270">语法、语义、权限</text><text class="text" x="420" y="298">查询优化</text><text class="text" x="420" y="326">生成存取计划</text>
+  <rect class="access" x="590" y="215" width="190" height="150"/><text class="label" x="685" y="260">数据存取层</text><text class="text" x="685" y="294">集合 → 单记录</text><text class="text" x="685" y="322">查找、封锁、日志</text>
+  <rect class="storage" x="845" y="180" width="220" height="220"/><text class="label" x="955" y="230">数据存储层</text><text class="text" x="955" y="266">查缓冲区</text><text class="text" x="955" y="294">读写数据页</text><text class="text" x="955" y="322">请求物理块</text><text class="text" x="955" y="350">操作系统完成 I/O</text>
+  <path class="arrow" d="M250 290 H305"/><path class="arrow" d="M525 290 H580"/><path class="arrow" d="M780 290 H835"/>
+  <path class="return" d="M955 420 C955 480 165 480 165 355"/>
+  <text class="small" x="500" y="475">记录格式、执行状态和结果沿调用链返回应用</text>
+  <rect class="panel" x="45" y="550" width="1110" height="85"/>
+  <text class="label" x="155" y="602">数据字典</text><text class="text" x="430" y="602">表、属性、视图、权限、统计信息和存储模式</text><text class="text" x="920" y="602">贯穿检查、优化和物理定位</text>
+</svg>

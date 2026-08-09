@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>5.1 数据库完整性与约束｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 5.1</div><h1>数据库完整性与约束</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将完整性运行循环的三个环节与作用匹配</h2><div class="matching-grid"><label class="matching-row"><span>定义约束</span><select class="matching-select" data-answer="把现实业务规则写入数据库模式" name="q1"><option value="">请选择</option><option value="在插入、修改或删除时判断新状态是否合法">在插入、修改或删除时判断新状态是否合法</option><option value="拒绝、级联或置空等方式处理不合法变化">拒绝、级联或置空等方式处理不合法变化</option><option value="把现实业务规则写入数据库模式">把现实业务规则写入数据库模式</option></select></label><label class="matching-row"><span>检查约束</span><select class="matching-select" data-answer="在插入、修改或删除时判断新状态是否合法" name="q1"><option value="">请选择</option><option value="在插入、修改或删除时判断新状态是否合法">在插入、修改或删除时判断新状态是否合法</option><option value="拒绝、级联或置空等方式处理不合法变化">拒绝、级联或置空等方式处理不合法变化</option><option value="把现实业务规则写入数据库模式">把现实业务规则写入数据库模式</option></select></label><label class="matching-row"><span>违约处理</span><select class="matching-select" data-answer="拒绝、级联或置空等方式处理不合法变化" name="q1"><option value="">请选择</option><option value="在插入、修改或删除时判断新状态是否合法">在插入、修改或删除时判断新状态是否合法</option><option value="拒绝、级联或置空等方式处理不合法变化">拒绝、级联或置空等方式处理不合法变化</option><option value="把现实业务规则写入数据库模式">把现实业务规则写入数据库模式</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>定义约束 → 把现实业务规则写入数据库模式；检查约束 → 在插入、修改或删除时判断新状态是否合法；违约处理 → 拒绝、级联或置空等方式处理不合法变化</p><p>完整性不是只写一条约束语句，还包括持续检查和明确的失败处理策略</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="single" data-answer="SC.Sno 对 Student.Sno 的参照完整性" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 单选题</div><h2>Student 中不存在 Sno 为 S999 的学生，向 SC 插入 S999、C01 会首先违反什么约束？</h2><div class="choices"><label class="choice"><input type="radio" name="q2" value="SC.Sno 对 Student.Sno 的参照完整性" aria-keyshortcuts="1"><span>SC.Sno 对 Student.Sno 的参照完整性</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q2" value="SC 组合主码的实体完整性一定已经违反" aria-keyshortcuts="2"><span>SC 组合主码的实体完整性一定已经违反</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>SC.Sno 对 Student.Sno 的参照完整性</p><p>外码的非 NULL 值必须匹配被参照关系中已有的目标码；是否重复主码还要看 SC 中是否已有同一组合</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="multiple" data-answer="[&quot;Sno 可以在不同课程记录中重复&quot;, &quot;Cno 可以在不同学生记录中重复&quot;, &quot;Sno 与 Cno 的组合不能重复&quot;, &quot;Sno 和 Cno 都不能为 NULL&quot;]" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 多选题</div><h2>关于 SC 的组合主码 PRIMARY KEY (Sno, Cno)，哪些说法正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q3" value="Sno 可以在不同课程记录中重复" aria-keyshortcuts="1"><span>Sno 可以在不同课程记录中重复</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q3" value="Cno 可以在不同学生记录中重复" aria-keyshortcuts="2"><span>Cno 可以在不同学生记录中重复</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q3" value="Sno 与 Cno 的组合不能重复" aria-keyshortcuts="3"><span>Sno 与 Cno 的组合不能重复</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q3" value="Sno 和 Cno 都不能为 NULL" aria-keyshortcuts="4"><span>Sno 和 Cno 都不能为 NULL</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q3" value="只要 Sno 不重复，Cno 可以任意为空" aria-keyshortcuts="5"><span>只要 Sno 不重复，Cno 可以任意为空</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>Sno 可以在不同课程记录中重复、Cno 可以在不同学生记录中重复、Sno 与 Cno 的组合不能重复、Sno 和 Cno 都不能为 NULL</p><p>组合主码约束的是组合值的唯一性，同时要求每个主码属性非空</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="matching" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 匹配题</div><h2>将删除被引用学生时的参照动作与结果匹配</h2><div class="matching-grid"><label class="matching-row"><span>RESTRICT／NO ACTION</span><select class="matching-select" data-answer="存在引用记录时拒绝删除" name="q4"><option value="">请选择</option><option value="把外码设为空，前提是外码列允许 NULL 且业务语义合理">把外码设为空，前提是外码列允许 NULL 且业务语义合理</option><option value="存在引用记录时拒绝删除">存在引用记录时拒绝删除</option><option value="同时删除或更新依赖的参照记录">同时删除或更新依赖的参照记录</option></select></label><label class="matching-row"><span>CASCADE</span><select class="matching-select" data-answer="同时删除或更新依赖的参照记录" name="q4"><option value="">请选择</option><option value="把外码设为空，前提是外码列允许 NULL 且业务语义合理">把外码设为空，前提是外码列允许 NULL 且业务语义合理</option><option value="存在引用记录时拒绝删除">存在引用记录时拒绝删除</option><option value="同时删除或更新依赖的参照记录">同时删除或更新依赖的参照记录</option></select></label><label class="matching-row"><span>SET NULL</span><select class="matching-select" data-answer="把外码设为空，前提是外码列允许 NULL 且业务语义合理" name="q4"><option value="">请选择</option><option value="把外码设为空，前提是外码列允许 NULL 且业务语义合理">把外码设为空，前提是外码列允许 NULL 且业务语义合理</option><option value="存在引用记录时拒绝删除">存在引用记录时拒绝删除</option><option value="同时删除或更新依赖的参照记录">同时删除或更新依赖的参照记录</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>RESTRICT／NO ACTION → 存在引用记录时拒绝删除；CASCADE → 同时删除或更新依赖的参照记录；SET NULL → 把外码设为空，前提是外码列允许 NULL 且业务语义合理</p><p>参照动作没有普遍最优答案，应根据对象生命周期和业务语义选择</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="single" data-answer="不一定，比较可能得到 UNKNOWN；若必须有值还应增加 NOT NULL" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 单选题</div><h2>CHECK (Ssex IN (&#x27;男&#x27;,&#x27;女&#x27;)) 遇到 Ssex 为 NULL 时，是否一定判为违反约束？</h2><div class="choices"><label class="choice"><input type="radio" name="q5" value="不一定，比较可能得到 UNKNOWN；若必须有值还应增加 NOT NULL" aria-keyshortcuts="1"><span>不一定，比较可能得到 UNKNOWN；若必须有值还应增加 NOT NULL</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q5" value="一定，因为 CHECK 会把任何 NULL 自动当成 FALSE" aria-keyshortcuts="2"><span>一定，因为 CHECK 会把任何 NULL 自动当成 FALSE</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不一定，比较可能得到 UNKNOWN；若必须有值还应增加 NOT NULL</p><p>CHECK 与三值逻辑共同工作，NOT NULL 和允许值集合解决的是不同约束问题</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="matching" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 匹配题</div><h2>将约束机制与适合表达的规则匹配</h2><div class="matching-grid"><label class="matching-row"><span>NOT NULL</span><select class="matching-select" data-answer="某列必须提供值" name="q6"><option value="">请选择</option><option value="在支持该功能的 DBMS 中集中复用取值规则">在支持该功能的 DBMS 中集中复用取值规则</option><option value="某列或属性组中的非重复要求">某列或属性组中的非重复要求</option><option value="表达可能跨表的数据库级断言，但产品支持有限">表达可能跨表的数据库级断言，但产品支持有限</option><option value="当前行内可判断的取值或属性组合规则">当前行内可判断的取值或属性组合规则</option><option value="某列必须提供值">某列必须提供值</option></select></label><label class="matching-row"><span>UNIQUE</span><select class="matching-select" data-answer="某列或属性组中的非重复要求" name="q6"><option value="">请选择</option><option value="在支持该功能的 DBMS 中集中复用取值规则">在支持该功能的 DBMS 中集中复用取值规则</option><option value="某列或属性组中的非重复要求">某列或属性组中的非重复要求</option><option value="表达可能跨表的数据库级断言，但产品支持有限">表达可能跨表的数据库级断言，但产品支持有限</option><option value="当前行内可判断的取值或属性组合规则">当前行内可判断的取值或属性组合规则</option><option value="某列必须提供值">某列必须提供值</option></select></label><label class="matching-row"><span>CHECK</span><select class="matching-select" data-answer="当前行内可判断的取值或属性组合规则" name="q6"><option value="">请选择</option><option value="在支持该功能的 DBMS 中集中复用取值规则">在支持该功能的 DBMS 中集中复用取值规则</option><option value="某列或属性组中的非重复要求">某列或属性组中的非重复要求</option><option value="表达可能跨表的数据库级断言，但产品支持有限">表达可能跨表的数据库级断言，但产品支持有限</option><option value="当前行内可判断的取值或属性组合规则">当前行内可判断的取值或属性组合规则</option><option value="某列必须提供值">某列必须提供值</option></select></label><label class="matching-row"><span>DOMAIN</span><select class="matching-select" data-answer="在支持该功能的 DBMS 中集中复用取值规则" name="q6"><option value="">请选择</option><option value="在支持该功能的 DBMS 中集中复用取值规则">在支持该功能的 DBMS 中集中复用取值规则</option><option value="某列或属性组中的非重复要求">某列或属性组中的非重复要求</option><option value="表达可能跨表的数据库级断言，但产品支持有限">表达可能跨表的数据库级断言，但产品支持有限</option><option value="当前行内可判断的取值或属性组合规则">当前行内可判断的取值或属性组合规则</option><option value="某列必须提供值">某列必须提供值</option></select></label><label class="matching-row"><span>ASSERTION 概念</span><select class="matching-select" data-answer="表达可能跨表的数据库级断言，但产品支持有限" name="q6"><option value="">请选择</option><option value="在支持该功能的 DBMS 中集中复用取值规则">在支持该功能的 DBMS 中集中复用取值规则</option><option value="某列或属性组中的非重复要求">某列或属性组中的非重复要求</option><option value="表达可能跨表的数据库级断言，但产品支持有限">表达可能跨表的数据库级断言，但产品支持有限</option><option value="当前行内可判断的取值或属性组合规则">当前行内可判断的取值或属性组合规则</option><option value="某列必须提供值">某列必须提供值</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>NOT NULL → 某列必须提供值；UNIQUE → 某列或属性组中的非重复要求；CHECK → 当前行内可判断的取值或属性组合规则；DOMAIN → 在支持该功能的 DBMS 中集中复用取值规则；ASSERTION 概念 → 表达可能跨表的数据库级断言，但产品支持有限</p><p>选择机制时要考虑约束范围、NULL 语义、维护方式和目标 DBMS 的能力</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>订单表的 CustomerId 外码在删除客户时应选 RESTRICT、CASCADE 还是 SET NULL？说明如何作出决定</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>先判断订单是否必须永久保留、是否允许失去客户归属、删除客户是物理删除还是停用，以及法律审计要求。通常历史订单不应随客户级联删除；如果订单必须保留且仍需归属，可拒绝删除或改用停用状态；只有业务允许匿名订单且外码可空时才考虑 SET NULL。选择应来自业务生命周期，而不是语法便利</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

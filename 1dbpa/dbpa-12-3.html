@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 12.3 封锁粒度、意向锁与多版本并发控制 | HUST</title>
+  <meta name="description" content="在锁粒度、层级意图与版本策略之间选择并发控制方案">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="12-3">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-12-3/assets/dbpa-12-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 12.3</div>
+      <h1>封锁粒度、意向锁与多版本并发控制</h1>
+      <p class="cover-description">比较锁粒度、意向锁和版本控制的并发取舍</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元先比较锁粒度，再用意向锁管理层级，最后用 MVCC 解释读写如何减少互相等待。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较不同封锁粒度的并发度和开销</span></li><li><span class="list-marker">02</span><span class="list-text">解释多粒度树中的显式锁和隐式锁</span></li><li><span class="list-marker">03</span><span class="list-text">说明 IS、IX、SIX 的意向语义</span></li><li><span class="list-marker">04</span><span class="list-text">判断意向锁请求的相容性</span></li><li><span class="list-marker">05</span><span class="list-text">描述 MVCC 如何减少读写阻塞</span></li><li><span class="list-marker">06</span><span class="list-text">比较封锁、时间戳、乐观方法和 MVCC 的控制点与代价</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/14</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">锁对象越大越易管理，也越容易造成阻塞</h2>
+    <div class="slide-content"><p class="slide-lead">对象越小通常并发度越高，但前提是事务访问不同对象；锁管理成本也会增加</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-granularity.svg" data-full-src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-granularity.svg" alt="页级锁和元组级锁在并发度与管理开销上的取舍" tabindex="0" role="button" aria-label="放大图片：页级锁和元组级锁在并发度与管理开销上的取舍" decoding="async"></figure>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="逻辑粒度：数据库　→　关系　→　元组　→　属性值 物理粒度：页、物理记录（页属于物理粒度，不是关系与元组之间必然存在的逻辑层级）"><span class="relation-term">逻辑粒度：数据库</span><span class="relation-operator">→</span><span class="relation-term">关系</span><span class="relation-operator">→</span><span class="relation-term">元组</span><span class="relation-operator">→</span><span class="relation-term">属性值 物理粒度：页、物理记录（页属于物理粒度，不是关系与元组之间必然存在的逻辑层级）</span></div></div></div></div>
+    <div class="numeric-progress">3/14</div>
+    <div class="semantic-label">LOCK GRANULARITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">访问范围决定合适粒度</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>元组级并发度更高，所以总该锁到元组吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">同一批事务在不同粒度下会有不同等待关系</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>场景</th><th>合适粒度</th><th>主要判断</th></tr></thead><tbody><tr><td><code>T1</code> 修改 <code>L1</code>，<code>T2</code> 修改同页 <code>L2</code></td><td>页级／元组级</td><td>页级使 <code>T2</code> 等待；元组级允许并发但锁更多</td></tr><tr><td><code>T3</code> 读取整张表</td><td>关系或数据库</td><td>避免逐元组申请大量锁</td></tr><tr><td>事务只修改少量元组</td><td>元组级</td><td>减少不相关数据被一起阻塞</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>粒度选择同时看访问范围、并发度与锁管理开销；小粒度的优势取决于事务访问范围</p></div></div>
+    <div class="numeric-progress">4/14</div>
+    <div class="semantic-label">GRANULARITY TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">显式锁和隐式锁来自不同层级的申请</h2>
+    <div class="slide-content"><p class="slide-lead">多粒度协议允许节点独立申请，但祖先锁会把保护传播到后裔</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="`S(R1)`　→　`L1、L2` 获得隐式 `S` 保护 `IX(R1)`　→　只声明后裔将申请 `X`，不等于已获得 `X(L1)`"><span class="relation-term"><code>S(R1)</code></span><span class="relation-operator">→</span><span class="relation-term"><code>L1、L2</code> 获得隐式 <code>S</code> 保护 <code>IX(R1)</code></span><span class="relation-operator">→</span><span class="relation-term">只声明后裔将申请 <code>X</code>，不等于已获得 <code>X(L1)</code></span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>直接申请的是显式锁；祖先 <code>S/X</code> 形成隐式保护；<code>IS/IX</code> 只声明后裔的加锁意图</p></div></div>
+    <div class="numeric-progress">5/14</div>
+    <div class="semantic-label">MULTI-GRANULARITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">意向锁让系统在上层快速发现下层冲突</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>祖先有了意向锁，下面的数据就已经被保护了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">申请元组锁前先向祖先节点声明意图</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-intention-matrix.svg" data-full-src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-intention-matrix.svg" alt="S、X、IS、IX、SIX 意向锁的相容矩阵" tabindex="0" role="button" aria-label="放大图片：S、X、IS、IX、SIX 意向锁的相容矩阵" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>IS</h3><p><code>IS</code> 表示后裔节点准备加 <code>S</code> 锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>IX</h3><p><code>IX</code> 表示后裔节点准备加 <code>X</code> 锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>SIX</h3><p><code>SIX</code> 表示当前节点加 <code>S</code> 锁并带有 <code>IX</code> 意图，即 <code>SIX = S + IX</code></p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>纵轴是已持有锁，横轴是请求锁；<code>Y</code> 表示相容，<code>N</code> 表示不相容并需等待。例：<code>IS</code> 与 <code>IX</code> 相容，<code>SIX</code> 与 <code>IX</code> 不相容；申请更强的锁可以替代较弱的保护，反向替代可能不安全</p></div></div>
+    <div class="numeric-progress">6/14</div>
+    <div class="semantic-label">INTENTION LOCKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">多粒度加锁自上而下，释放自下而上</h2>
+    <div class="slide-content"><p class="slide-lead">意向锁把后裔的潜在冲突汇总到祖先，并把层级检查变成可执行顺序</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="`IX(DB)` → `IX(R1)` → `X(L1)` → `UNLOCK L1` → `UNLOCK R1` → `UNLOCK DB`"><span class="relation-term"><code>IX(DB)</code></span><span class="relation-operator">→</span><span class="relation-term"><code>IX(R1)</code></span><span class="relation-operator">→</span><span class="relation-term"><code>X(L1)</code></span><span class="relation-operator">→</span><span class="relation-term"><code>UNLOCK L1</code></span><span class="relation-operator">→</span><span class="relation-term"><code>UNLOCK R1</code></span><span class="relation-operator">→</span><span class="relation-term"><code>UNLOCK DB</code></span></div></div>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">目标节点若有祖先，从最上层祖先开始逐级申请相应意向锁；目标是根节点时无需额外祖先锁</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">到目标页或元组申请 <code>S</code> 或 <code>X</code> 锁</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">释放锁时从目标向根反向进行</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">这条层级顺序还要同时满足 2PL 的扩展／收缩边界</span></li></ol></div></div></div>
+    <div class="numeric-progress">7/14</div>
+    <div class="semantic-label">INTENTION ORDER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">封锁之外的并发控制路线</h2>
+    <div class="slide-content"><p class="slide-lead">封锁在申请 <code>S/X</code> 锁时处理冲突；其他路线把处理点移到时间戳、提交验证或版本读取</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 38% 36%"><colgroup><col style="width:26%"><col style="width:38%"><col style="width:36%"></colgroup><thead><tr><th>方法</th><th>控制点</th><th>直观特点</th></tr></thead><tbody><tr><td>封锁</td><td>申请 <code>S/X</code> 锁时</td><td>冲突时等待或回滚</td></tr><tr><td>时间戳</td><td>冲突规则判定时</td><td>违规事务回滚并重新开始</td></tr><tr><td>乐观方法</td><td>提交前验证</td><td>平时少管制，验证失败则回滚</td></tr><tr><td>MVCC</td><td>读写访问与版本</td><td>用旧版本减少读写直接阻塞，但增加存储和检查</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/14</div>
+    <div class="semantic-label">OTHER METHODS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">MVCC：读取旧版本，提交仍需检查</h2>
+    <div class="slide-content"><p class="slide-lead"><code>T1</code> 写出 <code>Q2</code>；<code>T2</code> 读取 <code>Q1</code>；<code>T2</code> 在提交前检查 <code>T1</code> 状态</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-mvcc.svg" data-full-src="resources/decks/dbpa-12-3/assets/generated/dbpa-ch12-mvcc.svg" alt="T1 写事务生成 Q2，T2 读 Q1，提交前检查 T1 状态" tabindex="0" role="button" aria-label="放大图片：T1 写事务生成 Q2，T2 读 Q1，提交前检查 T1 状态" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>读路径</h3><p><code>T2</code> 读取符合快照条件的 <code>Q1</code>，在旧版本上继续执行；图中虚线表示提交检查／事务关系，不表示 <code>T2</code> 读取 <code>Q2</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>提交边界</h3><p>事务状态检查不等同于 c1 的乐观方法验证；<code>T1</code> 未完成时，<code>T2</code> 仍可能等待后再提交</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.32696cc0518d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>读旧版本不等于提交时可以忽略冲突</p></div></div></div></aside>
+    <div class="numeric-progress">9/14</div>
+    <div class="semantic-label">MVCC</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">版本时间戳：选可见版本，拒绝过晚写入</h2>
+    <div class="slide-content"><p class="slide-lead">读按版本链选择可见版本，写按 <code>R-timestamp</code> 检查；每个版本还要记录读写时间戳</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>判定</th><th>示例</th><th>结果</th></tr></thead><tbody><tr><td><code>W-timestamp(Qk)</code></td><td>成功写入 <code>Qk</code> 的最大事务时间戳</td><td>读 <code>TS(T)=15</code> 时选最新的 <code>W≤15</code> 版本</td></tr><tr><td><code>R-timestamp(Qk)</code></td><td>成功读取 <code>Qk</code> 的最大事务时间戳</td><td>写入 <code>TS(T)=15</code> 且 <code>R-timestamp=20</code> 时属于过晚写入</td></tr><tr><td>读规则</td><td><code>W(Q1)=10</code>，<code>W(Q2)=20</code>，<code>TS(T)=15</code></td><td>读取 <code>Q1</code>，而不是尚未可见的 <code>Q2</code></td></tr><tr><td>写规则</td><td><code>TS(T)&lt;R-timestamp(Qk)</code>；<code>TS(T)=W-timestamp(Qk)</code>；否则</td><td>依次回滚、覆盖、创建新版本</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/14</div>
+    <div class="semantic-label">VERSION EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3 <span>|</span> 12.3</div>
+    <h2 class="slide-title">MV2PL：多版本读取与提交验证</h2>
+    <div class="slide-content"><p class="slide-lead">读可继续；更新提交前在 <code>X</code> 锁对象上申请验证锁 <code>C</code></p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>生成</h3><p>更新事务 <code>T1</code> 产生新版本</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>验证</h3><p><code>T1</code> 在持有 X 锁的对象上申请 <code>C</code> 锁</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>等待</h3><p><code>C</code> 与 <code>S</code> 不相容，等待读者释放 <code>S</code> 锁</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>替换</h3><p>获得 <code>C</code> 锁后替换并清理不再需要的旧版本</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>提交</h3><p>释放 <code>C</code> 锁并完成事务提交</p></div></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>MV2PL 中 <code>S</code> 与 <code>X</code> 可相容，但 <code>C</code> 与 <code>S/X</code> 都不相容；<code>C</code> 锁只在提交边界出现，所以更新事务仍可能等待读事务，MV2PL 不是“所有读写都无等待”</p></div></div>
+    <div class="numeric-progress">11/14</div>
+    <div class="semantic-label">MV2PL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">按访问范围、层级声明和版本规则选择并发控制方案</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>粒度</h3><p><code>T1/L1</code> 与 <code>T2/L2</code> 不冲突时，元组级允许并发；<code>T3</code> 读整表时，大粒度减少锁管理开销</p></article><article class="content-card emphasis-card" tabindex="0"><h3>意向</h3><p>祖先 <code>S/X</code> 提供隐式保护，<code>IS/IX</code> 声明后裔意向；按 <code>IX(DB)→IX(R1)→X(L1)</code> 申请</p></article><article class="content-card emphasis-card" tabindex="0"><h3>多版本</h3><p><code>T1</code> 写 <code>Q2</code>、<code>T2</code> 读 <code>Q1</code>；系统按时间戳选版本并检查提交边界</p></article><article class="content-card emphasis-card" tabindex="0"><h3>选择</h3><p><code>MV2PL =</code> 多版本读取 + 更新事务 2PL + <code>C</code> 锁验证；它减少读写直接阻塞，但仍有等待和存储成本</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>S/X 锁提供基本互斥，2PL 约束申请与释放；粒度、意向锁、MVCC 和 MV2PL 扩展并发控制选择</p></div></div>
+    <div class="numeric-progress">12/14</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-12-3/mindmap-12-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">13/14</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text"><code>T1</code> 修改 <code>L1</code>、<code>T2</code> 修改同页 <code>L2</code>、<code>T3</code> 读取整表时，如何选择粒度，为什么？</span></li><li><span class="question-no">02</span><span class="question-text"><code>S(R1)</code>、<code>IX(R1)</code>、<code>SIX(R1)</code> 如何形成保护？<code>IX(R1)</code> 是否等于 <code>X(L1)</code>？不相容时请求方怎样处理？</span></li><li><span class="question-no">03</span><span class="question-text">为 <code>X(L1)</code> 写出从数据库到目标元组的申请序列和反向释放序列，并说明 2PL 边界？</span></li><li><span class="question-no">04</span><span class="question-text"><code>W(Q1)=10</code>、<code>W(Q2)=20</code>、<code>R-timestamp(Q1)=20</code>、<code>TS(T)=15</code> 时读哪个版本？写 <code>Q1</code> 是否回滚？</span></li><li><span class="question-no">05</span><span class="question-text">MV2PL 中更新事务为何可能在 <code>C</code> 锁处等待读事务？MVCC 减少哪种直接阻塞？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-12-2.html" title="上一节：12.2 死锁、可串行性与两段锁协议" aria-label="上一节：12.2 死锁、可串行性与两段锁协议">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">12.2</span>
+        <span class="nav-title">死锁与两段锁</span>
+      </a>
+      <a class="exercise-link" href="dbpa-12-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-13-1.html" title="下一节：13.1 DBMS 功能、层次结构与运行过程" aria-label="下一节：13.1 DBMS 功能、层次结构与运行过程">
+        <span class="nav-title">DBMS 功能与层次</span>
+        <span class="nav-number">13.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">14/14</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

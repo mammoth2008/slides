@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 7.3 逻辑、物理设计与实施维护 | HUST</title>
+  <meta name="description" content="把概念模型落到可运行、可评价和可维护的数据库系统（教材 7.4—7.6）">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="7-3">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-7-3/assets/dbpa-7-3.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 7.3</div>
+      <h1>逻辑、物理设计与实施维护</h1>
+      <p class="cover-description">把概念模型落到可运行的数据库系统</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元沿逻辑转换、物理选择、实施试运行和运行维护建立设计闭环，重点是用访问模式和运行证据做取舍。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">E-R 图需要转换为关系模式，再用运行证据评价物理和实施方案</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">按联系类型把 E-R 图转换为关系模式</span></li><li><span class="list-marker">02</span><span class="list-text">标出转换结果中的主码、复合码、外码和联系属性</span></li><li><span class="list-marker">03</span><span class="list-text">用依赖、范式、分解和事务需求优化逻辑模型</span></li><li><span class="list-marker">04</span><span class="list-text">根据工作负载选择索引、哈希或聚簇，并说明代价</span></li><li><span class="list-marker">05</span><span class="list-text">用时间、空间、吞吐和维护证据评价物理方案</span></li><li><span class="list-marker">06</span><span class="list-text">说明装载、应用调试、试运行、恢复和维护如何形成反馈闭环</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/19</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">逻辑设计：基本 E-R 图转为目标模型</h2>
+    <div class="slide-content"><p class="slide-lead">先用一个 m:n 示例说明属性、码、外码和联系属性如何落位</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-er-to-relational.svg" data-full-src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-er-to-relational.svg" alt="学生、教学班和选课联系转换为关系模式并落实码与联系属性" tabindex="0" role="button" aria-label="放大图片：学生、教学班和选课联系转换为关系模式并落实码与联系属性" decoding="async"></figure></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>学生(学号 PK, 姓名, 所在学院) 教学班(教学班号 PK, 课程号 FK, 开课学期) 选课(学号 PK/FK, 教学班号 PK/FK, 成绩)</p>
+<p>选课主码为（学号，教学班号）；两列分别作为外码，指向学生和教学班</p></div></div>
+    <div class="numeric-progress">3/19</div>
+    <div class="semantic-label">LOGICAL DESIGN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">联系类型决定关系转换方式</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>m:n 联系也可以只把一端的码放进另一端关系吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">联系属性和参照关系不能在转换中丢失</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 29% 33% 20%"><colgroup><col style="width:18%"><col style="width:29%"><col style="width:33%"><col style="width:20%"></colgroup><thead><tr><th>E-R 元素</th><th>关系落点</th><th>码／外码动作</th><th>选择判据</th></tr></thead><tbody><tr><td>实体型</td><td>一个关系模式</td><td>实体码成为主码</td><td>实体属性直接成为关系属性</td></tr><tr><td>1:1 联系</td><td>独立关系，或并入一端</td><td>独立关系时两端码为候选码；合并时加入另一端外码</td><td>参与约束、联系属性、空值与访问方式</td></tr><tr><td>1:n 联系</td><td>独立关系，或并入 n 端</td><td>n 端加入 1 端主码作外码；独立关系通常以 n 端码作码</td><td>联系属性与访问方式</td></tr><tr><td>m:n 联系</td><td>独立关系</td><td>两端码是外码，通常共同组成复合主码</td><td>联系本身承载事实</td></tr><tr><td>多元联系</td><td>独立关系</td><td>各参与码和联系属性进入；候选码由业务语义判断</td><td>事实是否由多端共同确定</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>候选码不一定都选作主码；联系属性不能丢失，外码是否可空要由参与约束决定</p></div></div>
+    <div class="numeric-progress">4/19</div>
+    <div class="semantic-label">TRANSFORMATION RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">转换后用依赖与事务评价逻辑模型</h2>
+    <div class="slide-content"><p class="slide-lead">规范化提供理论边界，合并、分解和适度冗余是设计动作</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>先诊断</h3><p>先写出数据依赖，识别部分、传递和多值依赖</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>再选结构</h3><p>再按事务选择水平或垂直分解，也可合并或保留适度冗余</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查保真</h3><p>检查分解是否无损连接并保持依赖</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>最后评价</h3><p>最后比较连接代价、更新频率、事务路径和维护成本</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>规范化等级要与语义约束和工作负载共同评价</p></div></div>
+    <div class="numeric-progress">5/19</div>
+    <div class="semantic-label">LOGICAL OPTIMIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
+  </section>
+<section id="a4b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">分解要兼顾还原与约束维护</h2>
+    <div class="slide-content"><p class="slide-lead">拆分关系前先明确按什么拆，拆分后再检查结果是否可靠</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 28% 50%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:50%"></colgroup><thead><tr><th>分解方式</th><th>关系代数记法</th><th>适合的问题与风险</th></tr></thead><tbody><tr><td>水平分解</td><td><code>Ri = σpi(R)</code></td><td>按元组条件分开；要防止遗漏或不必要重叠，重构通常靠并集</td></tr><tr><td>垂直分解</td><td><code>Ri = πK∪Ai(R)</code></td><td>按属性集合分开；公共码必须保留，重构依赖连接</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>无损连接</h3><p>无损连接要求重新连接子关系后只能得到原关系，不能产生伪元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>依赖保持</h3><p>依赖保持要求重要函数依赖尽量能在子关系中局部检查，不必每次都回到全局连接</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Student(Sno, Name, Dept, BirthDate, Address)</code> 可按事务拆成 <code>StudentCore(Sno, Name, Dept)</code> 与 <code>StudentProfile(Sno, BirthDate, Address)</code>，但要保留公共码并检查连接代价</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.32696cc0518d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>分解后的表更小，不等于设计更可靠；还要过无损连接和依赖保持两道检查</p></div></div></div></aside>
+    <div class="numeric-progress">6/19</div>
+    <div class="semantic-label">DECOMPOSITION CHECKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">用户外模式让全局结构适应不同用户</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>为用户建好视图，也就同时完成权限控制了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">视图可以同时简化使用和收紧可见范围</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>需要</th><th>视图做法</th><th>结果</th></tr></thead><tbody><tr><td>用户习惯不同</td><td>提供别名或重排列</td><td>不改全局列名</td></tr><tr><td>权限范围不同</td><td>教师视图隐藏学生身份；学生视图只展示本人记录</td><td>收紧可见范围</td></tr><tr><td>查询过于复杂</td><td>封装选课与课程查询</td><td>简化常用操作</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>视图表达用户外模式；实际谁可以使用视图，仍由目标 DBMS 的权限或安全策略控制</p></div></div>
+    <div class="numeric-progress">7/19</div>
+    <div class="semantic-label">USER SCHEMAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">物理设计：把工作负载转为存取路径</h2>
+    <div class="slide-content"><p class="slide-lead">物理设计依赖目标 DBMS 的能力、事务工作负载和响应目标</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="工作负载 + DBMS 能力 → 候选物理方案 → 时间、空间、吞吐与维护评价 → 保留、调整，或回退到逻辑设计"><span class="relation-term">工作负载</span><span class="relation-operator">+</span><span class="relation-term">DBMS 能力</span><span class="relation-operator">→</span><span class="relation-term">候选物理方案</span><span class="relation-operator">→</span><span class="relation-term">时间、空间、吞吐与维护评价</span><span class="relation-operator">→</span><span class="relation-term">保留、调整，或回退到逻辑设计</span></div></div></div></div>
+    <div class="numeric-progress">8/19</div>
+    <div class="semantic-label">PHYSICAL DESIGN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">先分析事务，再决定索引和存储</h2>
+    <div class="slide-content"><p class="slide-lead">一个字段是否建索引不能脱离访问模式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>事务信息</th><th>需要记录</th><th>影响选择</th></tr></thead><tbody><tr><td>查询关系</td><td>访问哪些表和视图</td><td>存取路径</td></tr><tr><td>选择与连接</td><td>条件属性、等值或范围、选择性</td><td>B+ 树、哈希和组合索引候选</td></tr><tr><td>投影与更新</td><td>读取列、修改列和更新频率</td><td>物理维护代价；垂直分解另作逻辑判断</td></tr><tr><td>频率与时限</td><td>关系规模、增长、调用频率和响应目标</td><td>响应、吞吐和存储目标</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>按学号查询选课并在开学高峰写入选课表时，索引选择不能只看“学号是不是主码”，还要看选择性、频率和更新代价</p></div></div>
+    <div class="numeric-progress">9/19</div>
+    <div class="semantic-label">TRANSACTION PROFILE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">B+ 树、哈希和聚簇服务不同访问模式</h2>
+    <div class="slide-content"><p class="slide-lead">选择重点是收益与维护代价的平衡</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-physical-choice.svg" data-full-src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-physical-choice.svg" alt="范围、等值和批量访问模式分别对应 B+ 树、哈希和聚簇的候选选择" tabindex="0" role="button" aria-label="放大图片：范围、等值和批量访问模式分别对应 B+ 树、哈希和聚簇的候选选择" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>B+ 树</h3><p>B+ 树适合作为范围、排序、聚集函数或连接条件的候选路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>哈希</h3><p>哈希适合等值查找或等值连接，不适合范围查找</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>聚簇</h3><p>聚簇把相同键的元组集中存放，适合主要访问路径</p></article></div>
+<div class="component component-text text-inset substep reveal-self"><p>在当前聚簇模型中，一个关系只能参加一个聚簇；B+ 树、哈希和聚簇的具体实现与参数要核对目标 DBMS</p></div></div></div></div>
+    <div class="numeric-progress">10/19</div>
+    <div class="semantic-label">ACCESS METHODS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">索引不是越多越好</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>外码既然是约束，就一定要另外建索引吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">每条索引都可能增加写入和维护成本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>观察</th><th>可能收益</th><th>可能代价</th></tr></thead><tbody><tr><td>高频且有选择性的条件</td><td>可能更快定位元组</td><td>更新时维护索引</td></tr><tr><td>连接条件</td><td>可能减少连接代价</td><td>占用存储空间</td></tr><tr><td>多列组合条件</td><td>组合索引可能匹配常用路径</td><td>列顺序与选择性需按事务评价</td></tr><tr><td>高频更新关系</td><td>少量关键索引</td><td>过多索引拖慢写入</td></tr><tr><td>聚簇码集中访问</td><td>减少物理块读取</td><td>元组移动和索引重建</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>主码和外码是逻辑约束；是否为外码另建索引，是另一项物理设计选择</p></div></div>
+    <div class="numeric-progress">11/19</div>
+    <div class="semantic-label">INDEX TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">存储安排要同时考虑负载、评价证据和 DBMS 边界</h2>
+    <div class="slide-content"><p class="slide-lead">表、索引、日志和备份的安排必须结合访问与变化特征</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">工作负载：记录事务、频率、响应目标和更新特征</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">物理方案：选择索引、哈希、聚簇、存储位置和系统参数</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">评价证据：比较响应时间、吞吐量、空间利用率和维护代价</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">回退判断：达标后实施；不达标时调整物理设计，必要时返回逻辑设计</span></li></ol></div>
+<div class="component component-text text-inset substep reveal-self"><p>存储布局、缓冲区和块大小受目标 DBMS 的能力与参数边界约束，不能脱离产品直接承诺</p></div></div></div>
+    <div class="numeric-progress">12/19</div>
+    <div class="semantic-label">STORAGE PLAN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">实施：把设计变成可运行的 DBMS 对象</h2>
+    <div class="slide-content"><p class="slide-lead">数据转换和应用程序开发要与模式实现同步</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="目标模式实现 ├─ 数据抽取、清洗、映射、装载与校验 └─ 应用编码与调试 ↓ 联合试运行"><span class="relation-term">目标模式实现 ├─ 数据抽取、清洗、映射、装载与校验 └─ 应用编码与调试 ↓ 联合试运行</span></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>装载与应用开发同步推进，在联合调试处汇合；目标模式是目标 DBMS 可接受的结构描述</p></div></div></div>
+    <div class="numeric-progress">13/19</div>
+    <div class="semantic-label">IMPLEMENTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">试运行：验证功能、性能与恢复</h2>
+    <div class="slide-content"><p class="slide-lead">试运行把纸面假设变成可测量证据，合格后才进入正式运行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>阶段</th><th>观察证据</th><th>不达标时回到哪里</th></tr></thead><tbody><tr><td>小批量装载</td><td>清洗映射、主外码和完整性通过率</td><td>数据转换与映射</td></tr><tr><td>应用联合调试</td><td>业务场景、事务结果和错误处理</td><td>应用程序，必要时逻辑设计</td></tr><tr><td>性能评价</td><td>响应时间、吞吐量和空间使用</td><td>物理设计，必要时逻辑设计</td></tr><tr><td>恢复演练</td><td>能否回到一致状态、恢复时间是否可接受</td><td>转储与恢复方案</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>试运行流程：小批量装载 → 联合调试 → 实测 → 修正 → 复测 → 合格后扩大装载并进入正式运行</p></div></div>
+    <div class="numeric-progress">14/19</div>
+    <div class="semantic-label">PILOT RUN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">运行维护是设计工作的延伸</h2>
+    <div class="slide-content"><p class="slide-lead">数据、用户和业务变化会持续改变设计约束；DBA 用运行证据触发调整</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>恢复</h3><p>制定转储和恢复计划</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>控制</h3><p>根据用户和业务变化更新安全和完整性规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>监督</h3><p>采集性能数据并分析瓶颈</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>调整</h3><p>按需重组或重构数据库</p></article></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="监测 → 分析 → 调整配置、索引或存储 → 重组／重构 → 再评价"><span class="relation-term">监测</span><span class="relation-operator">→</span><span class="relation-term">分析</span><span class="relation-operator">→</span><span class="relation-term">调整配置、索引或存储</span><span class="relation-operator">→</span><span class="relation-term">重组／重构</span><span class="relation-operator">→</span><span class="relation-term">再评价</span></div></div></div></div>
+    <div class="numeric-progress">15/19</div>
+    <div class="semantic-label">MAINTENANCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">重组和重构解决不同层次的变化</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.63a93cf4c5a1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>性能下降，就应该直接重构模式吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先判断问题在物理存储还是模式语义</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>维护动作</th><th>改变什么</th><th>典型场景</th></tr></thead><tbody><tr><td>重组</td><td>按原物理设计重新整理实际存储，不改逻辑结构和物理设计</td><td>回收空间、减少指针链</td></tr><tr><td>重构</td><td>部分修改模式或内模式</td><td>增删属性、表或索引，改变数据类型</td></tr><tr><td>新系统评估</td><td>变化超出局部重构能力</td><td>业务变化已改变系统生命周期</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>重组解决存储状态变坏；重构响应业务语义变化；变化过大时才评估新系统</p></div></div>
+    <div class="numeric-progress">16/19</div>
+    <div class="semantic-label">REORGANIZE OR RESTRUCTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">用反馈闭合逻辑、物理与运行设计</h2>
+    <div class="slide-content"><p class="slide-lead">逻辑语义、访问路径和运行证据需要相互反馈</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑产出</h3><p>关系模式、主码／外码、分解和外模式构成逻辑产出</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>物理产出</h3><p>工作负载画像、存取方法、存储安排和评价指标构成物理产出</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运行产出</h3><p>装载、应用调试、试运行和恢复结果支撑运行与维护判断</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>工作负载和运行反馈共同决定物理设计是否适合</p></div></div>
+    <div class="numeric-progress">17/19</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-3/mindmap-7-3.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">18/19</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定含 1:1、1:n、m:n 和多元联系的 E-R 子图，如何写出关系模式并标注主码、外码和联系关系的复合码？</span></li><li><span class="question-no">02</span><span class="question-text">规范化、水平分解、垂直分解和用户外模式分别解决什么问题？无损连接与依赖保持分别有什么作用？</span></li><li><span class="question-no">03</span><span class="question-text">给定查询条件、选择性、更新频率和响应目标，如何选择 B+ 树、哈希、聚簇或不增加索引，并写出一个维护代价？</span></li><li><span class="question-no">04</span><span class="question-text">根据装载、功能、性能或恢复失败的试运行证据，应回到数据转换、应用、逻辑设计、物理设计还是恢复方案？如何区分重组、重构和新系统评估？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-7-2.html" title="上一节：7.2 概念结构设计与 E-R 模型" aria-label="上一节：7.2 概念结构设计与 E-R 模型">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">7.2</span>
+        <span class="nav-title">概念结构与 E-R 模型</span>
+      </a>
+      <a class="exercise-link" href="dbpa-7-3-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-8-1.html" title="下一节：8.1 SQL 扩展与过程化 SQL 基础" aria-label="下一节：8.1 SQL 扩展与过程化 SQL 基础">
+        <span class="nav-title">SQL 扩展与过程化基础</span>
+        <span class="nav-number">8.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">19/19</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

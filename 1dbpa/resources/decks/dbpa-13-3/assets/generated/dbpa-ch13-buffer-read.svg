@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">缓冲区读写路径</title>
+  <desc id="desc">记录请求先通过 READBUF 检查缓冲区，命中直接返回，未命中则申请页面、必要时淘汰并调用操作系统读入；写入先修改缓冲区，之后按条件写回。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .request { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 11; }
+      .hit { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .miss { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 11; }
+      .io { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .miss-arrow { stroke: #d49a61; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">缓冲区先问“页面在不在”，只有未命中才访问外存</text>
+  <rect class="panel" x="45" y="105" width="1110" height="425"/>
+  <rect class="request" x="80" y="245" width="180" height="95"/><text class="label" x="170" y="282">记录请求</text><text class="text" x="170" y="310">READBUF(page)</text>
+  <rect class="io" x="345" y="210" width="220" height="165"/><text class="label" x="455" y="255">查找缓冲区</text><text class="text" x="455" y="290">页面是否已在内存</text><text class="text" x="455" y="320">控制信息 + 定长页面</text>
+  <rect class="hit" x="690" y="150" width="200" height="100"/><text class="label" x="790" y="188">命中</text><text class="text" x="790" y="218">直接返回目标记录</text>
+  <rect class="miss" x="690" y="335" width="200" height="125"/><text class="label" x="790" y="372">未命中</text><text class="text" x="790" y="402">申请空闲页或淘汰页</text><text class="text" x="790" y="430">调用操作系统 READ</text>
+  <rect class="io" x="985" y="335" width="135" height="125"/><text class="label" x="1052" y="373">外存</text><text class="text" x="1052" y="403">读入页面</text><text class="text" x="1052" y="430">再返回记录</text>
+  <path class="arrow" d="M260 292 H335"/><path class="arrow" d="M565 250 C630 250 630 200 680 200"/><path class="miss-arrow" d="M565 325 C630 325 630 395 680 395"/><path class="miss-arrow" d="M890 395 H975"/>
+  <text class="small" x="590" y="190">是</text><text class="small" x="590" y="380">否</text>
+  <rect class="panel" x="45" y="570" width="1110" height="75"/>
+  <text class="label" x="180" y="616">写入</text><text class="text" x="400" y="616">先改缓冲区页面并标记可释放</text><text class="text" x="810" y="616">需要空间或符合条件时 WRITEBUF 写回</text>
+</svg>

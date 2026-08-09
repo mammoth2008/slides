@@ -1,417 +1,270 @@
 <!doctype html>
-<html lang="en">
-
+<html lang="zh-CN">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=1024" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-
-    <!-- 修改页面标题 -->
-    <title>DBPA | HUST</title>
-
-    <!-- 修改 content -->
-    <meta name="description" content="数据库原理与应用课程使用, 为哈尔滨理工大学经济管理学院信息管理与信息系统系本科生设计. " />
-    <meta name="author" content="xinjiang@hrbust.edu.cn" />
-
-    <!-- 引入数学公式 -->
-    <script type="text/javascript">
-        window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']],
-                displayMath: [['$$', '$$'], ['\\[', '\\]']],
-            },
-            chtml: {
-                scale: 0.95
-            }
-        };
-    </script>
-    <script src="../extras/mathjax/tex-chtml-full.js"></script>
-    <!-- 引入完毕 -->
-
-    <link href="../css/impress-course.css" rel="stylesheet" />
-    <link href="../css/impress-common.css" rel="stylesheet" />
-
-    <!--    <link rel="shortcut icon" href="../hustlogo72.png" /> -->
-    <link rel="stylesheet" href="../extras/highlight/styles/github.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 1.4 数据库系统的组成 | HUST</title>
+  <meta name="description" content="从硬件平台、软件平台和人员分工理解数据库系统如何运行与演进">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="1-4">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
 </head>
-
 <body class="impress-not-supported">
-
-    <!-- 左上角加上 logo -->
-    <!--    <div class="logo"></div> -->
-
-    <div class="fallback-message">
-        <p>你的浏览器不支持本网站所要求的功能, 现在看到的是本网站简化版本.</p>
-        <p>为了获得最佳体验, 请使用最新的Chrome, Safari, Firefox 或 Edge 浏览器.</p>
-
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-1-4/assets/dbpa-1-4.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 1.4</div>
+      <h1>数据库系统的组成</h1>
+      <p class="cover-description">数据库、DBMS、应用、人员与运行平台共同支撑系统运行</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
     </div>
-
-    <div id="impress" data-transition-duration="1000" data-width="1024" data-height="768" data-max-scale="3"
-        data-min-scale="0" data-perspective="1000" data-autoplay="0">
-
-        <!-- 每一节 slide 的标题是 cxyt", 表示章节标题. 如第一章第一节标题就是 c11t, 第三章第二节标题就是 c32t -->
-        <!-- 每一节 slide 的标题页 class 应该是 step, 不是 step markdown -->
-        <!-- 类似地, 需要 HTML 排版的 slide,class 都是 step; 可以使用 markdown 的, class 才是 step markdown -->
-
-        <div id="overview" data-x="0" data-y="0" class="step" data-scale="10">
-
-        </div>
-
-        <!-- 修改 id -->
-
-        <div id="c14t" class="step" data-x="0" data-y="0" data-z="0" data-scale="5">
-
-            <!-- 修改标题 -->
-            <h2>1. 绪论</h2>
-            <h3 style="text-align: center">1.4 数据库系统的组成</h3>
-            <p class="footnote">
-                <inlinecode style="font-size: 16px">
-                    Powered by
-                </inlinecode>
-                <a href="https://github.com/impress/impress.js/">
-                    <inlinecode style="font-size: 16px">
-                        impress.js
-                    </inlinecode>
-                    <img class="icon" src="../favicon.png" style="width:10px;height:10px;">
-                </a>
-                <br />
-                <inlinecode style="font-size: 16px">
-                    Ver. 2602
-                </inlinecode>
-                </inlinecode>
-            </p>
-
-        </div>
-
-        <div id="a1" class="step markdown" data-rel-to="c14t" data-rel-x="-1500" data-rel-y="100" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库系统的构成
-
-- 数据库 (Database)
-- 数据库管理系统 (DBMS)
-- 应用程序 (Applications)
-- 数据库管理员 (Database Administrator)
-- 用户 (Users)
-
-        </div>
-
-        <div id="a2" class="step markdown" data-rel-to="a1" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Database System](img/c01/database.svg)
-#### Database System
-
-        </div>
-
-        <div id="a3" class="step markdown" data-rel-to="a2" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库
-
-- 数据库是存储在计算机中的有组织的数据集合
-- 可以持久地保存和管理数据
-- 数据按照特定的数据模型组织和存储
-
-        </div>
-
-        <div id="a4" class="step markdown" data-rel-to="a3" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库管理系统
-
-- 用于管理数据库的软件系统
-- 提供数据定义, 数据操作和数据控制等功能
-- 负责数据的存储, 检索, 更新和维护
-- 保证数据的完整性和安全性
-
-        </div>
-
-        <div id="a5" class="step markdown" data-rel-to="a4" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 应用程序
-
-- 基于数据库的软件程序
-- 实现特定的业务逻辑和功能
-- 通过调用 DBMS 的接口来访问和操作数据库
-- 实现数据的增删改查
-
-        </div>
-
-        <div id="a6" class="step markdown" data-rel-to="a5" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库管理员
-
-- 负责数据库的设计, 部署, 维护和管理
-- 负责数据库的安全性, 性能优化
-- 负责备份和恢复等管理任务
-- 负责授权用户的访问权限
-- 保证数据库的正常运行和数据可靠性
-
-        </div>
-
-        <div id="a7" class="step markdown" data-rel-to="a6" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 用户
-
-- 最终用户
-- 通过用户接口 (User Interface) 使用数据库
-
-        </div>
-
-        <div id="a8" class="step markdown" data-rel-to="a7" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Database System](img/c01/database.svg)
-#### Database System
-
-        </div>
-
-        <div id="a9" class="step markdown" data-rel-to="c14t" data-rel-x="400" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库系统的硬件
-
-- 内存要求
-- 存储要求
-- 高通道能力
-
-        </div>
-
-        <div id="a10" class="step markdown" data-rel-to="a9" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Computer Hardware](img/c01/computer-hardware.jpg)
-#### Computer Hardware
-
-        </div>
-
-        <div id="a11" class="step markdown" data-rel-to="a10" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Von Neumann Architecture](img/c01/von_neumann_structure.png)
-#### Von Neumann Architecture
-
-        </div>
-
-        <div id="a12" class="step markdown" data-rel-to="a11" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Von Neumann](img/c01/von_neumann.jpg)
-#### John von Neumann
-
-        </div>
-
-        <div id="a13" class="step markdown" data-rel-to="a12" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库系统的软件
-
-- 数据库管理系统
-- 操作系统
-- 高级语言和编译系统
-- 应用开发工具
-- 数据库应用系统
-
-        </div>
-
-        <div id="a14" class="step markdown" data-rel-to="a13" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Computer Software](img/c01/computer-software.jpeg)
-#### Computer Software
-
-        </div>
-
-        <div id="a15" class="step markdown" data-rel-to="c14t" data-rel-x="2400" data-rel-y="-500" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库系统的人员
-
-- 数据库管理员 (DBA)
-- 系统分析师
-- 数据库设计人员
-- 应用程序员
-- 用户
-
-        </div>
-
-        <div id="a16" class="step markdown" data-rel-to="a15" data-rel-x="0" data-rel-y="1000" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库管理员 (DBA)
-
-- 决定数据库中的信息内容和结构
-- 参与数据库设计的全过程
-- 决定数据库的存储结构和存取策略
-- 定义数据的安全性要求和完整性约束条件
-- 监控数据库的使用和运行
-- 改进和重组数据库
-
-        </div>
-
-        <div id="a17" class="step markdown" data-rel-to="a16" data-rel-x="0" data-rel-y="900" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 系统分析师
-
-- 负责应用系统需求分析和规范说明
-- 与用户和数据库管理员合作确定系统配置
-- 参与数据库系统概要设计
-
-        </div>
-
-        <div id="a18" class="step markdown" data-rel-to="a17" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 数据库设计人员
-
-- 负责确定数据并设计数据库的各级模式
-- 参与用户需求调查和系统分析
-- 进行数据库设计
-- 数据库设计人员往往由 DBA 担任
-
-        </div>
-
-        <div id="a19" class="step markdown" data-rel-to="a18" data-rel-x="0" data-rel-y="800" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 应用程序员
-
-- 设计和编写应用系统的程序模块
-- 调试和安装应用程序
-
-        </div>
-
-        <div id="a20" class="step markdown" data-rel-to="c14t" data-rel-x="-1500" data-rel-y="-1300" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 用户
-
-- 偶然用户
-- 简单用户
-- 复杂用户
-
-        </div>
-
-        <div id="a21" class="step markdown" data-rel-to="a20" data-rel-x="800" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 偶然用户
-
-- 不经常访问数据库
-- 每次访问需要不同的数据库信息
-- 如企业或组织的高中级管理人员
-
-        </div>
-
-        <div id="a22" class="step markdown" data-rel-to="a21" data-rel-x="1300" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 简单用户
-
-- 主要进行数据库的查询和更新
-- 通过应用程序存取数据库
-- 如银行职员, 航空公司的预订员
-
-        </div>
-
-        <div id="a23" class="step markdown" data-rel-to="a22" data-rel-x="1300" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-### 复杂用户
-
-- 具有较高科学技术背景
-- 熟悉数据库管理系统的功能
-- 能够直接使用数据库语言访问数据库
-- 甚至可以编写自己的应用程序
-
-        </div>
-
-        <div id="a24" class="step markdown" data-rel-to="a23" data-rel-x="0" data-rel-y="0" data-rel-z="0"
-            data-rotate-y="0" data-scale="2">
-
-![Database System](img/c01/database.svg)
-#### Database System
-
-        </div>
-
-        <div id="mm14" class="step" data-rel-to="c14t" data-rel-x="0" data-rel-y="-3000" data-rotate-y="0"
-            data-rotate="0" data-scale="1"
-            style="width: 92vw; height: 92vh; display: flex; justify-content: center; align-items: center;">
-
-            <iframe src="img/c01/mindmap-1-4.html" style="width: 100%; height: 100%; border: none;" allowfullscreen>
-            </iframe>
-
-        </div>
-
-        <!-- 本节问题 -->
-
-        <div id="c14q" class="step markdown" data-rel-to="c14t" data-rel-x="0" data-rel-y="-800" data-z="500"
-            data-rotate-x="77" data-rotate-y="0" data-rotate-z="180" data-scale="2">
-
-### 1.4 数据库系统的组成
-
-- 描述 DBA 在数据库系统中的角色和主要职责.
-- 数据库系统中的用户如何与数据库系统互动?
-- 何为应用程序? 它们如何与数据库和 DBMS 交互?
-- 系统分析师, 数据库设计人员, 应用程序员各自的职责是什么?
-- 请描述并区分偶然用户, 简单用户和复杂用户.
-
-            ----
-
-            [ 1.3 数据库系统的结构](dbpa-1-3.html#/overview)
-            [| 练习 |](dbpa-exec.html)
-            [ 2.1 关系数据结构及形式化定义](dbpa-2-1.html#/overview)
-
-        </div>
-
-    </div>
-
-    <!--
-    <div id="impress-toolbar"></div>
-    <div id="impress-help"></div>
-
-    <script>
-    if ("ontouchstart" in document.documentElement) { 
-        document.querySelector(".hint").innerHTML = "<p>Swipe left or right to navigate</p>";
-    }
-    </script>
-    -->
-
-    <!-- 页面下方显示进度条 -->
-    <div class="impress-progressbar">
-        <div></div>
-    </div>
-
-    <!-- 页面下方显示当前页/总页数 -->
-    <div class="impress-progress"></div>
-
-    <!-- 使用 markdown 写简单页面 -->
-    <script type="text/javascript" src="../extras/markdown/markdown.js"></script>
-
-    <!-- 语法高亮,配合<head>中的 highlight css 起作用 -->
-    <script src="../extras/highlight/highlight.min.js"></script>
-    <script>hljs.highlightAll();</script>
-
-    <!-- impress.js 需要放在最下面,并且初始化 -->
-    <script src="../js/impress.js"></script>
-    <script>impress().init();</script>
-    <br />
-    <div style="position: fixed; bottom: 30px; left: 0; right: 0; text-align: center;">
-        <a href="https://beian.mps.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; " target="_blank">
-            <img class="icon" ; src="../beianicon.png"
-                style="width: 20px; height: 20px; vertical-align: -5px; margin-right: 5px;">黑公网安备23010302001726号</a>
-        &nbsp;
-        <a href="https://beian.miit.gov.cn/"
-            style="color: #000000; text-shadow: none; font-family: CONSOLAS; font-size: 14px; "
-            target="_blank">黑ICP备2024033110号-1</a>
-    </div>
+<!-- speaker-notes
+1.1 已经给出数据库系统组成公式。本节不再停留在公式，而是追踪平台与人员如何共同完成设计、开发、运行和维护。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">数据库系统由数据、平台、软件和人员共同支撑；不同角色在不同抽象层次上承担职责</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明数据库、DBMS、应用系统、硬件平台、软件平台和人员怎样共同组成数据库系统</span></li><li><span class="list-marker">02</span><span class="list-text">区分硬件平台与软件平台分别为系统提供的能力</span></li><li><span class="list-marker">03</span><span class="list-text">解释系统分析员、数据库设计员、应用程序员、DBA 和最终用户的责任边界</span></li><li><span class="list-marker">04</span><span class="list-text">说明应用程序员为什么可以依据外模式开发，不必直接处理内模式</span></li><li><span class="list-marker">05</span><span class="list-text">根据工作情境判断主要角色以及涉及的抽象层次或运行平台</span></li><li><span class="list-marker">06</span><span class="list-text">用一个学生教学系统案例说明数据库系统如何长期运行与演进</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/18</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.1</div>
+    <h2 class="slide-title">数据库系统由核心要素和支撑平台共同组成</h2>
+    <div class="slide-content"><p class="slide-lead">组成公式列出核心要素，平台与人员说明这些要素如何协作运行</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>DBS = DB + DBMS + APP + DBA + Users</p></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>组成要素</th><th>运行平台</th><th>人员协作</th></tr></thead><tbody><tr><td>数据库、DBMS、应用系统</td><td>硬件平台、软件平台</td><td>DBA、系统分析员、数据库设计员、应用程序员、最终用户</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>这不是互斥分类：DBMS 和应用系统属于软件平台；“平台”是支撑视角，公式列出的是数据库系统的核心组成要素</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先用公式定位整体，再分别追踪平台如何支撑运行、人员如何承担职责</p></div></div>
+    <div class="numeric-progress">3/18</div>
+    <div class="semantic-label">SYSTEM COMPOSITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.1</div>
+    <h2 class="slide-title">硬件平台提供处理与存储基础</h2>
+    <div class="slide-content"><p class="slide-lead">数据库系统能否持续处理和保存数据，依赖底层硬件资源</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>处理器</h3><p>处理器为数据库管理、应用运行和查询处理提供计算能力</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内存</h3><p>暂存正在处理的数据和高频访问的数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>持久存储</h3><p>长期保存数据库记录、索引和后备副本</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>处理器、存储器和存储设备的演进会推动数据库存储与查询技术演进</p></div></div>
+    <div class="numeric-progress">4/18</div>
+    <div class="semantic-label">HARDWARE PLATFORM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.1</div>
+    <h2 class="slide-title">硬件资源重要，但硬件不负责数据库管理</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>服务器越强，数据库系统就一定越快吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">硬件提供运行资源，系统行为还取决于软件、配置和人员如何组织与使用数据</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>描述</th><th>主要归属</th><th>原因</th></tr></thead><tbody><tr><td>增加内存后热点查询更快</td><td>硬件平台</td><td>可能增加可用运行资源，仍需结合应用、DBMS 和配置判断</td></tr><tr><td>定义成绩表和完整性要求</td><td>数据库设计员/DBA 借助 DBMS</td><td>定义模式与约束</td></tr><tr><td>提供成绩查询页面</td><td>应用系统</td><td>实现面向用户的业务功能</td></tr><tr><td>规定谁可以修改成绩</td><td>DBA 与 DBMS</td><td>DBA 制定权限策略，DBMS 执行访问控制</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/18</div>
+    <div class="semantic-label">HARDWARE BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.7778%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.2</div>
+    <h2 class="slide-title">软件平台把基础资源连接到业务应用</h2>
+    <div class="slide-content"><p class="slide-lead">软件平台由操作系统、DBMS、开发环境和应用系统共同组成</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>操作系统 Operating System</h3><p>提供进程、文件、内存和设备等基础运行环境</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据库管理系统 DBMS</h3><p>定义、组织、存储、操纵、控制和维护数据库</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>开发工具与环境</h3><p>高级语言、编译系统和应用开发工具支持编写、调试和部署应用</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用系统</h3><p>应用系统把具体业务流程实现为用户可以操作的功能</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>软件平台中的应用系统面向业务；一次请求由应用系统、DBMS 和操作系统协作完成</p></div></div>
+    <div class="numeric-progress">6/18</div>
+    <div class="semantic-label">SOFTWARE PLATFORM</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.2</div>
+    <h2 class="slide-title">一次成绩查询经过多层软件协作</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果查询变慢，你会先检查应用、DBMS，还是运行平台？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">用户看到一个功能，系统内部需要多个软件平台共同完成</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-1-4/assets/dbpa-1-4.svg" data-full-src="resources/decks/dbpa-1-4/assets/dbpa-1-4.svg" alt="一次业务请求从最终用户经应用系统和 DBMS 访问数据库，并由软件与硬件平台支撑" tabindex="0" role="button" aria-label="放大图片：一次业务请求从最终用户经应用系统和 DBMS 访问数据库，并由软件与硬件平台支撑" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-inset"><p>主流程：学生点击“查看成绩”，应用系统组织业务请求，DBMS 处理数据访问，结果再返回应用</p>
+<p>底层支撑：操作系统和硬件为 DBMS 与数据库提供运行、存储支撑；开发工具用于开发和部署，不是这次查询的执行步骤</p></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="外模式 → 外模式/模式映像 → 模式 → 模式/内模式映像 → 内模式"><span class="relation-term">外模式</span><span class="relation-operator">→</span><span class="relation-term">外模式/模式映像</span><span class="relation-operator">→</span><span class="relation-term">模式</span><span class="relation-operator">→</span><span class="relation-term">模式/内模式映像</span><span class="relation-operator">→</span><span class="relation-term">内模式</span></div></div>
+<div class="component component-text text-inset"><p>应用程序员依据外模式开发；DBMS 通过两级映像连接三级模式，并管理存储细节</p></div></div></div></div>
+    <div class="numeric-progress">7/18</div>
+    <div class="semantic-label">SOFTWARE RESPONSIBILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.8889%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">数据库系统也是一个人机系统</h2>
+    <div class="slide-content"><p class="slide-lead">不同角色参与不同阶段，拥有不同的数据视图和责任</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 47% 30%"><colgroup><col style="width:23%"><col style="width:47%"><col style="width:30%"></colgroup><thead><tr><th>角色</th><th>主要工作</th><th>主要关注</th></tr></thead><tbody><tr><td>DBA</td><td>参与设计；负责运行、权限、安全、性能、备份恢复与重构</td><td>系统状态、内模式与长期运行</td></tr><tr><td>系统分析员</td><td>分析需求、规范说明和总体设计</td><td>业务目标与总体方案</td></tr><tr><td>数据库设计员</td><td>确定数据并参与各级模式设计，与用户、分析员和 DBA 协作</td><td>全局结构与各级模式</td></tr><tr><td>应用程序员</td><td>依据外模式开发应用程序</td><td>业务流程与用户功能</td></tr><tr><td>最终用户</td><td>通过应用系统完成业务活动</td><td>自己需要的数据与操作</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/18</div>
+    <div class="semantic-label">PEOPLE IN DBS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">DBA 负责数据库系统的长期管理</h2>
+    <div class="slide-content"><p class="slide-lead">DBA 需要在设计、使用、运行和变化之间持续协调</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>责任类别</th><th>典型工作</th></tr></thead><tbody><tr><td>设计与定义</td><td>参与概念模式、外模式、模式和内模式设计，协助确定数据定义</td></tr><tr><td>用户支持与培训</td><td>帮助用户理解和使用系统，处理日常运行问题并提供培训</td></tr><tr><td>运行控制与安全</td><td>管理访问权限，维护安全性与完整性，监视运行状态</td></tr><tr><td>性能改进与重组</td><td>监视空间利用率与处理效率，改进和重组数据库</td></tr><tr><td>转储与恢复</td><td>制定转储、备份和恢复策略，维护后备副本与日志</td></tr><tr><td>系统重构</td><td>需求变化时参与模式和内模式的重构，并与应用团队协作调整系统</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DBA 负责六类工作：设计、支持、运行、改进、恢复和重构。实际组织中可以由多人分担这些职责，不只是维护服务器</p></div></div>
+    <div class="numeric-progress">9/18</div>
+    <div class="semantic-label">DATABASE ADMINISTRATOR</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">三类角色把需求变成可运行的系统</h2>
+    <div class="slide-content"><p class="slide-lead">系统分析员澄清需求，数据库设计员组织数据，应用程序员实现功能</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>系统分析员</h3><p>澄清业务目标、范围和规范，参与总体设计以及软硬件配置讨论，把用户需求转化为可执行的系统说明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据库设计员</h3><p>确定数据并参与各级模式设计，与用户、分析员和 DBA 核对数据组织与运行方案</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用程序员</h3><p>以外模式为基础实现界面、业务流程和数据库访问程序</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用程序员 → 外模式；设计员和 DBA → 模式与内模式；两级映像连接这些层次，让程序不必直接处理内模式的存储细节</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.32696cc0518d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>岗位可以合并，职责边界仍要说清楚</p></div></div></div></aside>
+    <div class="numeric-progress">10/18</div>
+    <div class="semantic-label">DESIGN AND DEVELOPMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">最终用户通过应用完成业务活动</h2>
+    <div class="slide-content"><p class="slide-lead">用户不必直接管理数据库，也能参与需求形成和系统反馈</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">使用：通过应用系统的用户界面查询、录入和更新业务数据</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">提出需求：说明业务目标、字段和工作规则，帮助分析员澄清需求</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">反馈与检验：报告运行问题，检验系统是否支持实际工作</span></li></ol></div>
+<div class="component component-text text-inset"><p>最终用户通过应用界面使用外模式提供的局部数据，不直接面对内模式的存储结构</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>最终用户看到的是适合自己工作的数据视图，而不是数据库的全部内部结构</p></div></div>
+    <div class="numeric-progress">11/18</div>
+    <div class="semantic-label">END USERS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.1111%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">数据库系统的工作贯穿整个生命周期</h2>
+    <div class="slide-content"><p class="slide-lead">不同角色接力协作，需求变化时回到分析与设计</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>需求分析</h3><p>最终用户与系统分析员提出并澄清业务需求</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>模式与运行方案</h3><p>数据库设计员与 DBA 设计模式、外模式和运行方案</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>外模式与应用开发</h3><p>应用程序员依据外模式实现界面、业务流程和访问程序</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>上线运行与反馈</h3><p>最终用户通过应用完成业务，DBMS 按定义、权限和完整性规则管理数据</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>性能、恢复与重构</h3><p>DBA 监控、调优、备份、恢复并参与系统重构；需求变化时回到分析与设计</p></div></div></div></div></div>
+    <div class="numeric-progress">12/18</div>
+    <div class="semantic-label">DATABASE LIFECYCLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">练习：先判断角色与层次</h2>
+    <div class="slide-content"><p class="slide-lead">每项工作都要定位主要角色、相关层次或运行平台，并说明判断依据</p>
+<div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">说明学生需要查询哪些字段</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">设计学生、课程和选课的全局联系</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">编写选课页面和提交逻辑</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">为选课查询调整索引</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">系统故障后恢复到正确状态</span></li></ol></div></div>
+<div class="component component-text text-inset"><p>判断依据包括主要角色、相关层次或运行平台，以及选择该角色的理由。使用某个工具不等于承担相应角色</p></div></div></div>
+    <div class="numeric-progress">13/18</div>
+    <div class="semantic-label">RESPONSIBILITY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.2222%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">案例：学生教学系统新增完成度查询</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.63a93cf4c5a1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>新增需求先找谁确认边界？</p></div></div></div></aside>
+    <div class="slide-content"><div class="slide-main-content"><p>学生教学系统准备新增“培养方案完成度”查询。同时，团队提出了四项相关变化：为成绩查询增加索引；数据库服务器更换存储设备；教师反馈成绩录入规则不清楚；一次故障需要恢复到正确状态</p>
+<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">分别判断每项变化主要涉及的角色，以及需要协作的其他角色</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">指出每项变化涉及需求、应用、模式、外模式、内模式、软件或硬件平台中的哪些对象</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">选择一项变化，说明它如何从用户需求传到应用、DBMS 和运行平台</span></li></ol></div></div>
+<div class="component component-text text-inset"><p>案例判断的关键不是找一个“万能负责人”，而是追踪变化经过的数据、软件、平台和人员协作链</p></div></div></div>
+    <div class="numeric-progress">14/18</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4 <span>|</span> 1.4.3</div>
+    <h2 class="slide-title">结构、组成和体系结构回答不同问题</h2>
+    <div class="slide-content"><p class="slide-lead">1.3 解释数据分层，1.4 解释组成与协作，1.5 解释部署与连接</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 26% 26% 26%"><colgroup><col style="width:22%"><col style="width:26%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>比较维度</th><th>1.3 三级模式结构</th><th>1.4 数据库系统组成</th><th>1.5 数据库系统体系结构</th></tr></thead><tbody><tr><td>核心对象</td><td>外模式、模式、内模式、两级映像</td><td>平台、DBMS、应用和人员</td><td>要素的部署与连接方式</td></tr><tr><td>主要判断</td><td>变化在哪一层，哪一级映像吸收</td><td>哪个角色负责，依赖哪些平台</td><td>集中式、客户—服务器、并行、分布式或云</td></tr><tr><td>直接价值</td><td>数据独立性与应用稳定性</td><td>设计、开发、运行和维护协作</td><td>理解系统的外部组织方式</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>集中式、客户—服务器、并行、分布式和云部署回答的是系统要素怎样组织与连接</p></div></div></div>
+    <div class="numeric-progress">15/18</div>
+    <div class="semantic-label">STRUCTURE AND COMPOSITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4</div>
+    <h2 class="slide-title">数据库系统由数据、平台、软件和人员共同运行</h2>
+    <div class="slide-content"><p class="slide-lead">数据库系统的长期运行依赖平台协作和清晰的职责边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>硬件平台</h3><p>遇到资源或性能问题，先区分硬件容量、DBMS/存储组织、应用逻辑和配置</p></article><article class="content-card emphasis-card" tabindex="0"><h3>软件平台</h3><p>遇到“请求怎样被处理”时，沿应用、DBMS 和操作系统向下追踪</p></article><article class="content-card emphasis-card" tabindex="0"><h3>人员分工</h3><p>DBA 负责设计、支持、运行、改进、恢复和重构；实际组织中可以由多人分担这些职责</p>
+<p>遇到“谁来负责”时，按需求、设计、开发、使用和维护分配职责</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>理解数据库系统的组成，才能把设计、开发、运行和维护放回同一个整体</p></div></div>
+    <div class="numeric-progress">16/18</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-1-4/mindmap-1-4.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">17/18</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.4444%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.4</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">数据库系统为什么不能只理解为数据库或 DBMS？</span></li><li><span class="question-no">02</span><span class="question-text">硬件平台和软件平台分别为数据库系统提供什么能力？</span></li><li><span class="question-no">03</span><span class="question-text">DBA 的六类职责分别解决哪些长期管理问题？</span></li><li><span class="question-no">04</span><span class="question-text">系统分析员、数据库设计员和应用程序员如何在需求、模式、外模式和应用之间分工？</span></li><li><span class="question-no">05</span><span class="question-text">在原应用需求不变且两级映像能够吸收变化时，应用程序员为什么可以依据外模式开发，而不必直接处理内模式？</span></li><li><span class="question-no">06</span><span class="question-text">完成度查询涉及哪些角色与平台？集中式、分布式、云部署属哪一节？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-1-3.html" title="上一节：1.3 数据库系统的结构" aria-label="上一节：1.3 数据库系统的结构">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.3</span>
+        <span class="nav-title">数据库系统结构</span>
+      </a>
+      <a class="exercise-link" href="dbpa-1-4-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-1-5.html" title="下一节：1.5 数据库系统的体系结构" aria-label="下一节：1.5 数据库系统的体系结构">
+        <span class="nav-title">数据库系统体系结构</span>
+        <span class="nav-number">1.5</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">18/18</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
 </body>
-
 </html>

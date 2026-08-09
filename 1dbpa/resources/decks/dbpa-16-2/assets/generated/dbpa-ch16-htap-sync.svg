@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">一种行列协作实现：逻辑上一份业务数据，物理上可以有多条路径</title>
+  <desc id="desc">图示一种业务写入进入行存事务路径、经同步机制进入列存分析路径的 HTAP 实现；它不代表所有 HTAP 都必须先写行存再复制到列存。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .source { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 14; }
+      .row { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 14; }
+      .col { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 14; }
+      .sync { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 14; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .dashed { stroke: #9aabba; stroke-width: 2; stroke-dasharray: 7 7; fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">逻辑上一份业务数据，物理上可以有两条访问路径</text>
+  <rect class="panel" x="40" y="100" width="1120" height="475"/>
+
+  <rect class="source" x="75" y="250" width="190" height="115"/>
+  <text class="label" x="117" y="293">业务写入</text>
+  <text class="text" x="98" y="329">订单、库存、状态</text>
+
+  <rect class="row" x="350" y="150" width="245" height="145"/>
+  <text class="label" x="414" y="198">行存路径</text>
+  <text class="text" x="394" y="238">OLTP 短事务</text>
+  <text class="small" x="394" y="268">点查、更新、ACID</text>
+  <rect class="sync" x="350" y="380" width="245" height="120"/>
+  <text class="label" x="408" y="425">同步机制</text>
+  <text class="text" x="390" y="462">日志、复制或合并</text>
+
+  <rect class="col" x="720" y="150" width="245" height="145"/>
+  <text class="label" x="785" y="198">列存路径</text>
+  <text class="text" x="765" y="238">OLAP 大范围扫描</text>
+  <text class="small" x="765" y="268">聚合、压缩、并行</text>
+  <rect class="col" x="720" y="380" width="245" height="120"/>
+  <text class="label" x="783" y="425">分析结果</text>
+  <text class="text" x="762" y="462">报表、预警、推荐</text>
+
+  <path class="arrow" d="M265 307 H340"/>
+  <path class="arrow" d="M472 305 V370"/>
+  <path class="arrow" d="M595 440 H650 V230 H710"/>
+  <path class="arrow" d="M842 305 V370"/>
+  <text class="small" x="560" y="345">同步边界：延迟、一致性、资源隔离</text>
+
+  <rect class="panel" x="75" y="610" width="890" height="58"/>
+  <text class="label" x="105" y="647">HTAP 的判断点</text>
+  <text class="text" x="330" y="647">不是有没有副本，而是副本多久可见、事务是否受影响、接口是否统一</text>
+</svg>

@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">数据库镜像与介质故障切换</title>
+  <desc id="desc">主数据库更新时由数据库管理系统把更新复制到镜像介质，主介质损坏后由镜像继续提供服务。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .primary { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 14; }
+      .mirror { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 14; }
+      .fault { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 12; }
+      .router { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 12; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8d7bb8; stroke-width: 3; stroke-dasharray: 9 8; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">镜像把“重装副本”前移成“切换到另一份数据”</text>
+
+  <rect class="panel" x="45" y="105" width="1110" height="255"/>
+  <text class="label" x="110" y="155">正常运行</text>
+  <rect class="router" x="175" y="205" width="160" height="70"/><text class="label" x="255" y="235">应用请求</text><text class="text" x="255" y="258">读 / 写</text>
+  <rect class="primary" x="475" y="170" width="220" height="140"/><text class="label" x="585" y="220">主数据库</text><text class="text" x="585" y="248">主介质上的数据与日志</text><text class="text" x="585" y="273">接收更新</text>
+  <rect class="mirror" x="850" y="170" width="220" height="140"/><text class="label" x="960" y="220">镜像数据库</text><text class="text" x="960" y="248">另一介质上的副本</text><text class="text" x="960" y="273">保持同步</text>
+  <path class="arrow" d="M335 240 H465"/><path class="dash" d="M705 240 H840"/>
+  <text class="text" x="770" y="205">DBMS 自动复制更新</text>
+
+  <rect class="panel" x="45" y="400" width="1110" height="215"/>
+  <text class="label" x="110" y="450">主介质故障</text>
+  <rect class="fault" x="475" y="465" width="220" height="75"/><text class="label" x="585" y="497">主介质损坏</text><text class="text" x="585" y="522">原盘暂不可用</text>
+  <rect class="mirror" x="850" y="455" width="220" height="95"/><text class="label" x="960" y="490">镜像继续服务</text><text class="text" x="960" y="516">减少停机和重装时间</text>
+  <path class="dash" d="M705 502 H840"/>
+  <text class="text" x="775" y="475">切换 / 恢复</text>
+  <text class="text" x="600" y="590">代价：每次更新都要复制，写入路径更长；实际范围可只保护关键数据和日志。</text>
+</svg>

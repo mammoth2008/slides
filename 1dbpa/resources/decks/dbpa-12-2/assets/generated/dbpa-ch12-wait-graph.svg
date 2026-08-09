@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">死锁的事务等待图</title>
+  <desc id="desc">T1 持有 R1 等待 R2，T2 持有 R2 等待 R1，等待边形成闭环。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#d49a61"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .txn { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; }
+      .lock { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 10; }
+      .wait { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 10; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #d49a61; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">等待图把“互相等”画成一个闭环</text>
+  <rect class="panel" x="45" y="105" width="1110" height="440"/>
+  <text class="label" x="170" y="165">已持有</text><text class="label" x="1015" y="165">正在等待</text>
+  <rect class="txn" x="160" y="230" width="190" height="90"/><text class="label" x="255" y="270">T1</text><text class="text" x="255" y="296">持有 R1</text>
+  <rect class="lock" x="420" y="230" width="190" height="90"/><text class="label" x="515" y="270">R1</text><text class="text" x="515" y="296">被 T1 锁住</text>
+  <rect class="txn" x="850" y="230" width="190" height="90"/><text class="label" x="945" y="270">T2</text><text class="text" x="945" y="296">等待 R1</text>
+  <path class="arrow" d="M850 275 C780 190 700 190 615 275"/>
+  <rect class="txn" x="160" y="390" width="190" height="90"/><text class="label" x="255" y="430">T2</text><text class="text" x="255" y="456">持有 R2</text>
+  <rect class="lock" x="420" y="390" width="190" height="90"/><text class="label" x="515" y="430">R2</text><text class="text" x="515" y="456">被 T2 锁住</text>
+  <rect class="txn" x="850" y="390" width="190" height="90"/><text class="label" x="945" y="430">T1</text><text class="text" x="945" y="456">等待 R2</text>
+  <path class="arrow" d="M850 435 C770 520 700 520 615 435"/>
+  <path class="arrow" d="M350 275 H410"/><path class="arrow" d="M350 435 H410"/>
+  <text class="small" x="70" y="600">等待边：请求者 → 持有者</text>
+  <text class="small" x="470" y="600">T1 → T2 → T1 形成回路</text>
+  <text class="small" x="800" y="600">解除：回滚代价较小的事务，释放其锁</text>
+</svg>

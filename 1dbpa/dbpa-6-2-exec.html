@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>6.2 依赖推理与模式分解｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 6.2</div><h1>依赖推理与模式分解</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 8</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 8 题 · 匹配题</div><h2>将 Armstrong 公理与推理形式匹配</h2><div class="matching-grid"><label class="matching-row"><span>自反律</span><select class="matching-select" data-answer="若 Y 是 X 的子集，则 X→Y" name="q1"><option value="">请选择</option><option value="若 X→Y，则 XZ→YZ">若 X→Y，则 XZ→YZ</option><option value="若 X→Y 且 Y→Z，则 X→Z">若 X→Y 且 Y→Z，则 X→Z</option><option value="若 Y 是 X 的子集，则 X→Y">若 Y 是 X 的子集，则 X→Y</option></select></label><label class="matching-row"><span>增广律</span><select class="matching-select" data-answer="若 X→Y，则 XZ→YZ" name="q1"><option value="">请选择</option><option value="若 X→Y，则 XZ→YZ">若 X→Y，则 XZ→YZ</option><option value="若 X→Y 且 Y→Z，则 X→Z">若 X→Y 且 Y→Z，则 X→Z</option><option value="若 Y 是 X 的子集，则 X→Y">若 Y 是 X 的子集，则 X→Y</option></select></label><label class="matching-row"><span>传递律</span><select class="matching-select" data-answer="若 X→Y 且 Y→Z，则 X→Z" name="q1"><option value="">请选择</option><option value="若 X→Y，则 XZ→YZ">若 X→Y，则 XZ→YZ</option><option value="若 X→Y 且 Y→Z，则 X→Z">若 X→Y 且 Y→Z，则 X→Z</option><option value="若 Y 是 X 的子集，则 X→Y">若 Y 是 X 的子集，则 X→Y</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>自反律 → 若 Y 是 X 的子集，则 X→Y；增广律 → 若 X→Y，则 XZ→YZ；传递律 → 若 X→Y 且 Y→Z，则 X→Z</p><p>三条公理是可靠且完备的函数依赖推理基础，可继续导出合并、分解和伪传递等规则</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="ordering" hidden><div class="question-kicker">第 2 题 / 共 8 题 · 排序题</div><h2>求属性集 X 关于依赖集 F 的闭包时，按步骤排列</h2><ol class="ordering-list" data-answer="[&quot;用 X 初始化闭包 X+&quot;, &quot;查找左部已经包含在 X+ 中的函数依赖&quot;, &quot;把这些依赖的右部属性加入 X+&quot;, &quot;重复扫描直到闭包不再增长&quot;]"><li class="ordering-item"><span>重复扫描直到闭包不再增长</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“重复扫描直到闭包不再增长”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“重复扫描直到闭包不再增长”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>用 X 初始化闭包 X+</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“用 X 初始化闭包 X+”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“用 X 初始化闭包 X+”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>查找左部已经包含在 X+ 中的函数依赖</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“查找左部已经包含在 X+ 中的函数依赖”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“查找左部已经包含在 X+ 中的函数依赖”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>把这些依赖的右部属性加入 X+</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“把这些依赖的右部属性加入 X+”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“把这些依赖的右部属性加入 X+”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>用 X 初始化闭包 X+ → 查找左部已经包含在 X+ 中的函数依赖 → 把这些依赖的右部属性加入 X+ → 重复扫描直到闭包不再增长</p><p>闭包通过反复应用可触发的依赖得到，用于判断 X 能决定哪些属性以及是否为超码</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="single" data-answer="包含，因此 AB 是超码；还需检查最小性才能判断候选码" hidden><div class="question-kicker">第 3 题 / 共 8 题 · 单选题</div><h2>对 R(A,B,C,D,E)，F={AB→C, B→D, C→E}，AB+ 是否包含全部属性？</h2><div class="choices"><label class="choice"><input type="radio" name="q3" value="包含，因此 AB 是超码；还需检查最小性才能判断候选码" aria-keyshortcuts="1"><span>包含，因此 AB 是超码；还需检查最小性才能判断候选码</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q3" value="不包含，因为 AB 只能推出 C" aria-keyshortcuts="2"><span>不包含，因为 AB 只能推出 C</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>包含，因此 AB 是超码；还需检查最小性才能判断候选码</p><p>从 AB 得到 C 和 D，再由 C 得到 E，所以闭包为 ABCDE；候选码还要求去掉 A 或 B 后都不能决定全部属性</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="multiple" data-answer="[&quot;把每个依赖的右部拆成单属性&quot;, &quot;删除左部中的多余属性&quot;, &quot;删除可以由其他依赖推出的冗余依赖&quot;, &quot;保证简化前后的依赖集等价&quot;]" hidden><div class="question-kicker">第 4 题 / 共 8 题 · 多选题</div><h2>构造最小覆盖时通常需要完成哪些操作？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q4" value="把每个依赖的右部拆成单属性" aria-keyshortcuts="1"><span>把每个依赖的右部拆成单属性</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q4" value="删除左部中的多余属性" aria-keyshortcuts="2"><span>删除左部中的多余属性</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q4" value="删除可以由其他依赖推出的冗余依赖" aria-keyshortcuts="3"><span>删除可以由其他依赖推出的冗余依赖</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q4" value="保证简化前后的依赖集等价" aria-keyshortcuts="4"><span>保证简化前后的依赖集等价</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q4" value="任意删除导致关系数量增加的依赖" aria-keyshortcuts="5"><span>任意删除导致关系数量增加的依赖</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q4" value="把所有依赖的左部都替换成候选码" aria-keyshortcuts="6"><span>把所有依赖的左部都替换成候选码</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>把每个依赖的右部拆成单属性、删除左部中的多余属性、删除可以由其他依赖推出的冗余依赖、保证简化前后的依赖集等价</p><p>最小覆盖减少推理负担，但必须保持与原依赖集相同的逻辑含义</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 8 题 · 匹配题</div><h2>将分解质量准则与它回答的问题匹配</h2><div class="matching-grid"><label class="matching-row"><span>依赖保持</span><select class="matching-select" data-answer="原函数依赖能否通过各局部关系上的依赖直接检查" name="q5"><option value="">请选择</option><option value="分解后的投影自然连接能否恰好恢复原关系而不产生伪元组">分解后的投影自然连接能否恰好恢复原关系而不产生伪元组</option><option value="原函数依赖能否通过各局部关系上的依赖直接检查">原函数依赖能否通过各局部关系上的依赖直接检查</option></select></label><label class="matching-row"><span>无损连接</span><select class="matching-select" data-answer="分解后的投影自然连接能否恰好恢复原关系而不产生伪元组" name="q5"><option value="">请选择</option><option value="分解后的投影自然连接能否恰好恢复原关系而不产生伪元组">分解后的投影自然连接能否恰好恢复原关系而不产生伪元组</option><option value="原函数依赖能否通过各局部关系上的依赖直接检查">原函数依赖能否通过各局部关系上的依赖直接检查</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>依赖保持 → 原函数依赖能否通过各局部关系上的依赖直接检查；无损连接 → 分解后的投影自然连接能否恰好恢复原关系而不产生伪元组</p><p>两项准则相互独立，一个分解可能只满足其中一项</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="single" data-answer="公共属性 R1∩R2 能函数决定 R1 或 R2 的全部属性" hidden><div class="question-kicker">第 6 题 / 共 8 题 · 单选题</div><h2>二元分解 R→R1、R2 时，什么条件可用于判断无损连接？</h2><div class="choices"><label class="choice"><input type="radio" name="q6" value="公共属性 R1∩R2 能函数决定 R1 或 R2 的全部属性" aria-keyshortcuts="1"><span>公共属性 R1∩R2 能函数决定 R1 或 R2 的全部属性</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q6" value="R1 与 R2 的属性数量必须完全相等" aria-keyshortcuts="2"><span>R1 与 R2 的属性数量必须完全相等</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>公共属性 R1∩R2 能函数决定 R1 或 R2 的全部属性</p><p>若公共部分在 F+ 下能决定其中一侧，连接时可避免因公共值对应多种组合而产生伪元组</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="matching" hidden><div class="question-kicker">第 7 题 / 共 8 题 · 匹配题</div><h2>将分解目标与常见算法取向匹配</h2><div class="matching-grid"><label class="matching-row"><span>3NF 合成法</span><select class="matching-select" data-answer="优先保证依赖保持，并可构造无损分解" name="q7"><option value="">请选择</option><option value="获得更严格范式和无损连接，但可能失去依赖保持">获得更严格范式和无损连接，但可能失去依赖保持</option><option value="优先保证依赖保持，并可构造无损分解">优先保证依赖保持，并可构造无损分解</option><option value="继续处理非平凡多值依赖并保证无损">继续处理非平凡多值依赖并保证无损</option></select></label><label class="matching-row"><span>BCNF 分解</span><select class="matching-select" data-answer="获得更严格范式和无损连接，但可能失去依赖保持" name="q7"><option value="">请选择</option><option value="获得更严格范式和无损连接，但可能失去依赖保持">获得更严格范式和无损连接，但可能失去依赖保持</option><option value="优先保证依赖保持，并可构造无损分解">优先保证依赖保持，并可构造无损分解</option><option value="继续处理非平凡多值依赖并保证无损">继续处理非平凡多值依赖并保证无损</option></select></label><label class="matching-row"><span>4NF 分解</span><select class="matching-select" data-answer="继续处理非平凡多值依赖并保证无损" name="q7"><option value="">请选择</option><option value="获得更严格范式和无损连接，但可能失去依赖保持">获得更严格范式和无损连接，但可能失去依赖保持</option><option value="优先保证依赖保持，并可构造无损分解">优先保证依赖保持，并可构造无损分解</option><option value="继续处理非平凡多值依赖并保证无损">继续处理非平凡多值依赖并保证无损</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>3NF 合成法 → 优先保证依赖保持，并可构造无损分解；BCNF 分解 → 获得更严格范式和无损连接，但可能失去依赖保持；4NF 分解 → 继续处理非平凡多值依赖并保证无损</p><p>不同算法优先保证的目标不同，不能只看最终关系数量判断质量</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="7" data-type="reveal" hidden><div class="question-kicker">第 8 题 / 共 8 题 · 回想题</div><h2>R(Sno, School, Mname) 分解为 R1(Sno, School) 与 R2(Sno, Mname)，原依赖 School→Mname 为什么可能无法局部检查？这说明了什么？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>School 和 Mname 被分散在不同关系中，R1 只有 School，R2 只有 Mname，任何单个局部关系都不包含该依赖的全部属性；检查时可能需要连接两个关系。因此该分解可能不保持函数依赖，即使它在某些条件下仍可无损。设计必须分别验证依赖保持和无损连接</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

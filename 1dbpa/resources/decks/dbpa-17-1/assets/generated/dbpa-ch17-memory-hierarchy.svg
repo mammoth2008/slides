@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">内存数据库面对的硬件层次</title>
+  <desc id="desc">从 Cache、DRAM、NVM 到 SSD 或磁盘，容量增大而访问代价通常上升；GPU 是另一条高并行计算路径。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .cache { fill: #eeeafa; stroke: #b7a9d8; stroke-width: 2; rx: 12; }
+      .dram { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 12; }
+      .nvm { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 12; }
+      .disk { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 12; }
+      .gpu { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 12; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 19px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .axis { stroke: #9aabba; stroke-width: 2; stroke-dasharray: 7 7; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">硬件层次决定数据放在哪里、怎样访问以及由谁来计算</text>
+  <rect class="panel" x="40" y="100" width="1120" height="470"/>
+
+  <text class="label" x="95" y="150">存储层次</text>
+  <rect class="cache" x="95" y="180" width="270" height="66"/>
+  <text class="label" x="127" y="222">Cache</text><text class="small" x="235" y="222">小、快、近</text>
+  <rect class="dram" x="95" y="270" width="270" height="66"/>
+  <text class="label" x="127" y="312">DRAM</text><text class="small" x="235" y="312">热数据与计算</text>
+  <rect class="nvm" x="95" y="360" width="270" height="66"/>
+  <text class="label" x="127" y="402">NVM</text><text class="small" x="220" y="402">持久、容量较大</text>
+  <rect class="disk" x="95" y="450" width="270" height="66"/>
+  <text class="label" x="127" y="492">SSD／磁盘</text><text class="small" x="260" y="492">容量与成本</text>
+  <path class="arrow" d="M230 248 V260"/><path class="arrow" d="M230 338 V350"/><path class="arrow" d="M230 428 V440"/>
+  <text class="small" x="390" y="220">越靠上通常越快</text>
+  <text class="small" x="390" y="490">越靠下通常容量更大</text>
+  <path class="axis" d="M75 540 H430"/>
+
+  <text class="label" x="560" y="150">计算路径</text>
+  <rect class="dram" x="560" y="205" width="245" height="130"/>
+  <text class="label" x="628" y="250">CPU</text>
+  <text class="text" x="590" y="288">控制、分支、事务</text>
+  <rect class="gpu" x="880" y="205" width="220" height="130"/>
+  <text class="label" x="945" y="250">GPU</text>
+  <text class="text" x="905" y="288">高并行、宽带宽</text>
+  <path class="arrow" d="M805 270 H870"/>
+  <text class="small" x="817" y="252">数据传输</text>
+  <rect class="panel" x="560" y="390" width="540" height="125"/>
+  <text class="label" x="590" y="435">数据库设计问题</text>
+  <text class="text" x="590" y="470">让线程靠近数据，让可并行算子进入 GPU，</text>
+  <text class="text" x="590" y="496">并为跨层传输、Cache 失效和 NUMA 远程访问付费。</text>
+</svg>

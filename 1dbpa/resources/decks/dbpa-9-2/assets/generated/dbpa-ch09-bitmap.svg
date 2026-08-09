@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">位图索引的组合筛选</title>
+  <desc id="desc">性别和专业分别用位向量表示，每个位置对应一条记录；按位与得到同时满足两个条件的记录位置并可统计 1 的数量。低基数主要减少向量数量，向量长度由记录数决定。</desc>
+  <style>
+    .bg { fill: #fbfcfe; }
+    .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 18; }
+    .bit { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 7; }
+    .one { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 7; }
+    .result { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 7; }
+    .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+    .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+    .text { font: 17px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+    .center { text-anchor: middle; }
+  </style>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">位图先组合位置，再决定是否读取基本表</text>
+  <rect class="panel" x="45" y="115" width="1110" height="500"/>
+  <text class="text" x="350" y="160">记录位置</text>
+  <text class="text" x="505" y="160">1</text><text class="text" x="570" y="160">2</text><text class="text" x="635" y="160">3</text><text class="text" x="700" y="160">4</text><text class="text" x="765" y="160">5</text><text class="text" x="830" y="160">6</text><text class="text" x="895" y="160">7</text><text class="text" x="960" y="160">8</text>
+
+  <text class="label" x="90" y="225">Ssex = 男</text>
+  <rect class="bit" x="480" y="190" width="50" height="50"/><rect class="bit" x="545" y="190" width="50" height="50"/><rect class="one" x="610" y="190" width="50" height="50"/><rect class="one" x="675" y="190" width="50" height="50"/><rect class="bit" x="740" y="190" width="50" height="50"/><rect class="one" x="805" y="190" width="50" height="50"/><rect class="bit" x="870" y="190" width="50" height="50"/><rect class="bit" x="935" y="190" width="50" height="50"/>
+  <text class="text center" x="505" y="221">0</text><text class="text center" x="570" y="221">0</text><text class="text center" x="635" y="221">1</text><text class="text center" x="700" y="221">1</text><text class="text center" x="765" y="221">0</text><text class="text center" x="830" y="221">1</text><text class="text center" x="895" y="221">0</text><text class="text center" x="960" y="221">0</text>
+
+  <text class="label" x="90" y="315">Smajor = 计算机</text>
+  <rect class="bit" x="480" y="280" width="50" height="50"/><rect class="one" x="545" y="280" width="50" height="50"/><rect class="one" x="610" y="280" width="50" height="50"/><rect class="one" x="675" y="280" width="50" height="50"/><rect class="bit" x="740" y="280" width="50" height="50"/><rect class="bit" x="805" y="280" width="50" height="50"/><rect class="bit" x="870" y="280" width="50" height="50"/><rect class="one" x="935" y="280" width="50" height="50"/>
+  <text class="text center" x="505" y="311">0</text><text class="text center" x="570" y="311">1</text><text class="text center" x="635" y="311">1</text><text class="text center" x="700" y="311">1</text><text class="text center" x="765" y="311">0</text><text class="text center" x="830" y="311">0</text><text class="text center" x="895" y="311">0</text><text class="text center" x="960" y="311">1</text>
+
+  <text class="label" x="90" y="405">按位 AND</text>
+  <rect class="result" x="480" y="370" width="50" height="50"/><rect class="result" x="545" y="370" width="50" height="50"/><rect class="one" x="610" y="370" width="50" height="50"/><rect class="one" x="675" y="370" width="50" height="50"/><rect class="result" x="740" y="370" width="50" height="50"/><rect class="result" x="805" y="370" width="50" height="50"/><rect class="result" x="870" y="370" width="50" height="50"/><rect class="result" x="935" y="370" width="50" height="50"/>
+  <text class="text center" x="505" y="401">0</text><text class="text center" x="570" y="401">0</text><text class="text center" x="635" y="401">1</text><text class="text center" x="700" y="401">1</text><text class="text center" x="765" y="401">0</text><text class="text center" x="830" y="401">0</text><text class="text center" x="895" y="401">0</text><text class="text center" x="960" y="401">0</text>
+
+  <text class="label" x="90" y="500">结果</text>
+  <text class="text" x="480" y="500">位置 3、4 同时满足两个条件</text>
+  <text class="label" x="840" y="500">COUNT(1) = 2</text>
+  <text class="text" x="480" y="555">低基数列需要的向量少、组合代价较低；每条向量长度由记录数决定</text>
+</svg>

@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 13.2 语言处理层与数据存取层 | HUST</title>
+  <meta name="description" content="把 SQL 逐步束缚为单记录存取动作">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="13-2">
+  <meta name="version" content="2608.3">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-13-2/assets/dbpa-13-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 13.2</div>
+      <h1>语言处理层与数据存取层</h1>
+      <p class="cover-description">把 SQL 集合操作逐步转换为记录存取动作</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元解释语言处理层的检查与束缚，以及数据存取层的记录、事务、日志和路径子系统。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 DDL、DML 和 DCL 的处理重点</span></li><li><span class="list-marker">02</span><span class="list-text">说明数据字典如何支持名称解析、权限、约束和视图消解</span></li><li><span class="list-marker">03</span><span class="list-text">按顺序描述 DML 的分析、检查、优化和逐步束缚</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据存取层向上提供元组原语、向下依赖缓冲区接口</span></li><li><span class="list-marker">05</span><span class="list-text">区分记录存取、事务、日志、控制信息、排序合并、路径维护和封锁子系统</span></li><li><span class="list-marker">06</span><span class="list-text">用更新索引的例子说明存取路径为何必须同步维护</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/12</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">语言处理层把用户语言转换成内部调用</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>DDL、DML、DCL 只是写法不同，内部处理应该完全一样吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">三类数据库语言进入同一套分层处理</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-dbms-layers-image2.png" data-full-src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-dbms-layers-image2.png" alt="DDL、DML 与 DCL 经语言处理层进入内部调用" tabindex="0" role="button" aria-label="放大图片：DDL、DML 与 DCL 经语言处理层进入内部调用" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>DDL</h3><p><code>CREATE TABLE</code>、<code>CREATE VIEW</code>：形成内部表示并登记数据字典</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DML</h3><p><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>：检查、消解、优化并逐步束缚</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DCL</h3><p><code>GRANT</code>、<code>REVOKE</code>：登记权限定义，并参与执行时授权判断</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>三类语言都在语言处理层汇合，但 DDL、DML 和 DCL 的处理重点不同</p></div></div>
+    <div class="numeric-progress">3/12</div>
+    <div class="semantic-label">LANGUAGE PROCESSING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">DML 的四步束缚把集合表达变成记录原语</h2>
+    <div class="slide-content"><p class="slide-lead">案例：<code>SELECT Sno, Grade FROM HonorStudent WHERE Sno = &#x27;20180003&#x27;</code></p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-binding.svg" data-full-src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-binding.svg" alt="DML 从 SQL 经过检查和优化变成记录存取原语" tabindex="0" role="button" aria-label="放大图片：DML 从 SQL 经过检查和优化变成记录存取原语" decoding="async"></figure>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text"><strong>分析与名称转换</strong>：把外部名称转换为内部名称</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text"><strong>字典检查与视图消解</strong>：检查语义、权限和约束，把视图转换为基本表操作</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text"><strong>选择存取方案</strong>：依据统计、索引和存储信息选择存取路径</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text"><strong>绑定记录原语</strong>：把集合操作落实为 <code>FIND</code>、<code>NEXT</code>、<code>GET</code> 等元组调用</span></li></ol></div></div></div>
+    <div class="numeric-progress">4/12</div>
+    <div class="semantic-label">DML BINDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">数据字典支撑语句的语义、权限和完整性检查</h2>
+    <div class="slide-content"><p class="slide-lead">静态检查和执行时检查共同维护正确性；视图消解还要先读取视图定义</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 28% 22% 28%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:22%"><col style="width:28%"></colgroup><thead><tr><th>检查环节</th><th>依据</th><th>处理时机</th><th>典型问题</th></tr></thead><tbody><tr><td>词法／语法</td><td>SQL 语言规则</td><td>分析阶段</td><td>语句结构错误</td></tr><tr><td>名称与语义</td><td>关系、属性和类型定义</td><td>处理阶段</td><td>对象不存在或类型不符</td></tr><tr><td>权限</td><td>用户与权限定义</td><td>处理阶段，必要时运行时</td><td>无权读取或更新</td></tr><tr><td>完整性</td><td>约束和当前数据状态</td><td>静态检查与执行时检查</td><td>主码、参照或动态规则冲突</td></tr><tr><td>视图消解</td><td>视图定义</td><td>绑定前转换</td><td>把视图操作转换为基本表操作</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>名称、类型和部分范围可在处理阶段检查；主码、参照完整性和动态规则通常还要在写操作执行时验证</p></div></div>
+    <div class="numeric-progress">5/12</div>
+    <div class="semantic-label">DATA DICTIONARY CHECKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">数据存取层按元组落实执行方案</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>数据存取层已经在直接处理物理数据页了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">向上提供记录／元组接口，向下依赖系统缓冲区的页面和存储器接口</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="语言处理层　→　数据存取层的记录／元组原语　→　系统缓冲区的页面／存储器接口"><span class="relation-term">语言处理层</span><span class="relation-operator">→</span><span class="relation-term">数据存取层的记录／元组原语</span><span class="relation-operator">→</span><span class="relation-term">系统缓冲区的页面／存储器接口</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>向上提供一次一个元组的导航式接口，逻辑存取路径可以是文件或索引；向下依赖缓冲区接口，不直接暴露物理块</p></div></div>
+    <div class="numeric-progress">6/12</div>
+    <div class="semantic-label">DATA ACCESS LAYER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">记录存取原语与事务原语组成执行接口</h2>
+    <div class="slide-content"><p class="slide-lead">记录原语面向单个元组和逻辑存取路径；事务原语负责边界，不暴露物理块</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定位与扫描</h3><p><code>FIND</code>、<code>FIRST</code>、<code>NEXT</code>、<code>PRIOR</code>、<code>LAST</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>读取与更新</h3><p><code>GET</code>、<code>INSERT</code>、<code>DELETE</code>、<code>REPLACE</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务边界</h3><p><code>BEGIN TRANSACTION</code>、<code>COMMIT</code>、<code>ROLLBACK</code></p></article></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="查询：`FIND` → `GET` → `NEXT`　｜　事务：`BEGIN TRANSACTION` → `COMMIT`／`ROLLBACK`"><span class="relation-term">查询：<code>FIND</code></span><span class="relation-operator">→</span><span class="relation-term"><code>GET</code></span><span class="relation-operator">→</span><span class="relation-term"><code>NEXT</code>　｜　事务：<code>BEGIN TRANSACTION</code></span><span class="relation-operator">→</span><span class="relation-term"><code>COMMIT</code>／<code>ROLLBACK</code></span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>前两组负责记录访问，事务原语负责事务边界；逐步束缚把集合语句转换为有顺序的调用序列，结果取决于语义和存取路径</p></div></div>
+    <div class="numeric-progress">7/12</div>
+    <div class="semantic-label">ACCESS PRIMITIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">记录访问需要多个子系统协作</h2>
+    <div class="slide-content"><p class="slide-lead">数据存取层由多个职责不同的子系统组成</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>子系统</th><th>核心职责</th><th>协作对象</th></tr></thead><tbody><tr><td>记录存取与事务管理</td><td>元组查找、更新和事务边界</td><td>缓冲区、日志</td></tr><tr><td>日志登记</td><td>写入日志并支持 <code>UNDO</code>／<code>REDO</code></td><td>事务管理、恢复</td></tr><tr><td>控制信息管理</td><td>读取数据字典和控制信息</td><td>语言处理层</td></tr><tr><td>排序／合并</td><td>有序输出、连接预处理和索引建立</td><td>记录与路径</td></tr><tr><td>存取路径维护</td><td>更新数据时保持索引一致</td><td>数据更新</td></tr><tr><td>封锁子系统</td><td>并发控制和锁表管理</td><td>事务管理</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>更新带索引的记录时，记录存取与事务管理、封锁、路径维护和日志登记共同协作</p></div></div>
+    <div class="numeric-progress">8/12</div>
+    <div class="semantic-label">FUNCTION SUBSYSTEMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
+    <h2 class="slide-title">相关索引必须与表数据保持同一状态</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.a1d9228bdfdd.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>表记录已经更新，为什么索引查询还找不到新值？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">更新元组时若遗漏相关索引维护，会产生错误存取路径</p>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="INSERT／DELETE／UPDATE（涉及相关索引时）　→　表数据与相应索引项同步维护"><span class="relation-term">INSERT／DELETE／UPDATE（涉及相关索引时）</span><span class="relation-operator">→</span><span class="relation-term">表数据与相应索引项同步维护</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>修改索引键时必须同步更新索引项；修改非索引属性时索引项可能不变。路径维护保证数据可访问，日志支持恢复，封锁支持并发，排序／合并支持有序输出和中间运算</p></div></div>
+    <div class="numeric-progress">9/12</div>
+    <div class="semantic-label">PATH MAINTENANCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">本节回顾</h2>
+    <div class="slide-content"><p class="slide-lead">语言处理层负责检查、消解和优化；数据存取层负责按记录执行并维护事务边界</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>检查</h3><p>名称、权限、约束和视图消解</p></article><article class="content-card emphasis-card" tabindex="0"><h3>束缚</h3><p>集合语句变成 <code>FIND</code>、<code>GET</code>、<code>NEXT</code> 等记录调用，并通过上下层接口传递</p></article><article class="content-card emphasis-card" tabindex="0"><h3>子系统</h3><p>记录、事务、日志、排序、路径和封锁子系统共同完成一致的执行</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>视图查询 → 数据字典检查与视图消解 → <code>FIND</code>、<code>GET</code>、<code>NEXT</code> → 数据存取子系统协作；更新索引键时由路径维护保持表与索引一致</p></div></div>
+    <div class="numeric-progress">10/12</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-13-2/mindmap-13-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">11/12</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定 HonorStudent 视图查询，如何按顺序完成分析、检查、视图消解、优化和束缚？</span></li><li><span class="question-no">02</span><span class="question-text">数据字典怎样支持名称、权限、完整性检查和视图消解？</span></li><li><span class="question-no">03</span><span class="question-text"><code>FIND</code>、<code>GET</code>、<code>NEXT</code> 如何把集合请求变成记录访问？</span></li><li><span class="question-no">04</span><span class="question-text">数据存取层的上下层接口连接什么？逻辑存取路径有何作用？</span></li><li><span class="question-no">05</span><span class="question-text"><code>ORDER BY</code> 或连接何时需要排序／合并？</span></li><li><span class="question-no">06</span><span class="question-text">更新索引键时，记录、事务、封锁、日志和路径维护如何协作？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-13-1.html" title="上一节：13.1 DBMS 功能、层次结构与运行过程" aria-label="上一节：13.1 DBMS 功能、层次结构与运行过程">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">13.1</span>
+        <span class="nav-title">DBMS 功能与层次</span>
+      </a>
+      <a class="exercise-link" href="dbpa-13-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-13-3.html" title="下一节：13.3 缓冲区管理与数据库物理组织" aria-label="下一节：13.3 缓冲区管理与数据库物理组织">
+        <span class="nav-title">缓冲区与物理组织</span>
+        <span class="nav-number">13.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">12/12</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

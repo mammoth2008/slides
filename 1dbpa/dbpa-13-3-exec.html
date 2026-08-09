@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>13.3 缓冲区管理与数据库物理组织｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 13.3</div><h1>缓冲区管理与数据库物理组织</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="ordering"><div class="question-kicker">第 1 题 / 共 7 题 · 排序题</div><h2>READBUF 请求一个未缓存页面时，按处理顺序排列</h2><ol class="ordering-list" data-answer="[&quot;检查缓冲区中是否已有目标页面&quot;, &quot;寻找空闲页框或选择可淘汰候选页&quot;, &quot;若候选页已修改，先按恢复约束写回&quot;, &quot;调用操作系统 READ 把目标页面装入页框&quot;, &quot;更新缓冲区控制信息并返回页面&quot;]"><li class="ordering-item"><span>检查缓冲区中是否已有目标页面</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“检查缓冲区中是否已有目标页面”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“检查缓冲区中是否已有目标页面”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>若候选页已修改，先按恢复约束写回</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“若候选页已修改，先按恢复约束写回”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“若候选页已修改，先按恢复约束写回”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>更新缓冲区控制信息并返回页面</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“更新缓冲区控制信息并返回页面”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“更新缓冲区控制信息并返回页面”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>寻找空闲页框或选择可淘汰候选页</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“寻找空闲页框或选择可淘汰候选页”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“寻找空闲页框或选择可淘汰候选页”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>调用操作系统 READ 把目标页面装入页框</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“调用操作系统 READ 把目标页面装入页框”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“调用操作系统 READ 把目标页面装入页框”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>检查缓冲区中是否已有目标页面 → 寻找空闲页框或选择可淘汰候选页 → 若候选页已修改，先按恢复约束写回 → 调用操作系统 READ 把目标页面装入页框 → 更新缓冲区控制信息并返回页面</p><p>缓冲区在内存页框与外存页面之间建立可管理的装入、淘汰和写回路径</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="single" data-answer="不必，命中时可以直接返回内存页面" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 单选题</div><h2>目标页已经在缓冲区中且可直接使用时，READBUF 是否仍必须执行磁盘 READ？</h2><div class="choices"><label class="choice"><input type="radio" name="q2" value="不必，命中时可以直接返回内存页面" aria-keyshortcuts="1"><span>不必，命中时可以直接返回内存页面</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q2" value="必须，每次逻辑读取都要重新读取磁盘" aria-keyshortcuts="2"><span>必须，每次逻辑读取都要重新读取磁盘</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不必，命中时可以直接返回内存页面</p><p>缓冲命中减少慢速外存 I/O，是系统缓冲区提升访问效率的核心作用</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="matching" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 匹配题</div><h2>将页面状态与淘汰处理匹配</h2><div class="matching-grid"><label class="matching-row"><span>被固定或不可释放的页面</span><select class="matching-select" data-answer="暂时不能作为淘汰候选" name="q3"><option value="">请选择</option><option value="暂时不能作为淘汰候选">暂时不能作为淘汰候选</option><option value="需满足 WAL 等恢复约束后写回再复用">需满足 WAL 等恢复约束后写回再复用</option><option value="可直接复用页框">可直接复用页框</option></select></label><label class="matching-row"><span>可释放且未修改的页面</span><select class="matching-select" data-answer="可直接复用页框" name="q3"><option value="">请选择</option><option value="暂时不能作为淘汰候选">暂时不能作为淘汰候选</option><option value="需满足 WAL 等恢复约束后写回再复用">需满足 WAL 等恢复约束后写回再复用</option><option value="可直接复用页框">可直接复用页框</option></select></label><label class="matching-row"><span>可释放但已修改的页面</span><select class="matching-select" data-answer="需满足 WAL 等恢复约束后写回再复用" name="q3"><option value="">请选择</option><option value="暂时不能作为淘汰候选">暂时不能作为淘汰候选</option><option value="需满足 WAL 等恢复约束后写回再复用">需满足 WAL 等恢复约束后写回再复用</option><option value="可直接复用页框">可直接复用页框</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>被固定或不可释放的页面 → 暂时不能作为淘汰候选；可释放且未修改的页面 → 可直接复用页框；可释放但已修改的页面 → 需满足 WAL 等恢复约束后写回再复用</p><p>淘汰资格和脏页状态共同决定是否能够立即释放页框</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="matching" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 匹配题</div><h2>将页面替换策略与选择依据匹配</h2><div class="matching-grid"><label class="matching-row"><span>FIFO</span><select class="matching-select" data-answer="优先淘汰最早进入缓冲区的可释放页面" name="q4"><option value="">请选择</option><option value="优先淘汰最长时间未被访问的可释放页面">优先淘汰最长时间未被访问的可释放页面</option><option value="优先淘汰最早进入缓冲区的可释放页面">优先淘汰最早进入缓冲区的可释放页面</option></select></label><label class="matching-row"><span>LRU</span><select class="matching-select" data-answer="优先淘汰最长时间未被访问的可释放页面" name="q4"><option value="">请选择</option><option value="优先淘汰最长时间未被访问的可释放页面">优先淘汰最长时间未被访问的可释放页面</option><option value="优先淘汰最早进入缓冲区的可释放页面">优先淘汰最早进入缓冲区的可释放页面</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>FIFO → 优先淘汰最早进入缓冲区的可释放页面；LRU → 优先淘汰最长时间未被访问的可释放页面</p><p>LRU 利用近期访问局部性，FIFO 只看进入顺序；实际 DBMS 还会使用更复杂近似策略</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将数据库物理组织信息与示例匹配</h2><div class="matching-grid"><label class="matching-row"><span>数据描述</span><select class="matching-select" data-answer="数据字典中的表、列、类型和存储元数据" name="q5"><option value="">请选择</option><option value="索引、哈希入口和定位结构">索引、哈希入口和定位结构</option><option value="元组记录和数据文件">元组记录和数据文件</option><option value="数据字典中的表、列、类型和存储元数据">数据字典中的表、列、类型和存储元数据</option><option value="记录之间的物理关联或聚簇关系">记录之间的物理关联或聚簇关系</option></select></label><label class="matching-row"><span>数据本身</span><select class="matching-select" data-answer="元组记录和数据文件" name="q5"><option value="">请选择</option><option value="索引、哈希入口和定位结构">索引、哈希入口和定位结构</option><option value="元组记录和数据文件">元组记录和数据文件</option><option value="数据字典中的表、列、类型和存储元数据">数据字典中的表、列、类型和存储元数据</option><option value="记录之间的物理关联或聚簇关系">记录之间的物理关联或聚簇关系</option></select></label><label class="matching-row"><span>数据联系</span><select class="matching-select" data-answer="记录之间的物理关联或聚簇关系" name="q5"><option value="">请选择</option><option value="索引、哈希入口和定位结构">索引、哈希入口和定位结构</option><option value="元组记录和数据文件">元组记录和数据文件</option><option value="数据字典中的表、列、类型和存储元数据">数据字典中的表、列、类型和存储元数据</option><option value="记录之间的物理关联或聚簇关系">记录之间的物理关联或聚簇关系</option></select></label><label class="matching-row"><span>存取路径</span><select class="matching-select" data-answer="索引、哈希入口和定位结构" name="q5"><option value="">请选择</option><option value="索引、哈希入口和定位结构">索引、哈希入口和定位结构</option><option value="元组记录和数据文件">元组记录和数据文件</option><option value="数据字典中的表、列、类型和存储元数据">数据字典中的表、列、类型和存储元数据</option><option value="记录之间的物理关联或聚簇关系">记录之间的物理关联或聚簇关系</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>数据描述 → 数据字典中的表、列、类型和存储元数据；数据本身 → 元组记录和数据文件；数据联系 → 记录之间的物理关联或聚簇关系；存取路径 → 索引、哈希入口和定位结构</p><p>物理组织既包括数据文件，也包括描述、联系和额外访问路径</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;多次修改可在内存合并，减少重复磁盘写&quot;, &quot;脏页写回必须受日志与恢复规则约束&quot;, &quot;故障前未写回的已提交修改需要日志支持 REDO&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>关于延迟写回，下列哪些说法正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="多次修改可在内存合并，减少重复磁盘写" aria-keyshortcuts="1"><span>多次修改可在内存合并，减少重复磁盘写</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="脏页写回必须受日志与恢复规则约束" aria-keyshortcuts="2"><span>脏页写回必须受日志与恢复规则约束</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="故障前未写回的已提交修改需要日志支持 REDO" aria-keyshortcuts="3"><span>故障前未写回的已提交修改需要日志支持 REDO</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="延迟写回意味着永远不需要落盘" aria-keyshortcuts="4"><span>延迟写回意味着永远不需要落盘</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="日志可以晚于受保护数据页稳定写入" aria-keyshortcuts="5"><span>日志可以晚于受保护数据页稳定写入</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>多次修改可在内存合并，减少重复磁盘写、脏页写回必须受日志与恢复规则约束、故障前未写回的已提交修改需要日志支持 REDO</p><p>延迟写回改善 I/O，但必须与 WAL、检查点和提交持久性共同设计</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>用户创建一个新索引后，同一条 SQL 为什么可能更快，而应用代码和逻辑表都不变？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>CREATE INDEX 建立新的物理存取路径并把定义写入数据字典；优化器可根据统计和代价选择该路径，数据存储层负责维护索引与表的一致。索引属于物理组织，逻辑关系和 SQL 目标不变，因此上层应用可保持稳定，但插入、删除和键修改会增加维护成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">传统分层架构的数据移动成本</title>
+  <desc id="desc">图示一种传统批处理分层方案：抽取、清洗、转换、装载和分析跨过多个边界，数据复制、连接和等待会增加新鲜度与计算成本。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .box { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 12; }
+      .etl { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 12; }
+      .warehouse { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 12; }
+      .olap { fill: #eeeafa; stroke: #b7a9d8; stroke-width: 2; rx: 12; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 18px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .warn { stroke: #d49a61; stroke-width: 3; stroke-dasharray: 8 8; fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">每跨过一个边界，都可能增加复制、等待或重新计算</text>
+  <rect class="panel" x="40" y="100" width="1120" height="430"/>
+
+  <rect class="box" x="75" y="230" width="170" height="100"/>
+  <text class="label" x="111" y="270">业务源</text>
+  <text class="text" x="94" y="302">最新事务数据</text>
+  <rect class="etl" x="300" y="200" width="190" height="160"/>
+  <text class="label" x="356" y="245">ETL</text>
+  <text class="text" x="322" y="280">抽取、清洗、转换、装载</text>
+  <text class="small" x="328" y="320">复制一份并等待批次</text>
+  <rect class="warehouse" x="545" y="200" width="190" height="160"/>
+  <text class="label" x="601" y="245">仓库</text>
+  <text class="text" x="575" y="280">保存与再组织</text>
+  <text class="small" x="573" y="320">星型、雪花、汇总</text>
+  <rect class="olap" x="790" y="200" width="190" height="160"/>
+  <text class="label" x="832" y="245">OLAP</text>
+  <text class="text" x="816" y="280">连接与分析</text>
+  <text class="small" x="812" y="320">扫描、聚合、返回</text>
+
+  <path class="arrow" d="M245 280 H290"/><path class="arrow" d="M490 280 H535"/><path class="arrow" d="M735 280 H780"/>
+  <path class="warn" d="M270 175 H770"/>
+  <text class="label" x="424" y="157">数据移动与等待</text>
+  <text class="small" x="215" y="405">源数据变化后，分析端要等到下一次同步</text>
+  <text class="small" x="445" y="435">分析层还要承担连接、重组和重复存储</text>
+
+  <rect class="panel" x="75" y="585" width="905" height="72"/>
+  <text class="label" x="105" y="628">要优化的不是单个步骤</text>
+  <text class="text" x="375" y="628">而是新鲜度、移动成本、查询性能和事务隔离之间的整体平衡</text>
+</svg>

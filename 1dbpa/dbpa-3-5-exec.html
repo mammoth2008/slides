@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3.5 空值的处理｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 3.5</div><h1>空值的处理</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 6</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="single" data-answer="NULL 参与普通等号比较得到 UNKNOWN，应使用 IS NULL"><div class="question-kicker">第 1 题 / 共 6 题 · 单选题</div><h2>为什么使用 Grade = NULL 不能正确找出缺考记录？</h2><div class="choices"><label class="choice"><input type="radio" name="q1" value="NULL 参与普通等号比较得到 UNKNOWN，应使用 IS NULL" aria-keyshortcuts="1"><span>NULL 参与普通等号比较得到 UNKNOWN，应使用 IS NULL</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q1" value="NULL 与任何值都自动相等，应使用 DISTINCT" aria-keyshortcuts="2"><span>NULL 与任何值都自动相等，应使用 DISTINCT</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>NULL 参与普通等号比较得到 UNKNOWN，应使用 IS NULL</p><p>NULL 表示缺失或不适用等未知状态，不是普通值；判断空值要使用 IS NULL 或 IS NOT NULL</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 6 题 · 匹配题</div><h2>将 NULL 的产生路径与含义匹配</h2><div class="matching-grid"><label class="matching-row"><span>INSERT 省略一个无默认且可空的列</span><select class="matching-select" data-answer="基本表中新元组的该属性可能保存 NULL" name="q2"><option value="">请选择</option><option value="已有元组的业务状态被改为缺失或不适用">已有元组的业务状态被改为缺失或不适用</option><option value="基本表中新元组的该属性可能保存 NULL">基本表中新元组的该属性可能保存 NULL</option><option value="查询结果用 NULL 补齐右侧属性，不会写回基本表">查询结果用 NULL 补齐右侧属性，不会写回基本表</option></select></label><label class="matching-row"><span>UPDATE 把某列设为 NULL</span><select class="matching-select" data-answer="已有元组的业务状态被改为缺失或不适用" name="q2"><option value="">请选择</option><option value="已有元组的业务状态被改为缺失或不适用">已有元组的业务状态被改为缺失或不适用</option><option value="基本表中新元组的该属性可能保存 NULL">基本表中新元组的该属性可能保存 NULL</option><option value="查询结果用 NULL 补齐右侧属性，不会写回基本表">查询结果用 NULL 补齐右侧属性，不会写回基本表</option></select></label><label class="matching-row"><span>左外连接右侧没有匹配元组</span><select class="matching-select" data-answer="查询结果用 NULL 补齐右侧属性，不会写回基本表" name="q2"><option value="">请选择</option><option value="已有元组的业务状态被改为缺失或不适用">已有元组的业务状态被改为缺失或不适用</option><option value="基本表中新元组的该属性可能保存 NULL">基本表中新元组的该属性可能保存 NULL</option><option value="查询结果用 NULL 补齐右侧属性，不会写回基本表">查询结果用 NULL 补齐右侧属性，不会写回基本表</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>INSERT 省略一个无默认且可空的列 → 基本表中新元组的该属性可能保存 NULL；UPDATE 把某列设为 NULL → 已有元组的业务状态被改为缺失或不适用；左外连接右侧没有匹配元组 → 查询结果用 NULL 补齐右侧属性，不会写回基本表</p><p>三条路径都可能显示 NULL，但发生位置和业务语义不同</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="multiple" data-answer="[&quot;FALSE AND UNKNOWN = FALSE&quot;, &quot;TRUE AND UNKNOWN = UNKNOWN&quot;, &quot;TRUE OR UNKNOWN = TRUE&quot;, &quot;FALSE OR UNKNOWN = UNKNOWN&quot;, &quot;NOT UNKNOWN = UNKNOWN&quot;]" hidden><div class="question-kicker">第 3 题 / 共 6 题 · 多选题</div><h2>下列哪些三值逻辑等式正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q3" value="FALSE AND UNKNOWN = FALSE" aria-keyshortcuts="1"><span>FALSE AND UNKNOWN = FALSE</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q3" value="TRUE AND UNKNOWN = UNKNOWN" aria-keyshortcuts="2"><span>TRUE AND UNKNOWN = UNKNOWN</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q3" value="TRUE OR UNKNOWN = TRUE" aria-keyshortcuts="3"><span>TRUE OR UNKNOWN = TRUE</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q3" value="FALSE OR UNKNOWN = UNKNOWN" aria-keyshortcuts="4"><span>FALSE OR UNKNOWN = UNKNOWN</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q3" value="NOT UNKNOWN = UNKNOWN" aria-keyshortcuts="5"><span>NOT UNKNOWN = UNKNOWN</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q3" value="FALSE AND UNKNOWN = UNKNOWN" aria-keyshortcuts="6"><span>FALSE AND UNKNOWN = UNKNOWN</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label><label class="choice"><input type="checkbox" name="q3" value="TRUE OR UNKNOWN = UNKNOWN" aria-keyshortcuts="7"><span>TRUE OR UNKNOWN = UNKNOWN</span><span class="choice-shortcut" aria-hidden="true">（7）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>FALSE AND UNKNOWN = FALSE、TRUE AND UNKNOWN = UNKNOWN、TRUE OR UNKNOWN = TRUE、FALSE OR UNKNOWN = UNKNOWN、NOT UNKNOWN = UNKNOWN</p><p>已经能够确定整体真假的一侧会主导结果，否则 UNKNOWN 会继续传播</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="single" data-answer="COUNT(*) 为 3，COUNT(Grade) 为 2" hidden><div class="question-kicker">第 4 题 / 共 6 题 · 单选题</div><h2>某学生有三条选课记录，Grade 分别为 80、NULL、90。COUNT(*) 与 COUNT(Grade) 分别是多少？</h2><div class="choices"><label class="choice"><input type="radio" name="q4" value="COUNT(*) 为 3，COUNT(Grade) 为 2" aria-keyshortcuts="1"><span>COUNT(*) 为 3，COUNT(Grade) 为 2</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q4" value="COUNT(*) 为 2，COUNT(Grade) 为 3" aria-keyshortcuts="2"><span>COUNT(*) 为 2，COUNT(Grade) 为 3</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>COUNT(*) 为 3，COUNT(Grade) 为 2</p><p>COUNT(*) 统计行数，COUNT(列) 通常跳过该列为 NULL 的行</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="multiple" data-answer="[&quot;主码中的每个属性都不能为 NULL&quot;, &quot;NOT NULL 明确禁止该列保存 NULL&quot;, &quot;可空外码可以整体为 NULL&quot;, &quot;可空 UNIQUE 列允许多个 NULL 的规则可能因 DBMS 而异&quot;]" hidden><div class="question-kicker">第 5 题 / 共 6 题 · 多选题</div><h2>关于 NULL 与约束，下列哪些说法正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q5" value="主码中的每个属性都不能为 NULL" aria-keyshortcuts="1"><span>主码中的每个属性都不能为 NULL</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q5" value="NOT NULL 明确禁止该列保存 NULL" aria-keyshortcuts="2"><span>NOT NULL 明确禁止该列保存 NULL</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q5" value="可空外码可以整体为 NULL" aria-keyshortcuts="3"><span>可空外码可以整体为 NULL</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q5" value="复合外码可以只让一半属性为 NULL" aria-keyshortcuts="4"><span>复合外码可以只让一半属性为 NULL</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q5" value="可空 UNIQUE 列允许多个 NULL 的规则可能因 DBMS 而异" aria-keyshortcuts="5"><span>可空 UNIQUE 列允许多个 NULL 的规则可能因 DBMS 而异</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q5" value="NULL 与数值 0 表示同一种业务状态" aria-keyshortcuts="6"><span>NULL 与数值 0 表示同一种业务状态</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>主码中的每个属性都不能为 NULL、NOT NULL 明确禁止该列保存 NULL、可空外码可以整体为 NULL、可空 UNIQUE 列允许多个 NULL 的规则可能因 DBMS 而异</p><p>复合外码若为空应整体为空；NULL、0 和空串是不同值或状态，UNIQUE 对 NULL 的具体行为需要核查产品</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="reveal" hidden><div class="question-kicker">第 6 题 / 共 6 题 · 回想题</div><h2>“尚未录入成绩”“学生缺考”“课程不计成绩”都可能显示 NULL。为什么数据库设计仍要区分这些业务语义？可以怎样表达？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>SQL 中同样的 NULL 会参与相同的三值逻辑和聚集规则，但三种状态可能有不同流程、权限和统计含义。可以增加状态属性或独立业务事件，例如成绩状态为待录入、缺考、不计分，并规定它与 Grade 是否为空的组合约束，避免只靠一个 NULL 猜测原因</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

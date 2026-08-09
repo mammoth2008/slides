@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>14.3 分布式、云原生与数据库发展展望｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 14.3</div><h1>分布式、云原生与数据库发展展望</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将需求压力与较直接的架构机制匹配</h2><div class="matching-grid"><label class="matching-row"><span>单机容量和吞吐不足</span><select class="matching-select" data-answer="分片与横向扩展" name="q1"><option value="">请选择</option><option value="多模型协作">多模型协作</option><option value="HTAP">HTAP</option><option value="副本与故障切换">副本与故障切换</option><option value="DB4AI">DB4AI</option><option value="分片与横向扩展">分片与横向扩展</option></select></label><label class="matching-row"><span>节点故障仍需继续服务</span><select class="matching-select" data-answer="副本与故障切换" name="q1"><option value="">请选择</option><option value="多模型协作">多模型协作</option><option value="HTAP">HTAP</option><option value="副本与故障切换">副本与故障切换</option><option value="DB4AI">DB4AI</option><option value="分片与横向扩展">分片与横向扩展</option></select></label><label class="matching-row"><span>事务与分析都要求较新数据</span><select class="matching-select" data-answer="HTAP" name="q1"><option value="">请选择</option><option value="多模型协作">多模型协作</option><option value="HTAP">HTAP</option><option value="副本与故障切换">副本与故障切换</option><option value="DB4AI">DB4AI</option><option value="分片与横向扩展">分片与横向扩展</option></select></label><label class="matching-row"><span>训练和推理需要数据库内数据治理与计算</span><select class="matching-select" data-answer="DB4AI" name="q1"><option value="">请选择</option><option value="多模型协作">多模型协作</option><option value="HTAP">HTAP</option><option value="副本与故障切换">副本与故障切换</option><option value="DB4AI">DB4AI</option><option value="分片与横向扩展">分片与横向扩展</option></select></label><label class="matching-row"><span>同一业务包含关系、图、文档和时序对象</span><select class="matching-select" data-answer="多模型协作" name="q1"><option value="">请选择</option><option value="多模型协作">多模型协作</option><option value="HTAP">HTAP</option><option value="副本与故障切换">副本与故障切换</option><option value="DB4AI">DB4AI</option><option value="分片与横向扩展">分片与横向扩展</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>单机容量和吞吐不足 → 分片与横向扩展；节点故障仍需继续服务 → 副本与故障切换；事务与分析都要求较新数据 → HTAP；训练和推理需要数据库内数据治理与计算 → DB4AI；同一业务包含关系、图、文档和时序对象 → 多模型协作</p><p>每种机制只缓解部分压力，还要承担协调、隔离、恢复或治理成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="matching" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 匹配题</div><h2>将分布式组件与职责匹配</h2><div class="matching-grid"><label class="matching-row"><span>分片</span><select class="matching-select" data-answer="决定数据被划分到哪些节点" name="q2"><option value="">请选择</option><option value="在故障假设下协调副本接受顺序或状态">在故障假设下协调副本接受顺序或状态</option><option value="决定数据被划分到哪些节点">决定数据被划分到哪些节点</option><option value="根据分片规则把请求送到目标节点并聚合结果">根据分片规则把请求送到目标节点并聚合结果</option><option value="保存同一分片的数据拷贝">保存同一分片的数据拷贝</option></select></label><label class="matching-row"><span>路由</span><select class="matching-select" data-answer="根据分片规则把请求送到目标节点并聚合结果" name="q2"><option value="">请选择</option><option value="在故障假设下协调副本接受顺序或状态">在故障假设下协调副本接受顺序或状态</option><option value="决定数据被划分到哪些节点">决定数据被划分到哪些节点</option><option value="根据分片规则把请求送到目标节点并聚合结果">根据分片规则把请求送到目标节点并聚合结果</option><option value="保存同一分片的数据拷贝">保存同一分片的数据拷贝</option></select></label><label class="matching-row"><span>副本</span><select class="matching-select" data-answer="保存同一分片的数据拷贝" name="q2"><option value="">请选择</option><option value="在故障假设下协调副本接受顺序或状态">在故障假设下协调副本接受顺序或状态</option><option value="决定数据被划分到哪些节点">决定数据被划分到哪些节点</option><option value="根据分片规则把请求送到目标节点并聚合结果">根据分片规则把请求送到目标节点并聚合结果</option><option value="保存同一分片的数据拷贝">保存同一分片的数据拷贝</option></select></label><label class="matching-row"><span>共识</span><select class="matching-select" data-answer="在故障假设下协调副本接受顺序或状态" name="q2"><option value="">请选择</option><option value="在故障假设下协调副本接受顺序或状态">在故障假设下协调副本接受顺序或状态</option><option value="决定数据被划分到哪些节点">决定数据被划分到哪些节点</option><option value="根据分片规则把请求送到目标节点并聚合结果">根据分片规则把请求送到目标节点并聚合结果</option><option value="保存同一分片的数据拷贝">保存同一分片的数据拷贝</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>分片 → 决定数据被划分到哪些节点；路由 → 根据分片规则把请求送到目标节点并聚合结果；副本 → 保存同一分片的数据拷贝；共识 → 在故障假设下协调副本接受顺序或状态</p><p>分片解决规模，副本解决冗余，共识解决副本协调，路由连接请求与数据位置</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="multiple" data-answer="[&quot;大内存减少部分磁盘读取但放大持久化与恢复设计的重要性&quot;, &quot;NVM 缩小内存与存储延迟差距但仍需考虑耐久和一致性&quot;, &quot;高速网络降低通信成本但不会消除网络分区和协调&quot;, &quot;多核推动并行执行但会增加共享状态协调&quot;]" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 多选题</div><h2>硬件变化可能怎样改变数据库成本中心？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q3" value="大内存减少部分磁盘读取但放大持久化与恢复设计的重要性" aria-keyshortcuts="1"><span>大内存减少部分磁盘读取但放大持久化与恢复设计的重要性</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q3" value="NVM 缩小内存与存储延迟差距但仍需考虑耐久和一致性" aria-keyshortcuts="2"><span>NVM 缩小内存与存储延迟差距但仍需考虑耐久和一致性</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q3" value="高速网络降低通信成本但不会消除网络分区和协调" aria-keyshortcuts="3"><span>高速网络降低通信成本但不会消除网络分区和协调</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q3" value="多核推动并行执行但会增加共享状态协调" aria-keyshortcuts="4"><span>多核推动并行执行但会增加共享状态协调</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q3" value="新硬件会自动消除所有软件瓶颈" aria-keyshortcuts="5"><span>新硬件会自动消除所有软件瓶颈</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>大内存减少部分磁盘读取但放大持久化与恢复设计的重要性、NVM 缩小内存与存储延迟差距但仍需考虑耐久和一致性、高速网络降低通信成本但不会消除网络分区和协调、多核推动并行执行但会增加共享状态协调</p><p>硬件变化重新分配代价，不会让事务、故障和治理问题消失</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="matching" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 匹配题</div><h2>将云数据库形态与主要边界匹配</h2><div class="matching-grid"><label class="matching-row"><span>传统托管数据库</span><select class="matching-select" data-answer="云平台代管实例和运维，但计算与存储扩展常较耦合" name="q4"><option value="">请选择</option><option value="更强调计算、存储和服务组件解耦与按需扩缩">更强调计算、存储和服务组件解耦与按需扩缩</option><option value="云平台代管实例和运维，但计算与存储扩展常较耦合">云平台代管实例和运维，但计算与存储扩展常较耦合</option></select></label><label class="matching-row"><span>云原生数据库</span><select class="matching-select" data-answer="更强调计算、存储和服务组件解耦与按需扩缩" name="q4"><option value="">请选择</option><option value="更强调计算、存储和服务组件解耦与按需扩缩">更强调计算、存储和服务组件解耦与按需扩缩</option><option value="云平台代管实例和运维，但计算与存储扩展常较耦合">云平台代管实例和运维，但计算与存储扩展常较耦合</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>传统托管数据库 → 云平台代管实例和运维，但计算与存储扩展常较耦合；云原生数据库 → 更强调计算、存储和服务组件解耦与按需扩缩</p><p>解耦提高资源弹性，也会增加网络、元数据、缓存一致和故障恢复复杂度</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="single" data-answer="不可以，要明确快照新鲜度、资源隔离和写入干扰" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 单选题</div><h2>HTAP 中运行一个长时间分析查询，是否可以忽略对短事务的隔离影响？</h2><div class="choices"><label class="choice"><input type="radio" name="q5" value="不可以，要明确快照新鲜度、资源隔离和写入干扰" aria-keyshortcuts="1"><span>不可以，要明确快照新鲜度、资源隔离和写入干扰</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q5" value="可以，分析查询永远不会影响事务资源" aria-keyshortcuts="2"><span>可以，分析查询永远不会影响事务资源</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>不可以，要明确快照新鲜度、资源隔离和写入干扰</p><p>HTAP 的价值来自共享或快速同步数据，但事务延迟、分析新鲜度和资源争用仍需取舍</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="ordering" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 排序题</div><h2>用“需求—硬件—架构—取舍”分析未来数据库方向时按步骤排列</h2><ol class="ordering-list" data-answer="[&quot;明确规模、热点、故障、实时或异构需求&quot;, &quot;识别网络、多核、内存和存储等硬件条件&quot;, &quot;选择分片、副本、云原生、HTAP 或多模型等机制&quot;, &quot;评价协调、恢复、隔离、成本和治理代价&quot;]"><li class="ordering-item"><span>明确规模、热点、故障、实时或异构需求</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“明确规模、热点、故障、实时或异构需求”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“明确规模、热点、故障、实时或异构需求”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>评价协调、恢复、隔离、成本和治理代价</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“评价协调、恢复、隔离、成本和治理代价”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“评价协调、恢复、隔离、成本和治理代价”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>识别网络、多核、内存和存储等硬件条件</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“识别网络、多核、内存和存储等硬件条件”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“识别网络、多核、内存和存储等硬件条件”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>选择分片、副本、云原生、HTAP 或多模型等机制</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“选择分片、副本、云原生、HTAP 或多模型等机制”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“选择分片、副本、云原生、HTAP 或多模型等机制”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>明确规模、热点、故障、实时或异构需求 → 识别网络、多核、内存和存储等硬件条件 → 选择分片、副本、云原生、HTAP 或多模型等机制 → 评价协调、恢复、隔离、成本和治理代价</p><p>新方向应由问题和证据驱动，不能只按技术名词组合</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>三副本分片系统失去一个节点时，为什么“有副本”仍不足以直接保证可以提交？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>还要看剩余副本是否满足协议要求的法定人数、故障节点是否影响领导者或路由、复制进度是否足够新，以及网络是否把集群分割。副本提供冗余，共识或协调协议决定哪些节点组合可以接受新状态；恢复后还需补齐落后副本并处理重配置成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">Student、SC、Course 三表连接结果</title>
+  <desc id="desc">Student 与 SC 按 Sno 连接，SC 与 Course 按 Cno 连接，最后形成学号、学生姓名、课程名和成绩的结果关系。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 29px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { fill: #ffffff; stroke: #7890a5; stroke-width: 2; }
+      .blue { fill: #e8f3ff; }
+      .green { fill: #eef8ed; }
+      .orange { fill: #fff1dc; }
+      .purple { fill: #f0eaff; }
+      .box-title { font-size: 24px; font-weight: 700; }
+      .small-title { font-size: 19px; font-weight: 650; }
+      .small { font-size: 16px; fill: #536979; }
+      .map { font-size: 17px; font-weight: 650; fill: #536979; }
+      .row { fill: #f7f9fb; stroke: #b4c2cc; stroke-width: 1; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="60">连接不是把三张表横向拼接，而是按键保留匹配组合</text>
+  <text class="label note" x="65" y="92">先看 Student—SC—Course 的键／外键联系，再决定结果列和保留规则</text>
+
+  <rect class="box blue" x="65" y="150" width="285" height="150" rx="20"/>
+  <text class="label box-title" x="207" y="195" text-anchor="middle">Student</text>
+  <text class="label small-title" x="207" y="237" text-anchor="middle">Sno | Sname</text>
+  <text class="label small" x="207" y="271" text-anchor="middle">学生基本信息</text>
+
+  <rect class="box green" x="455" y="150" width="285" height="150" rx="20"/>
+  <text class="label box-title" x="597" y="195" text-anchor="middle">SC</text>
+  <text class="label small-title" x="597" y="237" text-anchor="middle">Sno | Cno | Grade</text>
+  <text class="label small" x="597" y="271" text-anchor="middle">选课记录</text>
+
+  <rect class="box orange" x="845" y="150" width="285" height="150" rx="20"/>
+  <text class="label box-title" x="987" y="195" text-anchor="middle">Course</text>
+  <text class="label small-title" x="987" y="237" text-anchor="middle">Cno | Cname</text>
+  <text class="label small" x="987" y="271" text-anchor="middle">课程基本信息</text>
+
+  <line x1="350" y1="220" x2="455" y2="220" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="370" y="198">Student.Sno = SC.Sno</text>
+  <line x1="740" y1="220" x2="845" y2="220" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="760" y="198">SC.Cno = Course.Cno</text>
+
+  <line x1="600" y1="300" x2="600" y2="380" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label map" x="625" y="350">保留匹配元组</text>
+
+  <rect class="box purple" x="235" y="380" width="730" height="205" rx="20"/>
+  <text class="label box-title" x="600" y="425" text-anchor="middle">连接结果关系</text>
+  <rect class="row" x="295" y="452" width="610" height="42" rx="8"/>
+  <text class="label small-title" x="600" y="479" text-anchor="middle">Sno | Sname | Cname | Grade</text>
+  <rect class="row" x="295" y="505" width="610" height="42" rx="8"/>
+  <text class="label small" x="600" y="532" text-anchor="middle">20180002 | 刘晨 | 数据库系统 | 92</text>
+  <text class="label small" x="600" y="568" text-anchor="middle">未匹配记录是否保留，要由内连接或外连接的业务要求决定</text>
+</svg>

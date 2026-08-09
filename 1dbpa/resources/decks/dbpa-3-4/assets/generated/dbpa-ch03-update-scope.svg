@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">WHERE 控制更新范围</title>
+  <desc id="desc">带 WHERE 的更新只改变 Semester 为 20201 且 Cno 为 81002 的匹配行，省略 WHERE 会把新值写到表中所有行。</desc>
+  <defs>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 30px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { fill: #ffffff; stroke: #7890a5; stroke-width: 2; }
+      .soft-green { fill: #eef8ed; } .soft-red { fill: #fff0ef; } .soft-blue { fill: #e8f3ff; }
+      .box-title { font-size: 24px; font-weight: 700; }
+      .small-title { font-size: 18px; font-weight: 650; }
+      .small { font-size: 16px; fill: #536979; }
+      .row { fill: #f7f9fb; stroke: #b4c2cc; stroke-width: 1; }
+      .hit { fill: #d9f0db; stroke: #6d9c75; stroke-width: 1.5; }
+      .danger { fill: #ffd8d5; stroke: #c66a62; stroke-width: 1.5; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="62">WHERE 决定 UPDATE 影响哪些行</text>
+  <text class="label note" x="65" y="94">省略 WHERE 是选择全表更新，不是“默认只更新当前一行”</text>
+
+  <rect class="box" x="65" y="145" width="300" height="430" rx="20"/>
+  <text class="label box-title" x="215" y="188" text-anchor="middle">更新前的 SC</text>
+  <rect class="row" x="105" y="220" width="220" height="42" rx="8"/><text class="label small-title" x="215" y="247" text-anchor="middle">Sno | Semester | Cno | Grade</text>
+  <rect class="row" x="105" y="273" width="220" height="42" rx="8"/><text class="label small" x="215" y="300" text-anchor="middle">01 | 20201 | 81002 | 86</text>
+  <rect class="row" x="105" y="326" width="220" height="42" rx="8"/><text class="label small" x="215" y="353" text-anchor="middle">02 | 20201 | 81002 | 91</text>
+  <rect class="row" x="105" y="379" width="220" height="42" rx="8"/><text class="label small" x="215" y="406" text-anchor="middle">03 | 20201 | 81003 | 78</text>
+  <text class="label small" x="215" y="476" text-anchor="middle">WHERE Semester = '20201'</text>
+  <text class="label small" x="215" y="500" text-anchor="middle">AND Cno = '81002'</text>
+  <text class="label small" x="215" y="536" text-anchor="middle">先用同样条件 SELECT 预览</text>
+
+  <rect class="box soft-green" x="430" y="145" width="320" height="430" rx="20"/>
+  <text class="label box-title" x="590" y="188" text-anchor="middle">带 WHERE：精确集合</text>
+  <text class="label small-title" x="590" y="225" text-anchor="middle">SET Grade = Grade - 5</text>
+  <rect class="hit" x="470" y="260" width="240" height="52" rx="8"/><text class="label small" x="590" y="293" text-anchor="middle">01 | 20201 | 81002 | 81</text>
+  <rect class="hit" x="470" y="325" width="240" height="52" rx="8"/><text class="label small" x="590" y="358" text-anchor="middle">02 | 20201 | 81002 | 86</text>
+  <rect class="row" x="470" y="390" width="240" height="52" rx="8"/><text class="label small" x="590" y="423" text-anchor="middle">03 | 20201 | 81003 | 78</text>
+  <text class="label small" x="590" y="492" text-anchor="middle">只改变两行</text>
+  <text class="label small" x="590" y="528" text-anchor="middle">目标集合可解释、可复查</text>
+
+  <rect class="box soft-red" x="815" y="145" width="320" height="430" rx="20"/>
+  <text class="label box-title" x="975" y="188" text-anchor="middle">省略 WHERE：全表集合</text>
+  <text class="label small-title" x="975" y="225" text-anchor="middle">SET Grade = Grade - 5</text>
+  <rect class="danger" x="855" y="260" width="240" height="52" rx="8"/><text class="label small" x="975" y="293" text-anchor="middle">01 | 20201 | 81002 | 81</text>
+  <rect class="danger" x="855" y="325" width="240" height="52" rx="8"/><text class="label small" x="975" y="358" text-anchor="middle">02 | 20201 | 81002 | 86</text>
+  <rect class="danger" x="855" y="390" width="240" height="52" rx="8"/><text class="label small" x="975" y="423" text-anchor="middle">03 | 20201 | 81003 | 73</text>
+  <text class="label small" x="975" y="492" text-anchor="middle">三行全部改变</text>
+  <text class="label small" x="975" y="528" text-anchor="middle">执行前必须二次确认</text>
+</svg>

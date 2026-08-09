@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">内存数据库的持久性补偿</title>
+  <desc id="desc">事务在易失性内存中运行，提交前通过日志、检查点、非易失性存储或复制把可恢复状态保存到可靠位置。</desc>
+  <defs>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .dram { fill: #eaf3fb; stroke: #a7c5df; stroke-width: 2; rx: 14; }
+      .log { fill: #fff1dc; stroke: #e0bc8d; stroke-width: 2; rx: 14; }
+      .disk { fill: #eef2f8; stroke: #b7c7d8; stroke-width: 2; rx: 14; }
+      .replica { fill: #eaf4ef; stroke: #a9cbb9; stroke-width: 2; rx: 14; }
+      .title { font: 700 29px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .small { font: 14px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #71869a; stroke-width: 3; fill: none; marker-end: url(#arrowhead); }
+      .danger { stroke: #cf8a7c; stroke-width: 3; stroke-dasharray: 8 8; fill: none; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="8" refX="8" refY="4" orient="auto">
+      <path d="M0,0 L10,4 L0,8 Z" fill="#71869a"/>
+    </marker>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">事务可以在 DRAM 中运行，但提交状态必须能在故障后找回</text>
+  <rect class="panel" x="40" y="100" width="1120" height="470"/>
+
+  <rect class="dram" x="95" y="190" width="250" height="180"/>
+  <text class="label" x="167" y="238">DRAM 内存</text>
+  <text class="text" x="145" y="280">表、索引和事务状态</text>
+  <text class="small" x="145" y="320">访问快，但断电会丢失</text>
+  <path class="danger" d="M220 375 V445"/>
+  <text class="small" x="145" y="470">易失性边界</text>
+
+  <rect class="log" x="450" y="150" width="245" height="125"/>
+  <text class="label" x="526" y="195">日志</text>
+  <text class="text" x="494" y="233">提交前写入可靠介质</text>
+  <rect class="disk" x="450" y="345" width="245" height="125"/>
+  <text class="label" x="524" y="390">检查点</text>
+  <text class="text" x="489" y="428">周期性保存内存状态</text>
+  <rect class="replica" x="820" y="150" width="245" height="125"/>
+  <text class="label" x="876" y="195">NVM 日志</text>
+  <text class="text" x="854" y="233">低延迟持久存储</text>
+  <rect class="replica" x="820" y="345" width="245" height="125"/>
+  <text class="label" x="880" y="390">复制副本</text>
+  <text class="text" x="854" y="428">故障时切换服务</text>
+
+  <path class="arrow" d="M345 245 H440"/><path class="arrow" d="M345 315 H440"/>
+  <path class="arrow" d="M695 212 H810"/><path class="arrow" d="M695 405 H810"/>
+  <text class="small" x="370" y="232">提交路径</text>
+  <text class="small" x="363" y="337">恢复基线</text>
+  <text class="small" x="730" y="198">日志介质</text>
+  <text class="small" x="725" y="393">高可用路径</text>
+
+  <rect class="panel" x="95" y="605" width="970" height="58"/>
+  <text class="label" x="125" y="642">恢复关系</text>
+  <text class="text" x="285" y="642">检查点提供较早状态，日志重放后续变化，副本缩短服务中断</text>
+</svg>

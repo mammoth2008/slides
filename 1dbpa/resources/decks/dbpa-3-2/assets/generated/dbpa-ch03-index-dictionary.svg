@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">索引、数据字典与查询路径</title>
+  <desc id="desc">用户描述查询目标和条件，DBMS 根据数据字典中的对象定义和统计信息，在表的完整扫描与索引路径之间选择。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#60758a"/>
+    </marker>
+    <style>
+      .label { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #1e2d3b; }
+      .title { font-size: 30px; font-weight: 700; }
+      .note { font-size: 18px; fill: #536979; }
+      .box { fill: #ffffff; stroke: #7890a5; stroke-width: 2; }
+      .soft-blue { fill: #e8f3ff; }
+      .soft-green { fill: #eef8ed; }
+      .soft-orange { fill: #fff1dc; }
+      .box-title { font-size: 23px; font-weight: 700; }
+      .small-title { font-size: 19px; font-weight: 650; }
+      .small { font-size: 16px; fill: #536979; }
+      .arrow-label { font-size: 17px; font-weight: 650; fill: #536979; }
+      .row { fill: #f7f9fb; stroke: #b4c2cc; stroke-width: 1; }
+    </style>
+  </defs>
+  <rect width="1200" height="720" rx="28" fill="#fbfcfe"/>
+  <text class="label title" x="65" y="60">索引增加路径，数据字典帮助 DBMS 做判断</text>
+  <text class="label note" x="65" y="92">用户描述查询目标和条件，不指定存取路径；系统结合元数据选择访问方式</text>
+
+  <rect class="box soft-blue" x="65" y="130" width="270" height="105" rx="20"/>
+  <text class="label box-title" x="200" y="174" text-anchor="middle">用户查询</text>
+  <text class="label small" x="200" y="205" text-anchor="middle">查询条件示例：Sname = '李明'</text>
+
+  <line x1="335" y1="182" x2="425" y2="182" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label arrow-label" x="348" y="162">请求</text>
+
+  <rect class="box soft-green" x="425" y="130" width="300" height="105" rx="20"/>
+  <text class="label box-title" x="575" y="174" text-anchor="middle">DBMS 规划与优化</text>
+  <text class="label small" x="575" y="205" text-anchor="middle">比较可用路径与预计代价</text>
+
+  <rect class="box soft-orange" x="815" y="125" width="320" height="190" rx="20"/>
+  <text class="label box-title" x="975" y="165" text-anchor="middle">数据字典</text>
+  <text class="label small" x="855" y="198">表与列定义</text>
+  <text class="label small" x="855" y="228">约束、索引与依赖</text>
+  <text class="label small" x="855" y="258">统计信息</text>
+  <line x1="725" y1="182" x2="815" y2="182" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <text class="label arrow-label" x="738" y="162">读取元数据</text>
+
+  <rect class="box" x="65" y="355" width="340" height="245" rx="20"/>
+  <text class="label box-title" x="235" y="397" text-anchor="middle">Student 表</text>
+  <rect class="row" x="105" y="425" width="260" height="40" rx="8"/>
+  <text class="label small-title" x="235" y="451" text-anchor="middle">Sno | Sname | Smajor</text>
+  <rect class="row" x="105" y="475" width="260" height="40" rx="8"/>
+  <text class="label small" x="235" y="501" text-anchor="middle">20180001 | 李明 | 计算机</text>
+  <rect class="row" x="105" y="525" width="260" height="40" rx="8"/>
+  <text class="label small" x="235" y="551" text-anchor="middle">20180002 | 王宁 | 软件工程</text>
+  <text class="label small" x="235" y="585" text-anchor="middle">完整扫描：逐行检查条件</text>
+
+  <rect class="box soft-blue" x="455" y="355" width="300" height="245" rx="20"/>
+  <text class="label box-title" x="605" y="397" text-anchor="middle">Sname 索引</text>
+  <rect class="row" x="500" y="425" width="210" height="40" rx="8"/>
+  <text class="label small-title" x="605" y="451" text-anchor="middle">李明 → 多个 Sno</text>
+  <rect class="row" x="500" y="475" width="210" height="40" rx="8"/>
+  <text class="label small-title" x="605" y="501" text-anchor="middle">王宁 → 20180002</text>
+  <text class="label small" x="605" y="551" text-anchor="middle">普通索引的同值可对应多条元组</text>
+  <text class="label small" x="605" y="582" text-anchor="middle">索引也要随数据变化维护</text>
+
+  <rect class="box soft-green" x="805" y="355" width="330" height="245" rx="20"/>
+  <text class="label box-title" x="970" y="397" text-anchor="middle">执行结果</text>
+  <text class="label small" x="970" y="447" text-anchor="middle">完整扫描或索引路径都可返回结果</text>
+  <text class="label small" x="970" y="485" text-anchor="middle">是否使用索引由 DBMS 判断</text>
+  <text class="label small" x="970" y="523" text-anchor="middle">路径选择不写在查询目标中</text>
+  <text class="label small" x="970" y="561" text-anchor="middle">索引不是业务数据的替代品</text>
+
+  <line x1="575" y1="235" x2="605" y2="355" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+  <line x1="575" y1="235" x2="235" y2="355" stroke="#60758a" stroke-width="2" stroke-dasharray="8 7" marker-end="url(#arrow)"/>
+  <text class="label arrow-label" x="350" y="300">可选存取路径</text>
+  <line x1="755" y1="480" x2="805" y2="480" stroke="#60758a" stroke-width="3" marker-end="url(#arrow)"/>
+</svg>

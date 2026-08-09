@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">哈希索引的桶定位与溢出链</title>
+  <desc id="desc">哈希函数把属性值映射到桶号，桶满时通过溢出桶和溢出链继续存放索引项。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .input { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 14; }
+      .bucket { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 14; }
+      .overflow { fill: #fff1dc; stroke: #d49a61; stroke-width: 2; rx: 14; }
+      .result { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 14; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 21px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .small { font: 16px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #d49a61; stroke-width: 3; fill: none; stroke-dasharray: 8 7; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">哈希索引把等值查找变成“算桶号，再查桶”</text>
+
+  <rect class="input" x="70" y="190" width="240" height="120"/>
+  <text class="label" x="190" y="235">Sno = 20180024</text>
+  <text class="text" x="190" y="270">输入的索引属性值</text>
+  <rect class="input" x="390" y="190" width="240" height="120"/>
+  <text class="label" x="510" y="235">h(Sno) = 0</text>
+  <text class="text" x="510" y="270">计算桶号</text>
+  <path class="arrow" d="M310 250 H385"/>
+
+  <rect class="bucket" x="720" y="135" width="210" height="105"/>
+  <rect class="bucket" x="720" y="285" width="210" height="105"/>
+  <rect class="overflow" x="980" y="285" width="160" height="105"/>
+  <text class="label" x="825" y="175">0 号桶</text>
+  <text class="text" x="825" y="210">20180010、20180024</text>
+  <text class="label" x="825" y="325">1 号桶</text>
+  <text class="text" x="825" y="360">已满</text>
+  <text class="label" x="1060" y="325">溢出桶</text>
+  <text class="text" x="1060" y="360">继续存放索引项</text>
+  <path class="arrow" d="M630 250 C675 250 680 185 715 185"/>
+  <path class="dash" d="M930 337 H975"/>
+  <text class="small" x="70" y="465">桶满、取值分布不均或哈希函数不理想，都可能造成溢出</text>
+
+  <rect class="result" x="70" y="520" width="475" height="100"/>
+  <text class="label" x="307" y="560">等值查询</text>
+  <text class="text" x="307" y="592">桶号 → 桶及溢出链 → 记录指针</text>
+  <rect class="overflow" x="655" y="520" width="475" height="100"/>
+  <text class="label" x="892" y="560">范围查询</text>
+  <text class="text" x="892" y="592">没有键值顺序，通常不适合连续扫描</text>
+</svg>

@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 16.2 HTAP 与大数据时代的新型数据仓库 | HUST</title>
+  <meta name="description" content="比较事务、分析与异构平台共存时的新鲜度、隔离和移动成本">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="16-2">
+  <meta name="version" content="2608.4">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-16-2/assets/dbpa-16-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 16.2</div>
+      <h1>HTAP 与大数据时代的新型数据仓库</h1>
+      <p class="cover-description">订单刚提交，分析报表什么时候能看见</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.4</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元比较单引擎、多引擎和共存式新型仓库的同步与资源取舍；封面图只作概念引导，不代表某种具体 HTAP 架构。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">围绕“订单提交后多久进入地区销售报表”，你能够</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明订单为什么已提交却还没有出现在分析报表中</span></li><li><span class="list-marker">02</span><span class="list-text">用同一软件、统一 SQL 接口和同一业务数据定义 HTAP</span></li><li><span class="list-marker">03</span><span class="list-text">比较单引擎与多引擎处理订单更新和地区分析的方式</span></li><li><span class="list-marker">04</span><span class="list-text">解释行存、列存、格式转换和副本同步带来的代价</span></li><li><span class="list-marker">05</span><span class="list-text">沿业务源、ETL、仓库和 OLAP 找出等待与重复计算</span></li><li><span class="list-marker">06</span><span class="list-text">根据新鲜度、隔离和移动成本选择架构起点</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/14</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 新鲜度问题</div>
+    <h2 class="slide-title">HTAP 缩短事务到分析的距离</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>HTAP 就是事务和分析只用一份物理数据吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">10:00:00 订单提交成功，10:00:20 地区销售报表仍没有这笔订单</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-16-2/assets/generated/dbpa-ch16-htap-sync.svg" data-full-src="resources/decks/dbpa-16-2/assets/generated/dbpa-ch16-htap-sync.svg" alt="一种行列协作实现：业务写入经同步机制进入列存分析路径" tabindex="0" role="button" aria-label="放大图片：一种行列协作实现：业务写入经同步机制进入列存分析路径" decoding="async"><figcaption>一种物理实现示意，不代表所有 HTAP 都先写行存再复制到列存</figcaption></figure>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="订单提交 → 等待复制或转换 → 分析端可见"><span class="relation-term">订单提交</span><span class="relation-operator">→</span><span class="relation-term">等待复制或转换</span><span class="relation-operator">→</span><span class="relation-term">分析端可见</span></div></div>
+<div class="component component-text text-inset substep reveal-self"><p>逻辑上，HTAP 用同一套数据库软件和统一 SQL 接口，在同一业务数据上同时支持事务与分析</p>
+<p>物理上，系统仍可以维护行存、列存或其他副本，因此分析可见时间仍要检查</p></div></div></div>
+    <div class="numeric-progress">3/14</div>
+    <div class="semantic-label">HTAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> HTAP 方案</div>
+    <h2 class="slide-title">单引擎可以在一个系统内组织两种负载</h2>
+    <div class="slide-content"><p class="slide-lead">订单写入和地区汇总使用不同访问方式，存储组织也会产生不同代价</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>负载</th><th>典型组织</th><th>主要取舍</th></tr></thead><tbody><tr><td>写入一笔订单</td><td>行存储</td><td>便于按记录点查和更新；扫描大量订单可能较慢</td></tr><tr><td>汇总地区销售</td><td>列存储</td><td>便于扫描、压缩和并行；更新或格式转换有成本</td></tr><tr><td>写入与汇总并存</td><td>行列混合组织</td><td>少跨一个系统，但仍要处理转换、同步和资源竞争</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/14</div>
+    <div class="semantic-label">SINGLE ENGINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> HTAP 方案</div>
+    <h2 class="slide-title">多引擎用组件专业化换取同步和接口成本</h2>
+    <div class="slide-content"><p class="slide-lead">事务系统写订单，分析系统做汇总；两边怎样同步成为新的问题</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>OLTP 加 OLAP</h3><p>订单进入事务系统，再经 ETL 或复制进入仓库；地区报表会晚于事务提交</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>OLTP 加 NoSQL</h3><p>订单表留在关系数据库，点击日志进入大数据平台；接口和字段含义要另外对齐</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共同难题</h3><p>两种路线都要处理副本同步、故障恢复和统一查询入口</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>多引擎保留专业组件，也增加了数据移动和接口维护</p></div></div>
+    <div class="numeric-progress">5/14</div>
+    <div class="semantic-label">MULTI ENGINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 仓库压力</div>
+    <h2 class="slide-title">大数据时代改变规模、类型和分析任务</h2>
+    <div class="slide-content"><p class="slide-lead">同一个销售主题开始同时接收订单表、点击日志和商品图片</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>规模</h3><p>订单和访问记录从 TB 增长到 PB，单机扫描时间和存储成本上升</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>类型</h3><p>结构化订单、半结构化点击日志和非结构化商品图片需要不同处理方式</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分析</h3><p>除了销售报表，还要做预测、关联和 what-if 分析</p></article></div></div></div>
+    <div class="numeric-progress">6/14</div>
+    <div class="semantic-label">NEW REQUIREMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 仓库压力</div>
+    <h2 class="slide-title">混合负载与新硬件的压力</h2>
+    <div class="slide-content"><p class="slide-lead">下单高峰与全量销售扫描同时发生，二者会争用处理器、内存和带宽</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>负载</h3><p>短事务持续写入订单，长查询同时扫描历史销售</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>硬件</h3><p>多核、大内存和高速网络可以加速处理，但不能替系统决定谁先使用资源</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>硬件提供并行能力，系统仍要隔离短事务与长查询</p></div></div>
+    <div class="numeric-progress">7/14</div>
+    <div class="semantic-label">NEW WORKLOADS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 仓库压力</div>
+    <h2 class="slide-title">分层架构的数据移动成本</h2>
+    <div class="slide-content"><p class="slide-lead">跟着一笔订单走过业务源、ETL、仓库和 OLAP，就能找到等待发生在哪里</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-16-2/assets/generated/dbpa-ch16-data-movement-cost.svg" data-full-src="resources/decks/dbpa-16-2/assets/generated/dbpa-ch16-data-movement-cost.svg" alt="一种传统批处理路径经过业务源、ETL、仓库和 OLAP 多个边界，数据移动造成等待与重复计算" tabindex="0" role="button" aria-label="放大图片：一种传统批处理路径经过业务源、ETL、仓库和 OLAP 多个边界，数据移动造成等待与重复计算" decoding="async"><figcaption>典型批处理分层与数据移动路径</figcaption></figure>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>写入</h3><p>订单先在事务系统提交</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>抽取</h3><p>ETL 等待批次，再复制和转换订单</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>组织</h3><p>仓库重组主题数据，OLAP 建立汇总结构</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>查询</h3><p>地区报表读取分析端当前可见的数据</p></div></div></div></div></div>
+    <div class="numeric-progress">8/14</div>
+    <div class="semantic-label">DATA MOVEMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 仓库压力</div>
+    <h2 class="slide-title">新增“退货原因”会改动哪些环节</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f0d43de25a1b.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只是多一个退货原因，为什么要改整条链？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一个新字段会从订单源一路传到地区销售分析</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">订单系统增加退货原因并确定取值口径</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">ETL 增加字段映射和清洗规则</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">仓库修改事实或维度结构并重新装载</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">报表增加退货分析并重新计算历史结果</span></li></ol></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>架构不仅要缩短数据等待，也要缩短业务变化传到分析端的路径</p></div></div>
+    <div class="numeric-progress">9/14</div>
+    <div class="semantic-label">ADAPTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 方案判断</div>
+    <h2 class="slide-title">关系与大数据平台共存的代价</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.c35e2d766676.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>接上连接器，字段含义和副本一致性就自动统一了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">订单表留在关系仓库，点击日志进入大数据平台，连接器负责交换数据</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="关系仓库订单 ＋ 大数据平台日志 → 连接器交换 → 统一查询入口"><span class="relation-term">关系仓库订单 ＋ 大数据平台日志</span><span class="relation-operator">→</span><span class="relation-term">连接器交换</span><span class="relation-operator">→</span><span class="relation-term">统一查询入口</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>目标</th><th>设计回应</th><th>新的瓶颈</th></tr></thead><tbody><tr><td>高扩展</td><td>分布式和并行平台</td><td>跨节点协调与故障恢复</td></tr><tr><td>混合负载</td><td>行存、列存或多副本</td><td>资源隔离与副本同步</td></tr><tr><td>开放接口</td><td>连接器和统一 SQL</td><td>传输带宽与字段含义对齐</td></tr><tr><td>低延迟</td><td>就地分析和缓存</td><td>可见新鲜度与资源隔离</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>连接器可以搬运数据，但不会自动统一字段含义或保证副本一致</p></div></div></div>
+    <div class="numeric-progress">10/14</div>
+    <div class="semantic-label">COEXISTENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-case layout-focus teaching-semantic"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2 <span>|</span> 方案判断</div>
+    <h2 class="slide-title">练习：为三个销售场景选择架构起点</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>先选产品，还是先写新鲜度与隔离要求？</p></div></div></div></aside>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 30% 30%"><colgroup><col style="width:40%"><col style="width:30%"><col style="width:30%"></colgroup><thead><tr><th>场景</th><th>先写出关键要求</th><th>选择的架构起点</th></tr></thead><tbody><tr><td>新订单一分钟内进入地区报表，同时不能拖慢下单</td><td>新鲜度、事务隔离</td><td>单引擎／多引擎／继续核对</td></tr><tr><td>夜间生成一次销售报表，现有仓库运行稳定</td><td>延迟容忍、维护成本</td><td>单引擎／多引擎／继续核对</td></tr><tr><td>订单表与点击日志联合分析，两个平台都要保留</td><td>语义映射、移动成本</td><td>异构共存／其他／继续核对</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先写出可见时间、隔离要求和数据移动，再选择系统组合</p></div></div>
+    <div class="numeric-progress">11/14</div>
+    <div class="semantic-label">DESIGN CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-grid"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2</div>
+    <h2 class="slide-title">本节回顾：从分离式仓库到方案判断</h2>
+    <div class="slide-content"><p class="slide-lead">从订单提交到地区报表，架构选择始终围绕可见时间、事务隔离和数据移动</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>HTAP</h3><p>同一软件和统一 SQL 接口同时服务订单事务与销售分析</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>单引擎</h3><p>少跨一个系统，但仍要处理行列转换与资源竞争</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多引擎</h3><p>事务与分析各用专业系统，但订单要等待复制和转换</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>异构共存</h3><p>连接器交换订单与日志，字段含义和副本一致仍需维护</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>没有脱离场景的最佳架构，先说明时间、负载和数据路径</p></div></div>
+    <div class="numeric-progress">12/14</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-16-2/mindmap-16-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">13/14</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单已经提交，为什么地区销售报表仍可能看不到它？</span></li><li><span class="question-no">02</span><span class="question-text">单引擎和多引擎分别怎样处理订单事务与销售分析？</span></li><li><span class="question-no">03</span><span class="question-text">行存和列存分别适合什么访问方式，格式转换会增加什么代价？</span></li><li><span class="question-no">04</span><span class="question-text">一笔订单经过业务源、ETL、仓库和 OLAP 时，等待可能发生在哪里？</span></li><li><span class="question-no">05</span><span class="question-text">新增“退货原因”为什么会引起整条仓库链的修改？</span></li><li><span class="question-no">06</span><span class="question-text">面对三个销售场景，你会选择哪种架构起点，依据是什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-16-1.html" title="上一节：16.1 数据仓库与联机分析处理" aria-label="上一节：16.1 数据仓库与联机分析处理">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">16.1</span>
+        <span class="nav-title">数据仓库与 OLAP</span>
+      </a>
+      <a class="exercise-link" href="dbpa-16-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-17-1.html" title="下一节：17.1 内存数据库概述与新硬件" aria-label="下一节：17.1 内存数据库概述与新硬件">
+        <span class="nav-title">内存数据库与新硬件</span>
+        <span class="nav-number">17.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">14/14</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

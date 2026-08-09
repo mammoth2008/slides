@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>9.2 B+ 树、哈希与位图索引｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 9.2</div><h1>B+ 树、哈希与位图索引</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将访问需求与通常更适合优先评估的结构匹配</h2><div class="matching-grid"><label class="matching-row"><span>高选择性等值与范围查询并存</span><select class="matching-select" data-answer="B+ 树索引" name="q1"><option value="">请选择</option><option value="B+ 树索引">B+ 树索引</option><option value="顺序扫描">顺序扫描</option><option value="位图索引">位图索引</option><option value="哈希索引">哈希索引</option></select></label><label class="matching-row"><span>主要为高选择性等值查询</span><select class="matching-select" data-answer="哈希索引" name="q1"><option value="">请选择</option><option value="B+ 树索引">B+ 树索引</option><option value="顺序扫描">顺序扫描</option><option value="位图索引">位图索引</option><option value="哈希索引">哈希索引</option></select></label><label class="matching-row"><span>低基数、读多写少且常组合筛选</span><select class="matching-select" data-answer="位图索引" name="q1"><option value="">请选择</option><option value="B+ 树索引">B+ 树索引</option><option value="顺序扫描">顺序扫描</option><option value="位图索引">位图索引</option><option value="哈希索引">哈希索引</option></select></label><label class="matching-row"><span>返回表中大部分记录</span><select class="matching-select" data-answer="顺序扫描" name="q1"><option value="">请选择</option><option value="B+ 树索引">B+ 树索引</option><option value="顺序扫描">顺序扫描</option><option value="位图索引">位图索引</option><option value="哈希索引">哈希索引</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>高选择性等值与范围查询并存 → B+ 树索引；主要为高选择性等值查询 → 哈希索引；低基数、读多写少且常组合筛选 → 位图索引；返回表中大部分记录 → 顺序扫描</p><p>索引选择要结合查询类型、选择性、数据规模、读写比和空间，而不是只看单次查找速度</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="ordering" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 排序题</div><h2>按 B+ 树等值查找的路径排列</h2><ol class="ordering-list" data-answer="[&quot;从根结点比较搜索键并选择子指针&quot;, &quot;在中间结点继续缩小键值范围&quot;, &quot;到达叶结点定位索引项&quot;, &quot;通过记录指针读取目标记录或判断不存在&quot;]"><li class="ordering-item"><span>到达叶结点定位索引项</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“到达叶结点定位索引项”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“到达叶结点定位索引项”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>在中间结点继续缩小键值范围</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“在中间结点继续缩小键值范围”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“在中间结点继续缩小键值范围”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>通过记录指针读取目标记录或判断不存在</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“通过记录指针读取目标记录或判断不存在”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“通过记录指针读取目标记录或判断不存在”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>从根结点比较搜索键并选择子指针</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“从根结点比较搜索键并选择子指针”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“从根结点比较搜索键并选择子指针”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>从根结点比较搜索键并选择子指针 → 在中间结点继续缩小键值范围 → 到达叶结点定位索引项 → 通过记录指针读取目标记录或判断不存在</p><p>平衡多级结构使所有叶结点深度相同，查找 I/O 随树高增长而不是随记录数线性增长</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="single" data-answer="叶结点按键有序相连，可以连续取得区间内后续键直到超过上界" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 单选题</div><h2>B+ 树范围查询找到第一个下界键后，为什么通常沿叶结点链继续扫描？</h2><div class="choices"><label class="choice"><input type="radio" name="q3" value="叶结点按键有序相连，可以连续取得区间内后续键直到超过上界" aria-keyshortcuts="1"><span>叶结点按键有序相连，可以连续取得区间内后续键直到超过上界</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q3" value="范围查询必须每取得一条记录就重新从根开始" aria-keyshortcuts="2"><span>范围查询必须每取得一条记录就重新从根开始</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>叶结点按键有序相连，可以连续取得区间内后续键直到超过上界</p><p>叶链是 B+ 树同时支持点查和有序范围扫描的重要结构</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="matching" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 匹配题</div><h2>将 B+ 树更新情况与维护动作匹配</h2><div class="matching-grid"><label class="matching-row"><span>叶结点插入后溢出</span><select class="matching-select" data-answer="分裂结点并把分隔键传播到父结点" name="q4"><option value="">请选择</option><option value="通常按旧键删除、按新键重新插入">通常按旧键删除、按新键重新插入</option><option value="分裂结点并把分隔键传播到父结点">分裂结点并把分隔键传播到父结点</option><option value="向兄弟借键或合并并调整父结点">向兄弟借键或合并并调整父结点</option></select></label><label class="matching-row"><span>删除后结点低于占用要求</span><select class="matching-select" data-answer="向兄弟借键或合并并调整父结点" name="q4"><option value="">请选择</option><option value="通常按旧键删除、按新键重新插入">通常按旧键删除、按新键重新插入</option><option value="分裂结点并把分隔键传播到父结点">分裂结点并把分隔键传播到父结点</option><option value="向兄弟借键或合并并调整父结点">向兄弟借键或合并并调整父结点</option></select></label><label class="matching-row"><span>修改索引键</span><select class="matching-select" data-answer="通常按旧键删除、按新键重新插入" name="q4"><option value="">请选择</option><option value="通常按旧键删除、按新键重新插入">通常按旧键删除、按新键重新插入</option><option value="分裂结点并把分隔键传播到父结点">分裂结点并把分隔键传播到父结点</option><option value="向兄弟借键或合并并调整父结点">向兄弟借键或合并并调整父结点</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>叶结点插入后溢出 → 分裂结点并把分隔键传播到父结点；删除后结点低于占用要求 → 向兄弟借键或合并并调整父结点；修改索引键 → 通常按旧键删除、按新键重新插入</p><p>分裂、借位和合并用于保持树平衡，但会增加写入和并发控制成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将哈希查找现象与处理方式匹配</h2><div class="matching-grid"><label class="matching-row"><span>目标桶中直接找到键</span><select class="matching-select" data-answer="返回对应记录指针" name="q5"><option value="">请选择</option><option value="重组静态哈希或采用可动态扩展的哈希结构">重组静态哈希或采用可动态扩展的哈希结构</option><option value="返回对应记录指针">返回对应记录指针</option><option value="继续检查溢出页或溢出链">继续检查溢出页或溢出链</option><option value="判断该键不存在">判断该键不存在</option></select></label><label class="matching-row"><span>目标桶已满并发生冲突</span><select class="matching-select" data-answer="继续检查溢出页或溢出链" name="q5"><option value="">请选择</option><option value="重组静态哈希或采用可动态扩展的哈希结构">重组静态哈希或采用可动态扩展的哈希结构</option><option value="返回对应记录指针">返回对应记录指针</option><option value="继续检查溢出页或溢出链">继续检查溢出页或溢出链</option><option value="判断该键不存在">判断该键不存在</option></select></label><label class="matching-row"><span>检查目标桶及溢出链仍无键</span><select class="matching-select" data-answer="判断该键不存在" name="q5"><option value="">请选择</option><option value="重组静态哈希或采用可动态扩展的哈希结构">重组静态哈希或采用可动态扩展的哈希结构</option><option value="返回对应记录指针">返回对应记录指针</option><option value="继续检查溢出页或溢出链">继续检查溢出页或溢出链</option><option value="判断该键不存在">判断该键不存在</option></select></label><label class="matching-row"><span>数据规模长期增长</span><select class="matching-select" data-answer="重组静态哈希或采用可动态扩展的哈希结构" name="q5"><option value="">请选择</option><option value="重组静态哈希或采用可动态扩展的哈希结构">重组静态哈希或采用可动态扩展的哈希结构</option><option value="返回对应记录指针">返回对应记录指针</option><option value="继续检查溢出页或溢出链">继续检查溢出页或溢出链</option><option value="判断该键不存在">判断该键不存在</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>目标桶中直接找到键 → 返回对应记录指针；目标桶已满并发生冲突 → 继续检查溢出页或溢出链；检查目标桶及溢出链仍无键 → 判断该键不存在；数据规模长期增长 → 重组静态哈希或采用可动态扩展的哈希结构</p><p>哈希把键映射到桶，冲突和增长策略决定查找长度与维护成本</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;每个低基数取值可以对应一个位向量&quot;, &quot;AND 可组合同时满足多个条件的记录&quot;, &quot;OR 可组合满足任一条件的记录&quot;, &quot;位计数可快速估计命中数量&quot;, &quot;频繁单行更新可能带来维护和并发成本&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>关于位图索引，下列哪些说法正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="每个低基数取值可以对应一个位向量" aria-keyshortcuts="1"><span>每个低基数取值可以对应一个位向量</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="AND 可组合同时满足多个条件的记录" aria-keyshortcuts="2"><span>AND 可组合同时满足多个条件的记录</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="OR 可组合满足任一条件的记录" aria-keyshortcuts="3"><span>OR 可组合满足任一条件的记录</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="位计数可快速估计命中数量" aria-keyshortcuts="4"><span>位计数可快速估计命中数量</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="频繁单行更新可能带来维护和并发成本" aria-keyshortcuts="5"><span>频繁单行更新可能带来维护和并发成本</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q6" value="位图索引最适合每行都不同的高基数随机键" aria-keyshortcuts="6"><span>位图索引最适合每行都不同的高基数随机键</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>每个低基数取值可以对应一个位向量、AND 可组合同时满足多个条件的记录、OR 可组合满足任一条件的记录、位计数可快速估计命中数量、频繁单行更新可能带来维护和并发成本</p><p>位图擅长低基数分析筛选，得到记录位置后仍可能需要回表读取其他列</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>一个订单表既有 OrderId 等值查询、OrderTime 范围查询，又常按少量状态组合统计。如何组合索引并说明边界？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>OrderId 可用 B+ 树或哈希支持高选择性等值定位；OrderTime 更适合 B+ 树及叶链范围扫描；状态若基数低、读多写少，可评估位图索引并用位操作组合。若订单持续高频更新，位图维护与并发成本可能过高。最终还要比较选择性、覆盖列、回表 I/O、空间和优化器实际计划，不能保证每个查询都使用索引</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>

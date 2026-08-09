@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720" role="img" aria-labelledby="title desc">
+  <title id="title">MVCC 用旧版本减少读写阻塞</title>
+  <desc id="desc">写事务生成新版本 Q2，读事务继续读取旧版本 Q1，提交时仍需检查事务关系和版本规则。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L0,6 L9,3 z" fill="#7890a5"/>
+    </marker>
+    <style>
+      .bg { fill: #fbfcfe; }
+      .panel { fill: #f7f9fc; stroke: #c8d3df; stroke-width: 2; rx: 16; }
+      .old { fill: #eef8ed; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .new { fill: #e8f3ff; stroke: #7890a5; stroke-width: 2; rx: 11; }
+      .check { fill: #f0eaff; stroke: #8d7bb8; stroke-width: 2; rx: 11; }
+      .title { font: 700 27px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; }
+      .label { font: 700 20px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #25364a; text-anchor: middle; }
+      .text { font: 15px -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif; fill: #60758a; text-anchor: middle; }
+      .arrow { stroke: #7890a5; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dash { stroke: #8d7bb8; stroke-width: 3; stroke-dasharray: 8 7; fill: none; marker-end: url(#arrow); }
+    </style>
+  </defs>
+  <rect class="bg" width="1200" height="720"/>
+  <text class="title" x="55" y="62">MVCC 让读者先看旧版本，写者生成新版本</text>
+  <rect class="panel" x="45" y="105" width="1110" height="430"/>
+  <text class="label" x="120" y="175">版本链</text>
+  <rect class="old" x="210" y="220" width="220" height="100"/><text class="label" x="320" y="260">Q1：旧版本</text><text class="text" x="320" y="287">A=5，仍可读</text>
+  <rect class="new" x="550" y="220" width="220" height="100"/><text class="label" x="660" y="260">Q2：新版本</text><text class="text" x="660" y="287">写事务产生</text>
+  <rect class="check" x="890" y="220" width="190" height="100"/><text class="label" x="985" y="260">提交检查</text><text class="text" x="985" y="287">按时间戳验证</text>
+  <path class="arrow" d="M430 270 H540"/><path class="arrow" d="M770 270 H880"/>
+  <text class="label" x="660" y="155">T1：写事务</text>
+  <rect class="old" x="210" y="390" width="220" height="85"/><text class="label" x="320" y="425">T2：读事务</text><text class="text" x="320" y="450">读取 Q1，不等 Q2</text>
+  <path class="dash" d="M430 430 C520 360 570 350 650 330"/>
+  <text class="text" x="690" y="390">读写路径分开</text>
+  <text class="text" x="690" y="420">减少直接读写阻塞</text>
+  <text class="text" x="600" y="505">旧版本不能永久保留：当没有事务再需要它时，系统才可回收</text>
+</svg>

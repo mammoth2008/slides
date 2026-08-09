@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 10.2 查询优化与执行计划 | HUST</title>
+  <meta name="description" content="对应教材 10.2—10.4 与选读 *10.5：用代数等价、启发式和代价估算选择较优查询计划">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="10-2">
+  <meta name="version" content="2608.2">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-10-2/assets/dbpa-10-2.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 10.2</div>
+      <h1>查询优化与执行计划</h1>
+      <p class="cover-description">在结果等价的前提下选择较低代价的执行计划</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+本单元对应教材 10.2—10.4 与选读 *10.5，从 81003 查询的代数等价开始，把选择下推、物理路径、统计信息和计划执行串成一个优化闭环
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">查询优化在结果等价的基础上比较逻辑改写、物理路径和执行方向</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释非过程化 SQL 为何允许自动优化</span></li><li><span class="list-marker">02</span><span class="list-text">区分代数优化和物理优化</span></li><li><span class="list-marker">03</span><span class="list-text">应用选择与投影下推规则</span></li><li><span class="list-marker">04</span><span class="list-text">说明启发式与代价优化的差异</span></li><li><span class="list-marker">05</span><span class="list-text">依据选择率、块数、索引、内存和统计信息比较候选计划</span></li><li><span class="list-marker">06</span><span class="list-text">比较查询计划的需求驱动与主动生产在请求、缓冲和流水上的差异</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/15</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">查询优化连接内部表示与物理选路</h2>
+    <div class="slide-content"><p class="slide-lead">高层表达让系统可以利用数据字典、统计信息和当前物理状态</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>用户／应用</h3><p>用户和应用表达结果需求，不指定存取路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>优化器</h3><p>优化器从合法内部表示出发改写逻辑表达式，再比较物理候选</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>物理状态</h3><p>表块、索引、内存和数据分布变化后，系统可能重新优化</p></article></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="内部关系表示与操作算法　→　等价改写与物理选路"><span class="relation-term">内部关系表示与操作算法</span><span class="relation-operator">→</span><span class="relation-term">等价改写与物理选路</span></div></div></div></div>
+    <div class="numeric-progress">3/15</div>
+    <div class="semantic-label">WHY OPTIMIZE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">优化目标是用较小代价得到相同结果</h2>
+    <div class="slide-content"><p class="slide-lead">集中式系统尤其关注块 I/O；分布式系统还要估计节点间通信</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="总成本　＝　I/O　＋　CPU　＋　内存　＋　通信"><span class="relation-term">总成本　＝　I/O　＋　CPU　＋　内存　＋　通信</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>I/O</h3><p>I/O 包括块的读取、写出和随机访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>CPU</h3><p>CPU 处理比较、排序和哈希计算</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内存</h3><p>内存提供缓冲区以及排序、哈希工作区</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>通信</h3><p>通信表示分布式节点之间传输数据</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>常见组合策略是先用启发式缩小候选，再估算代价并选择较优计划；实际优化器不一定固定按此顺序执行</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.32696cc0518d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>结果等价还不够，优化器要比较总代价，而不是只看一个指标</p></div></div></div></aside>
+    <div class="numeric-progress">4/15</div>
+    <div class="semantic-label">COST MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">代数优化：改写逻辑，再选物理路径</h2>
+    <div class="slide-content"><p class="slide-lead">结果不变，参与后续操作的中间关系变小</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-query-equivalence.svg" data-full-src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-query-equivalence.svg" alt="三个等价查询计划因操作顺序不同产生不同中间结果和块读写代价" tabindex="0" role="button" aria-label="放大图片：三个等价查询计划因操作顺序不同产生不同中间结果和块读写代价" decoding="async"></figure>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="SQL　→　关系代数表达式　→　语法树　→　等价逻辑方案　→　物理计划"><span class="relation-term">SQL</span><span class="relation-operator">→</span><span class="relation-term">关系代数表达式</span><span class="relation-operator">→</span><span class="relation-term">语法树</span><span class="relation-operator">→</span><span class="relation-term">等价逻辑方案</span><span class="relation-operator">→</span><span class="relation-term">物理计划</span></div></div>
+<div class="component component-code"><p>SELECT Student.Sname FROM Student, SC WHERE Student.Sno = SC.Sno AND SC.Cno = &#x27;81003&#x27;</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>在相同关系模式和语义下，<code>Q1 ≡ Q2 ≡ Q3</code> 表示结果相同；它们是等价关系代数表达式，不是已经确定的物理执行计划</p></div></div>
+    <div class="numeric-progress">5/15</div>
+    <div class="semantic-label">ALGEBRAIC OPTIMIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">选择下推通常是最重要的启发式规则</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-astonished" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-astonished.75b9ae677b74.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>结果明明等价，块读写为什么会相差几个数量级？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先过滤元组，再连接和投影；在示例假设下，块读写估算可从约 2,002,100 降到约 200</p>
+<div class="slide-main-content"><p>示例假设：Student 有 1000 条记录，SC 有 10000 条记录，<code>Cno=&#x27;81003&#x27;</code> 命中 50 条记录</p>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>计划</th><th>中间结果</th><th>示例假设下块读写估算</th></tr></thead><tbody><tr><td>先笛卡儿积</td><td>约 10⁷ 个元组</td><td>约 2,002,100 块</td></tr><tr><td>先连接再选择</td><td>约 10⁴ 个连接结果</td><td>约 4,100 块</td></tr><tr><td>先选择 SC</td><td>只保留 50 条课程记录</td><td>约 200 块</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>差异来自中间结果规模和扫描次数；这些数字只属于本组示例假设，不是跨数据库常数</p></div></div>
+    <div class="numeric-progress">6/15</div>
+    <div class="semantic-label">PUSH SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">语法树优化把规则变成可检查步骤</h2>
+    <div class="slide-content"><p class="slide-lead">重点是减少中间数据和重复扫描，同时保持关系代数等价</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>选择下推</h3><p>把选择条件尽可能移向叶端</p></article><article class="content-card emphasis-card" tabindex="0"><h3>投影下推</h3><p>把投影尽早下推，去掉无用列，但保留后续连接和选择所需属性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>连接化</h3><p>把笛卡儿积和连接条件合为连接</p></article><article class="content-card emphasis-card" tabindex="0"><h3>复用</h3><p>结果较小且复用成本合算时，再共享公共子表达式</p></article></div>
+<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">Q1 先从笛卡儿积和合取条件开始</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">拆分选择条件并把只涉及 SC 的条件下推</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">保留 <code>Sno</code> 等后续连接属性，不把连接列投影掉</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">再连接和投影得到 Q3，逐步检查结果等价</span></li></ol></div></div></div>
+    <div class="numeric-progress">7/15</div>
+    <div class="semantic-label">TREE RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">物理优化在等价逻辑计划中选择存取算法</h2>
+    <div class="slide-content"><p class="slide-lead">逻辑计划不变，扫描、索引、排序和哈希会改变执行代价</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>选择对象</th><th>候选</th><th>依据</th></tr></thead><tbody><tr><td>单表选择</td><td>全表或索引扫描</td><td>表大小和选择率</td></tr><tr><td>等值连接</td><td>索引、排序—合并、哈希或嵌套循环</td><td>索引、排序、块数和内存</td></tr><tr><td>通用连接</td><td>嵌套循环等候选</td><td>块数量和可用缓冲</td></tr><tr><td>条件组合</td><td>组合索引或多个索引</td><td>条件结构与选择性</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Student ⋈ SC</code> 可使用嵌套循环、排序—合并、索引连接或哈希连接；物理优化依据条件筛选候选，不重新定义算法</p></div></div>
+    <div class="numeric-progress">8/15</div>
+    <div class="semantic-label">PHYSICAL OPTIMIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">启发式规则先缩小候选计划</h2>
+    <div class="slide-content"><p class="slide-lead">规则通常有效，但只是候选起点，不保证每种数据状态都最好</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">主码等值查询：优先检查主码索引</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">非主属性或范围查询：低选择率时考虑索引扫描，不把 10% 当作固定阈值</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">AND 条件：比较组合索引、多个索引和全表扫描；OR 条件通常先考虑顺序扫描</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">连接属性已有排序：考虑排序—合并连接</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">内表连接属性有索引：考虑索引连接</span></li><li class="substep"><span class="list-marker">06</span><span class="list-text">等值连接且构建输入适合内存：考虑哈希连接</span></li><li class="substep"><span class="list-marker">07</span><span class="list-text">没有明显优势时再比较嵌套循环，并优先让块数较小的表作外表</span></li></ol></div></div></div>
+    <div class="numeric-progress">9/15</div>
+    <div class="semantic-label">HEURISTIC RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">统计信息让物理选择可以被估算</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>统计信息已经过期时，这些公式还能保证计划更快吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">优化器需要知道数据规模、分布和索引状态</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>信息</th><th>例子</th><th>用途</th></tr></thead><tbody><tr><td>表级</td><td>元组数、块数、元组长度</td><td>扫描和连接成本</td></tr><tr><td>列级</td><td>不同值个数、分布</td><td>选择率估算</td></tr><tr><td>索引级</td><td>层数、叶数、选择基数</td><td>索引扫描成本</td></tr><tr><td>系统级</td><td>内存和通信条件</td><td>计划总体代价</td></tr></tbody></table></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="均匀分布时 `f ≈ 1/m`　｜　全表扫描 `cost ≈ B`　｜　主码 B+ 树等值查找 `cost ≈ L + 1`"><span class="relation-term">均匀分布时 <code>f ≈ 1/m</code>　｜　全表扫描 <code>cost ≈ B</code>　｜　主码 B</span><span class="relation-operator">+</span><span class="relation-term">树等值查找 `cost ≈ L</span><span class="relation-operator">+</span><span class="relation-term">1`</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能保证。<code>B</code>、<code>L</code>、<code>m</code> 和 <code>f</code> 只形成代价估算；数据分布、缓存和统计信息变化都可能改变实际结果</p></div></div>
+    <div class="numeric-progress">10/15</div>
+    <div class="semantic-label">COST ESTIMATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">查询计划描述算子如何产生结果</h2>
+    <div class="slide-content"><p class="slide-lead">执行器按计划读取基本表或索引，并逐层产生输出</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="基本表／索引访问　→　选择／连接／投影算子　→　根节点结果"><span class="relation-term">基本表／索引访问</span><span class="relation-operator">→</span><span class="relation-term">选择／连接／投影算子</span><span class="relation-operator">→</span><span class="relation-term">根节点结果</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>计划树同时描述访问路径和关系算子；叶节点表示基本表或索引访问</p></div></div>
+    <div class="numeric-progress">11/15</div>
+    <div class="semantic-label">PLAN EXECUTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">执行计划可以需求驱动，也可以主动生产</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>自顶向下执行时，请求和结果都向下流动吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">两种方向对应不同的请求、缓冲和流水行为</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-plan-execution.svg" data-full-src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-plan-execution.svg" alt="查询计划自顶向下拉取结果或自底向上生产结果" tabindex="0" role="button" aria-label="放大图片：查询计划自顶向下拉取结果或自底向上生产结果" decoding="async"></figure>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>方式</th><th>请求或元组关系</th><th>直观特点</th></tr></thead><tbody><tr><td>自顶向下</td><td>根算子请求向下；元组逐层向上返回</td><td>需求驱动，按需拉取一条或一批</td></tr><tr><td>自底向上</td><td>叶算子生成元组写入缓冲，父算子取走</td><td>主动生产，可能受缓冲和阻塞影响</td></tr><tr><td>共同目标</td><td>按计划完成查询</td><td>结果语义不改变</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不是。自顶向下时请求向下、结果向上；自底向上时叶算子主动生产元组</p></div></div>
+    <div class="numeric-progress">12/15</div>
+    <div class="semantic-label">TOP DOWN OR BOTTOM UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
+    <h2 class="slide-title">用等价、代价和执行方向理解查询优化</h2>
+    <div class="slide-content"><p class="slide-lead">查询优化把语义等价的逻辑表达式连接到物理代价判断</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>等价</h3><p>关系代数变换保持结果不变</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑</h3><p>选择与投影尽早下推以减少中间结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>物理</h3><p>启发式、统计信息和代价估算共同选择物理路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>执行</h3><p>执行器按需求驱动或主动生产的方式推进算子</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>结果等价不代表代价相同；选择率、块数、内存和统计信息共同影响计划</p></div></div>
+    <div class="numeric-progress">13/15</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-10-2/mindmap-10-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">14/15</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">对 81003 查询说明 Q1 与 Q3 为何结果等价但代价不同？</span></li><li><span class="question-no">02</span><span class="question-text">在 Q1 语法树上把 <code>SC.Cno=&#x27;81003&#x27;</code> 下推，并列出必须保留的连接属性？</span></li><li><span class="question-no">03</span><span class="question-text">给定等价表达式和索引，如何判断属于代数优化还是物理优化？</span></li><li><span class="question-no">04</span><span class="question-text">给定 <code>B</code>、<code>m</code>、<code>f</code>、<code>L</code>、块数、排序、索引与内存，怎样选择扫描和 <code>Student⋈SC</code> 的连接算法？</span></li><li><span class="question-no">05</span><span class="question-text">自顶向下的请求流、元组返回流与自底向上的缓冲生产分别是什么？</span></li></ol>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>等价变换与代价估算需要结合选择率、块数和索引条件；执行器方向可用自顶向下与自底向上对照理解</p></div><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="dbpa-10-1.html" title="上一节：10.1 查询处理与操作算法" aria-label="上一节：10.1 查询处理与操作算法">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">10.1</span>
+        <span class="nav-title">查询处理与操作算法</span>
+      </a>
+      <a class="exercise-link" href="dbpa-10-2-exec.html">本节练习</a>
+      <a class="side-nav nav-next" href="dbpa-11-1.html" title="下一节：11.1 事务、故障与恢复策略" aria-label="下一节：11.1 事务、故障与恢复策略">
+        <span class="nav-title">事务故障与恢复</span>
+        <span class="nav-number">11.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">15/15</div>
+    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

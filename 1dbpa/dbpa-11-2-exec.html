@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>11.2 日志、检查点与数据库镜像｜本节练习</title>
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/exercises-common.css">
+  <link rel="stylesheet" href="resources/theme/exercises-theme.css">
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <div><div class="eyebrow">DBPA · 11.2</div><h1>日志、检查点与数据库镜像</h1></div>
+      <div class="progress" aria-live="polite"><span id="current-number">1</span> / 7</div>
+    </header>
+    <section id="questions"><article class="question-card" data-index="0" data-type="matching"><div class="question-kicker">第 1 题 / 共 7 题 · 匹配题</div><h2>将转储方式与主要特点匹配</h2><div class="matching-grid"><label class="matching-row"><span>静态转储</span><select class="matching-select" data-answer="转储期间限制更新，副本时点一致但影响业务" name="q1"><option value="">请选择</option><option value="复制完整数据库">复制完整数据库</option><option value="转储期间允许更新，需要日志协调副本时点">转储期间允许更新，需要日志协调副本时点</option><option value="转储期间限制更新，副本时点一致但影响业务">转储期间限制更新，副本时点一致但影响业务</option><option value="只复制自上次基线后变化的数据">只复制自上次基线后变化的数据</option></select></label><label class="matching-row"><span>动态转储</span><select class="matching-select" data-answer="转储期间允许更新，需要日志协调副本时点" name="q1"><option value="">请选择</option><option value="复制完整数据库">复制完整数据库</option><option value="转储期间允许更新，需要日志协调副本时点">转储期间允许更新，需要日志协调副本时点</option><option value="转储期间限制更新，副本时点一致但影响业务">转储期间限制更新，副本时点一致但影响业务</option><option value="只复制自上次基线后变化的数据">只复制自上次基线后变化的数据</option></select></label><label class="matching-row"><span>海量转储</span><select class="matching-select" data-answer="复制完整数据库" name="q1"><option value="">请选择</option><option value="复制完整数据库">复制完整数据库</option><option value="转储期间允许更新，需要日志协调副本时点">转储期间允许更新，需要日志协调副本时点</option><option value="转储期间限制更新，副本时点一致但影响业务">转储期间限制更新，副本时点一致但影响业务</option><option value="只复制自上次基线后变化的数据">只复制自上次基线后变化的数据</option></select></label><label class="matching-row"><span>增量转储</span><select class="matching-select" data-answer="只复制自上次基线后变化的数据" name="q1"><option value="">请选择</option><option value="复制完整数据库">复制完整数据库</option><option value="转储期间允许更新，需要日志协调副本时点">转储期间允许更新，需要日志协调副本时点</option><option value="转储期间限制更新，副本时点一致但影响业务">转储期间限制更新，副本时点一致但影响业务</option><option value="只复制自上次基线后变化的数据">只复制自上次基线后变化的数据</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>静态转储 → 转储期间限制更新，副本时点一致但影响业务；动态转储 → 转储期间允许更新，需要日志协调副本时点；海量转储 → 复制完整数据库；增量转储 → 只复制自上次基线后变化的数据</p><p>静态／动态描述转储期间能否更新，海量／增量描述复制范围，是两条独立分类轴</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="1" data-type="ordering" hidden><div class="question-kicker">第 2 题 / 共 7 题 · 排序题</div><h2>按先写日志 WAL 的关键顺序排列一次更新</h2><ol class="ordering-list" data-answer="[&quot;生成包含事务、对象和更新前后信息的日志记录&quot;, &quot;把必要日志记录写入稳定存储&quot;, &quot;允许对应修改后的数据页写入数据库文件&quot;, &quot;提交前确保提交记录及相关日志满足持久化要求&quot;]"><li class="ordering-item"><span>提交前确保提交记录及相关日志满足持久化要求</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“提交前确保提交记录及相关日志满足持久化要求”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“提交前确保提交记录及相关日志满足持久化要求”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>把必要日志记录写入稳定存储</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“把必要日志记录写入稳定存储”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“把必要日志记录写入稳定存储”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>生成包含事务、对象和更新前后信息的日志记录</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“生成包含事务、对象和更新前后信息的日志记录”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“生成包含事务、对象和更新前后信息的日志记录”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>允许对应修改后的数据页写入数据库文件</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“允许对应修改后的数据页写入数据库文件”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“允许对应修改后的数据页写入数据库文件”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>生成包含事务、对象和更新前后信息的日志记录 → 把必要日志记录写入稳定存储 → 允许对应修改后的数据页写入数据库文件 → 提交前确保提交记录及相关日志满足持久化要求</p><p>日志必须先于受其保护的数据页稳定保存，否则故障后可能无法 UNDO 或 REDO 已写页面</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="2" data-type="single" data-answer="系统可能无法知道怎样撤销或重做该页变化，形成恢复证据缺口" hidden><div class="question-kicker">第 3 题 / 共 7 题 · 单选题</div><h2>数据页已经写盘，但对应日志尚未稳定保存就发生故障，会造成什么问题？</h2><div class="choices"><label class="choice"><input type="radio" name="q3" value="系统可能无法知道怎样撤销或重做该页变化，形成恢复证据缺口" aria-keyshortcuts="1"><span>系统可能无法知道怎样撤销或重做该页变化，形成恢复证据缺口</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="radio" name="q3" value="没有问题，因为数据页总能证明事务是否提交" aria-keyshortcuts="2"><span>没有问题，因为数据页总能证明事务是否提交</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>系统可能无法知道怎样撤销或重做该页变化，形成恢复证据缺口</p><p>数据页不一定包含完整事务状态和旧值，WAL 是可恢复性的底线</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="3" data-type="ordering" hidden><div class="question-kicker">第 4 题 / 共 7 题 · 排序题</div><h2>使用检查点缩小系统故障恢复范围时按步骤排列</h2><ol class="ordering-list" data-answer="[&quot;找到重新开始文件记录的最后有效检查点&quot;, &quot;从检查点信息恢复当时的活动事务集合&quot;, &quot;向后扫描日志更新事务的提交或未完成状态&quot;, &quot;构造 UNDO-LIST 与 REDO-LIST&quot;, &quot;按恢复算法撤销未提交并重做需保证持久的事务&quot;]"><li class="ordering-item"><span>按恢复算法撤销未提交并重做需保证持久的事务</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“按恢复算法撤销未提交并重做需保证持久的事务”上移" aria-disabled="true">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“按恢复算法撤销未提交并重做需保证持久的事务”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>构造 UNDO-LIST 与 REDO-LIST</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“构造 UNDO-LIST 与 REDO-LIST”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“构造 UNDO-LIST 与 REDO-LIST”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>从检查点信息恢复当时的活动事务集合</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“从检查点信息恢复当时的活动事务集合”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“从检查点信息恢复当时的活动事务集合”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>向后扫描日志更新事务的提交或未完成状态</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“向后扫描日志更新事务的提交或未完成状态”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“向后扫描日志更新事务的提交或未完成状态”下移" aria-disabled="false">↓</button></span></li><li class="ordering-item"><span>找到重新开始文件记录的最后有效检查点</span><span class="ordering-controls"><button class="ordering-move" type="button" data-direction="up" aria-label="将“找到重新开始文件记录的最后有效检查点”上移" aria-disabled="false">↑</button><button class="ordering-move" type="button" data-direction="down" aria-label="将“找到重新开始文件记录的最后有效检查点”下移" aria-disabled="true">↓</button></span></li></ol><div class="ordering-status" aria-live="polite" aria-atomic="true"></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>找到重新开始文件记录的最后有效检查点 → 从检查点信息恢复当时的活动事务集合 → 向后扫描日志更新事务的提交或未完成状态 → 构造 UNDO-LIST 与 REDO-LIST → 按恢复算法撤销未提交并重做需保证持久的事务</p><p>检查点不替代日志，而是把恢复搜索起点移近故障位置</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab 切换移动按钮，Enter 或空格移动；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="4" data-type="matching" hidden><div class="question-kicker">第 5 题 / 共 7 题 · 匹配题</div><h2>将恢复证据与主要作用匹配</h2><div class="matching-grid"><label class="matching-row"><span>后备副本</span><select class="matching-select" data-answer="提供某个转储时刻的可信数据库起点" name="q5"><option value="">请选择</option><option value="补齐副本之后的更新并区分事务状态">补齐副本之后的更新并区分事务状态</option><option value="在主介质故障时提供快速切换的当前副本">在主介质故障时提供快速切换的当前副本</option><option value="缩短需要检查的日志范围">缩短需要检查的日志范围</option><option value="提供某个转储时刻的可信数据库起点">提供某个转储时刻的可信数据库起点</option></select></label><label class="matching-row"><span>更新日志</span><select class="matching-select" data-answer="补齐副本之后的更新并区分事务状态" name="q5"><option value="">请选择</option><option value="补齐副本之后的更新并区分事务状态">补齐副本之后的更新并区分事务状态</option><option value="在主介质故障时提供快速切换的当前副本">在主介质故障时提供快速切换的当前副本</option><option value="缩短需要检查的日志范围">缩短需要检查的日志范围</option><option value="提供某个转储时刻的可信数据库起点">提供某个转储时刻的可信数据库起点</option></select></label><label class="matching-row"><span>检查点</span><select class="matching-select" data-answer="缩短需要检查的日志范围" name="q5"><option value="">请选择</option><option value="补齐副本之后的更新并区分事务状态">补齐副本之后的更新并区分事务状态</option><option value="在主介质故障时提供快速切换的当前副本">在主介质故障时提供快速切换的当前副本</option><option value="缩短需要检查的日志范围">缩短需要检查的日志范围</option><option value="提供某个转储时刻的可信数据库起点">提供某个转储时刻的可信数据库起点</option></select></label><label class="matching-row"><span>数据库镜像</span><select class="matching-select" data-answer="在主介质故障时提供快速切换的当前副本" name="q5"><option value="">请选择</option><option value="补齐副本之后的更新并区分事务状态">补齐副本之后的更新并区分事务状态</option><option value="在主介质故障时提供快速切换的当前副本">在主介质故障时提供快速切换的当前副本</option><option value="缩短需要检查的日志范围">缩短需要检查的日志范围</option><option value="提供某个转储时刻的可信数据库起点">提供某个转储时刻的可信数据库起点</option></select></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>后备副本 → 提供某个转储时刻的可信数据库起点；更新日志 → 补齐副本之后的更新并区分事务状态；检查点 → 缩短需要检查的日志范围；数据库镜像 → 在主介质故障时提供快速切换的当前副本</p><p>四者组成恢复证据链，但镜像不是历史备份，错误也可能同步到镜像</p></div><div class="action-row"><div class="action-copy"><p class="instruction">Tab / Shift+Tab 切换项目，方向键选择；Ctrl+Enter 提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="5" data-type="multiple" data-answer="[&quot;可以减少部分介质故障下的停机时间&quot;, &quot;需要承担复制写入和一致性维护成本&quot;, &quot;可能把逻辑错误同步到镜像&quot;, &quot;不能替代历史后备副本和恢复演练&quot;]" hidden><div class="question-kicker">第 6 题 / 共 7 题 · 多选题</div><h2>关于数据库镜像，下列哪些说法正确？</h2><div class="choices"><label class="choice"><input type="checkbox" name="q6" value="可以减少部分介质故障下的停机时间" aria-keyshortcuts="1"><span>可以减少部分介质故障下的停机时间</span><span class="choice-shortcut" aria-hidden="true">（1）</span></label><label class="choice"><input type="checkbox" name="q6" value="需要承担复制写入和一致性维护成本" aria-keyshortcuts="2"><span>需要承担复制写入和一致性维护成本</span><span class="choice-shortcut" aria-hidden="true">（2）</span></label><label class="choice"><input type="checkbox" name="q6" value="可能把逻辑错误同步到镜像" aria-keyshortcuts="3"><span>可能把逻辑错误同步到镜像</span><span class="choice-shortcut" aria-hidden="true">（3）</span></label><label class="choice"><input type="checkbox" name="q6" value="不能替代历史后备副本和恢复演练" aria-keyshortcuts="4"><span>不能替代历史后备副本和恢复演练</span><span class="choice-shortcut" aria-hidden="true">（4）</span></label><label class="choice"><input type="checkbox" name="q6" value="使用镜像后不再需要日志" aria-keyshortcuts="5"><span>使用镜像后不再需要日志</span><span class="choice-shortcut" aria-hidden="true">（5）</span></label><label class="choice"><input type="checkbox" name="q6" value="镜像天然防止所有恶意删除" aria-keyshortcuts="6"><span>镜像天然防止所有恶意删除</span><span class="choice-shortcut" aria-hidden="true">（6）</span></label></div><div class="question-action"><div class="feedback objective-feedback" hidden aria-live="polite"><p class="result-line"></p><p><strong>正确答案：</strong>可以减少部分介质故障下的停机时间、需要承担复制写入和一致性维护成本、可能把逻辑错误同步到镜像、不能替代历史后备副本和恢复演练</p><p>镜像主要提高可用性，历史恢复、事务撤销和错误隔离仍需要其他证据与治理</p></div><div class="action-row"><div class="action-copy"><p class="instruction">可按数字键选择；请先作答，再提交答案</p><p class="response-warning" hidden role="alert">请先完成作答</p></div><button class="primary submit-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">提交答案（Enter）</button></div></div></article><article class="question-card" data-index="6" data-type="reveal" hidden><div class="question-kicker">第 7 题 / 共 7 题 · 回想题</div><h2>为什么动态转储后的介质恢复可能同时需要 UNDO 和 REDO，而不能简单记成“装副本后只 REDO”？</h2><div class="question-action"><div class="feedback reveal-feedback" hidden aria-live="polite"><p><strong>对照答案：</strong>动态转储期间事务仍在更新，副本中的不同页面可能对应不同瞬间；有些未提交事务的页面已经进入副本，需要 UNDO，有些已提交更新尚未进入副本，需要 REDO。必须结合转储期间日志、事务状态和恢复算法把副本还原到一致时点，再补齐已提交结果</p></div><div class="action-row"><div class="action-copy"><p class="instruction">请先在头脑中组织答案，再查看对照答案</p></div><button class="primary reveal-answer" type="button" aria-keyshortcuts="Enter Control+Enter Meta+Enter">查看对照答案（Enter）</button></div></div></article></section>
+    <section class="summary-card" id="summary" hidden>
+      <div class="question-kicker">练习完成</div>
+      <h2>根据反馈决定哪些内容需要重新回想</h2>
+      <div class="summary-grid">
+        <div>答对<strong id="correct-count">0</strong></div>
+        <div>需要复习<strong id="incorrect-count">0</strong></div>
+        <div>未作答<strong id="unanswered-count">0</strong></div>
+        <div>已查看对照<strong id="viewed-count">0</strong></div>
+      </div>
+      <button class="primary" id="restart" type="button">重新查看练习</button>
+    </section>
+    <nav class="navigation" aria-label="题目导航">
+      <button id="previous" type="button" aria-keyshortcuts="ArrowLeft" disabled>上一题（←）</button>
+      <button id="next" type="button" aria-keyshortcuts="ArrowRight">下一题（→）</button>
+    </nav>
+  </main>
+  <script>
+    (() => {
+      const cards = [...document.querySelectorAll(".question-card")];
+      const summary = document.getElementById("summary");
+      const previous = document.getElementById("previous");
+      const next = document.getElementById("next");
+      const currentNumber = document.getElementById("current-number");
+      const states = cards.map(card => card.dataset.type === "reveal" ? { viewed: false } : { answered: false, correct: false });
+      let current = 0;
+
+      function valuesEqual(left, right) {
+        return left.length === right.length && [...left].sort().every((value, index) => value === [...right].sort()[index]);
+      }
+
+      function hasResponse(card) {
+        if (card.dataset.type === "single" || card.dataset.type === "multiple") {
+          return card.querySelectorAll("input:checked").length > 0;
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value);
+        }
+        return card.dataset.type === "ordering";
+      }
+
+      function evaluateQuestion(card) {
+        if (card.dataset.type === "single") {
+          const selected = card.querySelector("input:checked");
+          return selected && selected.value === card.dataset.answer;
+        }
+        if (card.dataset.type === "multiple") {
+          const selected = [...card.querySelectorAll("input:checked")].map(input => input.value);
+          return valuesEqual(selected, JSON.parse(card.dataset.answer));
+        }
+        if (card.dataset.type === "matching") {
+          return [...card.querySelectorAll("select")].every(select => select.value === select.dataset.answer);
+        }
+        const list = card.querySelector(".ordering-list");
+        const currentOrder = [...list.querySelectorAll(".ordering-item > span:first-child")].map(item => item.textContent);
+        const answer = JSON.parse(list.dataset.answer);
+        return currentOrder.length === answer.length && currentOrder.every((value, index) => value === answer[index]);
+      }
+
+      function lockQuestion(card) {
+        card.querySelectorAll("input, select, .ordering-move, .submit-answer").forEach(control => { control.disabled = true; });
+      }
+
+      function refreshOrderingControls(list) {
+        const items = [...list.querySelectorAll(".ordering-item")];
+        items.forEach((item, index) => {
+          item.querySelector('[data-direction="up"]').setAttribute("aria-disabled", String(index === 0));
+          item.querySelector('[data-direction="down"]').setAttribute("aria-disabled", String(index === items.length - 1));
+        });
+      }
+
+      function currentAction() {
+        if (!summary.hidden) return null;
+        return cards[current].querySelector(
+          ".submit-answer:not(:disabled), .reveal-answer:not(:disabled)"
+        );
+      }
+
+      function show(index) {
+        summary.hidden = true;
+        cards.forEach((card, cardIndex) => { card.hidden = cardIndex !== index; });
+        current = index;
+        currentNumber.textContent = String(index + 1);
+        previous.disabled = index === 0;
+        next.textContent = index === cards.length - 1 ? "查看结果（→）" : "下一题（→）";
+      }
+
+      function showSummary() {
+        cards.forEach(card => { card.hidden = true; });
+        summary.hidden = false;
+        previous.disabled = false;
+        next.hidden = true;
+        currentNumber.textContent = String(cards.length);
+        document.getElementById("correct-count").textContent = states.filter(state => state.answered && state.correct).length;
+        document.getElementById("incorrect-count").textContent = states.filter(state => state.answered && !state.correct).length;
+        document.getElementById("unanswered-count").textContent = states.filter(state => "answered" in state && !state.answered).length;
+        document.getElementById("viewed-count").textContent = states.filter(state => state.viewed).length;
+      }
+
+      document.addEventListener("click", event => {
+        const move = event.target.closest(".ordering-move");
+        if (move) {
+          if (move.getAttribute("aria-disabled") === "true") return;
+          const item = move.closest(".ordering-item");
+          const list = item.closest(".ordering-list");
+          const sibling = move.dataset.direction === "up" ? item.previousElementSibling : item.nextElementSibling;
+          if (sibling) item.parentElement.insertBefore(item, move.dataset.direction === "up" ? sibling : sibling.nextElementSibling);
+          refreshOrderingControls(list);
+          move.focus();
+          const position = [...list.children].indexOf(item) + 1;
+          const label = item.querySelector("span:first-child").textContent;
+          item.closest(".question-card").querySelector(".ordering-status").textContent =
+            `${label}已移至第 ${position} 位`;
+          return;
+        }
+        const submit = event.target.closest(".submit-answer");
+        if (submit) {
+          const card = submit.closest(".question-card");
+          const warning = card.querySelector(".response-warning");
+          if (!hasResponse(card)) { warning.hidden = false; return; }
+          warning.hidden = true;
+          const correct = Boolean(evaluateQuestion(card));
+          const result = card.querySelector(".result-line");
+          result.textContent = correct ? "回答正确" : "需要再看一遍";
+          result.className = correct ? "result-line result-correct" : "result-line result-incorrect";
+          card.querySelector(".objective-feedback").hidden = false;
+          states[Number(card.dataset.index)] = { answered: true, correct };
+          lockQuestion(card);
+          return;
+        }
+        const reveal = event.target.closest(".reveal-answer");
+        if (reveal) {
+          const card = reveal.closest(".question-card");
+          card.querySelector(".reveal-feedback").hidden = false;
+          reveal.disabled = true;
+          states[Number(card.dataset.index)] = { viewed: true };
+        }
+      });
+
+      document.addEventListener("keydown", event => {
+        if (event.isComposing) return;
+
+        if (event.key === "Enter" && (event.ctrlKey || event.metaKey) && !event.altKey) {
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (event.metaKey || event.ctrlKey || event.altKey) return;
+        const target = event.target;
+        const inSelectOrButton = target && target.closest && target.closest("select, button");
+        const inInput = target && target.closest && target.closest("input");
+
+        if (event.key === "Enter") {
+          if (inSelectOrButton || !summary.hidden) return;
+          const action = currentAction();
+          if (!action) return;
+          event.preventDefault();
+          action.click();
+          return;
+        }
+
+        if (inSelectOrButton) return;
+
+        if (event.key === "ArrowLeft") {
+          if (inInput) return;
+          event.preventDefault();
+          next.hidden = false;
+          if (!summary.hidden) show(cards.length - 1);
+          else if (current > 0) show(current - 1);
+          return;
+        }
+        if (event.key === "ArrowRight") {
+          if (inInput) return;
+          event.preventDefault();
+          if (summary.hidden) current === cards.length - 1 ? showSummary() : show(current + 1);
+          return;
+        }
+
+        const choiceNumber = Number.parseInt(event.key, 10);
+        if (!Number.isInteger(choiceNumber) || choiceNumber < 1 || choiceNumber > 9 || !summary.hidden) return;
+        const card = cards[current];
+        if (card.dataset.type !== "single" && card.dataset.type !== "multiple") return;
+        const inputs = [...card.querySelectorAll(".choice input")];
+        const input = inputs[choiceNumber - 1];
+        if (!input || input.disabled) return;
+        event.preventDefault();
+        input.checked = card.dataset.type === "multiple" ? !input.checked : true;
+        input.dispatchEvent(new Event("change", { bubbles: true }));
+      });
+
+      previous.addEventListener("click", () => {
+        next.hidden = false;
+        if (!summary.hidden) show(cards.length - 1);
+        else if (current > 0) show(current - 1);
+      });
+      next.addEventListener("click", () => current === cards.length - 1 ? showSummary() : show(current + 1));
+      document.getElementById("restart").addEventListener("click", () => { next.hidden = false; show(0); });
+    })();
+  </script>
+</body>
+</html>
