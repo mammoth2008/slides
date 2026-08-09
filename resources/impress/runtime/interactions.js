@@ -263,6 +263,28 @@
     });
   }
 
+  function initializeProgressiveReveal() {
+    const items = Array.from(document.querySelectorAll(".substep"));
+    if (!items.length) return;
+
+    const sync = (root) => {
+      const candidates = root && root.matches && root.matches(".substep")
+        ? [root]
+        : Array.from((root || document).querySelectorAll(".substep"));
+      candidates.forEach((item) => {
+        const hidden = !item.classList.contains("substep-visible");
+        item.toggleAttribute("inert", hidden);
+        if (hidden) item.setAttribute("aria-hidden", "true");
+        else item.removeAttribute("aria-hidden");
+      });
+    };
+
+    sync(document);
+    ["impress:stepenter", "impress:substep:enter", "impress:substep:leave"].forEach((name) => {
+      document.addEventListener(name, (event) => sync(event.target));
+    });
+  }
+
 
   if (window.hljs) {
     window.hljs.highlightAll();
@@ -275,4 +297,5 @@
   initializeImageZoom();
   initializeCodeLineFocus();
   initializeMathFit();
+  initializeProgressiveReveal();
 })();
