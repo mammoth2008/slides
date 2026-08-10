@@ -3,669 +3,699 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="云计算与物联网课程全景图：从现实对象到云端服务与反馈闭环。">
+  <meta name="description" content="云计算与物联网课程全景：从现实对象到云端服务的闭环。">
   <title>CCIOT 课程全景 | 云计算与物联网</title>
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <style>
     :root {
       color-scheme: light;
-      --background: #f7fbfc;
-      --stage: #e5eef1;
+      --page: #e5eef1;
       --surface: #ffffff;
-      --surface-muted: #edf5f6;
+      --surface-soft: #edf5f6;
       --ink: #102a35;
       --ink-soft: #45616c;
       --primary: #0d6475;
+      --primary-deep: #084b59;
       --primary-soft: #dff0f2;
-      --auxiliary: #c26432;
-      --auxiliary-soft: #faebdf;
+      --accent: #c26432;
+      --accent-soft: #faebdf;
       --line: #94adb5;
       --line-soft: #c5d6da;
-      --shadow: rgba(16, 42, 53, .16);
-      --page-width: 1220px;
-      --sans: "Course Source Han Sans", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      --shadow: rgba(16, 42, 53, .18);
+      --sans: "Course Source Han Sans", "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     }
 
     * { box-sizing: border-box; }
-    html { background: var(--stage); scroll-behavior: smooth; }
+
+    html {
+      min-width: 320px;
+      background: var(--page);
+      scroll-behavior: smooth;
+    }
 
     body {
-      margin: 0;
       min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
       color: var(--ink);
       background:
-        radial-gradient(circle at 10% 26%, rgba(13, 100, 117, .055) 0 2px, transparent 2.5px) 0 0 / 34px 34px,
-        var(--background);
+        radial-gradient(circle at 20% 20%, rgba(13, 100, 117, .065) 0 2px, transparent 2.5px) 0 0 / 38px 38px,
+        linear-gradient(145deg, rgba(255, 255, 255, .58), transparent 42%),
+        var(--page);
       font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
 
-    button, a { font: inherit; }
-    a { color: inherit; }
+    button,
+    a { font: inherit; }
 
-    .site-header {
+    button { color: inherit; }
+
+    a {
+      color: inherit;
+      text-underline-offset: 4px;
+    }
+
+    .page {
+      width: min(1600px, calc(100% - 44px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px 0 22px;
+    }
+
+    .course-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      min-height: 68px;
-      padding: 0 max(24px, calc((100vw - var(--page-width)) / 2));
-      border-bottom: 1px solid var(--line-soft);
-      background: rgba(247, 251, 252, .94);
+      justify-content: space-between;
+      min-height: 52px;
+      padding: 0 2px 14px;
+      border-bottom: 2px solid var(--line);
     }
 
-    .brand {
+    .course-identity {
       display: flex;
       align-items: baseline;
-      gap: 14px;
-      font-weight: 800;
-      letter-spacing: .03em;
+      gap: 16px;
     }
 
-    .brand strong { color: var(--primary); font-size: 1.1rem; }
-    .brand span { color: var(--ink-soft); font-size: .88rem; font-weight: 600; }
-    .header-note { color: var(--ink-soft); font-size: .78rem; letter-spacing: .1em; }
+    .course-code {
+      color: var(--accent);
+      font: 800 18px/1 var(--mono);
+      letter-spacing: .12em;
+    }
+
+    .course-name {
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: .02em;
+    }
+
+    .course-meta {
+      color: var(--ink-soft);
+      font-size: 16px;
+      font-weight: 700;
+    }
 
     main {
-      width: min(calc(100% - 40px), var(--page-width));
-      margin: 0 auto;
-      padding: 48px 0 34px;
-    }
-
-    .intro {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 360px;
-      gap: 56px;
-      align-items: end;
-      margin-bottom: 34px;
+      gap: 18px;
+      padding-top: 18px;
     }
 
-    h1 {
-      max-width: 830px;
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.12fr) minmax(460px, .88fr);
+      gap: 42px;
+      align-items: center;
+    }
+
+    .hero h1 {
+      max-width: 950px;
       margin: 0;
-      font-size: clamp(2.65rem, 4.9vw, 4.65rem);
-      line-height: 1.06;
-      letter-spacing: -.055em;
-      font-weight: 800;
+      font-size: clamp(44px, 4vw, 66px);
+      font-weight: 850;
+      line-height: 1.08;
+      letter-spacing: -.045em;
     }
 
-    h1 span { color: var(--primary); }
+    .hero h1 span { color: var(--primary); }
 
-    .intro-copy {
-      margin: 0 0 4px;
-      padding: 15px 18px;
-      border: 1px solid var(--line-soft);
-      border-left: 5px solid var(--auxiliary);
-      border-radius: 6px;
-      color: var(--ink-soft);
-      background: rgba(255, 255, 255, .86);
-      font-size: .94rem;
+    .capability-summary {
+      padding: 18px 20px;
+      border-left: 8px solid var(--accent);
+      background: rgba(255, 255, 255, .84);
     }
 
-    .loop-shell {
+    .capability-summary ul {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 20px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .capability-summary li {
       position: relative;
-      padding: 24px 34px 28px;
-      overflow: hidden;
-      border: 1px solid var(--line);
-      border-radius: 6px;
-      background: rgba(255, 255, 255, .94);
-      box-shadow: 0 18px 46px -34px var(--shadow);
+      padding-left: 21px;
+      font-size: clamp(17px, 1.25vw, 21px);
+      font-weight: 750;
+      line-height: 1.38;
     }
 
-    .loop-shell::before {
+    .capability-summary li::before {
       position: absolute;
-      inset: 0 auto 0 0;
-      width: 5px;
+      top: .5em;
+      left: 0;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
       content: "";
-      background: linear-gradient(var(--primary) 0 68%, var(--auxiliary) 68% 100%);
+      background: var(--primary);
     }
 
-    .map-caption {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 20px;
-      color: var(--ink-soft);
-      font-size: .78rem;
-      letter-spacing: .08em;
+    .panorama {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(460px, .8fr);
+      min-height: 650px;
+      border: 2px solid var(--line);
+      border-radius: 6px;
+      background: var(--surface);
+      box-shadow: 0 24px 54px -40px var(--shadow);
+      overflow: hidden;
     }
 
-    .map-caption strong { color: var(--ink); font-weight: 800; }
+    .map-panel {
+      position: relative;
+      min-width: 0;
+      padding: 30px 32px;
+      border-right: 2px solid var(--line);
+      background: var(--surface-soft);
+      overflow: hidden;
+    }
+
+    .map-panel::before,
+    .map-panel::after {
+      position: absolute;
+      top: 0;
+      height: 8px;
+      content: "";
+    }
+
+    .map-panel::before {
+      left: 0;
+      width: 78%;
+      background: var(--primary);
+    }
+
+    .map-panel::after {
+      right: 0;
+      width: 22%;
+      background: var(--accent);
+    }
+
+    .loop-map {
+      position: relative;
+      min-height: 588px;
+      background:
+        linear-gradient(180deg, rgba(237, 245, 246, .08), rgba(255, 255, 255, .18)),
+        url("assets/cciot-system-landscape-v2.webp") center / 100% 100% no-repeat;
+    }
 
     .loop-grid {
       position: relative;
+      z-index: 1;
       display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-rows: minmax(170px, 1fr) 116px minmax(170px, 1fr);
       grid-template-areas:
         "one two three"
-        "bridge bridge bridge"
+        ". . ."
         "six five four";
-      grid-template-columns: repeat(3, 1fr);
-      grid-template-rows: minmax(196px, auto) 112px minmax(196px, auto);
-      gap: 16px 48px;
-      padding: 0 46px;
+      gap: 22px 28px;
+      min-height: 588px;
     }
 
-    .loop-lines {
-      position: absolute;
-      z-index: 0;
-      inset: 5px 8px;
-      width: calc(100% - 16px);
-      height: calc(100% - 10px);
-      overflow: visible;
-      color: var(--primary);
-      pointer-events: none;
-    }
-
-    .loop-lines path {
-      fill: none;
-      stroke: currentColor;
-      stroke-width: 2.4;
-      vector-effect: non-scaling-stroke;
-    }
-
-    .loop-lines .feedback { color: var(--auxiliary); }
-
-    .stage-card {
+    .stage-button {
       position: relative;
-      z-index: 2;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      align-content: start;
+      width: 100%;
       min-width: 0;
-      padding: 17px 18px 15px;
-      border: 1px solid var(--line-soft);
-      border-top: 4px solid var(--primary);
+      padding: 20px 20px 18px;
+      border: 2px solid var(--line);
       border-radius: 6px;
-      color: var(--ink);
-      background: var(--surface-muted);
+      background: rgba(255, 255, 255, .93);
       text-align: left;
       cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      box-shadow: 0 14px 26px -24px var(--shadow);
+      transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
     }
 
-    .stage-card[data-stage="1"] { grid-area: one; }
-    .stage-card[data-stage="2"] { grid-area: two; }
-    .stage-card[data-stage="3"] { grid-area: three; }
-    .stage-card[data-stage="4"] { grid-area: four; }
-    .stage-card[data-stage="5"] { grid-area: five; }
-    .stage-card[data-stage="6"] { grid-area: six; border-top-color: var(--auxiliary); }
-
-    .stage-card:hover,
-    .stage-card:focus-visible,
-    .stage-card[aria-pressed="true"] {
-      z-index: 3;
+    .stage-button:hover {
       border-color: var(--primary);
-      outline: none;
-      transform: translateY(-5px);
-      box-shadow: 0 16px 28px -20px var(--shadow);
+      transform: translateY(-4px);
     }
+
+    .stage-button:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--accent) 36%, white);
+      outline-offset: 4px;
+    }
+
+    .stage-button[aria-pressed="true"] {
+      border-color: var(--primary-deep);
+      color: #fff;
+      background: var(--primary-deep);
+      box-shadow: 0 22px 36px -25px rgba(8, 75, 89, .85);
+    }
+
+    .stage-1 { grid-area: one; }
+    .stage-2 { grid-area: two; }
+    .stage-3 { grid-area: three; }
+    .stage-4 { grid-area: four; }
+    .stage-5 { grid-area: five; }
+    .stage-6 { grid-area: six; }
 
     .stage-number {
-      display: inline-grid;
-      width: 28px;
-      height: 28px;
-      place-items: center;
-      margin-bottom: 10px;
-      border-radius: 50%;
-      color: #fff;
-      background: var(--primary);
-      font-weight: 800;
+      margin-bottom: 12px;
+      color: var(--accent);
+      font: 850 22px/1 var(--mono);
+      letter-spacing: .08em;
     }
 
-    .stage-card[data-stage="6"] .stage-number { background: var(--auxiliary); }
+    .stage-button[aria-pressed="true"] .stage-number { color: #f7c3a6; }
 
-    .stage-card h2 {
-      margin: 0;
-      font-size: 1.08rem;
-      line-height: 1.35;
-      letter-spacing: -.02em;
+    .stage-title {
+      font-size: clamp(19px, 1.35vw, 24px);
+      font-weight: 850;
+      line-height: 1.22;
     }
 
-    .stage-card p {
-      margin: 7px 0 0;
+    .stage-summary {
+      align-self: end;
+      margin-top: 13px;
       color: var(--ink-soft);
-      font-size: .76rem;
+      font-size: clamp(15px, 1.02vw, 18px);
+      font-weight: 650;
+      line-height: 1.4;
+    }
+
+    .stage-button[aria-pressed="true"] .stage-summary { color: #dcecef; }
+
+    .detail-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      padding: 34px 36px 30px;
+      background: var(--surface);
+    }
+
+    .detail-panel::before {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 100%;
+      height: 8px;
+      content: "";
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .detail-marker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font: 800 16px/1.2 var(--mono);
+      letter-spacing: .08em;
+    }
+
+    .detail-panel h2 {
+      margin: 0;
+      font-size: clamp(34px, 2.7vw, 46px);
+      font-weight: 850;
+      line-height: 1.1;
+      letter-spacing: -.035em;
+    }
+
+    .question {
+      margin: 22px 0 0;
+      padding: 17px 19px;
+      border-left: 7px solid var(--primary);
+      background: var(--primary-soft);
+      font-size: clamp(20px, 1.5vw, 24px);
+      font-weight: 800;
+      line-height: 1.42;
+    }
+
+    .learning {
+      margin: 18px 0 0;
+      color: var(--ink-soft);
+      font-size: clamp(17px, 1.2vw, 20px);
+      font-weight: 650;
+      line-height: 1.55;
+    }
+
+    .outcome-block {
+      margin-top: 26px;
+      padding-top: 22px;
+      border-top: 2px solid var(--line-soft);
+    }
+
+    .section-label {
+      margin: 0 0 9px;
+      color: var(--primary);
+      font-size: 17px;
+      font-weight: 850;
+      letter-spacing: .08em;
+    }
+
+    .outcome {
+      margin: 0;
+      font-size: clamp(20px, 1.45vw, 24px);
+      font-weight: 800;
       line-height: 1.48;
     }
 
-    .stage-diagram {
-      position: relative;
-      display: grid;
-      height: 50px;
-      margin: 14px 0 0;
-      place-items: center;
-      overflow: hidden;
-      border-top: 1px dashed var(--line);
-      color: var(--primary);
+    .lesson-block {
+      margin-top: auto;
+      padding-top: 28px;
     }
 
-    .resource-row,
-    .sensor-row,
-    .service-row { display: flex; gap: 10px; align-items: center; }
-
-    .resource-row i,
-    .sensor-row i,
-    .service-row i { display: block; width: 18px; height: 18px; border: 2px solid currentColor; }
-    .resource-row i:nth-child(1) { border-radius: 50%; }
-    .resource-row i:nth-child(2) { border-radius: 50% / 20%; }
-    .resource-row i:nth-child(3) { transform: rotate(45deg); }
-
-    .pool-stack { position: relative; width: 78px; height: 34px; }
-    .pool-stack i { position: absolute; left: 0; width: 78px; height: 11px; border: 2px solid currentColor; border-radius: 6px; }
-    .pool-stack i:nth-child(1) { top: 0; }
-    .pool-stack i:nth-child(2) { top: 12px; opacity: .72; }
-    .pool-stack i:nth-child(3) { top: 24px; opacity: .46; }
-
-    .service-row i:nth-child(1) { transform: rotate(30deg); }
-    .service-row i:nth-child(2) { border-radius: 50%; }
-    .service-row i:nth-child(3) { border-radius: 4px; box-shadow: inset 0 0 0 4px var(--surface-muted); }
-
-    .sensor-row i:nth-child(1) { border-radius: 50%; box-shadow: 0 0 0 5px rgba(13, 100, 117, .13); }
-    .sensor-row i:nth-child(2) { transform: rotate(45deg); }
-    .sensor-row i:nth-child(3) { border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
-
-    .network-path { display: flex; align-items: center; }
-    .network-path i { width: 16px; height: 16px; border: 2px solid currentColor; border-radius: 50%; }
-    .network-path b { display: block; width: 26px; height: 2px; background: currentColor; opacity: .7; }
-
-    .feedback-loop { position: relative; width: 52px; height: 34px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; }
-    .feedback-loop::after { position: absolute; right: -4px; bottom: -1px; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; content: ""; transform: rotate(-15deg); }
-
-    .bridge {
-      position: relative;
-      z-index: 2;
+    .lesson-list {
       display: grid;
-      grid-area: bridge;
-      grid-template-columns: 1fr auto 1fr;
-      gap: 22px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+    }
+
+    .lesson-link {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 24px;
+      gap: 12px;
       align-items: center;
-      padding: 0 46px;
-    }
-
-    .bridge-side {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      color: var(--ink-soft);
-      font-size: .74rem;
-    }
-
-    .bridge-side:last-child { justify-content: flex-end; text-align: right; }
-    .bridge-line { flex: 1; height: 1px; background: var(--line); }
-
-    .bridge-core {
-      display: grid;
-      width: 170px;
-      height: 72px;
-      place-items: center;
-      border: 2px solid var(--primary);
-      border-radius: 36px;
-      color: var(--primary);
-      background: var(--surface);
-      text-align: center;
+      min-height: 54px;
+      padding: 11px 13px;
+      border: 2px solid var(--line-soft);
+      border-radius: 6px;
+      background: var(--surface-soft);
+      text-decoration: none;
+      font-size: clamp(16px, 1.08vw, 19px);
       font-weight: 800;
-      line-height: 1.25;
-      box-shadow: 0 10px 24px -20px var(--shadow);
+      line-height: 1.3;
+      transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
     }
 
-    .bridge-core small { display: block; font-size: .66rem; font-weight: 600; letter-spacing: .06em; }
-
-    .bridge-band {
-      display: grid;
-      grid-template-columns: 1.25fr repeat(3, 1fr);
-      gap: 1px;
-      margin-top: 22px;
-      border: 1px solid var(--line-soft);
-      border-radius: 6px;
-      overflow: hidden;
-      background: var(--line-soft);
+    .lesson-link:hover {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      transform: translateX(3px);
     }
 
-    .bridge-summary,
-    .bridge-item { min-height: 108px; padding: 19px 20px; background: var(--surface); }
-    .bridge-summary { color: #fff; background: var(--primary); }
-    .bridge-summary span,
-    .bridge-item span { display: block; margin-bottom: 7px; font-size: .7rem; font-weight: 800; letter-spacing: .12em; }
-    .bridge-summary span { color: rgba(255, 255, 255, .72); }
-    .bridge-item span { color: var(--auxiliary); }
-    .bridge-summary strong, .bridge-item strong { font-size: .98rem; line-height: 1.5; }
-
-    .endpoint {
-      display: flex;
-      justify-content: space-between;
-      gap: 28px;
-      align-items: center;
-      margin-top: 18px;
-      padding: 20px 24px;
-      border: 1px solid var(--auxiliary);
-      border-radius: 6px;
-      background: var(--auxiliary-soft);
+    .lesson-link:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--accent) 34%, white);
+      outline-offset: 3px;
     }
 
-    .endpoint span { color: var(--auxiliary); font-size: .72rem; font-weight: 800; letter-spacing: .12em; white-space: nowrap; }
-    .endpoint strong { max-width: 900px; font-size: 1rem; }
+    .lesson-link svg {
+      width: 24px;
+      height: 24px;
+      color: var(--accent);
+    }
 
     footer {
       display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      width: min(calc(100% - 40px), var(--page-width));
-      margin: 0 auto;
-      padding: 16px 0 26px;
-      border-top: 1px solid var(--line-soft);
+      justify-content: flex-end;
+      padding-top: 14px;
       color: var(--ink-soft);
-      font-size: .72rem;
+      font: 750 13px/1.3 var(--mono);
+      letter-spacing: .08em;
     }
 
-    dialog {
-      width: min(900px, calc(100vw - 40px));
-      max-height: calc(100vh - 40px);
-      padding: 0;
-      border: 0;
-      border-radius: 6px;
-      color: var(--ink);
-      background: var(--surface);
-      box-shadow: 0 34px 80px rgba(16, 42, 53, .3);
+    @media (max-width: 1320px) {
+      .page { width: min(100% - 30px, 1460px); }
+      .hero { grid-template-columns: 1fr; gap: 20px; }
+      .capability-summary ul { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .capability-summary li { font-size: 17px; }
+      .panorama { grid-template-columns: minmax(0, 1.08fr) minmax(430px, .92fr); }
+      .map-panel { padding: 28px 24px; }
+      .loop-grid { gap: 20px; }
+      .stage-button { padding: 18px 16px 16px; }
+      .lesson-list { grid-template-columns: 1fr; }
     }
 
-    dialog::backdrop { background: rgba(16, 42, 53, .72); backdrop-filter: blur(3px); }
-    .dialog-shell { position: relative; border-top: 7px solid var(--primary); border-radius: 6px; overflow: hidden; }
-    .dialog-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink); background: var(--surface); cursor: pointer; font-size: 1.35rem; line-height: 1; }
-    .dialog-close:hover, .dialog-close:focus-visible { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
-    .dialog-head { padding: 34px 76px 26px 34px; border-bottom: 1px solid var(--line-soft); background: var(--surface-muted); }
-    .dialog-index { color: var(--primary); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
-    .dialog-head h2 { margin: 8px 0; font-size: clamp(1.65rem, 4vw, 2.55rem); line-height: 1.15; }
-    .dialog-question { margin: 0; color: var(--ink-soft); }
-    .dialog-body { display: grid; grid-template-columns: 1.08fr .92fr; }
-    .dialog-section { padding: 28px 34px; }
-    .dialog-section + .dialog-section { border-left: 1px solid var(--line-soft); }
-    .dialog-section h3 { margin: 0 0 14px; color: var(--primary); font-size: .78rem; letter-spacing: .12em; }
-    .lesson-list { display: grid; gap: 9px; }
-    .lesson-row { display: grid; grid-template-columns: 72px 1fr auto; gap: 12px; align-items: center; min-height: 46px; padding: 9px 11px; border: 1px solid var(--line-soft); border-radius: 6px; text-decoration: none; }
-    a.lesson-row:hover, a.lesson-row:focus-visible { border-color: var(--primary); outline: none; background: var(--primary-soft); }
-    .lesson-number { color: var(--primary); font-weight: 800; }
-    .lesson-status { color: var(--ink-soft); font-size: .7rem; white-space: nowrap; }
-    a.lesson-row .lesson-status { color: var(--auxiliary); }
-    .detail-block + .detail-block { margin-top: 24px; }
-    .detail-block h4 { margin: 0 0 6px; font-size: 1rem; }
-    .detail-block p { margin: 0; color: var(--ink-soft); font-size: .88rem; }
-
-    @media (max-width: 980px) {
-      .intro { grid-template-columns: 1fr; gap: 20px; }
-      .intro-copy { max-width: 700px; }
-      .loop-grid { gap: 16px 24px; padding: 0 16px; }
-      .bridge { padding: 0 14px; }
-      .bridge-band { grid-template-columns: 1fr 1fr; }
+    @media (max-width: 1040px) {
+      .capability-summary ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .panorama { grid-template-columns: 1fr; }
+      .map-panel { border-right: 0; border-bottom: 2px solid var(--line); }
+      .detail-panel { min-height: 590px; }
+      .lesson-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 700px) {
-      .site-header { min-height: 58px; padding: 0 18px; }
-      .brand span, .header-note { display: none; }
-      main { width: min(calc(100% - 24px), var(--page-width)); padding-top: 34px; }
-      h1 { font-size: clamp(2.25rem, 11vw, 3.4rem); }
-      .loop-shell { padding: 20px 12px 16px; }
-      .map-caption { display: block; }
-      .map-caption span { display: block; margin-top: 4px; }
-      .loop-grid { display: flex; flex-direction: column; padding: 0; }
-      .loop-lines { display: none; }
-      .bridge { order: 3; display: block; padding: 8px 0; }
-      .bridge-side { display: none; }
-      .bridge-core { width: 100%; height: 60px; border-radius: 6px; }
-      .stage-card[data-stage="1"] { order: 1; }
-      .stage-card[data-stage="2"] { order: 2; }
-      .stage-card[data-stage="3"] { order: 3; }
-      .stage-card[data-stage="4"] { order: 4; }
-      .stage-card[data-stage="5"] { order: 5; }
-      .stage-card[data-stage="6"] { order: 6; }
-      .bridge-band { grid-template-columns: 1fr; }
-      .endpoint { display: block; }
-      .endpoint strong { display: block; margin-top: 7px; }
-      .dialog-body { grid-template-columns: 1fr; }
-      .dialog-section + .dialog-section { border-top: 1px solid var(--line-soft); border-left: 0; }
-      .lesson-row { grid-template-columns: 62px 1fr; }
-      .lesson-status { grid-column: 2; }
-      footer { display: block; width: calc(100% - 24px); }
-      footer span { display: block; margin-top: 4px; }
+    @media (max-width: 720px) {
+      .page { width: min(100% - 22px, 680px); padding-top: 12px; }
+      .course-header { align-items: flex-start; gap: 12px; }
+      .course-identity { display: grid; gap: 5px; }
+      .course-name { font-size: 22px; }
+      .course-meta { padding-top: 2px; font-size: 14px; text-align: right; }
+      main { gap: 14px; padding-top: 14px; }
+      .hero h1 { font-size: clamp(37px, 11vw, 52px); }
+      .capability-summary { padding: 16px; }
+      .capability-summary ul { grid-template-columns: 1fr; }
+      .map-panel { padding: 26px 16px; }
+      .loop-map { min-height: auto; }
+      .loop-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: none;
+        grid-template-areas: "one" "two" "three" "four" "five" "six";
+        gap: 10px;
+        min-height: 0;
+      }
+      .stage-button {
+        grid-template-columns: 48px minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        min-height: 0;
+        padding: 15px;
+      }
+      .stage-number { grid-row: 1 / span 2; margin: 2px 0 0; }
+      .stage-summary { align-self: auto; margin-top: 5px; }
+      .detail-panel { min-height: 0; padding: 30px 20px 24px; }
+      .detail-panel h2 { font-size: 34px; }
+      .lesson-block { margin-top: 20px; }
+      .lesson-list { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .stage-card { transition: none; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand"><strong>CCIOT</strong><span>云计算与物联网</span></div>
-    <div class="header-note">课程全景 · 17 章</div>
-  </header>
+  <div class="page">
+    <header class="course-header">
+      <div class="course-identity">
+        <span class="course-code">CCIOT</span>
+        <span class="course-name">云计算与物联网</span>
+      </div>
+      <div class="course-meta">17 个小节</div>
+    </header>
 
-  <main>
-    <section class="intro" aria-labelledby="page-title">
-      <h1 id="page-title">从现实对象出发，<br><span>让数据、服务与反馈形成闭环</span></h1>
-      <p class="intro-copy">云计算组织可调度的资源与服务，物联网让现实对象被感知、连接、计算和控制；两者通过数据和反馈组成端到端系统。</p>
-    </section>
-
-    <section class="loop-shell" aria-labelledby="map-title">
-      <div class="map-caption"><strong id="map-title">一条跨越物理世界、边缘与云的系统回路</strong><span>选择一个阶段，查看系统职责与课程范围</span></div>
-      <div class="loop-grid">
-        <svg class="loop-lines" viewBox="0 0 1000 520" preserveAspectRatio="none" aria-hidden="true">
-          <defs>
-            <marker id="arrow-teal" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#0d6475"></path></marker>
-            <marker id="arrow-orange" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#c26432"></path></marker>
-          </defs>
-          <path d="M250 90 H405" marker-end="url(#arrow-teal)"></path>
-          <path d="M595 90 H750" marker-end="url(#arrow-teal)"></path>
-          <path d="M892 120 C968 150 968 360 892 392" marker-end="url(#arrow-teal)"></path>
-          <path d="M750 430 H595" marker-end="url(#arrow-teal)"></path>
-          <path d="M405 430 H250" marker-end="url(#arrow-teal)"></path>
-          <path class="feedback" d="M108 392 C32 360 32 150 108 120" marker-end="url(#arrow-orange)"></path>
-        </svg>
-
-        <button class="stage-card" type="button" data-stage="1" aria-pressed="false">
-          <span class="stage-number">1</span><h2>云资源成为服务</h2><p>从云计算概述建立资源、服务与物联网连接的共同语言</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="resource-row"><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="2" aria-pressed="false">
-          <span class="stage-number">2</span><h2>资源池化与调度</h2><p>用虚拟化把物理资源抽象成可隔离、可调度的能力</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="pool-stack"><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="3" aria-pressed="false">
-          <span class="stage-number">3</span><h2>云部署与应用服务</h2><p>公有云、私有云、容器云、存储和云应用组成服务交付链</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="service-row"><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="4" aria-pressed="false">
-          <span class="stage-number">4</span><h2>现实对象可被感知</h2><p>从物联网概述进入参考模型、感知、标识、定位与授时</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="sensor-row"><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="5" aria-pressed="false">
-          <span class="stage-number">5</span><h2>网络、边缘与云协同</h2><p>用网络与计算把设备接入、近端任务和全局能力分工起来</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="network-path"><i></i><b></b><i></i><b></b><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="6" aria-pressed="false">
-          <span class="stage-number">6</span><h2>数据智能、安全与反馈</h2><p>把数据与智能放回安全、隐私和物联网应用的完整闭环</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="feedback-loop"></span></span>
-        </button>
-
-        <div class="bridge" aria-label="云计算与物联网的连接">
-          <div class="bridge-side"><span>现实对象产生状态与任务</span><i class="bridge-line"></i></div>
-          <div class="bridge-core">数据与服务<small>连接两门技术</small></div>
-          <div class="bridge-side"><i class="bridge-line"></i><span>判断与控制返回现实世界</span></div>
+    <main>
+      <section class="hero" aria-labelledby="course-proposition">
+        <h1 id="course-proposition">从<span>现实对象</span>到<span>云端服务</span>的闭环</h1>
+        <div class="capability-summary" aria-label="完成课程后能够做到">
+          <ul>
+            <li>理解设备、感知、网络、边缘、云端与服务的系统分工</li>
+            <li>追踪数据从现实对象到判断、控制和反馈的完整路径</li>
+            <li>权衡资源、时延、安全、隐私与可靠性要求</li>
+            <li>为真实场景提出端—边—网—云协同方案</li>
+          </ul>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="bridge-band" aria-label="云计算与物联网的四个连接点">
-      <div class="bridge-summary"><span>课程桥梁</span><strong>设备、数据和应用不是三套系统；统一连接、数据融通、边云协同与服务反馈把它们组织成整体。</strong></div>
-      <div class="bridge-item"><span>连接</span><strong>设备可靠接入网络与云端服务</strong></div>
-      <div class="bridge-item"><span>协同</span><strong>边缘处理即时任务，云端承担全局能力</strong></div>
-      <div class="bridge-item"><span>反馈</span><strong>数据形成服务，服务重新作用于现实</strong></div>
-    </section>
+      <section class="panorama" aria-label="CCIOT 六阶段课程地图">
+        <nav class="map-panel" aria-label="选择课程阶段">
+          <div class="loop-map">
+            <div class="loop-grid">
+              <button class="stage-button stage-1" type="button" data-stage="1" aria-pressed="true" aria-controls="stage-detail">
+                <span class="stage-number">01</span>
+                <span class="stage-title">云资源成为服务</span>
+                <span class="stage-summary">把计算资源变成按需服务</span>
+              </button>
 
-    <section class="endpoint" aria-label="课程终点">
-      <span>课程终点</span>
-      <strong>能够说明设备、感知、标识、网络、边缘、云端、数据服务和反馈控制的职责，并分析资源、安全、隐私与可靠性边界。</strong>
-    </section>
-  </main>
+              <button class="stage-button stage-2" type="button" data-stage="2" aria-pressed="false" aria-controls="stage-detail">
+                <span class="stage-number">02</span>
+                <span class="stage-title">资源池化与调度</span>
+                <span class="stage-summary">把物理资源抽象为可调度能力</span>
+              </button>
 
-  <footer><strong>云计算与物联网 · 课程全景</strong><span>两套教材提供知识范围，端到端系统决定课程连接方式</span></footer>
+              <button class="stage-button stage-3" type="button" data-stage="3" aria-pressed="false" aria-controls="stage-detail">
+                <span class="stage-number">03</span>
+                <span class="stage-title">云部署与应用服务</span>
+                <span class="stage-summary">把云资源组合成稳定服务</span>
+              </button>
 
-  <dialog id="stage-dialog" aria-labelledby="dialog-title">
-    <div class="dialog-shell">
-      <button class="dialog-close" type="button" aria-label="关闭阶段详情">×</button>
-      <div class="dialog-head">
-        <div class="dialog-index" id="dialog-index"></div>
-        <h2 id="dialog-title"></h2>
-        <p class="dialog-question" id="dialog-question"></p>
-      </div>
-      <div class="dialog-body">
-        <section class="dialog-section">
-          <h3>课程范围</h3>
-          <div class="lesson-list" id="lesson-list"></div>
-        </section>
-        <section class="dialog-section">
-          <h3>这一阶段在系统中做什么</h3>
-          <div class="detail-block"><h4>系统职责</h4><p id="dialog-duty"></p></div>
-          <div class="detail-block"><h4>阶段产出</h4><p id="dialog-output"></p></div>
-        </section>
-      </div>
-    </div>
-  </dialog>
+              <button class="stage-button stage-4" type="button" data-stage="4" aria-pressed="false" aria-controls="stage-detail">
+                <span class="stage-number">04</span>
+                <span class="stage-title">现实对象可被感知</span>
+                <span class="stage-summary">让对象可感知可识别可定位</span>
+              </button>
+
+              <button class="stage-button stage-5" type="button" data-stage="5" aria-pressed="false" aria-controls="stage-detail">
+                <span class="stage-number">05</span>
+                <span class="stage-title">网络、边缘与云协同</span>
+                <span class="stage-summary">在端边网云之间分配任务</span>
+              </button>
+
+              <button class="stage-button stage-6" type="button" data-stage="6" aria-pressed="false" aria-controls="stage-detail">
+                <span class="stage-number">06</span>
+                <span class="stage-title">智能、安全与反馈</span>
+                <span class="stage-summary">让数据形成服务并安全反馈</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+
+        <article class="detail-panel" id="stage-detail" aria-live="polite">
+          <p class="detail-marker" id="detail-marker">阶段 1 / 6</p>
+          <h2 id="detail-title">云资源成为服务</h2>
+          <p class="question" id="detail-question">计算资源怎样成为可以按需获得的服务？</p>
+          <p class="learning" id="detail-learning">云的基本特征、部署模型和服务模型。</p>
+
+          <div class="outcome-block">
+            <p class="section-label">在本阶段中</p>
+            <p class="outcome" id="detail-outcome">判断一个系统是否体现云计算特征，并说明资源控制权和服务层次</p>
+          </div>
+
+          <div class="lesson-block">
+            <p class="section-label">进入小节</p>
+            <div class="lesson-list" id="lesson-list">
+              <a class="lesson-link" href="../../../_build/slides/cciot-1-1/cciot-1-1.html">
+                <span>1.1 云计算概述</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>CCIOT COURSE MAP · 17 SECTIONS</footer>
+  </div>
 
   <script>
     const stages = {
       1: {
+        marker: "阶段 1 / 6",
         title: "云资源成为服务",
-        question: "计算资源怎样从一批机器变成可以按需获得、计量和释放的服务？",
-        duty: "建立云计算的资源与服务视角，区分云的基本特征、部署模型和服务模型，避免把联网产品都称为云计算。",
-        output: "能够判断一个系统是否体现云计算特征，并说明资源由谁掌控、用户获得哪一层能力。",
+        question: "计算资源怎样成为可以按需获得的服务？",
+        learning: "云的基本特征、部署模型和服务模型。",
+        outcome: "判断一个系统是否体现云计算特征，并说明资源控制权和服务层次",
         lessons: [
-          { number: "1.1", title: "云计算概述", status: "已发布", href: "cciot-1-1.html" }
+          { label: "1.1 云计算概述", href: "cciot-1-1.html" }
         ]
       },
       2: {
+        marker: "阶段 2 / 6",
         title: "资源池化与调度",
-        question: "云平台怎样把异构物理资源组织成可隔离、可迁移、可弹性调度的能力？",
-        duty: "用虚拟化理解计算、存储和网络资源的抽象，再比较容器、资源池和弹性调度在云平台中的作用。",
-        output: "能够解释虚拟化、容器、资源池和弹性的关系，并分析资源利用率与隔离边界。",
+        question: "云平台怎样隔离、迁移和弹性调度资源？",
+        learning: "虚拟化、容器、资源池、弹性与可靠性。",
+        outcome: "解释虚拟化、容器和资源池的关系，并分析利用率与隔离边界",
         lessons: [
-          { number: "2.1", title: "虚拟化技术", status: "已发布", href: "cciot-2-1.html" }
+          { label: "2.1 虚拟化技术", href: "cciot-2-1.html" }
         ]
       },
       3: {
+        marker: "阶段 3 / 6",
         title: "云部署与应用服务",
-        question: "资源怎样被部署、存储和组合，最终形成能够稳定提供的应用服务？",
-        duty: "把公有云、私有云、云存储、云应用、数据库和高可用机制放入一条服务交付链。",
-        output: "能够依据组织控制、成本、弹性和可靠性需求分析云部署与应用方案。",
+        question: "资源怎样部署、存储和组合成应用服务？",
+        learning: "公有云、私有云、容器云、云存储、云应用与高可用。",
+        outcome: "依据控制、成本、弹性和可靠性需求选择云部署与应用方案",
         lessons: [
-          { number: "3.1", title: "体验公有云", status: "已发布", href: "cciot-3-1.html" },
-          { number: "4.1", title: "体验私有云", status: "已发布", href: "cciot-4-1.html" },
-          { number: "5.1", title: "体验容器云", status: "已发布", href: "cciot-5-1.html" },
-          { number: "6.1", title: "体验云存储", status: "已发布", href: "cciot-6-1.html" },
-          { number: "7.1", title: "体验云应用", status: "已发布", href: "cciot-7-1.html" }
+          { label: "3.1 体验公有云", href: "cciot-3-1.html" },
+          { label: "4.1 体验私有云", href: "cciot-4-1.html" },
+          { label: "5.1 体验容器云", href: "cciot-5-1.html" },
+          { label: "6.1 体验云存储", href: "cciot-6-1.html" },
+          { label: "7.1 体验云应用", href: "cciot-7-1.html" }
         ]
       },
       4: {
+        marker: "阶段 4 / 6",
         title: "现实对象可被感知",
-        question: "现实对象怎样获得可观察、可区分、可定位并能进入信息系统的数字身份？",
-        duty: "从物联网体系进入感知、标识、定位与授时，说明设备怎样产生可信状态和事件数据。",
-        output: "能够为真实对象选择合适的感知、标识和定位方式，并说明数据从何而来。",
+        question: "现实对象怎样产生可以进入系统的数据？",
+        learning: "物联网体系、感知、标识、定位与授时。",
+        outcome: "为真实对象选择感知、标识和定位方式，并说明数据来源",
         lessons: [
-          { number: "8.1", title: "物联网概述", status: "已发布", href: "cciot-8-1.html" },
-          { number: "9.1", title: "物联网参考模型与技术体系", status: "已发布", href: "cciot-9-1.html" },
-          { number: "10.1", title: "感知技术", status: "已发布", href: "cciot-10-1.html" },
-          { number: "11.1", title: "标识技术", status: "已发布", href: "cciot-11-1.html" },
-          { number: "12.1", title: "定位与授时", status: "已发布", href: "cciot-12-1.html" }
+          { label: "8.1 物联网概述", href: "cciot-8-1.html" },
+          { label: "9.1 物联网参考模型与技术体系", href: "cciot-9-1.html" },
+          { label: "10.1 感知技术", href: "cciot-10-1.html" },
+          { label: "11.1 标识技术", href: "cciot-11-1.html" },
+          { label: "12.1 定位与授时", href: "cciot-12-1.html" }
         ]
       },
       5: {
+        marker: "阶段 5 / 6",
         title: "网络、边缘与云协同",
-        question: "哪些任务留在设备附近，哪些任务交给网络和云端，系统怎样保持连接？",
-        duty: "连接设备接入、个域网与广域网、层级计算和人机协同，依据时延、带宽、自治和全局分析需求分配任务。",
-        output: "能够画出端—边—网—云的数据和控制路径，并解释各层职责。",
+        question: "哪些任务留在近端，哪些任务交给网络和云？",
+        learning: "设备接入、网络传输、层级计算与人机协同。",
+        outcome: "画出端—边—网—云的数据与控制路径，并说明各层职责",
         lessons: [
-          { number: "13.1", title: "物联网网络", status: "已发布", href: "cciot-13-1.html" },
-          { number: "14.1", title: "计算技术", status: "已发布", href: "cciot-14-1.html" }
+          { label: "13.1 物联网网络", href: "cciot-13-1.html" },
+          { label: "14.1 计算技术", href: "cciot-14-1.html" }
         ]
       },
       6: {
-        title: "数据智能、安全与反馈",
-        question: "物联网数据怎样形成判断与服务，又怎样在安全和隐私边界内返回现实世界？",
-        duty: "把大数据、人工智能、安全、隐私和行业应用放入反馈闭环，检查身份、访问、传输、数据使用和控制责任。",
-        output: "能够分析一个完整物联网应用的价值路径、风险边界和反馈机制。",
+        marker: "阶段 6 / 6",
+        title: "智能、安全与反馈",
+        question: "数据怎样形成判断，并安全地返回现实世界？",
+        learning: "数据智能、安全、隐私、应用服务与反馈控制。",
+        outcome: "分析物联网应用的价值路径、风险边界和反馈机制",
         lessons: [
-          { number: "15.1", title: "数据与智能", status: "已发布", href: "cciot-15-1.html" },
-          { number: "16.1", title: "安全与隐私保护", status: "已发布", href: "cciot-16-1.html" },
-          { number: "17.1", title: "物联网应用", status: "已发布", href: "cciot-17-1.html" }
+          { label: "15.1 数据与智能", href: "cciot-15-1.html" },
+          { label: "16.1 安全与隐私保护", href: "cciot-16-1.html" },
+          { label: "17.1 物联网应用", href: "cciot-17-1.html" }
         ]
       }
     };
 
-    const dialog = document.querySelector("#stage-dialog");
-    const closeButton = dialog.querySelector(".dialog-close");
+    const stageButtons = [...document.querySelectorAll(".stage-button")];
+    const marker = document.querySelector("#detail-marker");
+    const title = document.querySelector("#detail-title");
+    const question = document.querySelector("#detail-question");
+    const learning = document.querySelector("#detail-learning");
+    const outcome = document.querySelector("#detail-outcome");
     const lessonList = document.querySelector("#lesson-list");
-    let activeCard = null;
 
     function localLessonHref(publishHref) {
-      const isSourcePreview = window.location.pathname.includes("/courses/cciot/overview/");
-      const deckDirectory = publishHref.replace(/\.html$/, "");
-      if (isSourcePreview) {
+      if (window.location.protocol === "file:") {
+        const deckDirectory = publishHref.replace(/\.html$/, "");
         return "../../../_build/slides/" + deckDirectory + "/" + publishHref;
       }
       return publishHref;
     }
 
-    function openStage(stageId, card) {
-      const stage = stages[stageId];
+    function arrowIcon() {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M5 12h12M13 7l5 5-5 5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path>
+        </svg>`;
+    }
+
+    function renderStage(stageNumber, updateHash = true) {
+      const stage = stages[stageNumber];
       if (!stage) return;
-      document.querySelector("#dialog-index").textContent = `阶段 ${stageId} / 6`;
-      document.querySelector("#dialog-title").textContent = stage.title;
-      document.querySelector("#dialog-question").textContent = stage.question;
-      document.querySelector("#dialog-duty").textContent = stage.duty;
-      document.querySelector("#dialog-output").textContent = stage.output;
+
+      stageButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.stage === String(stageNumber) ? "true" : "false");
+      });
+
+      marker.textContent = stage.marker;
+      title.textContent = stage.title;
+      question.textContent = stage.question;
+      learning.textContent = stage.learning;
+      outcome.textContent = stage.outcome;
       lessonList.replaceChildren();
 
       stage.lessons.forEach((lesson) => {
-        const row = document.createElement(lesson.href ? "a" : "div");
-        row.className = "lesson-row";
-        if (lesson.href) row.href = localLessonHref(lesson.href);
-        const number = document.createElement("span");
-        number.className = "lesson-number";
-        number.textContent = lesson.number;
-        const title = document.createElement("span");
-        title.textContent = lesson.title;
-        const status = document.createElement("span");
-        status.className = "lesson-status";
-        status.textContent = lesson.status;
-        row.append(number, title, status);
-        lessonList.append(row);
+        const link = document.createElement("a");
+        link.className = "lesson-link";
+        link.href = localLessonHref(lesson.href);
+        link.innerHTML = `<span>${lesson.label}</span>${arrowIcon()}`;
+        lessonList.append(link);
       });
 
-      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
-      card.setAttribute("aria-pressed", "true");
-      activeCard = card;
-      dialog.showModal();
-    }
-
-    document.querySelectorAll(".stage-card").forEach((card) => {
-      card.addEventListener("click", () => openStage(card.dataset.stage, card));
-    });
-
-    function closeDialog() {
-      dialog.close();
-      if (activeCard) {
-        activeCard.setAttribute("aria-pressed", "false");
-        activeCard.focus();
+      if (updateHash) {
+        history.replaceState(null, "", `#stage-${stageNumber}`);
       }
-      activeCard = null;
     }
 
-    closeButton.addEventListener("click", closeDialog);
-    dialog.addEventListener("click", (event) => {
-      const bounds = dialog.getBoundingClientRect();
-      const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
-      if (outside) closeDialog();
+    stageButtons.forEach((button) => {
+      button.addEventListener("click", () => renderStage(Number(button.dataset.stage)));
     });
-    dialog.addEventListener("close", () => {
-      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
-    });
+
+    const initialStage = Number(window.location.hash.match(/^#stage-(\d)$/)?.[1] || 1);
+    renderStage(stages[initialStage] ? initialStage : 1, false);
   </script>
 </body>
 </html>

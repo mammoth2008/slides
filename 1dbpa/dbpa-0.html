@@ -3,648 +3,754 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="数据库原理与应用课程全景图：从认识数据与系统到数据库技术演进，覆盖 18 章 52 个单元。">
+  <meta name="description" content="数据库原理与应用课程全景：从业务事实到数据库系统。">
   <title>DBPA 课程全景 | 数据库原理与应用</title>
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <style>
     :root {
       color-scheme: light;
-      --background: #fbfcfa;
-      --stage: #e8eef1;
+      --page: #e8eef1;
       --surface: #ffffff;
-      --surface-muted: #f2f6f8;
+      --surface-soft: #f2f6f8;
       --ink: #15232d;
       --ink-soft: #3f5663;
       --primary: #185b91;
+      --primary-deep: #10446f;
       --primary-soft: #e7f0f6;
-      --auxiliary: #a8542b;
-      --auxiliary-soft: #fbf1ea;
+      --accent: #a8542b;
+      --accent-soft: #fbf1ea;
       --line: #aebdc6;
       --line-soft: #d4dde2;
       --shadow: rgba(30, 48, 58, .16);
-      --page-width: 1220px;
-      --sans: "Course Source Han Sans", "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-      --serif: "Course Source Han Serif", "Source Han Serif CN", "Songti SC", STSong, serif;
+      --serif: "Course Source Han Serif", "Source Han Serif CN", "Source Han Serif SC", "Songti SC", STSong, SimSun, serif;
+      --sans: "Course Source Han Sans", "Source Han Sans SC", "Noto Sans CJK SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
     }
 
     * { box-sizing: border-box; }
 
-    html { background: var(--stage); scroll-behavior: smooth; }
+    html {
+      min-width: 320px;
+      background: var(--page);
+      scroll-behavior: smooth;
+    }
 
     body {
-      margin: 0;
       min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
       color: var(--ink);
       background:
-        linear-gradient(90deg, transparent 0 49.94%, rgba(24, 91, 145, .035) 49.94% 50.06%, transparent 50.06%),
-        var(--background);
+        linear-gradient(90deg, rgba(24, 91, 145, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+        linear-gradient(rgba(24, 91, 145, .035) 1px, transparent 1px) 0 0 / 48px 48px,
+        #fbfcfa;
       font-family: var(--sans);
-      font-size: 16px;
-      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
     }
 
-    button, a { font: inherit; }
-    a { color: inherit; }
+    button,
+    a { font: inherit; }
 
-    .site-header {
+    button { color: inherit; }
+
+    a {
+      color: inherit;
+      text-underline-offset: 4px;
+    }
+
+    .page {
+      width: min(1540px, calc(100% - 28px));
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 10px 0 14px;
+    }
+
+    .course-header {
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      min-height: 68px;
-      padding: 0 max(24px, calc((100vw - var(--page-width)) / 2));
-      border-bottom: 1px solid var(--line-soft);
-      background: rgba(251, 252, 250, .94);
+      justify-content: space-between;
+      min-height: 50px;
+      padding: 0 2px 9px;
+      border-bottom: 3px solid var(--primary);
     }
 
-    .brand {
+    .course-identity {
       display: flex;
       align-items: baseline;
-      gap: 14px;
-      font-weight: 700;
-      letter-spacing: .04em;
+      gap: 18px;
     }
 
-    .brand strong { color: var(--primary); font-size: 1.1rem; }
-    .brand span { color: var(--ink-soft); font-size: .88rem; font-weight: 500; }
+    .course-code {
+      color: var(--primary);
+      font: 900 22px/1 var(--mono);
+      letter-spacing: .09em;
+    }
 
-    .header-note {
+    .course-name {
+      font-family: var(--serif);
+      font-size: 27px;
+      font-weight: 800;
+    }
+
+    .course-meta {
       color: var(--ink-soft);
-      font-size: .78rem;
-      letter-spacing: .1em;
+      font-size: 17px;
+      font-weight: 750;
     }
 
     main {
-      width: min(calc(100% - 40px), var(--page-width));
-      margin: 0 auto;
-      padding: 54px 0 34px;
-    }
-
-    .intro {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 310px;
-      gap: 48px;
-      align-items: end;
-      margin-bottom: 38px;
+      gap: 12px;
+      padding-top: 12px;
     }
 
-    h1 {
-      max-width: 850px;
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.04fr) minmax(510px, .96fr);
+      gap: 28px;
+      align-items: center;
+      min-height: 118px;
+    }
+
+    .hero h1 {
+      max-width: 820px;
       margin: 0;
-      font-family: var(--serif);
-      font-size: clamp(2.8rem, 5.2vw, 5rem);
-      line-height: 1.04;
+      font: 800 clamp(42px, 4.1vw, 61px)/1.08 var(--serif);
       letter-spacing: -.045em;
     }
 
-    h1 span { color: var(--primary); }
+    .hero h1 span { color: var(--accent); }
 
-    .intro-copy {
-      margin: 0 0 4px;
-      padding: 14px 0 14px 20px;
-      border-left: 4px solid var(--auxiliary);
-      color: var(--ink-soft);
-      font-size: .98rem;
+    .capability-summary {
+      padding: 12px 16px;
+      border-top: 2px solid var(--line);
+      border-bottom: 2px solid var(--line);
+      background: rgba(255, 255, 255, .8);
     }
 
-    .system-shell {
-      position: relative;
-      padding: 26px 22px 22px;
-      border: 1px solid var(--line);
-      background: var(--surface);
-      box-shadow: 0 18px 42px -34px var(--shadow);
-    }
-
-    .system-shell::before,
-    .system-shell::after {
-      position: absolute;
-      top: -1px;
-      width: 22%;
-      height: 4px;
-      content: "";
-    }
-
-    .system-shell::before { left: -1px; background: var(--primary); }
-    .system-shell::after { right: -1px; background: var(--auxiliary); }
-
-    .map-caption {
-      display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      margin-bottom: 18px;
-      color: var(--ink-soft);
-      font-size: .78rem;
-      letter-spacing: .08em;
-    }
-
-    .map-caption strong { color: var(--ink); font-weight: 700; }
-
-    .pipeline {
+    .capability-summary ul {
       display: grid;
-      grid-template-columns: repeat(6, minmax(0, 1fr));
-      gap: 12px;
-      counter-reset: stage;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 20px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
     }
 
-    .stage-card {
+    .capability-summary li {
       position: relative;
-      min-height: 242px;
-      padding: 17px 15px 15px;
-      border: 1px solid var(--line-soft);
-      border-top: 4px solid var(--primary);
-      border-radius: 0;
-      color: var(--ink);
-      background: var(--surface-muted);
-      text-align: left;
-      cursor: pointer;
-      transition: transform 160ms ease, box-shadow 160ms ease, border-color 160ms ease;
+      padding-left: 18px;
+      font-size: clamp(17px, 1.25vw, 20px);
+      font-weight: 750;
+      line-height: 1.38;
     }
 
-    .stage-card:nth-child(5),
-    .stage-card:nth-child(6) { border-top-color: var(--auxiliary); }
-
-    .stage-card:not(:last-child)::after {
+    .capability-summary li::before {
       position: absolute;
-      z-index: 2;
-      top: 50%;
-      right: -16px;
-      width: 19px;
-      height: 2px;
+      top: .25em;
+      bottom: .2em;
+      left: 0;
+      width: 5px;
       content: "";
       background: var(--primary);
-      box-shadow: 8px -4px 0 -3px var(--primary), 8px 4px 0 -3px var(--primary);
     }
 
-    .stage-card:hover,
-    .stage-card:focus-visible,
-    .stage-card[aria-pressed="true"] {
-      z-index: 3;
+    .panorama {
+      display: grid;
+      grid-template-columns: minmax(420px, 39%) minmax(0, 61%);
+      height: 700px;
+      border: 2px solid var(--line);
+      border-radius: 5px;
+      background: var(--surface);
+      box-shadow: 0 18px 42px -36px var(--shadow);
+      overflow: hidden;
+    }
+
+    .map-panel {
+      min-width: 0;
+      padding: 14px;
+      border-right: 2px solid var(--line);
+      background: var(--surface-soft);
+    }
+
+    .stage-list {
+      display: grid;
+      grid-template-rows: repeat(6, minmax(0, 1fr));
+      gap: 8px;
+      height: 100%;
+    }
+
+    .stage-button {
+      position: relative;
+      display: grid;
+      grid-template-columns: 78px minmax(0, 1fr);
+      grid-template-rows: auto auto;
+      column-gap: 14px;
+      align-content: center;
+      min-width: 0;
+      padding: 12px 22px 12px 14px;
+      border: 2px solid var(--line-soft);
+      border-left: 7px solid var(--primary);
+      border-radius: 4px;
+      color: var(--ink);
+      background: rgba(255, 255, 255, .92);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease, transform 150ms ease;
+    }
+
+    .stage-button:hover {
       border-color: var(--primary);
-      outline: none;
-      transform: translateY(-6px);
-      box-shadow: 0 14px 24px -18px var(--shadow);
+      transform: translateX(4px);
+    }
+
+    .stage-button:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--accent) 36%, white);
+      outline-offset: 3px;
+    }
+
+    .stage-button[aria-pressed="true"] {
+      border-color: var(--primary-deep);
+      color: #fff;
+      background: var(--primary-deep);
+    }
+
+    .stage-button[aria-pressed="true"]::after {
+      position: absolute;
+      top: 50%;
+      right: -15px;
+      width: 0;
+      height: 0;
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-left: 15px solid var(--primary-deep);
+      content: "";
+      transform: translateY(-50%);
     }
 
     .stage-number {
-      display: inline-grid;
-      width: 28px;
-      height: 28px;
-      place-items: center;
-      margin-bottom: 13px;
-      color: #fff;
-      background: var(--primary);
-      font-weight: 800;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .stage-card:nth-child(5) .stage-number,
-    .stage-card:nth-child(6) .stage-number { background: var(--auxiliary); }
-
-    .stage-card h2 {
-      min-height: 3.15em;
-      margin: 0;
-      font-family: var(--serif);
-      font-size: 1.17rem;
-      line-height: 1.42;
-      letter-spacing: -.02em;
-    }
-
-    .stage-card p {
-      margin: 8px 0 0;
-      color: var(--ink-soft);
-      font-size: .75rem;
-      line-height: 1.5;
-    }
-
-    .stage-diagram {
-      display: grid;
-      min-height: 58px;
-      margin-top: 15px;
-      place-items: center;
-      border-top: 1px solid var(--line-soft);
-      border-bottom: 1px solid var(--line-soft);
+      grid-row: 1 / span 2;
+      align-self: center;
       color: var(--primary);
-      background: rgba(255, 255, 255, .72);
+      font: 850 clamp(38px, 3.4vw, 54px)/1 var(--mono);
+      letter-spacing: -.06em;
     }
 
-    .data-dots { display: flex; gap: 5px; align-items: end; }
-    .data-dots i { display: block; width: 8px; background: currentColor; }
-    .data-dots i:nth-child(1) { height: 14px; opacity: .45; }
-    .data-dots i:nth-child(2) { height: 26px; opacity: .7; }
-    .data-dots i:nth-child(3) { height: 38px; }
-    .data-dots i:nth-child(4) { height: 22px; opacity: .6; }
-    .data-dots i:nth-child(5) { height: 31px; opacity: .8; }
+    .stage-button[aria-pressed="true"] .stage-number { color: #fff; }
 
-    .model-nodes { display: grid; grid-template-columns: 32px 28px 32px; align-items: center; }
-    .model-nodes span { height: 24px; border: 2px solid currentColor; }
-    .model-nodes i { display: block; height: 2px; background: currentColor; }
+    .stage-title {
+      align-self: end;
+      font-family: var(--serif);
+      font-size: clamp(20px, 1.65vw, 25px);
+      font-weight: 800;
+      line-height: 1.2;
+    }
 
-    .mini-table { width: 78%; border: 2px solid currentColor; }
-    .mini-table i { display: block; height: 9px; border-bottom: 1px solid currentColor; opacity: .75; }
-    .mini-table i:last-child { border: 0; }
+    .stage-summary {
+      align-self: start;
+      margin-top: 5px;
+      color: var(--ink-soft);
+      font-size: clamp(17px, 1.2vw, 19px);
+      font-weight: 650;
+      line-height: 1.3;
+    }
 
-    .query-lines { width: 80%; }
-    .query-lines i { display: block; height: 3px; margin: 6px 0; background: currentColor; }
-    .query-lines i:nth-child(2) { width: 74%; }
-    .query-lines i:nth-child(3) { width: 88%; opacity: .55; }
+    .stage-button[aria-pressed="true"] .stage-summary { color: #dceaf4; }
 
-    .constraints { display: flex; gap: 7px; align-items: center; }
-    .constraints span { width: 22px; height: 30px; border: 2px solid currentColor; }
-    .constraints b { font-size: 1.2rem; }
+    .detail-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      min-height: 0;
+      padding: 24px 26px 20px;
+      background: var(--surface);
+    }
 
-    .database-icon { position: relative; width: 52px; height: 42px; border: 2px solid currentColor; border-radius: 50% / 16%; }
-    .database-icon::before,
-    .database-icon::after { position: absolute; left: -2px; width: 50px; height: 12px; border: 2px solid currentColor; border-top: 0; border-radius: 0 0 50% 50%; content: ""; }
-    .database-icon::before { top: 9px; }
-    .database-icon::after { top: 22px; }
+    .detail-panel::before {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 72%;
+      height: 7px;
+      content: "";
+      background: var(--primary);
+    }
 
-    .case-rail {
+    .detail-panel::after {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 28%;
+      height: 7px;
+      content: "";
+      background: var(--accent);
+    }
+
+    .detail-marker {
+      margin: 0 0 8px;
+      color: var(--primary);
+      font: 850 17px/1.2 var(--mono);
+      letter-spacing: .06em;
+    }
+
+    .detail-panel h2 {
+      margin: 0;
+      font: 800 clamp(36px, 3vw, 47px)/1.08 var(--serif);
+      letter-spacing: -.035em;
+    }
+
+    .question {
+      margin: 14px 0 0;
+      padding: 13px 15px;
+      border-left: 7px solid var(--primary);
+      background: var(--primary-soft);
+      font-size: clamp(20px, 1.55vw, 24px);
+      font-weight: 800;
+      line-height: 1.38;
+    }
+
+    .learning {
+      margin: 12px 0 0;
+      color: var(--ink-soft);
+      font-size: clamp(17px, 1.22vw, 20px);
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .outcome-block {
       display: grid;
-      grid-template-columns: 150px repeat(3, 1fr);
-      margin-top: 16px;
-      border: 1px solid var(--line-soft);
-      background: var(--background);
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 14px;
+      align-items: start;
+      margin-top: 14px;
+      padding: 13px 0;
+      border-top: 2px solid var(--line-soft);
+      border-bottom: 2px solid var(--line-soft);
     }
 
-    .case-title,
-    .case-item { padding: 16px 18px; }
-    .case-title { display: grid; place-items: center start; color: var(--primary); background: var(--primary-soft); font-family: var(--serif); font-weight: 700; }
-    .case-item { border-left: 1px solid var(--line-soft); }
-    .case-item strong { display: block; margin-bottom: 3px; color: var(--auxiliary); }
-    .case-item span { color: var(--ink-soft); font-size: .76rem; }
+    .section-label {
+      margin: 0;
+      color: var(--accent);
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 1.45;
+      white-space: nowrap;
+    }
 
-    .outcome-band {
+    .outcome {
+      margin: 0;
+      font-size: clamp(18px, 1.38vw, 22px);
+      font-weight: 800;
+      line-height: 1.45;
+    }
+
+    .lesson-block {
+      display: flex;
+      flex: 1;
+      flex-direction: column;
+      min-height: 0;
+      padding-top: 14px;
+    }
+
+    .lesson-block > .section-label {
+      margin-bottom: 8px;
+      color: var(--primary);
+    }
+
+    .lesson-list {
       display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1.55fr;
-      gap: 1px;
-      margin-top: 24px;
-      border: 1px solid var(--line-soft);
-      background: var(--line-soft);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-auto-rows: minmax(52px, auto);
+      gap: 8px;
+      min-height: 0;
+      padding-right: 8px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-color: var(--line) var(--surface-soft);
+      scrollbar-width: thin;
     }
 
-    .capability,
-    .endpoint { min-height: 118px; padding: 20px; background: var(--surface); }
-    .capability span { display: block; margin-bottom: 8px; color: var(--primary); font-size: .72rem; font-weight: 800; letter-spacing: .12em; }
-    .capability strong { font-family: var(--serif); font-size: 1.04rem; }
-    .endpoint { color: #fff; background: var(--primary); }
-    .endpoint span { display: block; margin-bottom: 8px; color: rgba(255, 255, 255, .72); font-size: .72rem; letter-spacing: .12em; }
-    .endpoint strong { font-family: var(--serif); font-size: 1.08rem; line-height: 1.55; }
+    .lesson-link {
+      display: grid;
+      grid-template-columns: 48px minmax(0, 1fr) 22px;
+      gap: 9px;
+      align-items: center;
+      min-width: 0;
+      padding: 8px 10px;
+      border: 2px solid var(--line-soft);
+      border-radius: 4px;
+      background: var(--surface-soft);
+      text-decoration: none;
+      font-size: clamp(17px, 1.4vw, 19px);
+      font-weight: 750;
+      line-height: 1.3;
+      transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+    }
+
+    .lesson-link:hover {
+      border-color: var(--primary);
+      background: var(--primary-soft);
+      transform: translateX(3px);
+    }
+
+    .lesson-link:focus-visible {
+      outline: 4px solid color-mix(in srgb, var(--accent) 34%, white);
+      outline-offset: 2px;
+    }
+
+    .lesson-number {
+      color: var(--primary);
+      font: 850 17px/1 var(--mono);
+    }
+
+    .lesson-title {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    .lesson-link svg {
+      width: 22px;
+      height: 22px;
+      color: var(--accent);
+    }
 
     footer {
       display: flex;
-      justify-content: space-between;
-      gap: 24px;
-      width: min(calc(100% - 40px), var(--page-width));
-      margin: 0 auto;
-      padding: 16px 0 26px;
-      border-top: 1px solid var(--line-soft);
+      justify-content: flex-end;
+      padding-top: 8px;
       color: var(--ink-soft);
-      font-size: .72rem;
+      font: 750 13px/1.2 var(--mono);
+      letter-spacing: .07em;
     }
 
-    dialog {
-      width: min(900px, calc(100vw - 40px));
-      max-height: calc(100vh - 40px);
-      padding: 0;
-      border: 0;
-      color: var(--ink);
-      background: var(--surface);
-      box-shadow: 0 34px 80px rgba(21, 35, 45, .28);
+    @media (max-width: 1120px) {
+      .hero { grid-template-columns: 1fr; gap: 12px; }
+      .hero h1 { max-width: none; }
+      .panorama { grid-template-columns: minmax(360px, 42%) minmax(0, 58%); }
+      .stage-button { grid-template-columns: 64px minmax(0, 1fr); padding-right: 14px; }
+      .stage-title { font-size: 20px; }
+      .stage-summary { font-size: 15px; }
+      .lesson-list { grid-template-columns: 1fr; }
     }
 
-    dialog::backdrop { background: rgba(21, 35, 45, .7); backdrop-filter: blur(3px); }
-    .dialog-shell { position: relative; border-top: 7px solid var(--primary); }
-    .dialog-close { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border: 1px solid var(--line); color: var(--ink); background: var(--surface); cursor: pointer; font-size: 1.35rem; line-height: 1; }
-    .dialog-close:hover, .dialog-close:focus-visible { outline: 3px solid var(--primary-soft); border-color: var(--primary); }
-    .dialog-head { padding: 34px 76px 26px 34px; border-bottom: 1px solid var(--line-soft); background: var(--surface-muted); }
-    .dialog-index { color: var(--primary); font-size: .78rem; font-weight: 800; letter-spacing: .14em; }
-    .dialog-head h2 { margin: 8px 0 8px; font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.7rem); line-height: 1.15; }
-    .dialog-question { margin: 0; color: var(--ink-soft); }
-    .dialog-body { display: grid; grid-template-columns: 1.1fr .9fr; gap: 0; max-height: calc(100vh - 180px); overflow-y: auto; }
-    .dialog-section { padding: 28px 34px; }
-    .dialog-section + .dialog-section { border-left: 1px solid var(--line-soft); }
-    .dialog-section h3 { margin: 0 0 14px; color: var(--primary); font-size: .78rem; letter-spacing: .12em; }
-    .lesson-list { display: grid; gap: 9px; }
-    .lesson-row { display: grid; grid-template-columns: 78px 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; min-height: 64px; padding: 9px 11px; border: 1px solid var(--line-soft); text-decoration: none; }
-    a.lesson-row:hover, a.lesson-row:focus-visible { border-color: var(--primary); outline: none; background: var(--primary-soft); }
-    .lesson-cover { display: block; width: 78px; aspect-ratio: 4 / 3; object-fit: cover; border: 1px solid var(--line-soft); background: var(--surface-muted); }
-    .lesson-number { color: var(--primary); font-weight: 800; }
-    .lesson-title { min-width: 0; }
-    .lesson-status { color: var(--ink-soft); font-size: .7rem; white-space: nowrap; }
-    a.lesson-row .lesson-status { color: var(--auxiliary); }
-    .detail-block + .detail-block { margin-top: 24px; }
-    .detail-block h4 { margin: 0 0 6px; font-family: var(--serif); font-size: 1rem; }
-    .detail-block p { margin: 0; color: var(--ink-soft); font-size: .88rem; }
-
-    @media (max-width: 1050px) {
-      .intro { grid-template-columns: 1fr; gap: 22px; }
-      .intro-copy { max-width: 620px; }
-      .pipeline { grid-template-columns: repeat(3, 1fr); }
-      .stage-card:not(:last-child)::after { display: none; }
-      .case-rail { grid-template-columns: 1fr 1fr 1fr; }
-      .case-title { grid-column: 1 / -1; }
-      .case-item:first-of-type { border-left: 0; }
-      .outcome-band { grid-template-columns: repeat(3, 1fr); }
-      .endpoint { grid-column: 1 / -1; }
+    @media (max-width: 860px) {
+      .page { width: min(100% - 22px, 820px); }
+      .course-header { align-items: flex-start; gap: 12px; }
+      .course-identity { display: grid; gap: 4px; }
+      .course-name { font-size: 23px; }
+      .course-meta { font-size: 15px; text-align: right; }
+      .hero { min-height: 0; }
+      .hero h1 { font-size: clamp(38px, 8vw, 54px); }
+      .capability-summary ul { grid-template-columns: 1fr; }
+      .panorama { grid-template-columns: 1fr; height: auto; }
+      .map-panel { border-right: 0; border-bottom: 2px solid var(--line); }
+      .stage-list { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(3, 108px); }
+      .stage-button { grid-template-columns: 56px minmax(0, 1fr); }
+      .stage-button[aria-pressed="true"]::after { display: none; }
+      .detail-panel { height: 700px; }
+      .lesson-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     }
 
-    @media (max-width: 680px) {
-      .site-header { min-height: 58px; padding: 0 18px; }
-      .brand span, .header-note { display: none; }
-      main { width: min(calc(100% - 24px), var(--page-width)); padding-top: 34px; }
-      h1 { font-size: clamp(2.35rem, 12vw, 3.5rem); }
-      .system-shell { padding: 20px 12px 14px; }
-      .map-caption { display: block; }
-      .map-caption span { display: block; margin-top: 4px; }
-      .pipeline { grid-template-columns: 1fr; }
-      .stage-card { min-height: 0; }
-      .stage-card h2 { min-height: 0; }
-      .case-rail { grid-template-columns: 1fr; }
-      .case-title { grid-column: auto; }
-      .case-item { border-top: 1px solid var(--line-soft); border-left: 0; }
-      .outcome-band { grid-template-columns: 1fr; }
-      .endpoint { grid-column: auto; }
-      .dialog-body { grid-template-columns: 1fr; }
-      .dialog-section + .dialog-section { border-top: 1px solid var(--line-soft); border-left: 0; }
-      .lesson-row { grid-template-columns: 64px 48px minmax(0, 1fr); }
-      .lesson-cover { width: 64px; }
-      .lesson-status { grid-column: 3; white-space: normal; }
-      footer { display: block; width: calc(100% - 24px); }
-      footer span { display: block; margin-top: 4px; }
+    @media (max-width: 620px) {
+      .stage-list { grid-template-columns: 1fr; grid-template-rows: repeat(6, 96px); }
+      .detail-panel { height: 760px; padding: 22px 18px 18px; }
+      .detail-panel h2 { font-size: 34px; }
+      .outcome-block { grid-template-columns: 1fr; gap: 5px; }
+      .lesson-list { grid-template-columns: 1fr; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .stage-card { transition: none; }
+      *, *::before, *::after { transition-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="brand"><strong>DBPA</strong><span>数据库原理与应用</span></div>
-    <div class="header-note">课程全景 · 18 章 · 51 个单元</div>
-  </header>
-
-  <main>
-    <section class="intro" aria-labelledby="page-title">
-      <h1 id="page-title">让数据进入系统，<br><span>让系统值得信赖</span></h1>
-      <p class="intro-copy">从认识数据与系统出发，经由关系模型、SQL、设计与运行机制，走向多样数据库技术；课程把业务问题、数据结构、系统实现和技术选择连成一条主线。</p>
-    </section>
-
-    <section class="system-shell" aria-labelledby="map-title">
-      <div class="map-caption"><strong id="map-title">数据库知识怎样从基础组装到技术选择</strong><span>选择一个阶段，查看核心问题与已完成课程范围</span></div>
-      <div class="pipeline">
-        <button class="stage-card" type="button" data-stage="1" aria-pressed="false">
-          <span class="stage-number">1</span><h2>认识数据与系统</h2><p>理解数据库为何出现，以及模型、结构和组成如何协同</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="data-dots"><i></i><i></i><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="2" aria-pressed="false">
-          <span class="stage-number">2</span><h2>关系组织数据</h2><p>用关系模型、完整性和关系代数表达可计算的数据结构</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="model-nodes"><span></span><i></i><span></span></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="3" aria-pressed="false">
-          <span class="stage-number">3</span><h2>SQL 操作数据</h2><p>定义、查询、更新数据，并处理空值与视图</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="mini-table"><i></i><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="4" aria-pressed="false">
-          <span class="stage-number">4</span><h2>设计保证正确</h2><p>用安全、完整性、规范化和设计过程控制结构质量</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="query-lines"><i></i><i></i><i></i></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="5" aria-pressed="false">
-          <span class="stage-number">5</span><h2>运行形成可靠系统</h2><p>把编程、存储、优化、恢复、并发与 DBMS 结构连成运行机制</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="constraints"><span></span><b>✓</b><span></span></span></span>
-        </button>
-        <button class="stage-card" type="button" data-stage="6" aria-pressed="false">
-          <span class="stage-number">6</span><h2>技术演进与系统选择</h2><p>从数据库发展走向 NoSQL、数据仓库、内存数据库与区块链融合</p>
-          <span class="stage-diagram" aria-hidden="true"><span class="database-icon"></span></span>
-        </button>
+  <div class="page">
+    <header class="course-header">
+      <div class="course-identity">
+        <span class="course-code">DBPA</span>
+        <span class="course-name">数据库原理与应用</span>
       </div>
+      <div class="course-meta">18 章 · 52 个小节</div>
+    </header>
 
-      <div class="case-rail" aria-label="贯穿课程的三个案例">
-        <div class="case-title">贯穿案例</div>
-        <div class="case-item"><strong>手机游戏</strong><span>玩家、资产、对局与排行怎样被正确保存和查询？</span></div>
-        <div class="case-item"><strong>学生教学</strong><span>学生、课程、选课与成绩怎样被多个角色共同使用？</span></div>
-        <div class="case-item"><strong>电子商务</strong><span>订单、支付、库存与履约怎样保持一致并可靠运行？</span></div>
-      </div>
-    </section>
+    <main>
+      <section class="hero" aria-labelledby="course-proposition">
+        <h1 id="course-proposition">从<span>业务事实</span>到数据库系统</h1>
+        <div class="capability-summary" aria-label="完成课程后能够做到">
+          <ul>
+            <li>把需求转化为数据模型和关系结构</li>
+            <li>使用 SQL 与程序接口处理数据</li>
+            <li>用约束、事务与并发保障正确运行</li>
+            <li>根据数据形态选择数据库技术</li>
+          </ul>
+        </div>
+      </section>
 
-    <section class="outcome-band" aria-label="课程能力与终点">
-      <div class="capability"><span>01 · 表达</span><strong>把业务问题转化为数据模型与关系结构</strong></div>
-      <div class="capability"><span>02 · 操作</span><strong>使用 SQL 与程序接口处理数据</strong></div>
-      <div class="capability"><span>03 · 运行</span><strong>分析安全、约束、性能、恢复与并发</strong></div>
-      <div class="endpoint"><span>课程终点</span><strong>构建正确、安全、可靠、可维护的数据库系统，并在不同技术之间作出有依据的选择。</strong></div>
-    </section>
-  </main>
+      <section class="panorama" aria-label="DBPA 六阶段课程地图">
+        <nav class="map-panel" aria-label="选择课程阶段">
+          <div class="stage-list">
+            <button class="stage-button" type="button" data-stage="1" aria-pressed="true" aria-controls="stage-detail">
+              <span class="stage-number">01</span>
+              <span class="stage-title">认识数据与系统</span>
+              <span class="stage-summary">理解数据库、模型与系统的基本概念</span>
+            </button>
+            <button class="stage-button" type="button" data-stage="2" aria-pressed="false" aria-controls="stage-detail">
+              <span class="stage-number">02</span>
+              <span class="stage-title">关系组织数据</span>
+              <span class="stage-summary">用关系结构和规则组织数据</span>
+            </button>
+            <button class="stage-button" type="button" data-stage="3" aria-pressed="false" aria-controls="stage-detail">
+              <span class="stage-number">03</span>
+              <span class="stage-title">SQL 操作数据</span>
+              <span class="stage-summary">用 SQL 定义、查询和更新数据</span>
+            </button>
+            <button class="stage-button" type="button" data-stage="4" aria-pressed="false" aria-controls="stage-detail">
+              <span class="stage-number">04</span>
+              <span class="stage-title">设计保证正确</span>
+              <span class="stage-summary">从需求形成正确可维护的结构</span>
+            </button>
+            <button class="stage-button" type="button" data-stage="5" aria-pressed="false" aria-controls="stage-detail">
+              <span class="stage-number">05</span>
+              <span class="stage-title">运行形成可靠系统</span>
+              <span class="stage-summary">在负载、故障和并发中可靠运行</span>
+            </button>
+            <button class="stage-button" type="button" data-stage="6" aria-pressed="false" aria-controls="stage-detail">
+              <span class="stage-number">06</span>
+              <span class="stage-title">技术演进与系统选择</span>
+              <span class="stage-summary">根据场景选择数据库技术</span>
+            </button>
+          </div>
+        </nav>
 
-  <footer><strong>数据库原理与应用 · 课程全景</strong><span>课程 manifest 已同步 18 章 52 个单元；链接指向已发布课件</span></footer>
+        <article class="detail-panel" id="stage-detail" aria-live="polite">
+          <p class="detail-marker" id="detail-marker">阶段 1 / 6</p>
+          <h2 id="detail-title">认识数据与系统</h2>
+          <p class="question" id="detail-question">现实世界的信息怎样进入可管理的数据库系统？</p>
+          <p class="learning" id="detail-learning">数据、数据库、DBMS、数据模型、系统结构与组成。</p>
 
-  <dialog id="stage-dialog" aria-labelledby="dialog-title">
-    <div class="dialog-shell">
-      <button class="dialog-close" type="button" aria-label="关闭阶段详情">×</button>
-      <div class="dialog-head">
-        <div class="dialog-index" id="dialog-index"></div>
-        <h2 id="dialog-title"></h2>
-        <p class="dialog-question" id="dialog-question"></p>
-      </div>
-      <div class="dialog-body">
-        <section class="dialog-section">
-          <h3>课程范围</h3>
-          <div class="lesson-list" id="lesson-list"></div>
-        </section>
-        <section class="dialog-section">
-          <h3>这一阶段要完成什么</h3>
-          <div class="detail-block"><h4>学习活动</h4><p id="dialog-activity"></p></div>
-          <div class="detail-block"><h4>阶段产出</h4><p id="dialog-output"></p></div>
-        </section>
-      </div>
-    </div>
-  </dialog>
+          <div class="outcome-block">
+            <p class="section-label">在本阶段中</p>
+            <p class="outcome" id="detail-outcome">说明数据库系统解决的问题，并解释模型、软件、应用和人的关系</p>
+          </div>
+
+          <div class="lesson-block">
+            <p class="section-label">进入小节</p>
+            <div class="lesson-list" id="lesson-list">
+              <a class="lesson-link" href="../../../_build/slides/dbpa-1-1/dbpa-1-1.html">
+                <span class="lesson-number">1.1</span>
+                <span class="lesson-title">数据库系统概述</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+              <a class="lesson-link" href="../../../_build/slides/dbpa-1-2/dbpa-1-2.html">
+                <span class="lesson-number">1.2</span>
+                <span class="lesson-title">数据模型</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+              <a class="lesson-link" href="../../../_build/slides/dbpa-1-3/dbpa-1-3.html">
+                <span class="lesson-number">1.3</span>
+                <span class="lesson-title">数据库系统的结构</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+              <a class="lesson-link" href="../../../_build/slides/dbpa-1-4/dbpa-1-4.html">
+                <span class="lesson-number">1.4</span>
+                <span class="lesson-title">数据库系统的组成</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+              <a class="lesson-link" href="../../../_build/slides/dbpa-1-5/dbpa-1-5.html">
+                <span class="lesson-number">1.5</span>
+                <span class="lesson-title">数据库系统的体系结构</span>
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path></svg>
+              </a>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <footer>DBPA COURSE MAP · 18 CHAPTERS · 52 SECTIONS</footer>
+  </div>
 
   <script>
-    const completed = (number, title) => ({
+    const lesson = (number, title) => ({
       number,
       title,
-      status: "已发布",
-      href: `dbpa-${number.replace(".", "-")}.html`,
-      cover: `assets/covers/dbpa-${number.replace(".", "-")}${number === "1.5" ? ".svg" : ".webp"}`
+      href: `dbpa-${number.replace(".", "-")}.html`
     });
 
     const stages = {
       1: {
+        marker: "阶段 1 / 6",
         title: "认识数据与系统",
-        question: "为什么需要数据库，数据模型和系统结构怎样把现实信息放进系统？",
-        activity: "从数据、数据库、DBMS 和数据库系统出发，比较人工管理、文件系统与数据库系统，再建立数据模型、模式、三级模式和系统组成的共同语言。",
-        output: "能够说明数据库系统解决了什么问题，并解释数据、模型、软件、应用和人在系统中的关系。",
+        question: "现实世界的信息怎样进入可管理的数据库系统？",
+        learning: "数据、数据库、DBMS、数据模型、系统结构与组成。",
+        outcome: "说明数据库系统解决的问题，并解释模型、软件、应用和人的关系",
         lessons: [
-          completed("1.1", "数据库系统概述"),
-          completed("1.2", "数据模型"),
-          completed("1.3", "数据库系统的结构"),
-          completed("1.4", "数据库系统的组成"),
-          completed("1.5", "数据库系统的体系结构")
+          lesson("1.1", "数据库系统概述"),
+          lesson("1.2", "数据模型"),
+          lesson("1.3", "数据库系统的结构"),
+          lesson("1.4", "数据库系统的组成"),
+          lesson("1.5", "数据库系统的体系结构")
         ]
       },
       2: {
+        marker: "阶段 2 / 6",
         title: "关系组织数据",
-        question: "关系数据库用什么结构和规则组织数据，又怎样形式化地表达数据操作？",
-        activity: "从关系、关系模式和关系完整性进入关系操作与关系代数，用选择、投影、连接等操作描述查询意图。",
-        output: "能够读懂关系模式，判断完整性规则，并用关系操作和关系代数解释查询过程。",
+        question: "关系数据库怎样组织数据并表达数据操作？",
+        learning: "关系、关系模式、完整性、关系操作与关系代数。",
+        outcome: "读懂关系模式，判断完整性规则，并用关系代数解释查询",
         lessons: [
-          completed("2.1", "关系模型的数据结构及形式化定义"),
-          completed("2.2", "关系操作"),
-          completed("2.3", "关系的完整性"),
-          completed("2.4", "关系代数")
+          lesson("2.1", "关系模型的数据结构及形式化定义"),
+          lesson("2.2", "关系操作"),
+          lesson("2.3", "关系的完整性"),
+          lesson("2.4", "关系代数")
         ]
       },
       3: {
+        marker: "阶段 3 / 6",
         title: "SQL 操作数据",
-        question: "怎样把数据定义、查询和更新意图写成数据库能够执行的语言？",
-        activity: "围绕持续案例练习 SQL 概述、数据定义、单表与多表查询、数据更新、空值和视图，把语句结果回扣到业务问题。",
-        output: "能够独立完成常见 SQL 任务，并解释查询结果与业务问题之间的对应关系。",
+        question: "怎样把数据操作意图写成数据库能够执行的语言？",
+        learning: "数据定义、查询、更新、空值、视图与结果解释。",
+        outcome: "完成常见 SQL 任务，并说明查询结果与业务问题的对应关系",
         lessons: [
-          completed("3.1", "SQL 概述"),
-          completed("3.2", "数据定义"),
-          completed("3.3", "数据查询"),
-          completed("3.4", "数据更新"),
-          completed("3.5", "空值的处理"),
-          completed("3.6", "视图")
+          lesson("3.1", "SQL 概述"),
+          lesson("3.2", "数据定义"),
+          lesson("3.3", "数据查询"),
+          lesson("3.4", "数据更新"),
+          lesson("3.5", "空值的处理"),
+          lesson("3.6", "视图")
         ]
       },
       4: {
+        marker: "阶段 4 / 6",
         title: "设计保证正确",
-        question: "怎样让数据库结构既能表达业务，又能避免不一致、冗余和难以维护的问题？",
-        activity: "把安全性、完整性、触发器、函数依赖、规范化、需求分析和概念—逻辑—物理设计放回完整设计过程。",
-        output: "能够从需求形成数据库方案，并用安全机制、约束和规范化理由说明设计选择。",
+        question: "怎样让数据库既表达业务，又避免不一致、冗余和维护困难？",
+        learning: "安全、完整性、触发器、函数依赖、规范化与数据库设计。",
+        outcome: "从需求形成数据库方案，并说明约束、规范化和设计选择",
         lessons: [
-          completed("4.1", "数据库安全性与存取控制"),
-          completed("4.2", "其他安全保护机制"),
-          completed("5.1", "数据库完整性与约束"),
-          completed("5.2", "触发器"),
-          completed("6.1", "函数依赖与规范化"),
-          completed("6.2", "依赖推理与模式分解"),
-          completed("7.1", "数据库设计总览与需求分析"),
-          completed("7.2", "概念结构设计与 E-R 模型"),
-          completed("7.3", "逻辑、物理设计与实施维护")
+          lesson("4.1", "数据库安全性与存取控制"),
+          lesson("4.2", "其他安全保护机制"),
+          lesson("5.1", "数据库完整性与约束"),
+          lesson("5.2", "触发器"),
+          lesson("6.1", "函数依赖与规范化"),
+          lesson("6.2", "依赖推理与模式分解"),
+          lesson("7.1", "数据库设计总览与需求分析"),
+          lesson("7.2", "概念结构设计与 E-R 模型"),
+          lesson("7.3", "逻辑、物理设计与实施维护")
         ]
       },
       5: {
+        marker: "阶段 5 / 6",
         title: "运行形成可靠系统",
-        question: "数据库怎样在真实负载、故障和并发条件下保持高效、一致和可维护？",
-        activity: "从过程化 SQL、JDBC 和应用开发进入存储、索引、查询优化，再用事务、日志、恢复、并发控制和 DBMS 结构解释可靠运行。",
-        output: "能够分析数据库运行问题，并说明程序、存储、性能、并发、安全和恢复机制怎样共同服务业务。",
+        question: "数据库怎样在真实负载、故障和并发条件下保持可靠？",
+        learning: "程序接口、存储、索引、查询、事务、恢复、并发与 DBMS 结构。",
+        outcome: "定位性能、一致性或恢复问题，并解释相关运行机制",
         lessons: [
-          completed("8.1", "SQL 扩展与过程化 SQL 基础"),
-          completed("8.2", "游标、存储过程与存储函数"),
-          completed("8.3", "JDBC 与 MVC 数据库应用开发"),
-          completed("9.1", "数据组织与基础索引"),
-          completed("9.2", "B+ 树、哈希与位图索引"),
-          completed("10.1", "查询处理与操作算法"),
-          completed("10.2", "查询优化与执行计划"),
-          completed("11.1", "事务、故障与恢复策略"),
-          completed("11.2", "日志、检查点与数据库镜像"),
-          completed("12.1", "并发异常、隔离级别与封锁协议"),
-          completed("12.2", "死锁、可串行性与两段锁协议"),
-          completed("12.3", "封锁粒度、意向锁与多版本并发控制"),
-          completed("13.1", "DBMS 功能、层次结构与运行过程"),
-          completed("13.2", "语言处理层与数据存取层"),
-          completed("13.3", "缓冲区管理与数据库物理组织")
+          lesson("8.1", "SQL 扩展与过程化 SQL 基础"),
+          lesson("8.2", "游标、存储过程与存储函数"),
+          lesson("8.3", "JDBC 与 MVC 数据库应用开发"),
+          lesson("9.1", "数据组织与基础索引"),
+          lesson("9.2", "B+ 树、哈希与位图索引"),
+          lesson("10.1", "查询处理与操作算法"),
+          lesson("10.2", "查询优化与执行计划"),
+          lesson("11.1", "事务、故障与恢复策略"),
+          lesson("11.2", "日志、检查点与数据库镜像"),
+          lesson("12.1", "并发异常、隔离级别与封锁协议"),
+          lesson("12.2", "死锁、可串行性与两段锁协议"),
+          lesson("12.3", "封锁粒度、意向锁与多版本并发控制"),
+          lesson("13.1", "DBMS 功能、层次结构与运行过程"),
+          lesson("13.2", "语言处理层与数据存取层"),
+          lesson("13.3", "缓冲区管理与数据库物理组织")
         ]
       },
       6: {
+        marker: "阶段 6 / 6",
         title: "技术演进与系统选择",
-        question: "数据库技术怎样回应新的硬件、数据形态、分析任务和可信协作需求？",
-        activity: "沿着数据库发展历史比较关系系统、NoSQL、NewSQL、数据仓库、内存数据库与区块链，判断不同技术的适用边界。",
-        output: "能够根据数据形态、负载、分析需求、一致性和治理边界，在不同数据库技术之间作出有依据的选择。",
+        question: "新的数据形态、负载和硬件怎样改变数据库技术选择？",
+        learning: "数据库发展、NoSQL、NewSQL、数据仓库、内存数据库与区块链。",
+        outcome: "依据数据形态、负载、分析、一致性和治理边界选择技术",
         lessons: [
-          completed("14.1", "数据库发展动力与发展简史"),
-          completed("14.2", "关系系统扩展与 SQL NoSQL NewSQL"),
-          completed("14.3", "分布式、云原生与数据库发展展望"),
-          completed("15.1", "大数据特征与键值文档数据库"),
-          completed("15.2", "图数据库与关系的图化表达"),
-          completed("15.3", "时序数据库与时间窗口查询"),
-          completed("16.1", "数据仓库与联机分析处理"),
-          completed("16.2", "HTAP 与大数据时代的新型数据仓库"),
-          completed("17.1", "内存数据库概述与新硬件"),
-          completed("17.2", "内存数据库实现、恢复与异构展望"),
-          completed("18.1", "区块链概念、区块结构与工作机制"),
-          completed("18.2", "区块链发展阶段、准入模式与技术架构"),
-          completed("18.3", "区块链与数据库的对比与融合")
+          lesson("14.1", "数据库发展动力与发展简史"),
+          lesson("14.2", "关系系统扩展"),
+          lesson("14.3", "分布式、云原生与数据库发展展望"),
+          lesson("15.1", "大数据特征与键值文档数据库"),
+          lesson("15.2", "图数据库与关系的图化表达"),
+          lesson("15.3", "时序数据库与时间窗口查询"),
+          lesson("16.1", "数据仓库与联机分析处理"),
+          lesson("16.2", "HTAP 与大数据时代的新型数据仓库"),
+          lesson("17.1", "内存数据库概述与新硬件"),
+          lesson("17.2", "内存数据库实现、恢复与异构展望"),
+          lesson("18.1", "区块链概念、区块结构与工作机制"),
+          lesson("18.2", "区块链发展阶段、准入模式与架构"),
+          lesson("18.3", "区块链与数据库的对比与融合")
         ]
       }
     };
 
-    const dialog = document.querySelector("#stage-dialog");
-    const closeButton = dialog.querySelector(".dialog-close");
+    const stageButtons = [...document.querySelectorAll(".stage-button")];
+    const marker = document.querySelector("#detail-marker");
+    const title = document.querySelector("#detail-title");
+    const question = document.querySelector("#detail-question");
+    const learning = document.querySelector("#detail-learning");
+    const outcome = document.querySelector("#detail-outcome");
     const lessonList = document.querySelector("#lesson-list");
-    let activeCard = null;
 
     function localLessonHref(publishHref) {
-      const isSourcePreview = window.location.pathname.includes("/courses/dbpa/overview/");
-      const deckDirectory = publishHref.replace(/\.html$/, "");
-      if (isSourcePreview) {
+      if (window.location.protocol === "file:") {
+        const deckDirectory = publishHref.replace(/\.html$/, "");
         return "../../../_build/slides/" + deckDirectory + "/" + publishHref;
       }
       return publishHref;
     }
 
-    function openStage(stageId, card) {
-      const stage = stages[stageId];
-      if (!stage) return;
-      document.querySelector("#dialog-index").textContent = `阶段 ${stageId} / 6`;
-      document.querySelector("#dialog-title").textContent = stage.title;
-      document.querySelector("#dialog-question").textContent = stage.question;
-      document.querySelector("#dialog-activity").textContent = stage.activity;
-      document.querySelector("#dialog-output").textContent = stage.output;
-      lessonList.replaceChildren();
+    function arrowIcon() {
+      return `
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M7 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="square" stroke-linejoin="miter"></path>
+        </svg>`;
+    }
 
-      stage.lessons.forEach((lesson) => {
-        const row = document.createElement(lesson.href ? "a" : "div");
-        row.className = "lesson-row";
-        if (lesson.href) row.href = localLessonHref(lesson.href);
-        const cover = document.createElement("img");
-        cover.className = "lesson-cover";
-        cover.src = lesson.cover;
-        cover.alt = `${lesson.number} ${lesson.title} 封面`;
-        cover.loading = "lazy";
-        const number = document.createElement("span");
-        number.className = "lesson-number";
-        number.textContent = lesson.number;
-        const title = document.createElement("span");
-        title.className = "lesson-title";
-        title.textContent = lesson.title;
-        const status = document.createElement("span");
-        status.className = "lesson-status";
-        status.textContent = lesson.status;
-        row.append(cover, number, title, status);
-        lessonList.append(row);
+    function renderStage(stageNumber, updateHash = true) {
+      const stage = stages[stageNumber];
+      if (!stage) return;
+
+      stageButtons.forEach((button) => {
+        button.setAttribute("aria-pressed", button.dataset.stage === String(stageNumber) ? "true" : "false");
       });
 
-      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
-      card.setAttribute("aria-pressed", "true");
-      activeCard = card;
-      dialog.showModal();
-    }
+      marker.textContent = stage.marker;
+      title.textContent = stage.title;
+      question.textContent = stage.question;
+      learning.textContent = stage.learning;
+      outcome.textContent = stage.outcome;
+      lessonList.replaceChildren();
 
-    document.querySelectorAll(".stage-card").forEach((card) => {
-      card.addEventListener("click", () => openStage(card.dataset.stage, card));
-    });
+      stage.lessons.forEach((item) => {
+        const link = document.createElement("a");
+        link.className = "lesson-link";
+        link.href = localLessonHref(item.href);
+        link.innerHTML = `
+          <span class="lesson-number">${item.number}</span>
+          <span class="lesson-title">${item.title}</span>
+          ${arrowIcon()}`;
+        lessonList.append(link);
+      });
 
-    function closeDialog() {
-      dialog.close();
-      if (activeCard) {
-        activeCard.setAttribute("aria-pressed", "false");
-        activeCard.focus();
+      lessonList.scrollTop = 0;
+
+      if (updateHash) {
+        history.replaceState(null, "", `#stage-${stageNumber}`);
       }
-      activeCard = null;
     }
 
-    closeButton.addEventListener("click", closeDialog);
-    dialog.addEventListener("click", (event) => {
-      const bounds = dialog.getBoundingClientRect();
-      const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
-      if (outside) closeDialog();
+    stageButtons.forEach((button) => {
+      button.addEventListener("click", () => renderStage(Number(button.dataset.stage)));
     });
-    dialog.addEventListener("close", () => {
-      document.querySelectorAll(".stage-card").forEach((item) => item.setAttribute("aria-pressed", "false"));
-    });
+
+    const initialStage = Number(window.location.hash.match(/^#stage-(\d)$/)?.[1] || 1);
+    renderStage(stages[initialStage] ? initialStage : 1, false);
   </script>
 </body>
 </html>
