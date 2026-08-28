@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="1-5">
-  <meta name="version" content="2608.4">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -31,7 +31,7 @@
       <h1>数据库系统的<br>体系结构</h1>
       <p class="cover-description">部署、通信、处理和服务方式</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.4</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -45,8 +45,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">理解数据库系统的部署位置、通信方式、任务处理、数据节点、服务交付</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">明确区分模式与映像、系统组成、体系结构的对象和作用</span></li><li><span class="list-marker">02</span><span class="list-text">解释集中式、客户-服务器、并行、分布式和云数据库系统怎样部署与协作</span></li><li><span class="list-marker">03</span><span class="list-text">画出两层 C/S 和三层 B/S 的请求路径</span></li><li><span class="list-marker">04</span><span class="list-text">说明组件位置、请求路径、任务并行、数据跨节点分别改变了什么</span></li><li><span class="list-marker">05</span><span class="list-text">解释并行、分布式和云数据库的差别，以及选择时该做哪些权衡</span></li><li><span class="list-marker">06</span><span class="list-text">根据一个业务场景判断体系结构组合，并说出它带来的能力与新增负担</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">分析组件、请求、任务、数据、服务所在位置</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释 1.3 的模式结构、1.4 的系统组成、1.5 的组件部署各回答什么问题</span></li><li><span class="list-marker">02</span><span class="list-text">说明五类体系结构中应用、DBMS、数据库和处理资源怎样放置与工作</span></li><li><span class="list-marker">03</span><span class="list-text">画出两层 C/S 和三层 B/S 的请求路径</span></li><li><span class="list-marker">04</span><span class="list-text">说明移动组件、增加服务器、拆分任务、跨节点存数据怎样改变请求与管理</span></li><li><span class="list-marker">05</span><span class="list-text">说明并行、分布式和云数据库的好处及新增的通信、协调和管理工作</span></li><li><span class="list-marker">06</span><span class="list-text">根据业务场景判断可同时使用哪些体系结构名称，并列出好处与新增问题</span></li></ol></div></div></div>
     <div class="numeric-progress">2/19</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
@@ -55,11 +55,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.1</div>
-    <h2 class="slide-title">1.3、1.4、1.5 三节的区别</h2>
-    <div class="slide-content"><p class="slide-lead">三节都讨论“结构”，但关注的对象不同</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="8.652% 41.531% 49.817%"><colgroup><col style="width:8.652%"><col style="width:41.531%"><col style="width:49.817%"></colgroup><thead><tr><th>章节</th><th>核心问题</th><th>关键对象</th></tr></thead><tbody><tr><td>1.3</td><td>数据库内部怎样分层描述</td><td>外模式、模式、内模式和两级映像</td></tr><tr><td>1.4</td><td>系统如何运行、谁承担职责</td><td>数据、DBMS、应用、平台和人员</td></tr><tr><td>1.5</td><td>体系结构怎样部署、通信和协作</td><td>集中、客户-服务器、并行、分布和云</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>注意本节描述的维度，一个具体系统可以同时具有多种体系结构</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>该如何理解“结构”这个词？</p></div></div>
+    <h2 class="slide-title">1.3、1.4、1.5 都在讲结构</h2>
+    <div class="slide-content"><p class="slide-lead">1.3 看数据结构，1.4 看系统组成，1.5 看组件位置和连接方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="8.652% 41.531% 49.817%"><colgroup><col style="width:8.652%"><col style="width:41.531%"><col style="width:49.817%"></colgroup><thead><tr><th>章节</th><th>关键问题</th><th>相关概念</th></tr></thead><tbody><tr><td>1.3</td><td>数据库内部的分层结构</td><td>外模式、模式、内模式和两级映像</td></tr><tr><td>1.4</td><td>系统如何运行、谁承担职责</td><td>数据、DBMS、应用、平台和人员</td></tr><tr><td>1.5</td><td>应用、DBMS 和数据库放在哪些计算机，怎样通信</td><td>集中、客户-服务器、并行、分布和云</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>一个应用系统可以同时是客户-服务器、分布式和云数据库</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据怎样分层、系统需要哪些组成、组件如何存放和连接，是不同层面</p></div></div>
     <div class="numeric-progress">3/19</div>
     <div class="semantic-label">THREE OBSERVATION ANGLES</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
@@ -68,11 +68,11 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.1</div>
-    <h2 class="slide-title">不同的判断角度</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60.097" data-character-exposure="62.508" data-character-scale="0.9" style="--character-along:60.097%;--character-exposure:62.508;--character-hidden:37.492%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>这五种体系，是逐渐升级的吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先找系统改变的维度，再判断哪种体系结构描述适用</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28.031% 71.969%"><colgroup><col style="width:28.031%"><col style="width:71.969%"></colgroup><thead><tr><th>判断角度</th><th>体系结构描述</th></tr></thead><tbody><tr><td>组件位置与通信</td><td>集中：主要组件在同一机器上；客户端/服务器：功能分置</td></tr><tr><td>任务处理方式</td><td>并行：一个任务交给多个处理单元共同处理</td></tr><tr><td>数据位置与节点自治</td><td>分布式：数据跨多个网络节点，节点可以自治</td></tr><tr><td>能力交付方式</td><td>云数据库：数据库能力通过网络服务提供</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>比较体系结构时还要同时检查能力与成本</p></div></div>
+    <h2 class="slide-title">组件、任务、数据和服务</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="59.199" data-character-exposure="59.981" data-character-scale="0.9" style="--character-along:59.199%;--character-exposure:59.981;--character-hidden:40.019%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>这五种体系，是逐渐升级的吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">组件位置、任务处理、数据节点、数据库获取方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28.031% 71.969%"><colgroup><col style="width:28.031%"><col style="width:71.969%"></colgroup><thead><tr><th>可变项目</th><th>描述方式</th></tr></thead><tbody><tr><td>组件位置与通信</td><td>集中：主要组件在同一机器上；客户端/服务器：功能分置</td></tr><tr><td>任务处理方式</td><td>并行：一个任务交给多个处理单元共同处理</td></tr><tr><td>数据位置与节点自治</td><td>分布式：数据跨多个网络节点，节点可以自治</td></tr><tr><td>数据库获取方式</td><td>云数据库：应用通过网络使用数据库服务</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每获得一种好处，也要列出新增的网络、故障、资源竞争或管理问题</p></div></div>
     <div class="numeric-progress">4/19</div>
     <div class="semantic-label">ONE REQUEST</div>
     <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
@@ -82,11 +82,11 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.1</div>
     <h2 class="slide-title">集中式：主要组件在同一台计算机</h2>
-    <div class="slide-content"><p class="slide-lead">应用、DBMS 和数据库集中在同一台计算机内，可被多个终端共享</p>
+    <div class="slide-content"><p class="slide-lead">应用、DBMS 和数据库在同一台计算机上，可被多个终端共享</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="查看成绩：应用程序 + DBMS + 数据库 → 同一台计算机"><span class="relation-term">查看成绩：应用程序</span><span class="relation-operator">+</span><span class="relation-term">DBMS</span><span class="relation-operator">+</span><span class="relation-term">数据库</span><span class="relation-operator">→</span><span class="relation-term">同一台计算机</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>单用户</h3><p>微型计算机上的数据库系统通常由一个用户使用，如 SQLite</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多用户</h3><p>小型机或大型机上的数据库系统可以让多个终端共享同一个系统</p></article></div>
-<div class="component component-text text-inset"><p>关键看应用、DBMS 和数据库是否分别放置在不同的物理计算机上</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>集中式减少跨机器通信，但资源、扩展能力和故障影响也更集中</p></div></div>
+<div class="component component-text text-inset"><p>应用、DBMS 和数据库是否集中在一台计算机；接入多少终端不重要</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>少了跨机器请求，但 CPU、内存、存储和故障的影响也会集中</p></div></div>
     <div class="numeric-progress">5/19</div>
     <div class="semantic-label">CENTRALIZED DATABASE SYSTEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
@@ -100,8 +100,8 @@
 <div class="slide-main-content"><div class="component component-text text-inset"><p>请求路径：客户端应用 → 服务器上的 DBMS → 服务器上的数据库</p>
 <p>返回路径：数据库 → 服务器上的 DBMS → 网络 → 客户端应用</p></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>客户端</h3><p>提供用户界面和部分业务数据处理流程，需要数据时发出请求；桌面应用、移动应用或浏览器都是客户端</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>服务器</h3><p>通过网络接收请求，处理数据库访问，把用户需要的数据通过网络链路返回给客户端</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>把应用和数据库分到客户端与服务器，但增加网络、认证和连接管理负担</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="62.213" data-character-exposure="62.487" data-character-scale="0.9" style="--character-along:62.213%;--character-exposure:62.487;--character-hidden:37.513%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.3455d1457a9b.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果增加应用服务器，请求路径会怎样变化？</p></div></div></div></aside>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多台终端可以共享数据库服务；会有网络断开、身份认证和连接管理问题</p></div></div>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="61.513" data-character-exposure="62.289" data-character-scale="0.9" style="--character-along:61.513%;--character-exposure:62.289;--character-hidden:37.711%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.3455d1457a9b.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果增加应用服务器，请求路径会怎样变化？</p></div></div></div></aside>
     <div class="numeric-progress">6/19</div>
     <div class="semantic-label">CLIENT-SERVER DATABASE SYSTEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
@@ -111,10 +111,10 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.2</div>
     <h2 class="slide-title">客户端/应用服务器/数据库服务器三层结构</h2>
-    <div class="slide-content"><p class="slide-lead">浏览器可以视为一种客户端的使用方式</p>
+    <div class="slide-content"><p class="slide-lead">浏览器先访问应用服务器，应用服务器再请求数据库服务器</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="浏览器 → 应用服务器 → 数据库服务器"><span class="relation-term">浏览器</span><span class="relation-operator">→</span><span class="relation-term">应用服务器</span><span class="relation-operator">→</span><span class="relation-term">数据库服务器</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>浏览器</h3><p>提供统一的用户界面，发出业务请求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用服务器</h3><p>运行应用系统或模块，承接业务逻辑</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据库服务器</h3><p>运行 DBMS 和数据库，处理数据访问、事务和控制</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三层部署结构和三级模式结构都是“三层”，但注意区别</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>浏览器</h3><p>提供统一的用户界面，发出业务请求。应用在浏览器中运行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用服务器</h3><p>检查登录和业务规则，组织要发给数据库服务器的请求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据库服务器</h3><p>运行 DBMS 和数据库，读写数据并执行事务、权限和完整性检查</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>客户端、应用服务器、数据库服务器职责不同</p></div></div>
     <div class="numeric-progress">7/19</div>
     <div class="semantic-label">THREE-TIER STRUCTURE</div>
     <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
@@ -124,9 +124,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.2</div>
     <h2 class="slide-title">C/S 结构和 B/S 结构</h2>
-    <div class="slide-content"><p class="slide-lead">客户端是请求方，浏览器是一种客户端运行环境</p>
+    <div class="slide-content"><p class="slide-lead">桌面或移动应用可以直接作为客户端；B/S 使用浏览器作为客户端</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-1-5/assets/previews/cs-bs-two-three-tier.webp" data-full-src="resources/decks/dbpa-1-5/assets/cs-bs-two-three-tier.png" data-full-width="1672" data-full-height="940" alt="两层客户—服务器与三层浏览器—应用服务器—数据库服务器的路径对比图" tabindex="0" role="button" aria-label="放大图片：两层客户—服务器与三层浏览器—应用服务器—数据库服务器的路径对比图" decoding="async"></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>C/S 交互直接、客户端能力更强，但客户端更新与连接安全管理任务更重；B/S 便于统一部署和维护，但增加应用负担、网络往返和复杂性</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>C/S 的优势是本地处理数据；B/S 的优势是容易升级更新</p></div></div>
     <div class="numeric-progress">8/19</div>
     <div class="semantic-label">CS AND BS COMPARISON</div>
     <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
@@ -135,11 +135,11 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.2</div>
-    <h2 class="slide-title">请求在两层和三层结构中怎样往返</h2>
+    <h2 class="slide-title">数据请求的往返</h2>
     <div class="slide-content"><p class="slide-lead">两层结构让客户端直接连接数据库，三层结构让应用服务器承担部分业务处理</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 29.783% 22.964% 33.253%"><colgroup><col style="width:14%"><col style="width:29.783%"><col style="width:22.964%"><col style="width:33.253%"></colgroup><thead><tr><th>结构</th><th>请求路径</th><th>返回路径</th><th>主要职责</th></tr></thead><tbody><tr><td>两层</td><td>Client → DB Server</td><td>DBS → C</td><td>客户端直接请求数据服务</td></tr><tr><td>三层</td><td>Client → App Server → DB Server</td><td>DBS → AS → C</td><td>应用服务器承接业务逻辑</td></tr></tbody></table></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 29.783% 22.964% 33.253%"><colgroup><col style="width:14%"><col style="width:29.783%"><col style="width:22.964%"><col style="width:33.253%"></colgroup><thead><tr><th>结构</th><th>请求路径</th><th>返回路径</th><th>主要职责</th></tr></thead><tbody><tr><td>两层</td><td>Client → DB Server</td><td>DB Server → Client</td><td>客户端直接请求数据服务</td></tr><tr><td>三层</td><td>Client → App Server → DB Server</td><td>DB Server → App Server → Client</td><td>应用服务器检查登录和业务规则，组织数据库请求</td></tr></tbody></table></div>
 <div class="component component-text text-inset"><p>C/S 不一定都是两层，B/S 也不一定都是三层</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>是否架设单独的应用服务器，取决于业务复杂程度和访问量</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三层结构集中处理登录和业务规则，也多了一层网络往返和故障排查</p></div></div>
     <div class="numeric-progress">9/19</div>
     <div class="semantic-label">REQUEST PATH</div>
     <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
@@ -152,7 +152,7 @@
     <div class="slide-content"><p class="slide-lead">一个查询可以拆给多个处理单元，再汇总结果</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="查看成绩（教务汇总）：分解→ 并行处理 → 汇总结果"><span class="relation-term">查看成绩（教务汇总）：分解</span><span class="relation-operator">→</span><span class="relation-term">并行处理</span><span class="relation-operator">→</span><span class="relation-term">汇总结果</span></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22.107% 77.893%"><colgroup><col style="width:22.107%"><col style="width:77.893%"></colgroup><thead><tr><th>结构</th><th>资源如何共享</th></tr></thead><tbody><tr><td>共享内存型</td><td>多个处理器共享同一片内存</td></tr><tr><td>共享磁盘型</td><td>多个处理器共享磁盘，协同访问数据</td></tr><tr><td>非共享型</td><td>各处理单元拥有自己的处理器、内存和磁盘，通过系统协作</td></tr><tr><td>混合型</td><td>组合不同共享方式，按系统需要组织处理资源</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>并行使任务可以同时处理，带来性能、可用性和扩展性，但需要协调成本</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>适合的查询可能更快，但系统还要拆分、调度和汇总任务</p></div></div>
     <div class="numeric-progress">10/19</div>
     <div class="semantic-label">PARALLEL DATABASE SYSTEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
@@ -165,7 +165,7 @@
     <div class="slide-content"><p class="slide-lead">数据跨多个网络节点，用户仍可将其看作一个逻辑整体</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="多校区：各校区维护本地成绩 → 教务处跨校区汇总"><span class="relation-term">多校区：各校区维护本地成绩</span><span class="relation-operator">→</span><span class="relation-term">教务处跨校区汇总</span></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24.707% 75.293%"><colgroup><col style="width:24.707%"><col style="width:75.293%"></colgroup><thead><tr><th>观察点</th><th>具体含义</th></tr></thead><tbody><tr><td>逻辑整体</td><td>多个节点上的数据在逻辑上仍作为一个数据库</td></tr><tr><td>场地自治</td><td>节点可以独立处理本地数据库</td></tr><tr><td>局部应用</td><td>独立访问和处理本地节点的数据</td></tr><tr><td>全局应用</td><td>通过网络访问和处理多个节点的数据</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据物理跨网络节点并允许节点自治</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>分布式数据要跨网络节点，同时每个节点也可以处理本地数据</p></div></div>
     <div class="numeric-progress">11/19</div>
     <div class="semantic-label">DISTRIBUTED DATABASE SYSTEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
@@ -174,11 +174,11 @@
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5 <span>|</span> 1.5.5</div>
-    <h2 class="slide-title">云数据库：数据库能力上云</h2>
-    <div class="slide-content"><p class="slide-lead">云数据库在云环境中部署，通过网络提供数据库能力</p>
+    <h2 class="slide-title">云数据库：通过网络使用数据库服务</h2>
+    <div class="slide-content"><p class="slide-lead">应用通过网络使用云环境中的数据库，不必自己部署全部服务器和 DBMS</p>
 <div class="slide-main-content"><div class="component component-text text-inset"><p>考试周选课高峰：调用云数据库服务 → 按需获得资源 → 返回结果</p></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>服务交付</h3><p>用户获得存储、更新、查询处理和事务管理，不必自己部署全部基础设施</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>弹性资源</h3><p>云环境可以根据负载变化分配计算资源和存储资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共同责任</h3><p>云服务分担部分基础设施运维；用户仍需管理数据、权限、安全与成本</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云数据库是能力视角，底层依然使用并行/分布式技术</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>服务交付</h3><p>应用连接数据库服务后，可以存储、更新和查询数据，由服务处理事务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>弹性资源</h3><p>考试周可以增加计算和存储资源，访问量下降后再缩减</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共同责任</h3><p>云服务分担部分基础设施运维；用户仍需管理数据、权限、安全与成本</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“云”说明服务的获得方式，而不是服务内部的技术</p></div></div>
     <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60.504" data-character-exposure="60.156" data-character-scale="0.9" style="--character-along:60.504%;--character-exposure:60.156;--character-hidden:39.844%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>用了云服务，数据和权限责任也一起外包了吗？</p></div></div></div></aside>
     <div class="numeric-progress">12/19</div>
     <div class="semantic-label">CLOUD DATABASE SYSTEM</div>
@@ -189,9 +189,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">并行、分布式和云数据库比较</h2>
-    <div class="slide-content"><p class="slide-lead">改变了什么？该如何命名？</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14.321% 35.677% 25.013% 24.989%"><colgroup><col style="width:14.321%"><col style="width:35.677%"><col style="width:25.013%"><col style="width:24.989%"></colgroup><thead><tr><th>体系结构</th><th>核心变化</th><th>获得的能力</th><th>新增问题</th></tr></thead><tbody><tr><td>并行</td><td>一个任务使用多个处理单元</td><td>提高适合查询的处理速度</td><td>拆分、汇总和资源竞争</td></tr><tr><td>分布式</td><td>数据和处理跨多个网络节点，节点可以自治</td><td>就近处理、扩展性和可用性</td><td>网络故障、一致性和节点管理</td></tr><tr><td>云数据库</td><td>数据库能力按网络服务提供</td><td>按需资源和减少部分基础设施运维</td><td>服务依赖、隐私、成本和管理责任</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>并行、分布式、云三种体系并非严格隔离</p></div></div>
+    <div class="slide-content"><p class="slide-lead">不同结构改变了什么？该如何判断？</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14.321% 30.276% 30.413% 24.99%"><colgroup><col style="width:14.321%"><col style="width:30.276%"><col style="width:30.413%"><col style="width:24.99%"></colgroup><thead><tr><th>体系结构</th><th>判断依据</th><th>得到什么好处</th><th>多处理什么问题</th></tr></thead><tbody><tr><td>并行</td><td>一个任务使用多个处理单元</td><td>提高适合查询的处理速度</td><td>拆分、汇总和资源竞争</td></tr><tr><td>分布式</td><td>数据和处理跨多个网络节点，节点可以自治</td><td>为就近处理、增加节点和故障接替提供条件</td><td>网络故障、一致性和节点管理</td></tr><tr><td>云数据库</td><td>数据库能力按网络服务提供</td><td>按需资源和减少部分基础设施运维</td><td>服务依赖、隐私、成本和管理责任</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一个云数据库可以跨节点保存数据，也可以让多个处理单元并行执行查询</p></div></div>
     <div class="numeric-progress">13/19</div>
     <div class="semantic-label">THREE DIFFERENT CHANGES</div>
     <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
@@ -201,9 +201,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">练习：判断体系结构组合</h2>
-    <div class="slide-content"><p class="slide-lead">写出变化维度、描述和新增成本</p>
+    <div class="slide-content"><p class="slide-lead">每个场景写出组件和数据在哪、任务怎样处理、适用名称和新增问题</p>
 <div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">实验室的一台电脑上运行着本地成绩管理系统</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">多台终端访问一台服务器，并查询数据</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">浏览器访问应用服务器再访问数据库服务器</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">大查询被多个处理器同时执行</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">多校区节点维护本地数据并支持全局查询</span></li><li class="substep"><span class="list-marker">06</span><span class="list-text">考试周按需获得数据库资源和管理服务</span></li></ol></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断依据包括变化维度、体系结构描述和新增成本</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>列出判断依据、体系结构名称和带来的新问题</p></div></div>
     <div class="numeric-progress">14/19</div>
     <div class="semantic-label">ARCHITECTURE JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
@@ -213,11 +213,10 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">案例：教务系统升级</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="78.741" data-character-exposure="57.328" data-character-scale="0.9" style="--character-along:78.741%;--character-exposure:57.328;--character-hidden:42.672%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.95aa8b193b67.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>三校区系统，只能贴一个体系结构标签吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">同一系统可能同时具有多种体系结构描述</p>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="81.376" data-character-exposure="62.997" data-character-scale="0.9" style="--character-along:81.376%;--character-exposure:62.997;--character-hidden:37.003%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.95aa8b193b67.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>三校区系统，只能贴一个体系结构标签吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一个系统可以同时是 B/S、分布式和云数据库</p>
 <div class="slide-main-content"><div class="component component-text text-inset"><p>三个校区分别维护本地学生和成绩数据，教务处需要跨校区汇总；用户通过浏览器访问；考试周访问较集中。该自建服务器还是采购云数据库？</p></div>
-<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">哪些需求体现客户-服务器需求，哪些体现分布式、节点自治或全局应用？</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">考试周查询和更新是否适合并行，云服务能改变什么？</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">可以叠加哪些体系结构，会有什么收益和哪些新增成本？</span></li></ol></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择时要说明业务范围、数据位置、负载变化、网络条件和管理能力</p></div></div>
+<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">用户通过浏览器访问时，请求经过哪些客户端和服务器？三个校区各自维护数据为什么属于分布式？</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">考试周的查询和更新是否适合并行？云服务可以增加哪些资源，哪些运维工作仍由学校负责？</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">写出这个系统可以同时使用的体系结构名称，并为每个名称列出一项好处和一项新增问题</span></li></ol></div></div></div></div>
     <div class="numeric-progress">15/19</div>
     <div class="semantic-label">CASE EVOLUTION</div>
     <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
@@ -227,9 +226,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">1.3、1.4、1.5 的“结构”不能互相替换</h2>
-    <div class="slide-content"><p class="slide-lead">先提出正确的问题，再找答案</p>
+    <div class="slide-content"><p class="slide-lead">“结构”可能是数据分层、系统组成、或计算机与网络部署</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="8.882% 22.5% 40.615% 28.003%"><colgroup><col style="width:8.882%"><col style="width:22.5%"><col style="width:40.615%"><col style="width:28.003%"></colgroup><thead><tr><th>章节</th><th>要点</th><th>典型问题</th><th>相关但不同的内容</th></tr></thead><tbody><tr><td>1.3</td><td>数据库内部抽象</td><td>哪一级模式发生变化</td><td>组件部署位置</td></tr><tr><td>1.4</td><td>系统运行整体</td><td>谁和什么共同支撑系统</td><td>网络节点协作方式</td></tr><tr><td>1.5</td><td>外部体系结构</td><td>应用、DBMS、数据库如何部署</td><td>分布式实现算法、分片和具体云产品</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>五类体系结构不是升级路线，具体系统可以同时使用多种技术</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>五类体系结构不是逐一升级，真实系统可以同时使用多种技术</p></div></div>
     <div class="numeric-progress">16/19</div>
     <div class="semantic-label">CHAPTER BOUNDARY</div>
     <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
@@ -238,13 +237,13 @@
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
-    <h2 class="slide-title">按变化维度判断体系结构</h2>
-    <div class="slide-content"><p class="slide-lead">组件位置、请求路径和协作负担共同决定体系结构判断</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>集中式与客户-服务器</h3><p>集中式把主要组件放在一台计算机</p>
+    <h2 class="slide-title">看组件、任务、数据和服务怎样安排</h2>
+    <div class="slide-content"><p class="slide-lead">沿一次请求检查组件位置、处理方式和数据节点</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>集中式与 C/S</h3><p>集中式把主要组件放在一台计算机</p>
 <p>客户-服务器把应用与数据库服务分开</p></article><article class="content-card emphasis-card" tabindex="0"><h3>并行与分布式</h3><p>并行把一个任务交给多个处理单元</p>
 <p>分布式让多个节点处理本地或全局数据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>云数据库</h3><p>云数据库以网络服务提供存储、查询和事务能力</p>
 <p>用户仍需处理安全、隐私、成本和责任</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>根据组件位置、任务处理方式、数据节点和服务边界，再判断体系结构描述</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用和数据库放在哪里？任务并行吗？数据跨节点吗？是否是网络服务？</p></div></div>
     <div class="numeric-progress">17/19</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
@@ -264,7 +263,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH01 <span>|</span> 1.5</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">1.3、1.4、1.5 的区别在哪里？</span></li><li><span class="question-no">02</span><span class="question-text">集中式为什么可以是单用户或多用户？</span></li><li><span class="question-no">03</span><span class="question-text">两层 C/S 和三层 B/S 的查询路径分别如何经过 DBMS 和数据库？</span></li><li><span class="question-no">04</span><span class="question-text">为什么多台机器共同提供数据库服务不一定是分布式？</span></li><li><span class="question-no">05</span><span class="question-text">云数据库提供了哪些服务便利？会有哪些安全、网络、成本和管理责任？</span></li><li><span class="question-no">06</span><span class="question-text">云数据库同时采用并行和分布式技术时，为什么这些名称仍可分别成立？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">1.3、1.4、1.5 节的“结构”有什么区别？</span></li><li><span class="question-no">02</span><span class="question-text">集中式为什么可以是单用户或多用户？</span></li><li><span class="question-no">03</span><span class="question-text">两层 C/S 和三层 B/S 的查询路径分别如何经过 DBMS 和数据库？</span></li><li><span class="question-no">04</span><span class="question-text">为什么多台机器共同提供数据库服务，不一定是分布式？</span></li><li><span class="question-no">05</span><span class="question-text">使用云数据库后，哪些数据、权限、安全、网络和成本仍需自己处理？</span></li><li><span class="question-no">06</span><span class="question-text">云数据库同时采用并行和分布式技术时，应该如何描述？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-1-4.html" title="上一节：1.4 数据库系统的组成" aria-label="上一节：1.4 数据库系统的组成">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

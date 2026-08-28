@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>CCIOT 3.1 体验公有云 | HUST</title>
-  <meta name="description" content="从公有云责任边界出发，沿着位置、网络、实例和访问路径完成一次可验证、可回收的资源使用闭环">
+  <meta name="description" content="从提供商与租户各管什么出发，沿位置、网络、实例和访问路径完成创建、验证与回收">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="云计算与物联网">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">你能沿着申请、访问、验证、监控和回收，解释公有云如何提供计算能力</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释公有云的服务对象、资源所有权和获取方式</span></li><li><span class="list-marker">02</span><span class="list-text">区分云服务提供商与租户的管理责任</span></li><li><span class="list-marker">03</span><span class="list-text">说明区域、可用区、虚拟私有云 VPC、子网与实例的关系</span></li><li><span class="list-marker">04</span><span class="list-text">根据任务选择实例、网络、访问方式和计费方式</span></li><li><span class="list-marker">05</span><span class="list-text">沿着网络路径排查云服务器远程访问问题</span></li><li><span class="list-marker">06</span><span class="list-text">完成资源创建、验证、观察与回收闭环</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">云服务器由谁提供、怎样申请登录，用完怎样确认资源和费用已处理</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释公有云的服务对象、资源所有权和获取方式</span></li><li><span class="list-marker">02</span><span class="list-text">区分云服务提供商与租户的管理责任</span></li><li><span class="list-marker">03</span><span class="list-text">说明区域、可用区、虚拟私有云 VPC、子网与实例的关系</span></li><li><span class="list-marker">04</span><span class="list-text">根据任务选择实例、网络、访问方式和计费方式</span></li><li><span class="list-marker">05</span><span class="list-text">沿着网络路径排查云服务器远程访问问题</span></li><li><span class="list-marker">06</span><span class="list-text">创建并验证资源，用完后检查实例、磁盘、公网入口和费用记录</span></li></ol></div></div></div>
     <div class="numeric-progress">2/29</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:6.8966%"></div></div>
@@ -54,12 +54,12 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 公有云服务</div>
-    <h2 class="slide-title">公有云 Public Cloud</h2>
+    <h2 class="slide-title">公有云把共享资源池作为标准服务</h2>
     <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.a6f0f0381a37.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>公有云提供的，就是一台远程电脑</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">用户按需获得计算等资源，不必自建底层物理基础设施</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="资源池 → 逻辑资源 → 按需申请 → 计量 → 释放"><span class="relation-term">资源池</span><span class="relation-operator">→</span><span class="relation-term">逻辑资源</span><span class="relation-operator">→</span><span class="relation-term">按需申请</span><span class="relation-operator">→</span><span class="relation-term">计量</span><span class="relation-operator">→</span><span class="relation-term">释放</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>提供商建设</h3><p>云服务提供商建设并运营数据中心、物理设备和云平台</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户申请</h3><p>外部用户通过控制台、命令行或应用程序接口 API 申请所需资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>生命周期可管理</h3><p>实例等资源可按服务规则创建、调整、停止或释放，平台记录使用量</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云把计算资源标准化供给，并支持计量和回收</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>提供商建设</h3><p>云服务提供商建设并运营数据中心、物理设备和云平台</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户申请</h3><p>外部用户通过控制台、命令行或 API 申请所需资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>生命周期可管理</h3><p>用户可以创建、调整、停止或释放实例，平台记录运行时长和资源用量</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户通过提供商的控制台、命令行或 API 申请和释放资源；平台记录用量</p></div></div>
     <div class="numeric-progress">3/29</div>
     <div class="semantic-label">PUBLIC CLOUD</div>
     <div class="progress-track"><div class="progress-fill" style="width:10.3448%"></div></div>
@@ -68,10 +68,10 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 公有云服务</div>
-    <h2 class="slide-title">公有云与基础设施即服务 IaaS</h2>
-    <div class="slide-content"><p class="slide-lead">公有云看资源由谁提供、面向谁开放；IaaS 看用户获得哪一层能力</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>观察维度</th><th>公有云</th><th>基础设施即服务 IaaS</th></tr></thead><tbody><tr><td>回答的问题</td><td>谁建设资源，资源面向谁开放</td><td>用户获得计算、存储和网络等哪一层能力</td></tr><tr><td>典型判断</td><td>外部用户可以按需使用提供商资源池</td><td>用户通常还要管理虚拟机、操作系统和应用</td></tr><tr><td>不能直接推出</td><td>不等于所有服务层都由用户管理</td><td>不单独说明资源是否面向公众开放</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云中的云服务器可以属于 IaaS 服务，但两者回答的是不同分类问题</p></div></div>
+    <h2 class="slide-title">谁运营资源？用户能拿到什么？</h2>
+    <div class="slide-content"><p class="slide-lead">公有云/私有云和 IaaS/PaaS/SaaS 需要回答不同问题</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18.456% 39.257% 42.287%"><colgroup><col style="width:18.456%"><col style="width:39.257%"><col style="width:42.287%"></colgroup><thead><tr><th>问题</th><th>公有云/私有云</th><th>IaaS/PaaS/SaaS</th></tr></thead><tbody><tr><td>初步判断</td><td>谁建设并运营资源，哪些用户可以申请</td><td>用户拿到计算、存储和网络资源后，还要自行管理哪些部分</td></tr><tr><td>典型判断</td><td>外部用户是否可以按需使用提供商资源池</td><td>用户是否需要管理虚拟机、操作系统和应用</td></tr><tr><td>特别判断</td><td>所有服务层都由用户管理吗？</td><td>资源是否面向公众开放？</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云/私有云和 IaaS/PaaS/SaaS，是两种不同维度的分类</p></div></div>
     <div class="numeric-progress">4/29</div>
     <div class="semantic-label">PUBLIC CLOUD AND IAAS</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.7931%"></div></div>
@@ -83,10 +83,10 @@
     <h2 class="slide-title">本地虚拟机与云服务器都基于虚拟化</h2>
     <div class="slide-content"><p class="slide-lead">但宿主机位置、管理入口和计量方式不同</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>本地虚拟机</h3><p>运行在自己控制的宿主机上</p>
-<p>用户同时管理物理设备、虚拟化软件和虚拟机内的操作系统</p></article><article class="content-card emphasis-card" tabindex="0"><h3>常见场景</h3><p>机制观察、系统测试和本地隔离环境</p></article></div>
+<p>用户同时管理物理设备、虚拟化软件和虚拟机内的操作系统</p></article><article class="content-card emphasis-card" tabindex="0"><h3>常见场景</h3><p>观察 CPU、内存和网络怎样被虚拟化，进行系统测试，建立本地环境</p></article></div>
 <div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>公有云实例</h3><p>运行在提供商的数据中心和资源池中</p>
 <p>用户申请资源，并管理实例内的操作系统与应用</p></article><article class="content-card emphasis-card" tabindex="0"><h3>常见场景</h3><p>在线服务、临时任务和需要快速获得资源的场景</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云改变的是资源供给方式与管理责任边界</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>提供商管理物理设备和云平台；用户申请虚拟机并自行管理</p></div></div>
     <div class="numeric-progress">5/29</div>
     <div class="semantic-label">LOCAL AND PUBLIC VMS</div>
     <div class="progress-track"><div class="progress-fill" style="width:17.2414%"></div></div>
@@ -96,7 +96,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 公有云服务</div>
     <h2 class="slide-title">练习：哪些场景属于公有云？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 27% 37%"><colgroup><col style="width:36%"><col style="width:27%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请先判断</th><th>需要找到的证据</th></tr></thead><tbody><tr><td>在笔记本上运行 VMware 虚拟机</td><td>公有云／非公有云／证据不足</td><td>它是否由外部服务商的共享资源池按需供给？</td></tr><tr><td>远程登录实验室服务器</td><td>公有云／非公有云／证据不足</td><td>是否有资源池、按需、计量和回收证据？</td></tr><tr><td>在云平台申请一台按量计费实例</td><td>公有云／非公有云／证据不足</td><td>是否有面向外部用户的标准服务、资源池、按需、计量和回收证据？</td></tr><tr><td>租用机房中的长期独占物理服务器</td><td>公有云／非公有云／证据不足</td><td>哪些特征已证实，哪些仍待核对？</td></tr></tbody></table></div></div></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30.552% 24.351% 45.097%"><colgroup><col style="width:30.552%"><col style="width:24.351%"><col style="width:45.097%"></colgroup><thead><tr><th>场景</th><th>请先判断</th><th>需要找到的证据</th></tr></thead><tbody><tr><td>在笔记本上运行 VMware 虚拟机</td><td>公有云／非公有云／证据不足</td><td>它是否由外部服务商的共享资源池按需供给？</td></tr><tr><td>远程登录实验室服务器</td><td>公有云／非公有云／证据不足</td><td>是否有资源池、按需、计量和回收证据？</td></tr><tr><td>在云平台申请一台按量计费实例</td><td>公有云／非公有云／证据不足</td><td>是否有面向外部用户的标准服务、资源池、按需、计量和回收证据？</td></tr><tr><td>租用机房中的长期独占物理服务器</td><td>公有云／非公有云／证据不足</td><td>哪些特征已证实，哪些仍待核对？</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">6/29</div>
     <div class="semantic-label">PUBLIC CLOUD EVIDENCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.6897%"></div></div>
@@ -107,14 +107,14 @@
 <section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 责任边界</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 谁管理什么</div>
     <h2 class="slide-title">提供商与租户分担云服务责任</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confused" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confused.c1c3f73593ff.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>云主机出问题，提供商和租户各先查什么？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">服务层次和具体服务边界决定双方各自管理哪些对象</p>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confused" data-character-edge="left" data-character-along="59.228" data-character-exposure="69.198" data-character-scale="0.9" style="--character-along:59.228%;--character-exposure:69.198;--character-hidden:30.802%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confused.c1c3f73593ff.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>云主机出问题，提供商和租户各先查什么？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">提供商管数据中心和平台，租户管实例、操作系统、应用、数据</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3><span class="primary-emphasis">云服务提供商</span></h3><p>建设和运行数据中心、物理设备、底层网络与云平台</p>
 <p>维护资源池，让租户获得可用资源</p></article><article class="content-card emphasis-card" tabindex="0"><h3>负责基础设施</h3><p>让租户能够申请、计量和回收云资源</p></article></div>
 <div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3><span class="primary-emphasis">云服务租户</span></h3><p>选择实例与网络，管理身份凭证、实例内操作系统、应用和数据</p>
-<p>控制资源何时运行与释放</p></article><article class="content-card emphasis-card" tabindex="0"><h3>负责配置和使用</h3><p>保证配置、访问、数据与费用符合任务需要</p></article></div></div>
+<p>控制资源何时运行与释放</p></article><article class="content-card emphasis-card" tabindex="0"><h3>负责配置和使用</h3><p>配置、数据与费用符合任务需要</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>租户不必自建底层设施，但仍要对配置、安全、数据和费用负责</p></div></div>
     <div class="numeric-progress">7/29</div>
     <div class="semantic-label">SHARED RESPONSIBILITY</div>
@@ -123,11 +123,11 @@
 <section id="b2" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 责任边界</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 谁管理什么</div>
     <h2 class="slide-title">公有云优势取决于配置和管理</h2>
-    <div class="slide-content"><p class="slide-lead">平台提供底层能力，实际结果还取决于配置、负载与管理</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 36% 44%"><colgroup><col style="width:20%"><col style="width:36%"><col style="width:44%"></colgroup><thead><tr><th>常见说法</th><th>平台提供的能力</th><th>用户必须补上的条件</th></tr></thead><tbody><tr><td>成本较低</td><td>免去部分前期采购并支持按量使用</td><td>选择规格、时长；清理残留资源</td></tr><tr><td>快速弹性</td><td>资源可以扩展、缩减或重新组合</td><td>配置监控、策略和相应服务</td></tr><tr><td>安全可靠</td><td>提供基础设施保护、隔离和安全工具</td><td>收紧访问、维护系统并设计数据恢复</td></tr><tr><td>使用便捷</td><td>通过标准入口快速申请资源</td><td>理解每项配置的影响与费用</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云服务优势取决于配置是否合适、管理是否到位</p></div></div>
+    <div class="slide-content"><p class="slide-lead">费用、安全、可用性依然需要租户选择、配置、维护</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 32.058% 47.942%"><colgroup><col style="width:20%"><col style="width:32.058%"><col style="width:47.942%"></colgroup><thead><tr><th>常见说法</th><th>平台能做到什么</th><th>租户还要做什么</th></tr></thead><tbody><tr><td>成本较低</td><td>支持按量使用</td><td>选择规格、时长；清理残留资源</td></tr><tr><td>快速弹性</td><td>可以扩展、缩减或组合</td><td>设置监控指标、触发规则</td></tr><tr><td>安全可靠</td><td>提供基础设施保护、隔离和安全工具</td><td>收紧访问、维护系统并设计数据恢复</td></tr><tr><td>使用便捷</td><td>快速申请资源</td><td>理解每项配置的影响与费用</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择规格、设置监控和维护系统，是满足任务需要的前提</p></div></div>
     <div class="numeric-progress">8/29</div>
     <div class="semantic-label">CONDITIONAL BENEFITS</div>
     <div class="progress-track"><div class="progress-fill" style="width:27.5862%"></div></div>
@@ -135,10 +135,10 @@
 <section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 责任边界</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 谁管理什么</div>
     <h2 class="slide-title">练习：谁负责处理这些问题？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 24% 38%"><colgroup><col style="width:38%"><col style="width:24%"><col style="width:38%"></colgroup><thead><tr><th>问题</th><th>先判断责任</th><th>先定位对象</th></tr></thead><tbody><tr><td>底层设施故障（供电／物理硬盘）</td><td>提供商／租户／待核对</td><td>机房供电或物理磁盘，谁维护？</td></tr><tr><td>安全组开放管理端口</td><td>提供商／租户／待核对</td><td>谁配置规则，谁能改变？</td></tr><tr><td>实例内操作系统未安装补丁</td><td>提供商／租户／待核对</td><td>物理设施、云平台还是实例内操作系统？</td></tr><tr><td>应用数据无备份</td><td>提供商／租户／待核对</td><td>数据保护与恢复由谁负责？</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先定位故障对象，再按服务边界判断谁管理它</p></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27.761% 30.606% 41.633%"><colgroup><col style="width:27.761%"><col style="width:30.606%"><col style="width:41.633%"></colgroup><thead><tr><th>问题</th><th>判断责任</th><th>定位对象</th></tr></thead><tbody><tr><td>供电、物理硬盘故障</td><td>提供商／租户／待核对</td><td>机房供电或物理磁盘，谁维护？</td></tr><tr><td>安全组开放管理端口</td><td>提供商／租户／待核对</td><td>谁配置规则，谁能改变？</td></tr><tr><td>操作系统未安装补丁</td><td>提供商／租户／待核对</td><td>云平台还是实例内操作系统？</td></tr><tr><td>应用数据无备份</td><td>提供商／租户／待核对</td><td>数据保护与恢复由谁负责？</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先定位故障对象，再查服务说明和合同中的责任边界</p></div></div>
     <div class="numeric-progress">9/29</div>
     <div class="semantic-label">RESPONSIBILITY JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:31.0345%"></div></div>
@@ -153,10 +153,10 @@
     <h2 class="slide-title">区域 Region 与可用区 Availability Zone</h2>
     <div class="slide-content"><p class="slide-lead">区域划定地理服务范围，可用区划分其中的故障边界</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>位置：区域 → 可用区</p><p>网络：VPC 可跨多个可用区；子网通常位于一个可用区；实例部署在子网中</p></div></div>
-<div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>区域</h3><p>影响时延、数据位置、产品可用性和跨区通信</p>
-<p>先看主要用户、设备与数据要求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可用区</h3><p>区域内相对独立的供电、网络和基础设施单元</p>
-<p>关注资源依赖与故障隔离</p></article></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-3-1/assets/region-vpc-subnet-az.svg" data-full-src="resources/decks/cciot-3-1/assets/region-vpc-subnet-az.svg" alt="区域、可用区、跨可用区 VPC、子网和云资源的关系示意" tabindex="0" role="button" aria-label="放大图片：区域、可用区、跨可用区 VPC、子网和云资源的关系示意" decoding="async"></figure></div></div>
+<div class="cards-grid cards-comparison reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>区域</h3><p>数据中心所在地，影响时延、数据位置、产品可用性和跨区通信</p>
+<p>先看主要用户、设备与数据要求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可用区</h3><p>是在某个区域内相对独立的供电、网络和基础设施单元</p>
+<p>主要关注资源依赖与故障隔离</p></article></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-3-1/assets/region-vpc-subnet-az.svg" data-full-src="resources/decks/cciot-3-1/assets/region-vpc-subnet-az.svg" alt="区域、可用区、跨可用区 VPC、子网和云资源的关系示意" tabindex="0" role="button" aria-label="放大图片：区域、可用区、跨可用区 VPC、子网和云资源的关系示意" decoding="async"></figure></div></div>
     <div class="numeric-progress">10/29</div>
     <div class="semantic-label">REGION AND ZONE</div>
     <div class="progress-track"><div class="progress-fill" style="width:34.4828%"></div></div>
@@ -165,9 +165,9 @@
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 位置选择</div>
-    <h2 class="slide-title">练习：这些约束分别影响什么选择？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="46% 21% 33%"><colgroup><col style="width:46%"><col style="width:21%"><col style="width:33%"></colgroup><thead><tr><th>任务约束</th><th>位置判断</th><th>核查证据</th></tr></thead><tbody><tr><td>主要用户集中在华东</td><td>区域／可用区／两者</td><td>时延与网络路径</td></tr><tr><td>数据须在指定地理范围</td><td>区域／可用区／两者</td><td>数据位置与合规</td></tr><tr><td>抵御机房级故障</td><td>区域／可用区／两者</td><td>隔离边界与应用冗余</td></tr><tr><td>GPU 规格仅部分位置可用</td><td>区域／可用区／两者</td><td>产品与库存</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先写出不可违反的约束，再选择区域和可用区</p></div></div>
+    <h2 class="slide-title">练习：这些要求决定区域还是可用区？</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35.145% 31.855% 33%"><colgroup><col style="width:35.145%"><col style="width:31.855%"><col style="width:33%"></colgroup><thead><tr><th>任务要求</th><th>位置判断</th><th>核查证据</th></tr></thead><tbody><tr><td>主要用户集中在华东</td><td>区域／可用区／两者</td><td>时延与网络路径</td></tr><tr><td>数据须在指定地理范围</td><td>区域／可用区／两者</td><td>数据位置与合规</td></tr><tr><td>抵御机房级故障</td><td>区域／可用区／两者</td><td>隔离边界与应用冗余</td></tr><tr><td>GPU 规格仅部分位置可用</td><td>区域／可用区／两者</td><td>产品与库存</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按用户、数据位置、故障边界和规格供应，选择区域与可用区</p></div></div>
     <div class="numeric-progress">11/29</div>
     <div class="semantic-label">LOCATION CHOICE</div>
     <div class="progress-track"><div class="progress-fill" style="width:37.9310%"></div></div>
@@ -192,10 +192,10 @@
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 云中网络</div>
-    <h2 class="slide-title">位置边界和网络边界回答不同问题</h2>
+    <h2 class="slide-title">资源位置与私有网络是两件事</h2>
     <div class="slide-content"><p class="slide-lead">VPC 通常覆盖一个区域；子网通常位于一个可用区，实例部署在子网中</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="位置：区域 → 可用区 网络：VPC → 子网 → 实例"><span class="relation-term">位置：区域</span><span class="relation-operator">→</span><span class="relation-term">可用区 网络：VPC</span><span class="relation-operator">→</span><span class="relation-term">子网</span><span class="relation-operator">→</span><span class="relation-term">实例</span></div></div>
-<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">位置边界</h3><div class="key-value-value"><p>区域和可用区说明资源位置及基础设施故障边界</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">网络边界</h3><div class="key-value-value"><p>VPC 在一个区域内划定逻辑隔离网络，可跨多个可用区</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">子网位置</h3><div class="key-value-value"><p>子网从 VPC 划分地址范围，通常位于一个可用区</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">实例通信</h3><div class="key-value-value"><p>实例通过网卡连接子网，并使用私有 IP 地址通信</p></div></div></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">资源位置</h3><div class="key-value-value"><p>资源位于哪个地理范围，以及可能发生哪些基础设施故障</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">私有网络范围</h3><div class="key-value-value"><p>VPC 把资源组织在一个逻辑隔离网络中，并可跨多个可用区</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">子网位置</h3><div class="key-value-value"><p>子网从 VPC 划分地址范围，通常位于一个可用区</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">实例通信</h3><div class="key-value-value"><p>实例通过网卡连接子网，并使用私有 IP 地址通信</p></div></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>区域、可用区、VPC 和子网不能互相替代</p></div></div>
     <div class="numeric-progress">13/29</div>
     <div class="semantic-label">CLOUD NETWORK BOUNDARIES</div>
@@ -207,8 +207,8 @@
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 云中网络</div>
     <h2 class="slide-title">VPC、子网与安全组</h2>
     <div class="slide-content"><p class="slide-lead">VPC 和子网组织网络范围与实例位置，安全组控制到达实例的流量</p>
-<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="22% 78%" style="--key-value-columns:minmax(0,22fr) minmax(0,78fr)"><div class="key-value-item"><h3 class="key-value-key">VPC</h3><div class="key-value-value"><p>建立租户私有网络范围和逻辑隔离边界</p></div></div><div class="key-value-item"><h3 class="key-value-key">地址空间</h3><div class="key-value-value"><p>规定私有网络可用地址范围，便于规划并避免网段冲突</p></div></div><div class="key-value-item"><h3 class="key-value-key">子网</h3><div class="key-value-value"><p>从 VPC 划分网络段，实例部署在其中</p></div></div><div class="key-value-item"><h3 class="key-value-key">私有 IP</h3><div class="key-value-value"><p>实例在云内通信使用的私有地址，不能直接作为互联网入口</p></div></div><div class="key-value-item"><h3 class="key-value-key">安全组</h3><div class="key-value-value"><p>按方向、来源地址和端口控制流量；放行不等于服务启动</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>VPC 划定网络边界，子网划分地址范围，安全组决定哪些流量可以通过</p></div></div>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="22% 78%" style="--key-value-columns:minmax(0,22fr) minmax(0,78fr)"><div class="key-value-item"><h3 class="key-value-key">VPC</h3><div class="key-value-value"><p>把租户的云资源组织在一个逻辑隔离的私有网络中</p></div></div><div class="key-value-item"><h3 class="key-value-key">地址空间</h3><div class="key-value-value"><p>规定私有网络可用地址范围，便于规划并避免网段冲突</p></div></div><div class="key-value-item"><h3 class="key-value-key">子网</h3><div class="key-value-value"><p>从 VPC 划分网络段，实例部署在其中</p></div></div><div class="key-value-item"><h3 class="key-value-key">私有 IP</h3><div class="key-value-value"><p>实例在云内通信使用的私有地址，不能直接作为互联网入口</p></div></div><div class="key-value-item"><h3 class="key-value-key">安全组</h3><div class="key-value-value"><p>按方向、来源地址和端口控制流量；放行不等于服务启动</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>VPC 组织私有网络，子网分配地址范围，安全组决定哪些流量可以通过</p></div></div>
     <div class="numeric-progress">14/29</div>
     <div class="semantic-label">VPC SUBNET AND SECURITY GROUP</div>
     <div class="progress-track"><div class="progress-fill" style="width:48.2759%"></div></div>
@@ -220,8 +220,8 @@
     <h2 class="slide-title">公网访问需要完整的网络与登录条件</h2>
     <div class="slide-content"><p class="slide-lead">公网入口、网络规则和系统服务共同决定能否到达服务，凭证决定能否登录</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>电脑 → 公网入口 → 路由或网关 → 安全组 → 实例网卡 → 系统服务</p></div></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>公网入口</h3><p>提供互联网可寻址入口，并接入通往实例的网络路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>安全组</h3><p>按方向、来源和端口决定哪些流量可以通过</p></article><article class="content-card emphasis-card" tabindex="0"><h3>系统服务</h3><p>SSH 服务、Web 服务等必须运行并监听相应端口</p></article></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-3-1/assets/previews/cloud-access-path-image2.webp" data-full-src="resources/decks/cciot-3-1/assets/cloud-access-path-image2.png" data-full-width="1448" data-full-height="1086" alt="公网入口经过路由、安全组、网卡和系统服务到达端口的访问路径" tabindex="0" role="button" aria-label="放大图片：公网入口经过路由、安全组、网卡和系统服务到达端口的访问路径" decoding="async"></figure></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>公网入口</h3><p>提供互联网入口，并接入通往实例的网络路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>安全组</h3><p>按方向、来源和端口决定哪些流量可以通过</p></article><article class="content-card emphasis-card" tabindex="0"><h3>系统服务</h3><p>SSH 服务、Web 服务等运行并监听相应端口</p></article></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-3-1/assets/previews/cloud-access-path-image2.webp" data-full-src="resources/decks/cciot-3-1/assets/cloud-access-path-image2.png" data-full-width="1448" data-full-height="1086" alt="公网入口经过路由、安全组、网卡和系统服务到达端口的访问路径" tabindex="0" role="button" aria-label="放大图片：公网入口经过路由、安全组、网卡和系统服务到达端口的访问路径" decoding="async"></figure></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公网入口提供可寻址路径，规则决定放行，服务与凭证决定能否登录</p></div></div>
     <div class="numeric-progress">15/29</div>
     <div class="semantic-label">ACCESS PATH</div>
@@ -245,8 +245,8 @@
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 实例配置</div>
     <h2 class="slide-title">云服务器由多种资源组合而成</h2>
     <div class="slide-content"><p class="slide-lead">实例规格、镜像、云硬盘和云网络分别承担不同作用</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>实例规格</h3><p>决定虚拟 CPU、内存和计算性能</p></article><article class="content-card emphasis-card" tabindex="0"><h3>镜像 Image</h3><p>提供实例操作系统或预装环境的初始状态</p></article><article class="content-card emphasis-card" tabindex="0"><h3>云硬盘</h3><p>保存系统与业务数据，通常具有独立容量和生命周期</p></article><article class="content-card emphasis-card" tabindex="0"><h3>云网络</h3><p>提供私有地址，并可配置公网入口、带宽和访问范围</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云服务实例需要组合可配置、可计量且生命周期不同的资源</p></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>实例规格</h3><p>决定虚拟 CPU、内存和计算性能</p></article><article class="content-card emphasis-card" tabindex="0"><h3>镜像 Image</h3><p>提供实例操作系统或预装环境</p></article><article class="content-card emphasis-card" tabindex="0"><h3>云硬盘</h3><p>保存系统与业务数据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>云网络</h3><p>提供私有地址，并可配置</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>删除实例时也要分别检查磁盘和公网入口</p></div></div>
     <div class="numeric-progress">17/29</div>
     <div class="semantic-label">INSTANCE COMPONENTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:58.6207%"></div></div>
@@ -255,10 +255,10 @@
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 实例配置</div>
-    <h2 class="slide-title">根据业务约束选择配置</h2>
-    <div class="slide-content"><p class="slide-lead">先满足任务约束，再比较性能、成本与恢复能力</p>
+    <h2 class="slide-title">选配置前要考虑的具体问题</h2>
+    <div class="slide-content"><p class="slide-lead">先运行什么、保存什么、谁来访问、运行多久、能否中断、用完怎样删除</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>运行什么</h3><p>软件、并发与性能 → CPU、内存和镜像</p></article><article class="content-card emphasis-card" tabindex="0"><h3>保存什么</h3><p>数据量、读写与恢复 → 磁盘和备份</p></article><article class="content-card emphasis-card" tabindex="0"><h3>谁来访问</h3><p>谁访问、从哪里访问、使用什么协议 → 私有连接、公网入口和访问规则</p></article></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>运行多久</h3><p>时长与可预测性 → 计费方式</p></article><article class="content-card emphasis-card" tabindex="0"><h3>能否中断</h3><p>可重算任务通常能容忍中断；在线服务通常需要连续运行</p></article><article class="content-card emphasis-card" tabindex="0"><h3>如何退出</h3><p>在创建前列出关联资源和释放条件</p></article></div></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>运行多久</h3><p>时长与可预测性 → 计费方式</p></article><article class="content-card emphasis-card" tabindex="0"><h3>能否中断</h3><p>可重算任务通常能接受偶尔中断；在线服务通常需要连续运行</p></article><article class="content-card emphasis-card" tabindex="0"><h3>如何退出</h3><p>在创建前列出关联资源和释放条件</p></article></div></div></div>
     <div class="numeric-progress">18/29</div>
     <div class="semantic-label">INSTANCE DECISIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:62.0690%"></div></div>
@@ -267,9 +267,9 @@
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 实例配置</div>
-    <h2 class="slide-title">练习：为三个任务选择资源思路</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 32% 37%"><colgroup><col style="width:31%"><col style="width:32%"><col style="width:37%"></colgroup><thead><tr><th>任务</th><th>请提出配置取舍</th><th>需要说明的失败与生命周期约束</th></tr></thead><tbody><tr><td>两小时的 Linux 测试</td><td>规格、镜像、网络和是否需要公网入口</td><td>运行时长、暴露面、课后释放</td></tr><tr><td>持续一学期的网站</td><td>计算、数据保护和访问方式</td><td>持续成本、可用性和恢复方案</td></tr><tr><td>允许失败后重算的批处理</td><td>计算资源、数据保存和访问方式</td><td>可接受的中断、重算条件和结果保存</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择云资源时，要考虑性能、数据、访问、持续时间和失败后果</p></div></div>
+    <h2 class="slide-title">练习：为三个任务选择资源</h2>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30.999% 30.283% 38.718%"><colgroup><col style="width:30.999%"><col style="width:30.283%"><col style="width:38.718%"></colgroup><thead><tr><th>任务</th><th>需要选择什么</th><th>可能怎样失败，用完怎样处理</th></tr></thead><tbody><tr><td>两小时的 Linux 测试</td><td>规格、镜像、网络和是否需要公网入口</td><td>运行时长、暴露面、课后释放</td></tr><tr><td>持续一学期的网站</td><td>计算、数据保护和访问方式</td><td>持续成本、可用性和恢复方案</td></tr><tr><td>允许失败后重算的任务</td><td>计算资源、数据保存和访问方式</td><td>可接受的中断、重算条件和结果保存</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>要考虑数据放哪里、谁能访问、运行多久，以及失败后如何恢复</p></div></div>
     <div class="numeric-progress">19/29</div>
     <div class="semantic-label">WORKLOAD CHOICE</div>
     <div class="progress-track"><div class="progress-fill" style="width:65.5172%"></div></div>
@@ -280,9 +280,9 @@
 <section id="f1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 使用闭环</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 创建、验证与回收</div>
     <h2 class="slide-title">公有云演示</h2>
-    <div class="slide-content"><p class="slide-lead">演示沿着资源申请、访问、计量和回收展开</p>
+    <div class="slide-content"><p class="slide-lead">资源申请、访问、计量和回收</p>
 <div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>准备演示环境</h3><p>核对账号、权限与费用限制</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>选择方案</h3><p>选择平台、区域、最小规格和当前计费规则</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>准备凭证</h3><p>使用所需密钥或强密码</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>准备备用证据</h3><p>保留已验证实例的截图</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>建立清单</h3><p>记录实例、磁盘、公网入口和其他关联资源</p></div></div></div></div></div>
     <div class="numeric-progress">20/29</div>
     <div class="semantic-label">DEMO PREPARATION</div>
@@ -294,10 +294,10 @@
 <section id="f2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 使用闭环</div>
-    <h2 class="slide-title">按约束选择配置并提交创建</h2>
-    <div class="slide-content"><p class="slide-lead">创建表单要求确定位置、实例、网络、访问和费用</p>
-<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>选择位置</h3><p>根据用户、数据和故障约束选择区域与可用区</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>选择网络</h3><p>把实例放入 VPC 的子网，并选择合适的安全组</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>选择实例</h3><p>确定规格、镜像、磁盘和登录凭证</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>选择访问</h3><p>按需要配置公网入口和最小访问规则</p></div></div><div class="process-item"><span class="process-marker">05</span><div class="process-content"><h3>核对费用</h3><p>确认计费方式、关联资源与释放行为</p></div></div></div></div></div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 创建、验证与回收</div>
+    <h2 class="slide-title">位置到费用：五项确认再创建</h2>
+    <div class="slide-content"><p class="slide-lead">确定位置、实例、网络、访问和费用</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>选择位置</h3><p>根据用户与数据所在地、要隔离的故障选择区域与可用区</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>选择网络</h3><p>把实例放入 VPC 的子网，并选择合适的安全组</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>选择实例</h3><p>确定规格、镜像、磁盘和登录凭证</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>选择访问</h3><p>按需要配置公网入口和最小访问规则</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>核对费用</h3><p>确认计费方式、关联资源与释放行为</p></div></div></div></div></div>
     <div class="numeric-progress">21/29</div>
     <div class="semantic-label">CREATE INSTANCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:72.4138%"></div></div>
@@ -305,7 +305,7 @@
 <section id="f3" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
       data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 使用闭环</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 创建、验证与回收</div>
     <h2 class="slide-title">用 SSH 验证实例可远程登录</h2>
     <div class="slide-content"><p class="slide-lead">公网入口、规则、服务和凭证齐全，SSH 才能成功</p>
 <div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">BASH</span><pre tabindex="0" aria-label="BASH code"><span class="code-line-numbers" aria-hidden="true">01
@@ -315,7 +315,7 @@
 hostname
 hostname -I
 uname -a</code></pre></div></div></div>
-<div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>观察</h3><p>记录状态、私有 IP 和公网入口</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>连接</h3><p>SSH 登录并确认目标实例</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>取证</h3><p>查看主机名、地址和系统信息</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>判断</h3><p>区分运行、登录和应用可用性</p></div></div></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>观察</h3><p>记录状态、私有 IP 和公网入口</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>连接</h3><p>SSH 登录并确认目标实例</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>取证</h3><p>查看主机名、地址和系统信息</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>判断</h3><p>区分运行、登录和应用可用性</p></div></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>SSH 成功只证明系统登录，不等于应用可用</p></div></div>
     <div class="numeric-progress">22/29</div>
     <div class="semantic-label">SSH VERIFICATION</div>
@@ -324,11 +324,11 @@ uname -a</code></pre></div></div></div>
 <section id="f4" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 使用闭环</div>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 创建、验证与回收</div>
     <h2 class="slide-title">监控与变更</h2>
     <div class="slide-content"><p class="slide-lead">监控指标要结合任务需求，才能判断是否调整资源</p>
-<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="27% 73%" style="--key-value-columns:minmax(0,27fr) minmax(0,73fr)"><div class="key-value-item"><h3 class="key-value-key">查看状态</h3><div class="key-value-value"><p>查看平台提供的 CPU、内存、磁盘、网络和实例状态</p></div></div><div class="key-value-item"><h3 class="key-value-key">解释指标</h3><div class="key-value-value"><p>结合任务负载判断高使用率、低使用率或短时波动</p></div></div><div class="key-value-item"><h3 class="key-value-key">调整资源</h3><div class="key-value-value"><p>根据证据变更规格、磁盘或相关服务，并核查停机和费用影响</p></div></div><div class="key-value-item"><h3 class="key-value-key">保护数据</h3><div class="key-value-value"><p>重装、切换系统或删除前确认系统盘、数据盘和恢复路径</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>弹性来自可观察、可调整和可恢复的管理能力，不是盲目增加规格</p></div></div>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="20.924% 79.076%" style="--key-value-columns:minmax(0,20.924fr) minmax(0,79.076fr)"><div class="key-value-item substep"><h3 class="key-value-key">查看状态</h3><div class="key-value-value"><p>查看平台提供的 CPU、内存、磁盘、网络和实例状态</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">解释指标</h3><div class="key-value-value"><p>结合任务负载判断高使用率、低使用率或短时波动</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">调整资源</h3><div class="key-value-value"><p>根据证据变更规格、磁盘或相关服务，并核查停机和费用影响</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">保护数据</h3><div class="key-value-value"><p>重装、切换系统或删除前确认系统盘、数据盘和恢复路径</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先用指标判断是否需要调整，再核对停机、费用和数据恢复</p></div></div>
     <div class="numeric-progress">23/29</div>
     <div class="semantic-label">OBSERVE AND CHANGE</div>
     <div class="progress-track"><div class="progress-fill" style="width:79.3103%"></div></div>
@@ -336,10 +336,10 @@ uname -a</code></pre></div></div></div>
 <section id="f5" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 使用闭环</div>
-    <h2 class="slide-title">练习：关闭窗口，资源真的结束了吗？</h2>
+    <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 创建、验证与回收</div>
+    <h2 class="slide-title">练习：资源什么时候回收</h2>
     <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>退出操作台，不等于资源已经回收</p></div></div></div></aside>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="39% 23% 38%"><colgroup><col style="width:39%"><col style="width:23%"><col style="width:38%"></colgroup><thead><tr><th>当前状态</th><th>是否完成回收</th><th>还要核对</th></tr></thead><tbody><tr><td>只关 SSH 终端</td><td>是／否／待核对</td><td>实例、磁盘、公网 IP 等关联资源</td></tr><tr><td>操作系统已关机</td><td>是／否／待核对</td><td>云平台实例、磁盘、公网 IP</td></tr><tr><td>实例已删除</td><td>是／否／待核对</td><td>云硬盘、公网 IP、快照等</td></tr><tr><td>清单归零并核对费用</td><td>是／否／待核对</td><td>操作与费用记录</td></tr></tbody></table></div></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28.155% 27.084% 44.761%"><colgroup><col style="width:28.155%"><col style="width:27.084%"><col style="width:44.761%"></colgroup><thead><tr><th>当前状态</th><th>是否完成回收</th><th>还要核对</th></tr></thead><tbody><tr><td>只关 SSH 终端</td><td>是／否／待核对</td><td>实例、磁盘、公网 IP 等关联资源</td></tr><tr><td>操作系统已关机</td><td>是／否／待核对</td><td>云平台实例、磁盘、公网 IP</td></tr><tr><td>实例已删除</td><td>是／否／待核对</td><td>云硬盘、公网 IP、快照等</td></tr><tr><td>清单归零并核对费用</td><td>是／否／待核对</td><td>操作与费用记录</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用后回收必须核对完整资源清单</p></div></div>
     <div class="numeric-progress">24/29</div>
     <div class="semantic-label">RESOURCE CLEANUP</div>
@@ -352,9 +352,9 @@ uname -a</code></pre></div></div></div>
       data-x="0" data-y="6720" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 云特征回扣</div>
-    <h2 class="slide-title">回顾云计算特征</h2>
-    <div class="slide-content"><p class="slide-lead">公有云的申请、访问、计量和回收行为体现云计算的基本特征</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 72%"><colgroup><col style="width:28%"><col style="width:72%"></colgroup><thead><tr><th>云计算特征</th><th>本次操作中的证据</th></tr></thead><tbody><tr><td>按需自助服务</td><td>用户通过标准入口自行申请与释放资源</td></tr><tr><td>广泛网络访问</td><td>用户通过网络访问控制台、实例和应用</td></tr><tr><td>资源池化</td><td>提供商从共享基础设施中分配逻辑资源</td></tr><tr><td>快速弹性</td><td>规格与资源数量可以根据需求调整</td></tr><tr><td>可计量服务</td><td>平台记录资源用量并形成费用</td></tr></tbody></table></div></div>
+    <h2 class="slide-title">操作证据对应云计算特征</h2>
+    <div class="slide-content"><p class="slide-lead">从申请、访问、计量和回收中找到对应证据</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25.478% 74.522%"><colgroup><col style="width:25.478%"><col style="width:74.522%"></colgroup><thead><tr><th>云计算特征</th><th>本次操作中的证据</th></tr></thead><tbody><tr><td>按需自助服务</td><td>用户通过标准入口自行申请与释放资源</td></tr><tr><td>广泛网络访问</td><td>用户通过网络访问控制台、实例和应用</td></tr><tr><td>资源池化</td><td>提供商从共享基础设施中分配逻辑资源</td></tr><tr><td>快速弹性</td><td>规格与资源数量可以根据需求调整</td></tr><tr><td>可计量服务</td><td>平台记录资源用量并形成费用</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>要用证据说明资源如何被供给、访问、计量和回收</p></div></div>
     <div class="numeric-progress">25/29</div>
     <div class="semantic-label">CLOUD CHARACTERISTICS</div>
@@ -367,9 +367,9 @@ uname -a</code></pre></div></div></div>
     <h2 class="slide-title">是否是“永不过时的计算机”？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>可以持续调整</h3><p>实例规格、镜像、磁盘和网络可以随需求改变</p>
 <p>用户不必淘汰整套物理设备才能获得新的逻辑资源</p></article><article class="content-card emphasis-card" tabindex="0"><h3>可以快速替换</h3><p>资源能够被重新创建，但软件与数据必须有可恢复的来源</p></article></div></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>现实边界</h3><p>更高规格意味着新的费用，软件与数据仍需迁移和维护</p>
-<p>平台、区域、产品和配额也会变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>承担责任</h3><p>系统更新、应用安全、数据保护和成本管理不会自动完成</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云提供可调整的资源服务，但仍需管理资源并承担费用</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>不能自动解决</h3><p>更高规格意味着新的费用，软件与数据仍需迁移和维护</p>
+<p>平台、区域、产品和配额也会变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>用户仍要完成</h3><p>系统更新、应用安全、数据保护和成本管理不会自动完成</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>公有云提供可调整的资源服务，但用户依然需要管理资源并承担费用</p></div></div>
     <div class="numeric-progress">26/29</div>
     <div class="semantic-label">CLOUD COMPUTER JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:89.6552%"></div></div>
@@ -378,9 +378,9 @@ uname -a</code></pre></div></div></div>
       data-x="3000" data-y="6720" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">要合理使用云资源，必须说清责任、位置、网络、配置与生命周期</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">服务判断：公有云面向外部用户标准化供给资源，并计量使用量</span></li><li><span class="list-marker">02</span><span class="list-text">责任边界：提供商运行基础设施，租户管理配置、系统、应用与数据</span></li><li><span class="list-marker">03</span><span class="list-text">位置选择：区域决定地理范围，可用区划分故障边界</span></li><li><span class="list-marker">04</span><span class="list-text">网络路径：VPC、子网、公网入口、安全组与服务共同决定可达性</span></li><li><span class="list-marker">05</span><span class="list-text">实例配置：规格、镜像、磁盘和网络分别承担不同角色</span></li><li><span class="list-marker">06</span><span class="list-text">使用闭环：创建、验证、观察、调整和回收都需要证据</span></li></ol></div></div></div>
+    <h2 class="slide-title">练习：验收一次公有云资源使用</h2>
+    <div class="slide-content"><p class="slide-lead">以“两小时 Linux 测试”为例，提交一份资源使用记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明哪些证据证明它属于公有云，并区分部署模型与服务层次</span></li><li><span class="list-marker">02</span><span class="list-text">列出提供商与租户各自管理的对象和承担的任务，以及哪些情况要特殊处理</span></li><li><span class="list-marker">03</span><span class="list-text">画出区域、可用区、VPC、子网、实例与公网入口的关系</span></li><li><span class="list-marker">04</span><span class="list-text">选择规格、镜像、磁盘、网络和计费方式，并逐项写出任务中的理由</span></li><li><span class="list-marker">05</span><span class="list-text">针对“实例运行但 SSH 失败”提出按路径排列的取证顺序</span></li><li><span class="list-marker">06</span><span class="list-text">列出监控、变更、数据保护和关联资源回收证据</span></li></ol></div></div></div>
     <div class="numeric-progress">27/29</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.1034%"></div></div>
@@ -400,7 +400,7 @@ uname -a</code></pre></div></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIOT <span>|</span> CH03 <span>|</span> 3.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">哪些证据能够说明一项远程计算服务属于公有云？</span></li><li><span class="question-no">02</span><span class="question-text">云服务提供商和租户分别管理哪些对象？</span></li><li><span class="question-no">03</span><span class="question-text">区域、可用区、VPC 和子网分别回答什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">实例有公网 IP 时，为什么远程登录仍可能失败？</span></li><li><span class="question-no">05</span><span class="question-text">创建一台云服务器时，哪些配置选择会影响性能、数据、网络和费用？</span></li><li><span class="question-no">06</span><span class="question-text">如何证明一次公有云资源使用已经完成闭环？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">哪些证据能够说明一项远程计算服务属于公有云？</span></li><li><span class="question-no">02</span><span class="question-text">云服务提供商和租户分别管理哪些对象？</span></li><li><span class="question-no">03</span><span class="question-text">区域、可用区、VPC 和子网分别回答什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">实例有公网 IP 时，为什么远程登录仍可能失败？</span></li><li><span class="question-no">05</span><span class="question-text">创建一台云服务器时，哪些配置选择会影响性能、数据、网络和费用？</span></li><li><span class="question-no">06</span><span class="question-text">哪些记录能证明实例、磁盘、公网入口等资源已回收，并且费用已核对？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="cciot-2-1.html" title="上一节：2.1 虚拟化技术" aria-label="上一节：2.1 虚拟化技术">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
