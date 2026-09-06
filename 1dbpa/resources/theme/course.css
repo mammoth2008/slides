@@ -1,37 +1,107 @@
+/* DBPA projection baseline. The shared runtime owns geometry, content,
+   image fitting, keyboard navigation and reveal order. */
+.content-card p, .cards-comparison .content-card p { color: var(--slide-ink); }
+.slide-content:has(> .slide-lead) > .slide-lead { color: var(--slide-ink-soft); }
+.content-card:hover, .content-card:focus-visible,
+.emphasis-card:hover, .emphasis-card:focus-visible,
+.content-list li:hover, .nav-row a:hover, .nav-row a:focus-visible {
+  transform: none; filter: none; box-shadow: none;
+}
+.content-card:focus-visible, .nav-row a:focus-visible {
+  outline: 3px solid var(--slide-auxiliary); outline-offset: 3px;
+}
+.content-card::after { box-shadow: none; }
+.content-card:hover::after, .content-card:focus-visible::after { box-shadow: none; }
+.cards-grid.reveal-items .content-card.substep-active,
+.content-list.reveal-items li.substep-active {
+  box-shadow: inset 6px 0 0 var(--slide-auxiliary);
+}
+.reveal-items .substep-active { filter: none; }
+.key-value-item + .key-value-item {
+  background-image: none; border-top: 2px solid var(--slide-line-soft);
+}
+.character-bubble { box-shadow: none; }
+.progress-track { height: 4px; }
+.media-block { border-radius: 0; }
+.media-block figcaption { background: var(--slide-surface-raised); }
+.text-component-label { background: var(--slide-background); }
+@media (prefers-reduced-motion: reduce) {
+  .content-card, .content-list li, .nav-row a { transition: none; }
+}
+
+/* DBPA 铅字讲堂: typographic hierarchy, open columns, red proof marks. */
 :root {
-  --slide-background: #fbfcfa;
-  --slide-stage-background: #e8eef1;
-  --slide-surface-raised: #fff;
-  --slide-surface-muted: #f2f6f8;
-  --slide-surface-translucent: rgba(255, 255, 255, .88);
-  --slide-surface-translucent-soft: rgba(255, 255, 255, .72);
-  --slide-ink: #15232d;
-  --slide-ink-soft: #3f5663;
-  --slide-primary: #185b91;
-  --slide-primary-soft: #e7f0f6;
-  --slide-auxiliary: #a8542b;
-  --slide-auxiliary-soft: #fbf1ea;
-  --slide-line: #aebdc6;
-  --slide-line-soft: #d4dde2;
-  --slide-breadcrumb-muted: #80909a;
-  --slide-progress-ink: #687983;
-  --slide-footer-ink: #526570;
-  --slide-progress-track: #d7e0e5;
-  --slide-cover-description-ink: #334b59;
-  --slide-cover-meta-ink: #536873;
-  --slide-on-primary: #fff;
-  --slide-card-shadow: rgba(30, 48, 58, .18);
-  --slide-navigation-shadow: rgba(24, 91, 145, .18);
-  --slide-code-active-line: #f0cdb9;
-  --slide-code-ink: #172731;
-  --slide-code-meta-ink: #687983;
-  --slide-code-keyword: #185b91;
-  --slide-code-literal: #a8542b;
-  --slide-overlay-background: rgba(21, 35, 45, .78);
-  --slide-overlay-line: rgba(255, 255, 255, .72);
-  --slide-overlay-shadow: rgba(0, 0, 0, .36);
+  --slide-background: #fffefa;
+  --slide-stage-background: #dededb;
+  --slide-surface-raised: #fffefa;
+  --slide-surface-muted: #f1f0eb;
+  --slide-surface-translucent: #fffefa;
+  --slide-surface-translucent-soft: #fffefa;
+  --slide-ink: #1b1b1b;
+  --slide-ink-soft: #41413e;
+  --slide-primary: #222222;
+  --slide-primary-soft: #eeede7;
+  --slide-auxiliary: #ad241b;
+  --slide-auxiliary-soft: #fcece5;
+  --slide-line: #787873;
+  --slide-line-soft: #b4b4ad;
+  --slide-breadcrumb-muted: #52524e;
+  --slide-progress-ink: #41413e;
+  --slide-footer-ink: #41413e;
+  --slide-progress-track: #c9c9c1;
+  --slide-cover-description-ink: #1b1b1b;
+  --slide-cover-meta-ink: #41413e;
+  --slide-on-primary: #ffffff;
+  --slide-card-shadow: rgba(27, 27, 27, .14);
+  --slide-navigation-shadow: rgba(173, 36, 27, .18);
+  --slide-code-active-line: #f9d8c8;
+  --slide-code-ink: #1b1b1b;
+  --slide-code-meta-ink: #51514c;
+  --slide-code-keyword: #772020;
+  --slide-code-literal: #174d55;
+  --slide-overlay-background: rgba(27, 27, 27, .84);
+  --slide-overlay-line: rgba(255, 254, 250, .82);
+  --slide-overlay-shadow: rgba(0, 0, 0, .42);
+  --slide-table-header-background: #222222;
+  --slide-table-header-ink: #ffffff;
   --slide-component-radius: 0;
-  --slide-table-header-background: var(--slide-primary-soft);
-  --slide-table-header-ink: var(--slide-primary);
   --slide-title-font: "Course Source Han Serif", "Source Han Serif CN", "Source Han Serif SC", "Songti SC", STSong, SimSun, serif;
 }
+.breadcrumb { font-family: var(--slide-mono-font), var(--slide-body-font); }
+.slide-title { border-bottom: 2.5px solid var(--slide-ink); color: var(--slide-auxiliary); }
+.slide-content { letter-spacing: .01em; }
+.slide-content:has(> .slide-lead) > .slide-lead { color: var(--slide-ink); }
+.cards-grid { gap: 20px 24px; }
+.content-card {
+  border: 0; border-left: 3px solid var(--slide-line-soft);
+  padding: 25px 28px; background: transparent;
+}
+.content-card h3 { color: var(--slide-auxiliary); font-family: var(--slide-title-font); }
+.content-card:hover, .content-card:focus-visible { background: var(--slide-primary-soft); }
+.content-list li {
+  border-left-color: transparent; background: transparent; box-shadow: none;
+  border-bottom: 2px solid var(--slide-line-soft);
+}
+.content-list li:hover { background: var(--slide-primary-soft); }
+.content-list-ordered .list-marker { color: var(--slide-auxiliary); font-weight: 700; }
+.reading-panel { border: 0; border-left: 3px solid var(--slide-ink); background: transparent; }
+.text-inset, .text-case-prompt { background: transparent; border-left-color: var(--slide-auxiliary); }
+.text-takeaway {
+  border: 0;
+  background: transparent;
+  padding-left: 0;
+}
+.text-takeaway .text-component-label { left: 0; padding-left: 0; }
+.text-quote { background: var(--slide-primary-soft); border-left: 8px solid var(--slide-ink); }
+.text-quote .text-component-label { background: transparent; }
+.text-quote blockquote p { font-family: var(--slide-title-font); font-weight: 600; }
+.text-focal p { font: 700 104px/1 var(--slide-title-font); color: var(--slide-auxiliary); }
+.relation-term { border: 0; border-bottom: 4px solid var(--slide-ink); background: transparent; }
+.process-marker { border: 0; background: var(--slide-ink); color: #fff; }
+.component-table { border: 0; border-bottom: 3px solid var(--slide-ink); }
+.content-table tbody tr:nth-child(even) { background: var(--slide-primary-soft); }
+pre { border: 2px solid var(--slide-ink); }
+.question-list li { border: 0; border-bottom: 2px solid var(--slide-line-soft); background: transparent; box-shadow: none; }
+.question-no { font-weight: 700; color: var(--slide-auxiliary); }
+.nav-row a { border-color: var(--slide-ink); background: transparent; }
+.progress-fill { background: var(--slide-auxiliary); }
