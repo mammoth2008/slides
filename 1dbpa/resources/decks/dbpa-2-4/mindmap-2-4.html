@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>关系代数 · Mind Map</title>
   <link rel="stylesheet" href="../../theme/fonts.css">
+  <script>
+    window.__MINDMAP_MATHJAX__ = null;
+    window.MathJax = {
+      startup: {
+        typeset: false,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          window.__MINDMAP_MATHJAX__ = MathJax;
+        }
+      },
+      tex: {inlineMath: [['\\(', '\\)']], displayMath: []}
+    };
+  </script>
+  <script defer src="../../../../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; }
     html, body, #mindmap { width: 100%; height: 100%; background: #fff; }
@@ -15,6 +29,7 @@
     .markmap-node > circle { fill: #a8542b; }
     .markmap-link { stroke: rgba(21, 35, 45, .22); }
   </style>
+  <link rel="stylesheet" href="../../theme/mindmap.css">
 </head>
 <body>
   <svg id="mindmap"></svg>
@@ -22,10 +37,46 @@
   <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
   <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
   <script>
-    const tree = {"content":"关系代数","children":[{"content":"2.4.1 传统集合运算","children":[{"content":"运算三要素：对象、运算符与结果","children":[]},{"content":"相容关系：并、差和交的输入条件","children":[]},{"content":"并、差、交：<code>∪ − ∩<\/code> 合并、排除与比较共有元组","children":[]},{"content":"笛卡儿积：<code>×<\/code> 组合所有元组与结果规模","children":[]},{"content":"分类轴：集合/专门与基本/可导出彼此独立、可以交叉","children":[]},{"content":"可导出性：<code>∪ − × σ Π<\/code> 是基本运算；<code>∩ ⋈ ÷<\/code> 是可导出运算","children":[]}]},{"content":"2.4.2 专门关系运算","children":[{"content":"选择 <code>σ<\/code>：按条件保留行","children":[]},{"content":"投影 <code>Π<\/code>：按属性保留列并去除重复","children":[]},{"content":"连接 <code>⋈<\/code>：匹配元组并组合关系","children":[]},{"content":"连接变体：θ 连接、等值连接与自然连接","children":[]},{"content":"除 <code>÷<\/code>：用象集覆盖表达对所有条件","children":[]},{"content":"可导出性：选择、投影是基本运算；连接、除是可导出运算","children":[]},{"content":"综合查询：<code>R₁→R₂→R₃→R₄<\/code> 沿中间关系逐步构造与验证","children":[]}]}]};
+    const tree = {"content":"关系代数","children":[{"content":"2.4.1 传统集合运算","children":[{"content":"每一步都要写：输入关系、运算符、结果的行与列","children":[]},{"content":"相容关系：并、差和交的输入条件","children":[]},{"content":"并、差、交：\\(\\cup\\)、\\(-\\)、\\(\\cap\\) 合并、排除与比较共有元组","children":[]},{"content":"笛卡儿积：\\(\\times\\) 组合所有元组与结果规模","children":[]},{"content":"分类轴：集合/专门与基本/可导出彼此独立、可以交叉","children":[]},{"content":"可导出性：\\(\\cup,-,\\times,\\sigma,\\Pi\\) 是基本运算；\\(\\cap,\\bowtie,\\div\\) 是可导出运算","children":[]}]},{"content":"2.4.2 专门关系运算","children":[{"content":"选择 \\(\\sigma\\)：按条件保留行","children":[]},{"content":"投影 \\(\\Pi\\)：按属性保留列并去除重复","children":[]},{"content":"连接 \\(\\bowtie\\)：匹配元组并组合关系","children":[]},{"content":"连接变体：\\(\\theta\\) 连接、等值连接与自然连接","children":[]},{"content":"除 \\(\\div\\)：用象集覆盖表达对所有条件","children":[]},{"content":"可导出性：选择、投影是基本运算；连接、除是可导出运算","children":[]},{"content":"综合查询：\\(R_1\\to R_2\\to R_3\\to R_4\\)；逐步核对列名和每一行的含义","children":[]}]}]};
     const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
     const api = window.markmap;
-    window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);
+    const svg = document.querySelector("svg#mindmap");
+    const mm = new api.Markmap(svg, {...options, color: () => options.color});
+    window.mm = mm;
+    const markmapReady = mm.setData(tree);
+
+    const typesetPendingMath = async () => {
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (!mathJax?.typesetPromise) return;
+      const nodes = Array.from(document.querySelectorAll(".markmap-foreign > div > div"))
+        .filter((node) => !node.dataset.mathTypeset && node.textContent.includes("\\("));
+      if (!nodes.length) return;
+      await mathJax.typesetPromise(nodes);
+      nodes.forEach((node) => { node.dataset.mathTypeset = "true"; });
+      await mm.renderData();
+    };
+
+    const originalToggleNode = mm.toggleNode.bind(mm);
+    mm.toggleNode = async (...args) => {
+      await originalToggleNode(...args);
+      await typesetPendingMath();
+    };
+
+    const initializeMindmapMath = async () => {
+      await markmapReady;
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (mathJax?.startup?.promise) {
+        await mathJax.startup.promise;
+        await typesetPendingMath();
+      }
+      await mm.fit();
+    };
+
+    const startMindmapMath = () => {
+      window.__MINDMAP_MATH_READY__ = initializeMindmapMath();
+    };
+    if (document.readyState === "complete") startMindmapMath();
+    else window.addEventListener("load", startMindmapMath, {once: true});
   </script>
 </body>
 </html>

@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>关系的完整性 · Mind Map</title>
   <link rel="stylesheet" href="../../theme/fonts.css">
+  <script>
+    window.__MINDMAP_MATHJAX__ = null;
+    window.MathJax = {
+      startup: {
+        typeset: false,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          window.__MINDMAP_MATHJAX__ = MathJax;
+        }
+      },
+      tex: {inlineMath: [['\\(', '\\)']], displayMath: []}
+    };
+  </script>
+  <script defer src="../../../../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; }
     html, body, #mindmap { width: 100%; height: 100%; background: #fff; }
@@ -15,6 +29,7 @@
     .markmap-node > circle { fill: #a8542b; }
     .markmap-link { stroke: rgba(21, 35, 45, .22); }
   </style>
+  <link rel="stylesheet" href="../../theme/mindmap.css">
 </head>
 <body>
   <svg id="mindmap"></svg>
@@ -22,10 +37,46 @@
   <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
   <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
   <script>
-    const tree = {"content":"关系的完整性","children":[{"content":"2.3.1 实体完整性","children":[{"content":"核心要求：元组能够被唯一识别","children":[]},{"content":"主码规则：主码值不能重复","children":[]},{"content":"非空规则：主码中的每个属性不能取空值","children":[]},{"content":"复合主码：每个主属性都不能取空值","children":[]}]},{"content":"2.3.2 参照完整性","children":[{"content":"外码：参照关系中对应目标主码的属性；F 与 Ks 同域或同组域","children":[]},{"content":"关系角色：参照关系与被参照关系","children":[]},{"content":"合法取值：F 整体为空或完整匹配目标关系的完整主码","children":[]},{"content":"复合外码：不能只空其中一部分","children":[]},{"content":"自引用：同一关系可以同时承担两种角色","children":[]}]},{"content":"2.3.3 用户定义完整性","children":[{"content":"语义来源：具体应用领域的业务规则","children":[]},{"content":"常见规则：范围、非空与唯一","children":[]},{"content":"用户定义完整性：不替代实体/参照完整性，由关系数据库系统统一定义和检查","children":[]},{"content":"判断路径：标识、引用、业务语义","children":[]}]}]};
+    const tree = {"content":"关系的完整性","children":[{"content":"2.3.1 实体完整性","children":[{"content":"要检查的事实：每一行都能由主码唯一找到","children":[]},{"content":"主码规则：主码值不能重复","children":[]},{"content":"非空规则：主码中的每个属性不能取空值","children":[]},{"content":"复合主码：每个主属性都不能取空值","children":[]}]},{"content":"2.3.2 参照完整性","children":[{"content":"外码：参照关系中对应目标主码的属性；\\(F\\) 与 \\(K_s\\) 同域或同组域","children":[]},{"content":"关系角色：参照关系与被参照关系","children":[]},{"content":"合法取值：\\(F\\) 整体为空或完整匹配目标关系的完整主码","children":[]},{"content":"复合外码：不能只空其中一部分","children":[]},{"content":"自引用：同一关系可以同时承担两种角色","children":[]}]},{"content":"2.3.3 用户定义完整性","children":[{"content":"规则从哪里来：成绩、订单等具体业务要求","children":[]},{"content":"常见规则：范围、非空与唯一","children":[]},{"content":"用户定义完整性：不替代实体/参照完整性，由关系数据库系统统一定义和检查","children":[]},{"content":"检查顺序：先查主码，再查外码，最后查业务值","children":[]}]}]};
     const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
     const api = window.markmap;
-    window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);
+    const svg = document.querySelector("svg#mindmap");
+    const mm = new api.Markmap(svg, {...options, color: () => options.color});
+    window.mm = mm;
+    const markmapReady = mm.setData(tree);
+
+    const typesetPendingMath = async () => {
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (!mathJax?.typesetPromise) return;
+      const nodes = Array.from(document.querySelectorAll(".markmap-foreign > div > div"))
+        .filter((node) => !node.dataset.mathTypeset && node.textContent.includes("\\("));
+      if (!nodes.length) return;
+      await mathJax.typesetPromise(nodes);
+      nodes.forEach((node) => { node.dataset.mathTypeset = "true"; });
+      await mm.renderData();
+    };
+
+    const originalToggleNode = mm.toggleNode.bind(mm);
+    mm.toggleNode = async (...args) => {
+      await originalToggleNode(...args);
+      await typesetPendingMath();
+    };
+
+    const initializeMindmapMath = async () => {
+      await markmapReady;
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (mathJax?.startup?.promise) {
+        await mathJax.startup.promise;
+        await typesetPendingMath();
+      }
+      await mm.fit();
+    };
+
+    const startMindmapMath = () => {
+      window.__MINDMAP_MATH_READY__ = initializeMindmapMath();
+    };
+    if (document.readyState === "complete") startMindmapMath();
+    else window.addEventListener("load", startMindmapMath, {once: true});
   </script>
 </body>
 </html>

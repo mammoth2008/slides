@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="2-1">
-  <meta name="version" content="2608.1">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -28,10 +28,10 @@
     <img class="cover-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 2.1</div>
-      <h1>关系模型的数据结构及形式化定义</h1>
-      <p class="cover-description">把二维表还原为域、关系、关系模式与关系实例</p>
+      <h1>关系模型的数据<br>结构及形式化定义</h1>
+      <p class="cover-description">把二维表还原为属性、元组、域与关系</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,37 +44,37 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">关系模型用统一的关系结构表达数据；形式化定义帮助我们判断关系的结构、性质、类型和存储边界</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释域、属性、笛卡儿积、元组、分量和关系</span></li><li><span class="list-marker">02</span><span class="list-text">用形式化定义说明关系为什么是笛卡儿积的有意义子集，并区分关系的度与基数</span></li><li><span class="list-marker">03</span><span class="list-text">说出关系的六条基本性质，并用分量原子性判断一个表</span></li><li><span class="list-marker">04</span><span class="list-text">区分基本关系、查询结果和视图</span></li><li><span class="list-marker">05</span><span class="list-text">区分候选码、主码、主属性和非主属性</span></li><li><span class="list-marker">06</span><span class="list-text">区分关系模式、关系实例、关系数据库模式与关系数据库值</span></li><li><span class="list-marker">07</span><span class="list-text">解释 RDBMS 如何把逻辑关系交给物理存储结构管理</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/17</div>
+    <div class="slide-content"><p class="slide-lead">从二维表开始理解关系，检查关系性质，并区分模式与实例</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">从二维表中指出属性、元组、分量、度和基数</span></li><li><span class="list-marker">02</span><span class="list-text">用域和笛卡儿积解释所有可能组合，判断哪些元组能组成有意义的关系</span></li><li><span class="list-marker">03</span><span class="list-text">用六条基本性质诊断不合格的关系，并区分基本关系、查询结果和视图</span></li><li><span class="list-marker">04</span><span class="list-text">判断候选码，区分关系模式、关系实例、数据库模式与数据库值</span></li><li><span class="list-marker">05</span><span class="list-text">说明逻辑关系由谁表达、物理存储由谁组织</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:11.7647%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-focus"
+<section id="a2" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
-    <h2 class="slide-title">关系模型只使用一种基本数据结构</h2>
-    <div class="slide-content"><p class="slide-lead">二维表可以翻译为属性、元组和分量</p>
-<div class="slide-main-content"><div class="component component-text text-open"><p>列 → 属性 → 域　｜　行 → 元组　｜　单元格 → 分量　｜　整张表 → 关系</p></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>统一结构</h3><p>从用户视角看，Student、Course 和 SC 都是一张二维表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>丰富语义</h3><p>Student 表示学生实体，Course 表示课程实体，SC 表示选课联系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>统一操作</h3><p>查询结果也可以继续作为关系被处理；基本关系、查询结果和视图都使用这一结构</p></article></div></div></div>
-    <div class="numeric-progress">3/17</div>
+    <h2 class="slide-title">把表拆成列、行、单元格和关系</h2>
+    <div class="slide-content"><p class="slide-lead">列、行和单元格分别对应属性、元组和分量；整张表对应一个关系</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1-relation-structure-map.svg" data-full-src="resources/decks/dbpa-2-1/assets/dbpa-2-1-relation-structure-map.svg" alt="二维表示例中列、行、单元格和整张表分别对应属性、元组、分量和关系" tabindex="0" role="button" aria-label="放大图片：二维表示例中列、行、单元格和整张表分别对应属性、元组、分量和关系" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>三张表的形状相同</h3><p><code>Student</code>、<code>Course</code> 和 <code>SC</code> 都由有名称的列和一行行记录组成</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录不同事实</h3><p><code>Student</code> 记录学生，<code>Course</code> 记录课程，<code>SC</code> 记录选课</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询结果也是表</h3><p>基本关系、查询结果和视图都由属性与元组组成，可以继续参与关系操作</p></article></div></div></div>
+    <div class="numeric-progress">3/20</div>
     <div class="semantic-label">RELATIONAL MODEL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-grid"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
-    <h2 class="slide-title">域 Domain 规定属性可以取什么值</h2>
+    <h2 class="slide-title">一列能接受哪些值，由域 Domain 决定</h2>
     <div class="slide-content"><p class="slide-lead">域是一组具有相同数据类型的值的集合</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>D₁：导师姓名域</h3><p><code>{张清玫，刘逸}</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>D₂：专业域</h3><p><code>{计算机科学与技术，信息管理与信息系统}</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>D₃：研究生姓名域</h3><p><code>{李勇，刘晨，王敏}</code></p></article></div>
-<div class="component component-text text-inset"><p>例如 <code>SUPERVISOR</code> 与 <code>POSTGRADUATE</code> 都可以取自 <code>PERSON</code> 域，但必须用不同属性名区分业务角色</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>域说明属性允许取哪些值，属性名说明这些值在业务中的角色。不同属性也可以来自同一个域</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同属 PERSON 域，为什么还要分成两个属性？</p></div></div></div></aside>
-    <div class="numeric-progress">4/17</div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>\(D_1\)：导师姓名域</h3><p>{张清玫，刘逸}</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>\(D_2\)：专业域</h3><p>{计算机科学与技术，信息管理与信息系统}</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>\(D_3\)：学生姓名域</h3><p>{李勇，刘晨，王敏}</p></article></div>
+<div class="component component-text text-inset"><p>“导师”与“研究生”都可以取自 <code>PERSON</code> 域，但必须用不同属性名</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>域说明属性允许取哪些值，属性名说明这些值在业务中的角色</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="54.884" data-character-exposure="58.56" data-character-scale="0.9" style="--character-along:54.884%;--character-exposure:58.56;--character-hidden:41.44%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>都是 <code>PERSON</code> 域，为什么还要分成两个属性？</p></div></div></div></aside>
+    <div class="numeric-progress">4/20</div>
     <div class="semantic-label">DOMAIN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
 <section id="a4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
@@ -88,165 +88,202 @@ D_1 \times D_2 \times \cdots \times D_n
 \{(d_1,d_2,\ldots,d_n)\mid d_i\in D_i,\ i=1,\ldots,n\}
 $$</div>
 <div class="math-block">$$
-M=|D_1\times D_2\times D_3|
- =|D_1||D_2||D_3|
- =2\times2\times3=12
-$$</div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>概念</th><th>形式化含义</th><th>导师—专业—研究生例子</th></tr></thead><tbody><tr><td><code>n</code></td><td>参与组合的域的个数</td><td><code>n=3</code></td></tr><tr><td>元组</td><td>笛卡儿积中的一个元素</td><td>（张清玫，计算机科学与技术，李勇）</td></tr><tr><td>分量</td><td>元组中的一个值</td><td>张清玫或李勇</td></tr><tr><td>域的基数</td><td>一个域允许的不同取值个数</td><td>D₁=2，D₂=2，D₃=3</td></tr><tr><td>笛卡儿积的基数 <code>M</code></td><td>各域基数的乘积，即可能元组数</td><td><code>M=2×2×3=12</code></td></tr><tr><td>关系的基数 <code>|R|</code></td><td>实际保留的元组数</td><td>由业务语义决定，且 <code>|R|≤M</code></td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>笛卡儿积的基数 <code>M</code> 表示可能组合数，关系的基数 <code>|R|</code> 表示实际元组数，两者不是同一个量</p></div></div>
-    <div class="numeric-progress">5/17</div>
+M=\lvert D_1\times D_2\times D_3\rvert
+ =\lvert D_1\rvert\cdot\lvert D_2\rvert\cdot\lvert D_3\rvert
+ =2\cdot2\cdot3=12
+$$</div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>笛卡儿积的基数 \(M\) 表示可能组合数，关系的基数 \(\lvert R\rvert\) 表示实际元组数</p></div></div>
+    <div class="numeric-progress">5/20</div>
     <div class="semantic-label">CARTESIAN PRODUCT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:29.4118%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a4b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
+    <h2 class="slide-title">域、元组与基数</h2>
+    <div class="slide-content"><p class="slide-lead">用表格区分笛卡儿积中的形式化概念及其例子</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15.603% 36.569% 47.828%"><colgroup><col style="width:15.603%"><col style="width:36.569%"><col style="width:47.828%"></colgroup><thead><tr><th>概念</th><th>形式化含义</th><th>导师-专业-研究生例子</th></tr></thead><tbody><tr><td>\(n\)</td><td>参与组合的域的个数</td><td>\(n=3\)</td></tr><tr><td>元组</td><td>笛卡儿积中的一个元素</td><td>（张清玫，计算机科学与技术，李勇）</td></tr><tr><td>分量</td><td>元组中的一个值</td><td>张清玫或李勇</td></tr><tr><td>域的基数</td><td>一个域允许的不同取值个数</td><td>\(D_1=2\)，\(D_2=2\)，\(D_3=3\)</td></tr><tr><td>\(M\)</td><td>域基数的乘积，可能元组数</td><td>\(M=2\times2\times3=12\)</td></tr><tr><td>\(\lvert R\rvert\)</td><td>实际保留的元组数</td><td>由业务语义决定，且 \(\lvert R\rvert\le M\)</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">CARTESIAN PRODUCT DETAILS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
 <section id="a5" class="step slide-surface role-content layout-split axis-vertical order-media-group"
-      data-x="3000" data-y="1120" data-z="0"
+      data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
     <h2 class="slide-title">关系从所有可能组合中选择有意义的部分</h2>
-    <div class="slide-content"><p class="slide-lead">笛卡儿积提供可能空间，关系保留符合业务语义的有限元组</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1-cartesian-subset.svg" data-full-src="resources/decks/dbpa-2-1/assets/dbpa-2-1-cartesian-subset.svg" alt="笛卡儿积中的十二个可能组合经过业务语义保留三个有意义元组" tabindex="0" role="button" aria-label="放大图片：笛卡儿积中的十二个可能组合经过业务语义保留三个有意义元组" decoding="async"></figure>
-<div class="component content-group group-align-start"><p>所有可能组合 → 按业务语义筛选 → 有意义的关系 :::</p>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>形式化</h3><p>关系是给定域的笛卡儿积的子集：<code>R ⊆ D₁ × D₂ × … × Dₙ</code></p>
-<p><code>SMP ⊆ D₁ × D₂ × D₃</code>；度 <code>deg(SMP)=3</code>，基数 <code>|SMP|=3</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务语义</h3><p>“导师指导研究生”只保留现实中确实成立的导师、专业和研究生组合。图中 3 个元组来自 12 个可能组合</p></article></div></div></div></div>
-    <div class="numeric-progress">6/17</div>
+    <div class="slide-content"><p class="slide-lead">三个域产生 12 个可能组合，实际只有 3 个导师-专业-研究生组合成立</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1-cartesian-subset.svg" data-full-src="resources/decks/dbpa-2-1/assets/dbpa-2-1-cartesian-subset.svg" alt="笛卡儿积中的十二个可能组合经过业务语义保留三个有意义元组" tabindex="0" role="button" aria-label="放大图片：笛卡儿积中的十二个可能组合经过业务语义保留三个有意义元组" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-open"><p>所有可能组合 → 按业务语义筛选 → 有意义的关系</p></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>形式化</h3><p>关系是给定域的笛卡儿积的子集：\(R \subseteq D_1 \times D_2 \times \cdots \times D_n\)</p>
+<p>关系 \(\mathrm{SMP}\subseteq D_1\times D_2\times D_3\)</p>
+<p>关系的度 \(\operatorname{deg}(\mathrm{SMP})=3\)</p>
+<p>关系的基数 \(\lvert\mathrm{SMP}\rvert=3\)</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>哪些组合在现实中成立</h3><p>“导师指导研究生”关系只保留确实存在的导师、专业和研究生组合</p></article></div></div></div></div>
+    <div class="numeric-progress">7/20</div>
     <div class="semantic-label">RELATION AS SUBSET</div>
-    <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="1120" data-z="0"
+      data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
-    <h2 class="slide-title">关系先满足有限性，再遵守六条基本性质</h2>
-    <div class="slide-content"><p class="slide-lead">关系是有限集合且不保留完全相同的元组；基本关系还需满足六条性质</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="10% 38% 52%"><colgroup><col style="width:10%"><col style="width:38%"><col style="width:52%"></colgroup><thead><tr><th>编号</th><th>基本性质</th><th>课堂判断</th></tr></thead><tbody><tr><td>1</td><td>列同质</td><td>每列分量来自同一个域</td></tr><tr><td>2</td><td>同域列仍须有不同属性名</td><td><code>SUPERVISOR</code> 与 <code>POSTGRADUATE</code> 即使同属 <code>PERSON</code> 域，也要区分列名</td></tr><tr><td>3</td><td>列序无关</td><td>调换列顺序不改变关系</td></tr><tr><td>4</td><td>任意两个元组不能有相同的码值</td><td>不能用相同码值识别两行</td></tr><tr><td>5</td><td>行序无关</td><td>调换行顺序不改变关系</td></tr><tr><td>6</td><td>分量必须原子</td><td>一个单元格不能再装一个小表</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">7/17</div>
+    <h2 class="slide-title">判断一张表能否作为基本关系</h2>
+    <div class="slide-content"><p class="slide-lead">先确认它是有限的元组集合，再逐项检查列、行、码和分量</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="10% 38% 52%"><colgroup><col style="width:10%"><col style="width:38%"><col style="width:52%"></colgroup><thead><tr><th>编号</th><th>基本性质</th><th>课堂判断</th></tr></thead><tbody><tr><td>1</td><td>列同质</td><td>每列分量来自同一个域</td></tr><tr><td>2</td><td>同域列仍须有不同属性名</td><td>即使多个属性同属一个域，也要区分列名</td></tr><tr><td>3</td><td>列序无关</td><td>调换列顺序不改变关系</td></tr><tr><td>4</td><td>任意两个元组的码不能相同</td><td>不能用相同码值识别两行</td></tr><tr><td>5</td><td>行序无关</td><td>调换行顺序不改变关系</td></tr><tr><td>6</td><td>分量必须是原子值</td><td>一个单元格不能再装一个小表</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/20</div>
     <div class="semantic-label">RELATION PROPERTIES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.1765%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
-      data-x="0" data-y="1120" data-z="0"
+      data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
     <h2 class="slide-title">分量原子性：每个分量作为一个值处理</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>把两门课写在一格里，为什么不算一个值？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.68da125e7c38.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>把两门课写在一格里，为什么不算一个值？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">每个分量只包含一个在当前关系模式中不可再分的数据项</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>不符合基本要求</th><th>符合基本要求</th></tr></thead><tbody><tr><td>订单商品：商品 A、商品 B</td><td>订单项分别保存商品 A 与商品 B</td></tr><tr><td>一格中包含多个值</td><td>每个分量只有一个不可再分的值</td></tr><tr><td>查询和更新需要拆解字符串</td><td>每个分量在当前关系模式中作为一个值处理</td></tr></tbody></table></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>不符合基本要求</th><th>符合基本要求</th></tr></thead><tbody><tr><td>订单商品：商品 A、商品 B</td><td>订单项分别保存商品 A 与商品 B</td></tr><tr><td>一格中包含多个值</td><td>每个分量只有一个不可再分的值</td></tr><tr><td>查询和更新需要拆解字符串</td><td>分量在当前关系模式中是一个处理对象</td></tr></tbody></table></div>
 <div class="component component-text text-inset"><p>分量不能再包含一个关系或一组并列值；现实对象可以很复杂，只要在当前关系模式中作为一个值处理即可</p></div></div></div>
-    <div class="numeric-progress">8/17</div>
+    <div class="numeric-progress">9/20</div>
     <div class="semantic-label">ATOMIC COMPONENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:47.0588%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-grid"
-      data-x="0" data-y="2240" data-z="0"
+      data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.1</div>
     <h2 class="slide-title">关系可以来自存储、查询或导出</h2>
-    <div class="slide-content"><p class="slide-lead">三种关系都能用统一的关系结构表示，来源和生命周期不同</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>基本关系</h3><p>实际存在并独立保存的表，例如 Student，是基础数据的逻辑表示</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询结果</h3><p>查询执行后产生的临时关系，例如某班成绩列表，可供显示或后续处理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>视图</h3><p>由基本表或其他视图导出的虚关系，例如学生成绩视图；普通视图保存定义而不是查询结果</p></article></div></div>
+    <div class="slide-content"><p class="slide-lead">区别在于数据是独立保存、查询时临时产生，还是只保存一个视图定义</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>基本关系</h3><p>实际存在并独立保存的表，如<code>Student</code>，是基础数据的逻辑表示</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询结果</h3><p>查询执行后产生的临时关系，如可供显示或后续处理的某班成绩列表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>视图</h3><p>由基本表或其他视图导出的虚关系，如学生成绩视图</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先问数据从哪里来、是否独立保存，再判断关系类型</p></div></div>
-    <div class="numeric-progress">9/17</div>
+    <div class="numeric-progress">10/20</div>
     <div class="semantic-label">THREE RELATION TYPES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:52.9412%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
 <section id="c1" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="2240" data-z="0"
+      data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.2</div>
-    <h2 class="slide-title">关系模式描述关系的结构</h2>
-    <div class="slide-content"><p class="slide-lead">关系模式是型，关系是某时刻的值；完整形式描述域映射和属性依赖</p>
-<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R(U,D,DOM,F)$$</div></div>
-<div class="component component-text text-open"><p>常用简写：<code>R(A₁，A₂，…，Aₙ)</code>；完整形式再说明属性属于哪些域，以及属性间的数据依赖</p></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 42% 44%"><colgroup><col style="width:14%"><col style="width:42%"><col style="width:44%"></colgroup><thead><tr><th>符号</th><th>准确定义</th><th>Student 中的对应</th></tr></thead><tbody><tr><td>R</td><td>关系模式名（也作为关系名使用）</td><td>Student</td></tr><tr><td>U</td><td>属性名集合</td><td>Sno、Sname、Ssex、Sbirthdate、Smajor</td></tr><tr><td>D</td><td>属性所属的域集合</td><td>学号域、姓名域、性别域等</td></tr><tr><td>DOM</td><td>属性到域的映像</td><td><code>DOM(Sno)=学号域</code>；同域属性仍有不同名字</td></tr><tr><td>F</td><td>属性间数据依赖关系的集合</td><td>由关系模式表示的属性依赖</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>R(D₁，…，Dₙ)</code> 只强调关系建立在哪些域上；<code>R(U,D,DOM,F)</code> 描述关系模式结构。<code>F</code> 是属性间数据依赖集合，不等于全部完整性约束</p></div></div>
-    <div class="numeric-progress">10/17</div>
+    <h2 class="slide-title">先用 Student 写结构，再展开关系模式</h2>
+    <div class="slide-content"><p class="slide-lead">简写先列关系名与属性，完整形式再补域映射和数据依赖</p>
+<div class="slide-main-content"><div class="component component-text text-open"><p>课堂中常用 \(R(A_1,A_2,\ldots,A_n)\) 书写关系名和属性</p>
+<p>需要精确说明属性来自哪个域、属性间有哪些数据依赖时，再展开完整形式</p></div>
+<div class="component component-math"><div class="math-block">$$R(U,D,DOM,F)$$</div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>\(R(D1,…,Dn)\) 强调关系和域；\(R(U,D,DOM,F)\) 描述关系模式</p></div></div>
+    <div class="numeric-progress">11/20</div>
     <div class="semantic-label">RELATION SCHEMA</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
+  </section>
+<section id="c1b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.2</div>
+    <h2 class="slide-title">\(R(U,D,DOM,F)\) 中的符号</h2>
+    <div class="slide-content"><p class="slide-lead">关系模式的组成部分<code>Student</code> 中的对应</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 42% 44%"><colgroup><col style="width:14%"><col style="width:42%"><col style="width:44%"></colgroup><thead><tr><th>符号</th><th>准确定义</th><th><code>Student</code> 中的对应</th></tr></thead><tbody><tr><td>\(R\)</td><td>关系模式名（关系名）</td><td><code>Student</code></td></tr><tr><td>\(U\)</td><td>属性名集合</td><td><code>Sno, Sname, Ssex, Sbirthdate, Smajor</code></td></tr><tr><td>\(D\)</td><td>属性所属的域集合</td><td>学号域、姓名域、性别域等</td></tr><tr><td>\(DOM\)</td><td>属性到域的映像</td><td>\(DOM(Sno)\) = 学号域</td></tr><tr><td>\(F\)</td><td>属性间数据依赖关系的集合</td><td>由关系模式表示的属性依赖</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">RELATION SCHEMA SYMBOLS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
 <section id="c2" class="step slide-surface role-content layout-grid"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.2</div>
     <h2 class="slide-title">候选码的成立依赖业务规则</h2>
     <div class="slide-content"><p class="slide-lead">候选码先由唯一性和最小性确定，主码再从候选码中选定</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>候选码 Candidate Key</h3><p>一个属性或属性组能够唯一标识元组，且任何真子集都不能做到</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>主码 Primary Key</h3><p>从候选码中选定一个作为关系元组的主要标识</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>主属性与非主属性</h3><p>属于任一候选码的属性是主属性，不属于任何候选码的属性是非主属性</p></article></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 28% 24%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:28%"><col style="width:24%"></colgroup><thead><tr><th>候选标识</th><th>唯一性</th><th>最小性</th><th>结论</th></tr></thead><tbody><tr><td><code>Sno</code></td><td>否：同一学生可修多门课</td><td>—</td><td>不能作为候选码</td></tr><tr><td><code>Cno</code></td><td>否：同一课程可有多名学生</td><td>—</td><td>不能作为候选码</td></tr><tr><td><code>(Sno，Cno)</code></td><td>是：同一学生同一课程只登记一次</td><td>是：任一单属性均不唯一</td><td>候选码；选定后可为主码</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>简化关系 <code>Enrollment(Sno，Cno，Grade)</code> 的前提：同一学生同一课程只登记一次，不考虑重修、跨学期重复或多个教学班。若允许这些情况，候选码可能需要包含 <code>Semester</code>、<code>Teachingclass</code> 等属性</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>样例里没有重复，这组属性就一定是候选码吧？</p></div></div></div></aside>
-    <div class="numeric-progress">11/17</div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>候选码 Candidate Key</h3><p>某属性或属性组能够唯一标识元组，且该属性组的任何真子集都不能</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>主码 Primary Key</h3><p>从候选码中选定一个，作为关系元组的主要标识。由 DBA 选定</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>主属性与非主属性</h3><p>属于任一候选码的属性叫主属性；不属于任何候选码的属性，叫非主属性</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若允许重修、跨学期重复或多个教学班，候选码会是什么？</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="58.955" data-character-exposure="57.591" data-character-scale="0.9" style="--character-along:58.955%;--character-exposure:57.591;--character-hidden:42.409%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>样例里没有重复值的属性就一定是候选码吧？</p></div></div></div></aside>
+    <div class="numeric-progress">13/20</div>
     <div class="semantic-label">KEYS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:64.7059%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+  </section>
+<section id="c2b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.2</div>
+    <h2 class="slide-title">用唯一性与最小性检查候选码</h2>
+    <div class="slide-content"><p class="slide-lead">以 <code>Enrollment</code> 为例，逐项检查单属性和属性组是否满足候选码条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18.682% 36.776% 20.54% 24.002%"><colgroup><col style="width:18.682%"><col style="width:36.776%"><col style="width:20.54%"><col style="width:24.002%"></colgroup><thead><tr><th>候选标识</th><th>唯一性</th><th>最小性</th><th>结论</th></tr></thead><tbody><tr><td><code>Sno</code></td><td>否：同一学生可修多门课</td><td>—</td><td>不能作为候选码</td></tr><tr><td><code>Cno</code></td><td>否：同一课程可有多名学生</td><td>—</td><td>不能作为候选码</td></tr><tr><td><code>(Sno, Cno)</code></td><td>是：同一学生同一课程只登记一次</td><td>是：任一单属性均不唯一</td><td>候选码；可以选为主码</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">CANDIDATE KEY CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
   </section>
 <section id="c3" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.2</div>
-    <h2 class="slide-title">关系模式与关系实例必须分开</h2>
-    <div class="slide-content"><p class="slide-lead">关系模式说明可以怎样组织，关系实例说明此刻保存了什么</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1-schema-instance.svg" data-full-src="resources/decks/dbpa-2-1/assets/dbpa-2-1-schema-instance.svg" alt="同一关系模式对应两个时刻的关系实例" tabindex="0" role="button" aria-label="放大图片：同一关系模式对应两个时刻的关系实例" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>关系模式</h3><p>静态、稳定的结构描述</p>
-<p><code>Student(Sno，Sname，Ssex，Sbirthdate，Smajor)</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>关系实例</h3><p>某一时刻的学生记录集合</p>
+    <h2 class="slide-title">关系模式与关系实例</h2>
+    <div class="slide-content"><p class="slide-lead">关系模式列出属性、域和规则，关系实例是此刻保存在这些属性下的一组记录</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-2-1/assets/dbpa-2-1-schema-instance.svg" data-full-src="resources/decks/dbpa-2-1/assets/dbpa-2-1-schema-instance.svg" alt="同一关系模式对应两个时刻的关系实例" tabindex="0" role="button" aria-label="放大图片：同一关系模式对应两个时刻的关系实例" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>关系模式</h3><p>列出属性名称、取值域和规则，不包含某个时刻的具体学生记录</p>
+<p><code>Student(Sno, Sname, Ssex, Sbirthdate, Smajor)</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>关系实例</h3><p>某一时刻的学生记录集合</p>
 <p>新增、删除或修改记录都会改变实例</p></article></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>模式是型，关系是值</p></div></div>
-    <div class="numeric-progress">12/17</div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>关系模式是型，关系实例是值</p></div></div>
+    <div class="numeric-progress">15/20</div>
     <div class="semantic-label">SCHEMA AND INSTANCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:70.5882%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
   </section>
 <section id="d1" class="step slide-surface role-content layout-focus"
-      data-x="4500" data-y="3360" data-z="0"
+      data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.3</div>
-    <h2 class="slide-title">关系数据库：模式、数据库值与 RDBMS</h2>
-    <div class="slide-content"><p class="slide-lead">实体和联系分别用关系表示；某一时刻各关系实例的集合构成数据库的值</p>
-<div class="slide-main-content"><div class="component component-text text-open"><p><code>DB_t = {Student_t，Course_t，SC_t}</code></p>
-<p>→ 某一时刻的学生选课关系数据库值</p></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>层次</th><th>描述</th><th>学生选课例子</th></tr></thead><tbody><tr><td>关系数据库模式</td><td>所有关系模式的集合</td><td>Student、Course、SC 的结构</td></tr><tr><td>关系数据库值</td><td>某一时刻对应关系的集合</td><td>某学年某时刻的三组记录</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p><code>RDBMS</code> 是管理这些模式和值的数据库管理系统，不是数据库值中的第三类关系</p></div></div></div>
-    <div class="numeric-progress">13/17</div>
+    <h2 class="slide-title">三张关系在某一时刻组成数据库值</h2>
+    <div class="slide-content"><p class="slide-lead">关系模式集合描述结构，某一时刻的关系集合描述数据库值</p>
+<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$
+\mathrm{DB}_t
+=
+\{\mathrm{Student}_t,\mathrm{Course}_t,\mathrm{SC}_t\}
+$$</div></div>
+<div class="component component-text text-open"><p>上式表示某一时刻的学生选课关系数据库值</p></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>层次</th><th>描述</th><th>学生选课例子</th></tr></thead><tbody><tr><td>关系数据库模式</td><td>所有关系模式的集合</td><td><code>Student</code>、<code>Course</code>、<code>SC</code>表</td></tr><tr><td>关系数据库值</td><td>某一时刻对应关系的集合</td><td>某学年某时刻的三组记录</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>关系型数据管理系统（RDBMS）是管理这些模式和值的 DBMS</p></div></div></div>
+    <div class="numeric-progress">16/20</div>
     <div class="semantic-label">RELATIONAL DATABASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:76.4706%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
-      data-x="3000" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+<section id="d2" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1 <span>|</span> 2.1.4</div>
     <h2 class="slide-title">RDBMS 把逻辑关系映射为内部存储结构</h2>
     <div class="slide-content"><p class="slide-lead">用户用关系语言表达数据，RDBMS 负责内部存储</p>
-<div class="slide-main-content"><div class="component component-text text-open"><p>关系模型 / 关系语言　→　RDBMS　→　文件、页、索引等物理结构</p></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑层</h3><p>关系、关系模式和关系语言描述用户能够理解的逻辑结构与操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存储层</h3><p>RDBMS 选择并组织文件、页、索引等内部存储结构；具体实现可以不同</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一逻辑关系可采用不同的内部存储组织；RDBMS 负责管理文件、页和索引等物理结构</p></div></div>
-    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-astonished" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-astonished.32ac26b4b510.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>同一逻辑关系，内部竟然可以有不同存储方式？</p></div></div></div></aside>
-    <div class="numeric-progress">14/17</div>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="关系模型 / 关系语言 → RDBMS → 文件、页、索引等物理结构"><span class="relation-term">关系模型 / 关系语言</span><span class="relation-operator">→</span><span class="relation-term">RDBMS</span><span class="relation-operator">→</span><span class="relation-term">文件、页、索引等物理结构</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑层</h3><p>关系、关系模式和关系语言描述用户能够理解的逻辑结构与操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存储层</h3><p>RDBMS 选择并组织文件、页、索引等内部存储结构；具体实现可以不同</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一逻辑关系可采用不同的内部存储组织</p></div></div>
+    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="81.857" data-character-exposure="66.807" data-character-scale="0.9" style="--character-along:81.857%;--character-exposure:66.807;--character-hidden:33.193%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.118c9bc54e70.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>同一逻辑关系，内部竟然可以有不同存储方式？</p></div></div></div></aside>
+    <div class="numeric-progress">17/20</div>
     <div class="semantic-label">STORAGE STRUCTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:82.3529%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
   </section>
 <section id="review" class="step slide-surface role-review layout-grid"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1</div>
-    <h2 class="slide-title">从形式化结构判断关系</h2>
-    <div class="slide-content"><p class="slide-lead">看到一张表时，需要同时检查结构、性质、类型、模式与存储边界</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>结构</h3><p>列→属性→域，行→元组，单元格→分量；度为 <code>n</code>，基数为 <code>|R|</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>性质与类型</h3><p>六条性质要求列同质、同域不同名、列序无关、码不重复、行序无关、分量原子；再判断基本关系、查询结果还是视图</p></article><article class="content-card emphasis-card" tabindex="0"><h3>模式、数据库与存储</h3><p><code>R(U,D,DOM,F)</code> 描述关系模式；候选码和主码标识元组。模式是型，关系是值；数据库模式是模式集合，数据库值是实例集合。RDBMS 负责组织物理存储</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>看到一张表时，依次问：它的属性、元组、度和基数是什么？满足哪些性质？属于哪种关系？模式、码和物理存储边界又是什么？</p></div></div>
-    <div class="numeric-progress">15/17</div>
+    <h2 class="slide-title">练习：给一张表做三步检查</h2>
+    <div class="slide-content"><p class="slide-lead">任选订单项表或玩家对局表，不看前页结论，完成下面三项检查</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>标出结构</h3><p>指出属性、元组和分量，计算关系的度与基数，并说明每个属性来自什么域</p></article><article class="content-card emphasis-card" tabindex="0"><h3>检查是否合格</h3><p>检查六条基本性质，根据来源和保存方式判断它是基本关系、查询结果还是视图</p></article><article class="content-card emphasis-card" tabindex="0"><h3>解释型和值</h3><p>写出关系模式和候选码前提，说明实例、数据库与 RDBMS 物理存储各处在哪一层</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>为什么当前样例中没有重复，仍不足以证明某组属性是候选码？</p></div></div>
+    <div class="numeric-progress">18/20</div>
     <div class="semantic-label">SECTION REVIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="0" data-y="3360" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-1/mindmap-2-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">16/17</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-1/mindmap-2-1.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">19/20</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="0" data-y="4480" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">域、笛卡儿积、元组、分量和关系如何联系？a5 中 <code>M</code>、<code>|SMP|</code> 和关系的度分别是多少？</span></li><li><span class="question-no">02</span><span class="question-text">六条基本性质分别限制什么？为什么“订单商品 A、商品 B”放在一个单元格中不符合原子性？</span></li><li><span class="question-no">03</span><span class="question-text">基本关系、查询结果和视图分别从哪里来？它们的保存方式和生命周期有什么不同？</span></li><li><span class="question-no">04</span><span class="question-text">候选码和主码有什么区别？为什么当前样例不重复仍不足以证明候选码成立？若允许重修，业务规则会怎样影响候选码？</span></li><li><span class="question-no">05</span><span class="question-text">为什么关系模式是型、关系是值？关系数据库模式和值如何区分？为什么用户不必直接指定物理文件、页和索引？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">在导师-专业-研究生例子中，域、笛卡儿积、元组、分量和关系如何联系？</span></li><li><span class="question-no">02</span><span class="question-text">六条基本性质分别限制什么？</span></li><li><span class="question-no">03</span><span class="question-text">基本关系、查询结果和视图的保存方式和生命周期有什么不同？</span></li><li><span class="question-no">04</span><span class="question-text">候选码和主码有什么区别？为什么样例不重复仍不足以证明候选码成立？</span></li><li><span class="question-no">05</span><span class="question-text">把学生选课案例换成订单与订单项后，怎样区分关系模式、关系实例、数据库模式和数据库值？为什么用户不必直接指定物理文件、页和索引？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-1-5.html" title="上一节：1.5 数据库系统的体系结构" aria-label="上一节：1.5 数据库系统的体系结构">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -261,7 +298,7 @@ $$</div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">17/17</div>
+    <div class="numeric-progress">20/20</div>
     <div class="semantic-label">SECTION QUESTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

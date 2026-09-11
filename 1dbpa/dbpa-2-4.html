@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 2.4 关系代数 | HUST</title>
-  <meta name="description" content="用关系代数表达集合筛选、关系组合和对所有条件的查询">
+  <meta name="description" content="用并、差、交、选择、投影、连接和除表达名单合并、筛行、留列、按学号匹配与“满足全部”">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="2-4">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 2.4</div>
       <h1>关系代数</h1>
-      <p class="cover-description">用关系运算表达查询问题</p>
+      <p class="cover-description">输入、处理、输出</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,221 +44,235 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">关系代数把查询问题表示为可组合的关系运算，并保留每一步的结构和语义</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明关系代数的运算对象、运算符和运算结果</span></li><li><span class="list-marker">02</span><span class="list-text">说明 8 种运算，并区分集合/专门与基本/可导出两条分类轴</span></li><li><span class="list-marker">03</span><span class="list-text">用选择和投影表达行筛选与列筛选</span></li><li><span class="list-marker">04</span><span class="list-text">解释连接如何组合两个关系</span></li><li><span class="list-marker">05</span><span class="list-text">用除表达对所有对象都满足的条件</span></li><li><span class="list-marker">06</span><span class="list-text">构造并检查综合关系代数表达式</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/20</div>
+    <div class="slide-content"><p class="slide-lead">选择运算，并说清每个中间结果有哪些列、每行代表什么</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">对一个查询指出输入关系、运算符、输出中的行与列，以及回答了什么问题</span></li><li><span class="list-marker">02</span><span class="list-text">判断并、差、交的相容条件，并预测笛卡儿积的结果规模</span></li><li><span class="list-marker">03</span><span class="list-text">用选择、投影和连接表达行筛选、列筛选与跨关系组合</span></li><li><span class="list-marker">04</span><span class="list-text">（可选）用象集覆盖解释“满足全部指定条件”的除运算</span></li><li><span class="list-marker">05</span><span class="list-text">用 \(R_1,R_2,\ldots\) 构造综合表达式，并检查每张结果表的列和行</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/21</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.5238%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.1</div>
-    <h2 class="slide-title">关系代数有三个要素和两条分类轴</h2>
-    <div class="slide-content"><p class="slide-lead">任何一个关系运算都要说明对什么做什么以及得到什么</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>运算对象</h3><p>关系是关系代数的输入</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算符</h3><p>规定如何合并、筛选或变换关系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算结果</h3><p>结果仍然是关系，可以继续参与运算</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按类别：集合运算（并、差、交、笛卡儿积）｜专门运算（选择、投影、连接、除）</p>
-<p>按可导出性：基本运算（并、差、笛卡儿积、选择、投影）｜可导出运算（交、连接、除）；两条分类轴彼此独立、可以交叉：选择属于“专门且基本”，连接属于“专门且可导出”</p></div></div>
-    <div class="numeric-progress">3/20</div>
+    <h2 class="slide-title">追踪一次查询</h2>
+    <div class="slide-content"><p class="slide-lead">筛选 <code>SC</code> 得到 \(R_1\)，保留 <code>Sno</code> 得到 \(R_2\)；如果结果非空则继续连接 <code>Student</code></p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="`SC` → 筛 81002 → 取 `Sno` → 连 `Student` → 取 `Sname`"><span class="relation-term"><code>SC</code></span><span class="relation-operator">→</span><span class="relation-term">筛 81002</span><span class="relation-operator">→</span><span class="relation-term">取 <code>Sno</code></span><span class="relation-operator">→</span><span class="relation-term">连 <code>Student</code></span><span class="relation-operator">→</span><span class="relation-term">取 <code>Sname</code></span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>输入关系</h3><p>先从保存选课记录的 <code>SC</code> 开始</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算步骤</h3><p>筛选课程号、保留学号、匹配学生姓名</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输出关系</h3><p>每一步都产生一个关系，能够交给下一步</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>\(R_1\) 作为投影的输入，\(R_2\) 作为连接的输入</p></div></div>
+    <div class="numeric-progress">3/21</div>
     <div class="semantic-label">ALGEBRA ELEMENTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-grid"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.1</div>
-    <h2 class="slide-title">集合运算先检查两个关系是否相容</h2>
-    <div class="slide-content"><p class="slide-lead">并、差和交要求两个关系相容：相同目、对应位置同域，属性名不必相同</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>相同的目</h3><p>两个关系具有相同的属性数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>对应位置同域</h3><p>相应位置的属性来自同一个域</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结果结构一致</h3><p>并、差和交保留相应属性结构；不要求属性名相同</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>属性名不同，也能做并、差和交吗？</p></div></div></div></aside>
-    <div class="numeric-progress">4/20</div>
-    <div class="semantic-label">SET COMPATIBILITY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <h2 class="slide-title">同一个关系运算，两个分类标签</h2>
+    <div class="slide-content"><p class="slide-lead">是集合运算还是关系运算？是基本运算还是导出运算</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>集合运算与关系运算</h3><p>并、差、交、笛卡儿积从元组集合出发；选择、投影、连接、除还会使用条件或属性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>基本运算与可导出运算</h3><p>并、差、笛卡儿积、选择、投影是基本运算；交、连接、除可由它们表达</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择是“专门且基本”，连接是“专门且可导出”；两条分类轴彼此独立</p></div></div>
+    <div class="numeric-progress">4/21</div>
+    <div class="semantic-label">OPERATION CLASSIFICATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-grid"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.1</div>
-    <h2 class="slide-title">并、差和交处理元组集合</h2>
-    <div class="slide-content"><p class="slide-lead">它们从关系的水平角度合并或比较行</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 40% 38%"><colgroup><col style="width:22%"><col style="width:40%"><col style="width:38%"></colgroup><thead><tr><th>运算</th><th>表达式</th><th>结果含义</th></tr></thead><tbody><tr><td>并</td><td>\(R \cup S\)</td><td>属于 \(R\) 或属于 \(S\) 的元组</td></tr><tr><td>差</td><td>\(R - S\)</td><td>属于 \(R\) 而不属于 \(S\) 的元组</td></tr><tr><td>交</td><td>\(R \cap S\)</td><td>同时属于 \(R\) 和 \(S\) 的元组</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>差运算有方向；并、差和交的结果都不改变元组的属性结构</p></div></div>
-    <div class="numeric-progress">5/20</div>
-    <div class="semantic-label">SET OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+    <h2 class="slide-title">并、差、交运算需要先检查是否相容</h2>
+    <div class="slide-content"><p class="slide-lead">并、差、交的两个输入必须属性数相同、对应位置同域</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>相同的目</h3><p>两个关系具有相同的属性数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>对应位置同域</h3><p>相应位置的属性来自同一个域</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结果结构一致</h3><p>保留相应属性结构；不要求属性名相同</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="61.456" data-character-exposure="59.856" data-character-scale="0.9" style="--character-along:61.456%;--character-exposure:59.856;--character-hidden:40.144%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>属性名不同，也能做并、差和交吗？</p></div></div></div></aside>
+    <div class="numeric-progress">5/21</div>
+    <div class="semantic-label">SET COMPATIBILITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.8095%"></div></div>
   </section>
-<section id="a5" class="step slide-surface role-content layout-focus"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.1</div>
-    <h2 class="slide-title">笛卡儿积组合两个关系的所有元组</h2>
-    <div class="slide-content"><p class="slide-lead">笛卡儿积不要求两个关系相容，\(R\) 的每个元组都与 \(S\) 的每个元组组合</p>
-<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R \times S$$</div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>结果规模与结构</h3><p>若 \(R\) 有 \(k_1\) 个元组，\(S\) 有 \(k_2\) 个元组，结果有 \(k_1 \times k_2\) 个元组；结果属性数为 \(R\) 与 \(S\) 的属性数之和，同名属性用关系名区分</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务意义</h3><p>所有组合通常只是候选空间，必须配合条件筛选或连接</p></article></div></div></div>
-    <div class="numeric-progress">6/20</div>
-    <div class="semantic-label">CARTESIAN PRODUCT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
+    <h2 class="slide-title">用并、差和交回答三个问题</h2>
+    <div class="slide-content"><p class="slide-lead">合并两份名单、找只在第一份的人、找两份都出现的人</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 40% 38%"><colgroup><col style="width:22%"><col style="width:40%"><col style="width:38%"></colgroup><thead><tr><th>运算</th><th>表达式</th><th>结果含义</th></tr></thead><tbody><tr><td>并</td><td>\(R \cup S\)</td><td>属于 \(R\) 或属于 \(S\) 的元组</td></tr><tr><td>差</td><td>\(R - S\)</td><td>属于 \(R\) 而不属于 \(S\) 的元组</td></tr><tr><td>交</td><td>\(R \cap S\)</td><td>同时属于 \(R\) 和 \(S\) 的元组</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>差运算有方向；并、差和交的结果都不改变元组的属性结构</p></div></div>
+    <div class="numeric-progress">6/21</div>
+    <div class="semantic-label">SET OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a5" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">选择 Selection 保留满足条件的行</h2>
-    <div class="slide-content"><p class="slide-lead">选择判断 \(R\) 中每个元组，只保留使 \(F(t)\) 为真的元组</p>
-<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$\sigma_F(R)$$</div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>结构变化</h3><p>结果保留 \(R\) 的全部属性，只减少元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Student 关系</h3><p>\(\sigma_{\mathrm{Smajor}=\text{信息管理与信息系统}}(\mathrm{Student})\) 找出符合专业条件的学生</p></article></div></div></div>
-    <div class="numeric-progress">7/20</div>
-    <div class="semantic-label">SELECTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.1</div>
+    <h2 class="slide-title">笛卡儿积：组合两个关系的所有元组</h2>
+    <div class="slide-content"><p class="slide-lead">笛卡儿积不要求两个关系相容，\(R\) 的每个元组都与 \(S\) 的每个元组组合</p>
+<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R \times S$$</div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>结果规模与结构</h3><p>若 \(R\) 有 \(k_1\) 个元组，\(S\) 有 \(k_2\) 个元组，结果有 \(k_1 \times k_2\) 个元组；结果属性数为 \(R\) 与 \(S\) 的属性数之和，同名属性用关系名区分</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>业务意义</h3><p>结果先包含匹配与不匹配的所有行对，通常还要用条件筛掉不需要的配对</p></article></div></div></div>
+    <div class="numeric-progress">7/21</div>
+    <div class="semantic-label">CARTESIAN PRODUCT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">投影 Projection 保留需要的列</h2>
-    <div class="slide-content"><p class="slide-lead">投影只保留指定属性列；取消部分列后，完全相同的元组只保留一次</p>
-<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$\Pi_A(R)$$</div></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>Student 关系</h3><p>\(\Pi_{\mathrm{Sno},\mathrm{Smajor}}(\mathrm{Student})\) 只保留学号和主修专业 \(\Pi_{\mathrm{Smajor}}(\mathrm{Student})\) 只保留不同的主修专业；示例数据的 7 个学生投影后得到 4 个不同值</p></article></div></div></div>
-    <div class="numeric-progress">8/20</div>
-    <div class="semantic-label">PROJECTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <h2 class="slide-title">选择 Selection：找出信息管理专业学生</h2>
+    <div class="slide-content"><p class="slide-lead">选择判断 \(R\) 中每个元组，只保留使 \(F(t)\) 为真的元组</p>
+<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$\sigma_F(R)$$</div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>结构变化</h3><p>结果保留 \(R\) 的全部属性，只减少元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3><code>Student</code> 关系</h3><p>\(\sigma_{\mathrm{Smajor}=\text{信息管理与信息系统}}(\mathrm{Student})\) 找出符合专业条件的学生</p></article></div></div></div>
+    <div class="numeric-progress">8/21</div>
+    <div class="semantic-label">SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.0952%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">选择与投影回答两个不同问题</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只想要姓名，为什么还要同时考虑行和列？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先判断要减少行还是减少列</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 38% 39%"><colgroup><col style="width:23%"><col style="width:38%"><col style="width:39%"></colgroup><thead><tr><th>运算</th><th>保留什么</th><th>典型问题</th></tr></thead><tbody><tr><td>选择</td><td>满足条件的元组</td><td>哪些学生属于信息管理专业</td></tr><tr><td>投影</td><td>指定的属性列</td><td>需要显示学生的哪些信息</td></tr><tr><td>选择后投影（组合表达式）</td><td>条件对象的指定信息</td><td>这些学生的学号和姓名是什么</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">9/20</div>
-    <div class="semantic-label">SELECTION AND PROJECTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
+    <h2 class="slide-title">投影 Projection：列出学生主修专业</h2>
+    <div class="slide-content"><p class="slide-lead">投影只保留指定属性列；取消部分列后，完全相同的元组只保留一次</p>
+<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$\Pi_A(R)$$</div></div>
+<div class="component component-text text-inset"><h3><code>Student</code> 关系</h3>
+<p>\(\Pi_{\mathrm{Sno},\mathrm{Smajor}}(\mathrm{Student})\) 只保留学号和主修专业</p>
+<p>\(\Pi_{\mathrm{Smajor}}(\mathrm{Student})\) 只保留不同的主修专业</p></div></div></div>
+    <div class="numeric-progress">9/21</div>
+    <div class="semantic-label">PROJECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">连接前先明确元组和属性组</h2>
-    <div class="slide-content"><p class="slide-lead">这些符号说明连接表达式中的关系、元组和属性组</p>
-<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">关系与元组</h3><div class="key-value-value"><p>\(R(A_1,A_2,\ldots,A_n)\) 是关系模式；\(t_R \in R\)、\(t_S \in S\) 分别表示两个输入关系中的元组</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">属性组</h3><div class="key-value-value"><p>\(A\)、\(B\) 分别是 \(R\)、\(S\) 的属性组；\(t_R[A]\)、\(t_S[B]\) 是对应的分量组</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">元组连接</h3><div class="key-value-value"><p>把 \(R\) 中元组与 \(S\) 中元组串接，形成更长的元组</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">象集</h3><div class="key-value-value"><p>固定 \(X\) 上的值 \(x\) 后，收集 \(R\) 中对应元组在 \(Y\) 上的分量集合 \(Y_x\)；除运算用它表达“全部”条件</p></div></div></div></div></div>
-    <div class="numeric-progress">10/20</div>
-    <div class="semantic-label">OPERATION NOTATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <h2 class="slide-title">选择与投影</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="61.765" data-character-exposure="63.729" data-character-scale="0.9" style="--character-along:61.765%;--character-exposure:63.729;--character-hidden:36.271%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.68da125e7c38.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只想要姓名，为什么还要同时考虑行和列？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先判断要减少行还是减少列</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 38% 39%"><colgroup><col style="width:23%"><col style="width:38%"><col style="width:39%"></colgroup><thead><tr><th>运算</th><th>保留什么</th><th>典型问题</th></tr></thead><tbody><tr><td>选择</td><td>满足条件的元组</td><td>哪些学生属于信息管理专业</td></tr><tr><td>投影</td><td>指定的属性列</td><td>需要显示学生的哪些信息</td></tr><tr><td>选择后投影</td><td>满足条件的行中的指定列</td><td>这些学生的学号和姓名是什么</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/21</div>
+    <div class="semantic-label">SELECTION AND PROJECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">连接从候选组合中保留匹配元组</h2>
-    <div class="slide-content"><p class="slide-lead">A、B 分别是 \(R\)、\(S\) 中列数相等且值可比较的属性组，\(\theta\) 是比较运算符</p>
-<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R \Join_{A \,\theta\, B} S$$</div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>θ 与等值连接</h3><p>\(\theta\) 连接从 \(R \times S\) 中保留满足 \(t_R[A] \,\theta\, t_S[B]\) 的元组；\(\theta\) 为等号时是等值连接</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>自然连接</h3><p>同名属性等值匹配，并删除重复的连接列</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>连接就是把两张表直接拼在一起吧？</p></div></div></div></aside>
-    <div class="numeric-progress">11/20</div>
-    <div class="semantic-label">JOIN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
+    <h2 class="slide-title">找出学号相同的 Student 与 SC 元组</h2>
+    <div class="slide-content"><p class="slide-lead">连接从候选组合中保留学号匹配的元组</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="19.077% 80.923%" style="--key-value-columns:minmax(0,19.077fr) minmax(0,80.923fr)"><div class="key-value-item substep"><h3 class="key-value-key">关系与元组</h3><div class="key-value-value"><p>\(t_{\mathrm{Student}} \in \mathrm{Student}\)、\(t_{\mathrm{SC}} \in \mathrm{SC}\) 分别表示两个输入关系中的一行</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">属性组</h3><div class="key-value-value"><p>\(t_{\mathrm{Student}}[\mathrm{Sno}]\)、\(t_{\mathrm{SC}}[\mathrm{Sno}]\) 取出两行中用来比较的学号分量</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">元组连接</h3><div class="key-value-value"><p>学号匹配时，把两行的属性串接为更长的结果元组</p></div></div></div></div></div>
+    <div class="numeric-progress">11/21</div>
+    <div class="semantic-label">OPERATION NOTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.3810%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">连接让分散在不同关系中的信息重新组合</h2>
-    <div class="slide-content"><p class="slide-lead">\(SC\) 记录有课程号和学号，姓名与课程名需要从其他关系取得</p>
-<div class="slide-main-content"><div class="component component-text text-inset"><p>在参照完整性成立时，每条 SC 都能匹配 Student 和 Course；但没有选课的 Student 或没有学生选修的 Course 仍可能成为另一侧的悬浮元组</p></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>连接</th><th>匹配条件</th><th>结果关注</th></tr></thead><tbody><tr><td>自然连接 Student 与 SC</td><td>\(\mathrm{Student}.\mathrm{Sno}=\mathrm{SC}.\mathrm{Sno}\)</td><td>补出 \(\mathrm{Sname}\)；同名连接列只保留一列</td></tr><tr><td>自然连接 Course 与 SC</td><td>\(\mathrm{Course}.\mathrm{Cno}=\mathrm{SC}.\mathrm{Cno}\)</td><td>补出 \(\mathrm{Cname}\)；同名连接列只保留一列</td></tr><tr><td>悬浮元组</td><td>连接条件属性上没有匹配</td><td>普通自然连接中舍弃</td></tr><tr><td>外连接</td><td>保留悬浮元组</td><td>未匹配一侧的属性填入 \(\mathrm{NULL}\)</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>无匹配元组是悬浮元组，普通自然连接会舍弃它们；外连接保留悬浮元组，并在缺失一侧填入 <code>NULL</code></p></div></div>
-    <div class="numeric-progress">12/20</div>
+    <h2 class="slide-title">匹配学号，再组合两边属性</h2>
+    <div class="slide-content"><p class="slide-lead">\(A\)、\(B\) 分别是 \(R\)、\(S\) 中列数相等且值可比较的属性组，\(\theta\) 是比较运算符</p>
+<div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R \underset{A \,\theta\, B}{\bowtie} S$$</div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>θ 与等值连接</h3><p>\(\theta\) 连接从 \(R \times S\) 中保留满足 \(t_R[A] \,\theta\, t_S[B]\) 的元组；\(\theta\) 为等号时是等值连接</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>自然连接</h3><p>同名属性等值匹配，并删除重复的连接列</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="95" data-character-exposure="74.085" data-character-scale="0.9" style="--character-along:95%;--character-exposure:74.085;--character-hidden:25.915%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>连接就是把两张表直接拼在一起吧？</p></div></div></div></aside>
+    <div class="numeric-progress">12/21</div>
+    <div class="semantic-label">JOIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
+    <h2 class="slide-title">SC 连接后取得学生姓名和课程名</h2>
+    <div class="slide-content"><p class="slide-lead">某个关系中不存在的属性，往往需要从其他关系取得</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>没有选课的 <code>Student</code> 或没有学生选修的 <code>Course</code> 成为悬浮元组</p></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="21.605% 41.394% 37.001%"><colgroup><col style="width:21.605%"><col style="width:41.394%"><col style="width:37.001%"></colgroup><thead><tr><th>连接</th><th>匹配条件</th><th>结果关注</th></tr></thead><tbody><tr><td><code>Student</code> 与 <code>SC</code></td><td>\(\mathrm{Student}.\mathrm{Sno}=\mathrm{SC}.\mathrm{Sno}\)</td><td>补出 \(\mathrm{Sname}\)</td></tr><tr><td>悬浮元组</td><td>连接条件属性上没有匹配</td><td>普通自然连接中舍弃</td></tr><tr><td>外连接</td><td>保留悬浮元组</td><td>未匹配的属性填入 \(\mathrm{NULL}\)</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>无匹配元组是悬浮元组，普通自然连接会舍弃它们；外连接保留悬浮元组</p></div></div>
+    <div class="numeric-progress">13/21</div>
     <div class="semantic-label">JOIN RESULT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
   </section>
 <section id="c4" class="step slide-surface role-content layout-focus"
-      data-x="4500" data-y="3360" data-z="0"
+      data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
     <h2 class="slide-title">等值连接与自然连接的差异在结果结构</h2>
     <div class="slide-content"><p class="slide-lead">两者都按相等条件匹配，但自然连接还处理重复属性列</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 38% 40%"><colgroup><col style="width:22%"><col style="width:38%"><col style="width:40%"></colgroup><thead><tr><th>类型</th><th>匹配条件</th><th>结果列结构</th></tr></thead><tbody><tr><td>θ 连接</td><td>\(A \,\theta\, B\)，\(\theta \in \{&gt;,\ge,&lt;,\le,=,\ne\}\)</td><td>保留两个输入关系的属性列</td></tr><tr><td>等值连接</td><td>\(A = B\)</td><td>保留两个输入关系的属性列</td></tr><tr><td>自然连接</td><td>同名属性等值匹配</td><td>删除重复的同名连接列</td></tr></tbody></table></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 38% 40%"><colgroup><col style="width:22%"><col style="width:38%"><col style="width:40%"></colgroup><thead><tr><th>类型</th><th>匹配条件</th><th>结果列结构</th></tr></thead><tbody><tr><td>\(\theta\) 连接</td><td>\(A \,\theta\, B\)，\(\theta \in \{&gt;,\ge,&lt;,\le,=,\ne\}\)</td><td>保留两个输入关系的属性列</td></tr><tr><td>等值连接</td><td>\(A = B\)</td><td>保留两个输入关系的属性列</td></tr><tr><td>自然连接</td><td>同名属性等值匹配</td><td>删除重复的同名连接列</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>等值连接只按相等匹配；自然连接还删除重复的同名连接列</p></div></div>
-    <div class="numeric-progress">13/20</div>
+    <div class="numeric-progress">14/21</div>
     <div class="semantic-label">JOIN VARIANTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
   </section>
 <section id="d1" class="step slide-surface role-content layout-focus"
-      data-x="3000" data-y="3360" data-z="0"
+      data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">除 Division 表达对所有条件都满足</h2>
-    <div class="slide-content"><p class="slide-lead">只有当 X 的象集覆盖 S 在 Y 上的全部要求时，X 才进入结果</p>
+    <h2 class="slide-title">除 Division：检查课程集合是否覆盖要求</h2>
+    <div class="slide-content"><p class="slide-lead">学生的已修课程象集覆盖全部指定课程时，该学生进入结果</p>
 <div class="slide-main-content"><div class="component component-math"><div class="math-block">$$R(X,Y) \div S(Y,Z) = P(X)$$</div></div>
-<div class="component component-text text-inset"><p>\(R\) 与 \(S\) 中参与比较的属性组要求列数相等、对应位置同域；属性名可以不同</p></div>
+<div class="component component-text text-inset"><p>\(R\) 与 \(S\) 中参与比较的属性组列数相等、对应位置同域；属性名可以不同</p></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>象集</h3><p>固定 \(x\)，\(Y_x = \{t[Y] \mid t \in R \land t[X] = x\}\)</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>覆盖</h3><p>若 \(\Pi_Y(S) \subseteq Y_x\)，则 \(x\) 进入结果 \(P\)。例如目标集合为 \(\{y_1,y_2\}\) 时，只有象集同时包含 \(y_1\) 和 \(y_2\) 的 \(x\) 入选</p></article></div></div></div>
-    <div class="numeric-progress">14/20</div>
+    <div class="numeric-progress">15/21</div>
     <div class="semantic-label">DIVISION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
   </section>
 <section id="d2" class="step slide-surface role-case layout-focus teaching-semantic"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
     <h2 class="slide-title">案例：找出选修全部指定课程的学生</h2>
     <div class="slide-content"><p class="slide-lead">“全部”决定了查询不能只筛选其中一门课程</p>
 <div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>指定集合</h3><p>\(K(\mathrm{Cno}) = \{81001,81003\}\)</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>输入关系</h3><p>\(R(\mathrm{Sno},\mathrm{Cno}) = \Pi_{\mathrm{Sno},\mathrm{Cno}}(\mathrm{SC})\)</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>除运算</h3><p>\(R \div K \to P(\mathrm{Sno})\)</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>结果</h3><p>只保留同时拥有 \(K\) 中两门课程的 \(\mathrm{Sno}\)；\(P(\mathrm{Sno}) = \{20180001,20180002\}\)</p></div></div></div></div></div>
-    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-astonished" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-astonished.32ac26b4b510.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>原来除运算检查的是象集有没有覆盖全部要求？</p></div></div></div></aside>
-    <div class="numeric-progress">15/20</div>
+    <aside class="character-intervention character-edge-top character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.162e63a66001.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>原来除运算检查的是象集有没有覆盖全部要求？</p></div></div></div></aside>
+    <div class="numeric-progress">16/21</div>
     <div class="semantic-label">DIVISION CASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.1905%"></div></div>
   </section>
 <section id="e1" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">示例：逐步构造选修 81002 的学生姓名</h2>
-    <div class="slide-content"><p class="slide-lead">每一步先命名中间关系，再检查它的属性和业务含义</p>
-<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>\(R_1(\mathrm{Sno},\mathrm{Cno},\mathrm{Grade},\mathrm{Semester},\mathrm{Teachingclass}) = \sigma_{\mathrm{Cno}=81002}(\mathrm{SC})\)</h3><p>选修 81002 的 SC 记录</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>\(R_2(\mathrm{Sno}) = \Pi_{\mathrm{Sno}}(R_1) = \{20180001,20180002,20180003\}\)</h3><p>这些记录中的学生学号</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>\(R_3(\mathrm{Sno},\mathrm{Sname},\mathrm{Ssex},\mathrm{Sbirthdate},\mathrm{Smajor}) = R_2 \Join \mathrm{Student}\)</h3><p>按同名 Sno 自然连接，补齐学生属性且只保留一列 Sno</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>\(R_4(\mathrm{Sname}) = \Pi_{\mathrm{Sname}}(R_3) = \{\text{李勇},\text{刘晨},\text{王敏}\}\)</h3><p>最终学生姓名结果</p></div></div></div></div></div>
-    <div class="numeric-progress">16/20</div>
-    <div class="semantic-label">COMPOSITE QUERY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
-  </section>
-<section id="e2" class="step slide-surface role-content layout-grid"
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
-    <h2 class="slide-title">示例：为业务问题选择最小关系运算</h2>
-    <div class="slide-content"><p class="slide-lead">业务问题决定所需的最小运算组合，表中给出一种可行答案</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 28% 30%"><colgroup><col style="width:42%"><col style="width:28%"><col style="width:30%"></colgroup><thead><tr><th>业务问题</th><th>核心运算</th><th>结果说明</th></tr></thead><tbody><tr><td>选修 81002 的学生学号</td><td>选择、投影</td><td>只保留满足条件的 \(\mathrm{Sno}\)</td></tr><tr><td>选修 81002 的学生姓名</td><td>选择、投影、连接</td><td>将 \(\mathrm{Sno}\) 与 \(\mathrm{Student}\) 组合</td></tr><tr><td>同时选修 81001 和 81003</td><td>分别选择并投影两门课程的 \(\mathrm{Sno}\)，再求交</td><td>只保留两次结果共有的 \(\mathrm{Sno}\)</td></tr><tr><td>选修全部指定课程</td><td>投影、除；若要姓名再连接</td><td>除先得到象集覆盖全部课程的 \(\mathrm{Sno}\)</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">17/20</div>
-    <div class="semantic-label">QUERY JUDGMENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+    <h2 class="slide-title">示例：逐步构造选修 81002 的学生姓名</h2>
+    <div class="slide-content"><p class="slide-lead">每一步先给结果命名，再写清它保留哪些列以及其中一行代表什么</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>筛选 <code>SC</code></h3><p>\(R_1 = \sigma_{\mathrm{Cno}=81002}(\mathrm{SC})\)，模式与 <code>SC</code> 相同，表示选修 81002 的记录</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>只留学号</h3><p>\(R_2(\mathrm{Sno}) = \Pi_{\mathrm{Sno}}(R_1)\)，表示这些记录中的学生学号</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>连接 <code>Student</code></h3><p>\(R_3 = R_2 \Join \mathrm{Student}\)，按同名 <code>Sno</code> 匹配，模式与 <code>Student</code> 相同</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>只留姓名</h3><p>\(R_4(\mathrm{Sname}) = \Pi_{\mathrm{Sname}}(R_3)\)，得到最终姓名关系</p></div></div></div></div></div>
+    <div class="numeric-progress">17/21</div>
+    <div class="semantic-label">COMPOSITE QUERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.9524%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="e2" class="step slide-surface role-content layout-grid"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4</div>
-    <h2 class="slide-title">用关系运算验证查询结果</h2>
-    <div class="slide-content"><p class="slide-lead">每一步都要同时检查运算、结果结构和业务语义</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>基本运算与输入条件</h3><p>\(\cup\)、\(-\)、\(\cap\) 先检查相容；\(\times\) 生成所有组合。5 种基本运算是 \(\cup,-,\times,\sigma,\Pi\)</p></article><article class="content-card emphasis-card" tabindex="0"><h3>行、列与组合</h3><p>\(\sigma\) 保留满足条件的行，\(\Pi\) 保留列并去重，\(\Join\) 按条件匹配并组合；自然连接只留一列同名连接列</p></article><article class="content-card emphasis-card" tabindex="0"><h3>全部与综合验证</h3><p>\(\div\) 检查象集是否覆盖全部要求；综合查询按 \(R_1 \to R_2 \to R_3 \to R_4\) 检查模式、语义和最终结果</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>5 种基本运算：并、差、笛卡儿积、选择、投影；3 种可导出运算：交、连接、除；两条分类轴：“集合/专门”与“基本/可导出”。综合结果：\(R_1 \to R_2 \to R_3 \to R_4\) 每步仍是关系，最终 \(R_4(\mathrm{Sname}) = \{\text{李勇},\text{刘晨},\text{王敏}\}\)</p></div></div>
-    <div class="numeric-progress">18/20</div>
-    <div class="semantic-label">SECTION REVIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4 <span>|</span> 2.4.2</div>
+    <h2 class="slide-title">示例：为业务问题选择最小关系运算</h2>
+    <div class="slide-content"><p class="slide-lead">只要学号不连 <code>Student</code>；需要姓名按 <code>Sno</code> 连接；要求“全部”再检查象集覆盖</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31.344% 28.209% 40.447%"><colgroup><col style="width:31.344%"><col style="width:28.209%"><col style="width:40.447%"></colgroup><thead><tr><th>业务问题</th><th>核心运算</th><th>结果说明</th></tr></thead><tbody><tr><td>选修 81002 的学生学号</td><td>选择、投影</td><td>只保留满足条件的 \(\mathrm{Sno}\)</td></tr><tr><td>选修 81002 的学生姓名</td><td>选择、投影、连接</td><td>将 \(\mathrm{Sno}\) 与 \(\mathrm{Student}\) 组合</td></tr><tr><td>同时选修 81001 和 81003</td><td>分别选择并投影两门课程的 \(\mathrm{Sno}\)，再求交</td><td>只保留两次结果共有的 \(\mathrm{Sno}\)</td></tr><tr><td>选修全部指定课程</td><td>投影、除；若要姓名再连接</td><td>除先得到象集覆盖全部课程的 \(\mathrm{Sno}\)</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">18/21</div>
+    <div class="semantic-label">QUERY JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="review" class="step slide-surface role-review layout-grid"
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-4/mindmap-2-4.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">19/20</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
+    <h2 class="slide-title">练习：为一个新查询画出中间关系</h2>
+    <div class="slide-content"><p class="slide-lead">任选“集齐道具的玩家”或“买齐指定商品的用户”，画中间表并合成表达式</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>写出输入与条件</h3><p>列出需要的关系和属性，判断是否需要相容关系、匹配条件或目标集合</p></article><article class="content-card emphasis-card" tabindex="0"><h3>逐步命名结果</h3><p>用 \(R_1,R_2,\ldots\) 记录每一步保留的行、列或组合，并写出结果模式</p></article><article class="content-card emphasis-card" tabindex="0"><h3>解释业务语义</h3><p>写出中间结果的一行代表哪个玩家、用户、道具或商品；遇到“全部”时，明确谁拥有的集合必须包含哪份要求清单</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>给中间结果表命名，写列和行的含义，把 \(R_1,R_2,\ldots\) 合成关系代数表达式</p></div></div>
+    <div class="numeric-progress">19/21</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="map" class="step slide-surface role-map layout-single"
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-4/mindmap-2-4.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">20/21</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.4</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">并、差、交为什么要求相容关系？笛卡儿积的输入条件和结果规模有什么不同？</span></li><li><span class="question-no">02</span><span class="question-text">\(\sigma_{\mathrm{Smajor}=\text{信息管理与信息系统}}(\mathrm{Student})\) 与 \(\Pi_{\mathrm{Sno},\mathrm{Smajor}}(\mathrm{Student})\) 分别改变什么？为什么 \(\Pi_{\mathrm{Smajor}}(\mathrm{Student})\) 要去除重复？</span></li><li><span class="question-no">03</span><span class="question-text">对 Student、SC、Course 依次做自然连接时，同名连接列如何处理？什么是悬浮元组，外连接增加了什么边界行为？</span></li><li><span class="question-no">04</span><span class="question-text">对 \(R(X,Y) \div S(Y,Z)\)，参与比较的属性组需要满足什么条件？为什么要检查 \(\Pi_Y(S) \subseteq Y_x\)？</span></li><li><span class="question-no">05</span><span class="question-text">综合示例中的 \(R_1\)、\(R_2\)、\(R_3\)、\(R_4\) 分别是什么模式和语义，最终的 \(\mathrm{Sname}\) 集合如何得到？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">并、差、交为什么要求相容？笛卡儿积的输入条件和结果规模有何不同？</span></li><li><span class="question-no">02</span><span class="question-text">选择与投影分别怎样改变行和列？为什么投影 <code>Smajor</code> 后要去重？</span></li><li><span class="question-no">03</span><span class="question-text">自然连接怎样处理同名列？普通连接与外连接怎样处理悬浮元组？</span></li><li><span class="question-no">04</span><span class="question-text">除运算中参与比较的属性组需满足什么条件？为什么检查 \(\Pi_Y(S) \subseteq Y_x\)？</span></li><li><span class="question-no">05</span><span class="question-text">把“选修 81002”改成“选修全部指定课程并返回姓名”，怎样重组选择、投影、连接和除？请写出各中间关系的模式与语义</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-2-3.html" title="上一节：2.3 关系的完整性" aria-label="上一节：2.3 关系的完整性">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -273,7 +287,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">20/20</div>
+    <div class="numeric-progress">21/21</div>
     <div class="semantic-label">SECTION QUESTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

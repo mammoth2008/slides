@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 2.2 关系操作 | HUST</title>
-  <meta name="description" content="区分查询与更新，理解关系的成组处理和关系数据语言分类">
+  <meta name="description" content="区分查记录、改数据、建表与改权限，理解一次处理一组记录以及三类语言怎样表达查询">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="2-2">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 2.2</div>
       <h1>关系操作</h1>
-      <p class="cover-description">让关系能够被查询、更新和组合</p>
+      <p class="cover-description">基本操作和导出操作</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,167 +44,180 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">关系操作先区分请求类型，再说明处理粒度、操作类别和语言能力</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分查询、更新、定义和控制请求，并说出插入、删除和修改三类更新操作</span></li><li><span class="list-marker">02</span><span class="list-text">解释关系操作为什么采用成组数据处理，以及为什么结果和中间结果仍是关系</span></li><li><span class="list-marker">03</span><span class="list-text">区分五种基本操作与连接、除、交三种导出操作</span></li><li><span class="list-marker">04</span><span class="list-text">区分关系代数、关系演算和 SQL 的表达思路</span></li><li><span class="list-marker">05</span><span class="list-text">解释关系完备性的含义及其评价查询能力的作用</span></li><li><span class="list-marker">06</span><span class="list-text">说明 SQL 的 DQL、DDL、DML、DCL 功能边界</span></li><li><span class="list-marker">07</span><span class="list-text">说明 SQL 查询描述目标，RDBMS 再选择具体存取路径</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
+    <div class="slide-content"><p class="slide-lead">面对业务要求，判断数据库是要返回结果表、修改记录，还是改变表结构</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断一个请求属于查询、更新、定义还是控制，并说明它的结果</span></li><li><span class="list-marker">02</span><span class="list-text">画出一张表经过筛选、保留列和连接后怎样变成下一张表</span></li><li><span class="list-marker">03</span><span class="list-text">根据业务问题选择五种基本操作或连接、除、交等导出操作</span></li><li><span class="list-marker">04</span><span class="list-text">（可选）用同一个查询比较关系代数、关系演算和 SQL 的表达思路</span></li><li><span class="list-marker">05</span><span class="list-text">（可选）判断一种语言能否写出关系代数可写的全部查询</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/16</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-grid"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
-    <h2 class="slide-title">关系操作分为查询与更新</h2>
-    <div class="slide-content"><p class="slide-lead">关系操作包括查询和更新；SQL 还把定义、操纵和控制纳入同一语言</p>
+    <h2 class="slide-title">返回结果，还是改变关系</h2>
+    <div class="slide-content"><p class="slide-lead">“查询成绩”产生结果关系，“修改成绩”改变关系中的数据</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>查询 Query</h3><p>从已有关系中得到所需的结果</p>
-<p>例如查询信息管理专业的学生</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>更新 Update</h3><p>改变关系中的元组或属性值</p>
-<p>包括插入、删除和修改</p></article></div></div>
+<p>例如：查询某位学生某门课程的成绩</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>更新 Update</h3><p>改变关系中的元组或属性值</p>
+<p>例如：添加、删除、修改</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>查询回答“现在有什么”，更新改变“数据库中保存什么”</p></div></div>
-    <div class="numeric-progress">3/15</div>
+    <div class="numeric-progress">3/16</div>
     <div class="semantic-label">QUERY AND UPDATE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-split axis-vertical order-media-group"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
-    <h2 class="slide-title">关系操作一次处理一个集合</h2>
+    <h2 class="slide-title">输入和输出都是关系</h2>
     <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>成组处理，就是把所有记录一次读进内存吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">关系模型把成组数据处理作为基本操作方式</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-2-2/assets/dbpa-2-2-set-processing.svg" data-full-src="resources/decks/dbpa-2-2/assets/dbpa-2-2-set-processing.svg" alt="以 Cno 等于 81002 的筛选为示意，关系输入经过一次成组处理产生关系结果" tabindex="0" role="button" aria-label="放大图片：以 Cno 等于 81002 的筛选为示意，关系输入经过一次成组处理产生关系结果" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>处理方式</th><th>逻辑操作单位</th><th>学习重点</th></tr></thead><tbody><tr><td>成组处理 <code>set-at-a-time</code></td><td>一组元组组成的关系</td><td>一次处理一个关系集合</td></tr><tr><td>逐条处理 <code>record-at-a-time</code></td><td>一条记录，或沿记录路径逐步处理</td><td>一次处理一条记录</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>成组处理描述逻辑操作单位，不规定 RDBMS 的物理执行方式；图示用 <code>Cno=81002</code> 筛选说明输入和输出，不把成组处理等同于选择操作</p></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>操作对象、结果和中间结果都可以是关系，所以复杂查询可以继续组合</p></div></div></div></div>
-    <div class="numeric-progress">4/15</div>
+    <div class="slide-content"><p class="slide-lead">筛出关系中所有满足条件的行，是否需要一次读入整张表？</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-2-2/assets/dbpa-2-2-set-processing.svg" data-full-src="resources/decks/dbpa-2-2/assets/dbpa-2-2-set-processing.svg" alt="以 Cno 等于 81002 的筛选为示意，关系输入经过一次成组处理产生关系结果" tabindex="0" role="button" aria-label="放大图片：以 Cno 等于 81002 的筛选为示意，关系输入经过一次成组处理产生关系结果" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19.085% 34.775% 46.14%"><colgroup><col style="width:19.085%"><col style="width:34.775%"><col style="width:46.14%"></colgroup><thead><tr><th>处理方式</th><th>逻辑操作单位</th><th>学习重点</th></tr></thead><tbody><tr><td>成组处理</td><td>一组元组组成的关系</td><td>一次处理所有满足条件的行</td></tr><tr><td>逐条处理</td><td>一条记录</td><td>一次处理一条记录</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>查询在特定语言中怎样表达？</p></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>操作对象、结果和中间结果都是关系，所以复杂查询可以继续组合</p></div></div></div></div>
+    <div class="numeric-progress">4/16</div>
     <div class="semantic-label">SET AT A TIME</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
 <section id="a4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
-    <h2 class="slide-title">基本操作与导出操作回答不同问题</h2>
-    <div class="slide-content"><p class="slide-lead">操作名称用于识别功能，形式化表达式还需要明确运算符和输入输出</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 24% 28% 30%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:28%"><col style="width:30%"></colgroup><thead><tr><th>操作</th><th>代数位置</th><th>主要问题</th><th>学生选课中的例子</th></tr></thead><tbody><tr><td>选择</td><td>基本操作（1/5）</td><td>哪些元组满足条件</td><td>找出选修 81002 的记录</td></tr><tr><td>投影</td><td>基本操作（2/5）</td><td>保留哪些属性</td><td>只保留学号和姓名</td></tr><tr><td>并、差</td><td>基本操作（3—4/5）</td><td>合并或排除哪些同型关系</td><td>合并名单 / 找仅在一方的学生</td></tr><tr><td>笛卡儿积</td><td>基本操作（5/5）</td><td>所有配对组合是什么</td><td>形成可能配对后再筛选</td></tr><tr><td>连接</td><td>导出操作（1/3）</td><td>按相关属性组合哪些关系</td><td>按 Sno 连接 Student 与 SC</td></tr><tr><td>除、交</td><td>导出操作（2—3/3）</td><td>满足全部条件 / 同时属于两组</td><td>修满全部课程 / 找共同名单</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择、投影、并、差和笛卡儿积是 5 种基本操作；连接、除和交可由它们导出。这里的“选择”不等于 SQL 的 SELECT 关键字</p></div></div>
-    <div class="numeric-progress">5/15</div>
-    <div class="semantic-label">OPERATION MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <h2 class="slide-title">基本操作</h2>
+    <div class="slide-content"><p class="slide-lead">基本操作用来筛出特定的行或列、合并或配对</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15.227% 14.345% 33.052% 37.376%"><colgroup><col style="width:15.227%"><col style="width:14.345%"><col style="width:33.052%"><col style="width:37.376%"></colgroup><thead><tr><th>操作</th><th>代数位置</th><th>主要问题</th><th>示例</th></tr></thead><tbody><tr><td>选择</td><td>基本操作</td><td>哪些元组满足条件</td><td>找出选修 <code>Cno=81002</code> 的记录</td></tr><tr><td>投影</td><td>基本操作</td><td>保留哪些属性</td><td>只保留学号和姓名</td></tr><tr><td>并</td><td>基本操作</td><td>合并哪些同型关系</td><td>合并两个班的学生数据</td></tr><tr><td>差</td><td>基本操作</td><td>排除哪些同型关系</td><td>找免修某门课的学生</td></tr><tr><td>笛卡儿积</td><td>基本操作</td><td>所有配对组合是什么</td><td>形成可能配对后再筛选</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选择、投影、并、差和笛卡儿积，是五种基本操作</p></div></div>
+    <div class="numeric-progress">5/16</div>
+    <div class="semantic-label">BASIC OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-case layout-focus teaching-semantic"
+<section id="a4b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
-    <h2 class="slide-title">案例：教务查询连续组合关系操作</h2>
-    <div class="slide-content"><p class="slide-lead">先预测每一步的结果关系，再看中间结果如何继续参与下一步操作</p>
-<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>选择</h3><p>SC → R₁（<code>Cno=81002</code> 的选课记录）</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>投影</h3><p>R₁ → R₂（学生学号）</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>连接</h3><p>按 Sno 将 R₂ 与 Student 连接 → R₃（补回学生信息）</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>投影</h3><p>R₃ → R₄（学生姓名）</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>连接结果还需投影；组合查询的连续性来自“结果仍是关系”</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>为什么连接以后，还要再投影一次？</p></div></div></div></aside>
-    <div class="numeric-progress">6/15</div>
-    <div class="semantic-label">CASE JUDGMENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <h2 class="slide-title">导出操作</h2>
+    <div class="slide-content"><p class="slide-lead">组合关系、满足全部条件或找出共同部分</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15.227% 14.345% 33.052% 37.376%"><colgroup><col style="width:15.227%"><col style="width:14.345%"><col style="width:33.052%"><col style="width:37.376%"></colgroup><thead><tr><th>操作</th><th>代数位置</th><th>主要问题</th><th>学生选课中的例子</th></tr></thead><tbody><tr><td>连接</td><td>导出操作</td><td>按相关属性组合哪些关系</td><td>按某个属性连接两个关系</td></tr><tr><td>除</td><td>导出操作</td><td>哪些对象与全部对象有关</td><td>找修满全部课程的学生</td></tr><tr><td>交</td><td>导出操作</td><td>哪些元组同时属于两组</td><td>找共同名单</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>连接、除和交可以由基本操作导出，也属于关系操作</p></div></div>
+    <div class="numeric-progress">6/16</div>
+    <div class="semantic-label">DERIVED OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="c2" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
-    <h2 class="slide-title">示例：判断请求属于哪一种关系操作</h2>
-    <div class="slide-content"><p class="slide-lead">先看请求改变不改变数据，再看它要得到什么关系结果</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 16% 18% 32%"><colgroup><col style="width:34%"><col style="width:16%"><col style="width:18%"><col style="width:32%"></colgroup><thead><tr><th>业务请求</th><th>大类</th><th>具体操作</th><th>关系中的结果/变化</th></tr></thead><tbody><tr><td>找出 <code>SC</code> 中 <code>Cno=81002</code> 的选课记录</td><td>查询</td><td>选择</td><td>产生结果，不改变原关系</td></tr><tr><td>找出这些记录对应的学生姓名</td><td>查询</td><td>选择、连接、投影</td><td>还需连接 Student，并最终投影 Sname</td></tr><tr><td>新增一条 SC 记录</td><td>更新</td><td>插入</td><td>增加一个元组</td></tr><tr><td>把成绩 78 修改为 82</td><td>更新</td><td>修改</td><td>改变一个分量</td></tr><tr><td>删除已取消的订单</td><td>更新</td><td>删除</td><td>移除满足条件的元组</td></tr><tr><td>定义 Student 的关系结构；限制用户访问指定数据</td><td>定义 / 控制</td><td>DDL / DCL</td><td>分别改变结构与访问权限，不等于修改业务数据</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">7/15</div>
-    <div class="semantic-label">OPERATION JUDGMENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <h2 class="slide-title">案例：教务查询</h2>
+    <div class="slide-content"><p class="slide-lead">查询选了编号为 81002 课程的学生姓名</p>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>选择</h3><p><code>SC</code> → \(R_1\)（<code>Cno=81002</code> 的选课记录）</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>投影</h3><p>\(R_1\) → \(R_2\)（学生学号）</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>连接</h3><p>按 <code>Sno</code> 将 \(R_2\) 与 <code>Student</code> 连接 → \(R_3\)（补回学生信息）</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>投影</h3><p>\(R_3\) → \(R_4\)（学生姓名）</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>中间结果仍是关系，可以继续运算</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="65.212" data-character-exposure="57.258" data-character-scale="0.9" style="--character-along:65.212%;--character-exposure:57.258;--character-hidden:42.742%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.827a630e355d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>为什么连接以后，还要再投影一次？</p></div></div></div></aside>
+    <div class="numeric-progress">7/16</div>
+    <div class="semantic-label">CASE JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-grid"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
-    <h2 class="slide-title">关系代数：用运算表达查询</h2>
-    <div class="slide-content"><p class="slide-lead">关系代数说明如何通过关系运算得到查询结果</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>运算对象</h3><p>关系是关系代数的输入</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算过程</h3><p>对关系施加集合运算或专门的关系运算</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算结果</h3><p>结果仍然是关系，可以继续参与下一步运算</p></article></div>
-<div class="component component-text text-inset"><p>例如 <code>Student</code> 经过选择或投影得到查询结果关系；“怎样运算”是抽象表达，不指定文件扫描或索引路径</p></div></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">RELATIONAL ALGEBRA</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.1</div>
+    <h2 class="slide-title">示例：判断请求属于哪一种操作</h2>
+    <div class="slide-content"><p class="slide-lead">请求是否数据？请求要得到什么结果？</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20.105% 17.281% 26.502% 36.112%"><colgroup><col style="width:20.105%"><col style="width:17.281%"><col style="width:26.502%"><col style="width:36.112%"></colgroup><thead><tr><th>业务请求</th><th>大类</th><th>具体操作</th><th>关系中的结果/变化</th></tr></thead><tbody><tr><td>找选课记录</td><td>查询</td><td>选择</td><td>产生结果，不改变原关系</td></tr><tr><td>找出学生姓名</td><td>查询</td><td>选择、连接、投影</td><td>连接 <code>Student</code> 找到姓名</td></tr><tr><td>新增选课记录</td><td>更新</td><td>插入</td><td>增加一个元组</td></tr><tr><td>修改成绩</td><td>更新</td><td>修改</td><td>改变一个分量</td></tr><tr><td>删除成绩</td><td>更新</td><td>删除</td><td>移除满足条件的元组</td></tr><tr><td>定义关系结构</td><td>定义</td><td>DDL</td><td>改变关系结构</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/16</div>
+    <div class="semantic-label">OPERATION JUDGMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-grid"
+<section id="b1" class="step slide-surface role-content layout-grid"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
-    <h2 class="slide-title">关系演算：用谓词表达查询</h2>
-    <div class="slide-content"><p class="slide-lead">关系演算说明结果应满足什么逻辑条件，不要求用户写出运算步骤</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>元组关系演算</h3><p>用元组变量指代整行，并用谓词表达条件</p></article><article class="content-card emphasis-card" tabindex="0"><h3>域关系演算</h3><p>用域变量表示属性值，并用谓词表达条件</p></article></div></div>
+    <h2 class="slide-title">用运算步骤表达“选修 81002 的学生”</h2>
+    <div class="slide-content"><p class="slide-lead">筛选选课记录、保留学号、连接学生、保留姓名</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>运算对象</h3><p>关系是关系代数的输入对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算过程</h3><p>用选择、投影、连接等操作处理输入关系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算结果</h3><p>结果仍然是关系，可以继续下一步运算</p></article></div>
+<div class="component component-text text-inset"><p><code>SC</code> → 选修 81002 的记录 → 学号关系 → 与 <code>Student</code> 组合 → 姓名关系</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每一步关系运算的结果都能继续作为下一步输入</p></div></div>
+    <div class="numeric-progress">9/16</div>
+    <div class="semantic-label">RELATIONAL ALGEBRA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
+    <h2 class="slide-title">用谓词表达同一个查询条件</h2>
+    <div class="slide-content"><p class="slide-lead">学生进入结果，当且仅当存在课程号匹配、学号相同的选课记录</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>元组关系演算</h3><p>用变量分别指代 <code>Student</code> 和 <code>SC</code> 中的一整行，再要求课程号匹配且两行学号相同</p></article><article class="content-card emphasis-card" tabindex="0"><h3>域关系演算</h3><p>用变量分别表示学号、姓名、课程号等列值，再要求这些值满足同样条件</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>关系代数偏向“怎样运算”，关系演算偏向“满足什么条件”</p></div></div>
-    <div class="numeric-progress">9/15</div>
+    <div class="numeric-progress">10/16</div>
     <div class="semantic-label">RELATIONAL CALCULUS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-grid"
-      data-x="1500" data-y="2240" data-z="0"
+      data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
     <h2 class="slide-title">SQL：关系数据库的综合数据语言</h2>
     <div class="slide-content"><p class="slide-lead">SQL 是综合数据语言，不只提供查询</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>DQL</h3><p>Data Query Language：从已有关系中查询结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DDL</h3><p>Data Definition Language：定义或修改关系结构和数据库对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DML</h3><p>Data Manipulation Language：插入、删除和修改关系数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DCL</h3><p>Data Control Language：管理访问权限和数据控制</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>这些功能由具体 SQL 语句实现</p></div></div>
-    <div class="numeric-progress">10/15</div>
+    <div class="numeric-progress">11/16</div>
     <div class="semantic-label">SQL LANGUAGE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
   </section>
 <section id="b4" class="step slide-surface role-content layout-focus"
-      data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
-    <h2 class="slide-title">关系完备性衡量语言能表达什么查询</h2>
-    <div class="slide-content"><p class="slide-lead">能表达关系代数所能表达的全部查询，才称为具有关系完备性</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>语言</th><th>表达方式</th><th>语言层次</th></tr></thead><tbody><tr><td>关系代数</td><td>对关系进行运算</td><td>抽象查询语言</td></tr><tr><td>元组关系演算</td><td>用元组变量和谓词</td><td>抽象查询语言</td></tr><tr><td>域关系演算</td><td>用域变量和谓词</td><td>抽象查询语言</td></tr><tr><td>SQL</td><td>查询、定义、操纵与控制</td><td>实际综合语言；查询能力达到关系完备</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三种抽象查询语言表达能力等价；SQL 具备关系完备的查询能力，并提供定义、操纵和控制功能</p></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">RELATIONAL COMPLETENESS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
-  </section>
-<section id="c3" class="step slide-surface role-content layout-grid"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
-    <h2 class="slide-title">SQL 查询描述目标，RDBMS 选择路径</h2>
-    <div class="slide-content"><p class="slide-lead">同一个查询可以有多条正确的存取路径</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="用户描述查询目标 → RDBMS 选择执行计划 → 返回结果"><span class="relation-term">用户描述查询目标</span><span class="relation-operator">→</span><span class="relation-term">RDBMS 选择执行计划</span><span class="relation-operator">→</span><span class="relation-term">返回结果</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>用户说明目标</h3><p>给出需要的关系结果和筛选条件，不必逐步写出访问文件的动作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>系统比较路径</h3><p>RDBMS 的优化机制可以比较顺序扫描、索引扫描和不同的连接顺序</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结果保持一致</h3><p>不同执行计划应得到相同的查询结果，但所需时间和资源可能不同</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非过程化不等于没有执行过程，而是把存取路径选择交给 RDBMS</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-astonished" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-astonished.9a0502aee1e4.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个查询，竟然可以有多条正确执行路径？</p></div></div></div></aside>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">NONPROCEDURAL QUERY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <h2 class="slide-title">关系完备</h2>
+    <div class="slide-content"><p class="slide-lead">是否能实现关系代数全部查询？</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="21.174% 36.641% 42.185%"><colgroup><col style="width:21.174%"><col style="width:36.641%"><col style="width:42.185%"></colgroup><thead><tr><th>语言</th><th>表达方式</th><th>语言层次</th></tr></thead><tbody><tr><td>关系代数</td><td>对关系进行运算</td><td>抽象查询语言</td></tr><tr><td>元组关系演算</td><td>用元组变量和谓词</td><td>抽象查询语言</td></tr><tr><td>域关系演算</td><td>用域变量和谓词</td><td>抽象查询语言</td></tr><tr><td>SQL</td><td>查询、定义、操纵与控制</td><td>实际综合语言；达到关系完备</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>关系代数、两类关系演算和 SQL 都能表达某个查询；但 SQL 还可以做更多</p></div></div>
+    <div class="numeric-progress">12/16</div>
+    <div class="semantic-label">RELATIONAL COMPLETENESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="c3" class="step slide-surface role-content layout-grid"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2</div>
-    <h2 class="slide-title">从请求到存取路径判断关系操作</h2>
-    <div class="slide-content"><p class="slide-lead">关系操作先区分请求类型，再区分处理粒度、操作类别和语言能力</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>查询与更新</h3><p>查询产生结果；更新包括插入、删除和修改</p></article><article class="content-card emphasis-card" tabindex="0"><h3>成组处理与闭包</h3><p>set-at-a-time 以关系为逻辑单位；结果和中间结果仍是关系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>基本与导出</h3><p>基本操作五种：选择、投影、并、差、笛卡儿积；导出操作三种：连接、除、交</p></article><article class="content-card emphasis-card" tabindex="0"><h3>语言与能力</h3><p>关系代数用运算，关系演算用谓词；关系完备性评价查询能力，SQL 提供综合功能</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先判断请求类型，再区分抽象表达方式与实际 SQL 功能；SQL 查询通常不要求用户指定存取路径</p></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">SECTION REVIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2 <span>|</span> 2.2.2</div>
+    <h2 class="slide-title">SQL 描述目标，RDBMS 实际执行</h2>
+    <div class="slide-content"><p class="slide-lead">关系型数据库管理系统扫描表、查索引、为表建立连接</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="用户描述查询目标 → RDBMS 执行 → 返回结果"><span class="relation-term">用户描述查询目标</span><span class="relation-operator">→</span><span class="relation-term">RDBMS 执行</span><span class="relation-operator">→</span><span class="relation-term">返回结果</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>用户说明目标</h3><p>给出需要的关系结果和筛选条件，不逐步写出访问文件的动作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>系统比较路径</h3><p>RDBMS 可以在顺序扫描、索引扫描和不同连接顺序中选择一种</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>结果保持一致</h3><p>不同执行计划应得到相同查询结果，但所需时间和资源不同</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“非过程化”依然需要执行过程，只是具体过程交给了 RDBMS</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-astonished" data-character-edge="right" data-character-along="57.624" data-character-exposure="62.332" data-character-scale="0.9" style="--character-along:57.624%;--character-exposure:62.332;--character-hidden:37.668%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-astonished.9a0502aee1e4.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个查询，竟然可以有多条正确执行路径？</p></div></div></div></aside>
+    <div class="numeric-progress">13/16</div>
+    <div class="semantic-label">NONPROCEDURAL QUERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="review" class="step slide-surface role-review layout-grid"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-2/mindmap-2-2.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <h2 class="slide-title">练习：从业务要求到数据库</h2>
+    <div class="slide-content"><p class="slide-lead">从学号查询相应学生选了哪些课程</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>请求改变什么</h3><p>判断它产生结果、改变数据、改变结构还是改变权限</p></article><article class="content-card emphasis-card" tabindex="0"><h3>每一步得到哪张表</h3><p>写出输入表、每张中间结果表和最终结果表，并标出各表保留哪些行和列</p></article><article class="content-card emphasis-card" tabindex="0"><h3>需要哪些操作</h3><p>先选能回答问题的最小操作组合，判断哪些是基本操作、哪些是导出操作</p></article><article class="content-card emphasis-card" tabindex="0"><h3>谁决定执行路径</h3><p>区分用户描述的查询目标与 RDBMS 选择的扫描、索引和连接顺序</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用关系代数式思路口述查询过程，画出每一步生成的关系</p></div></div>
+    <div class="numeric-progress">14/16</div>
+    <div class="semantic-label">SECTION REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="map" class="step slide-surface role-map layout-single"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-2-2/mindmap-2-2.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">15/16</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH02 <span>|</span> 2.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">如何判断一个业务请求属于查询、更新、定义还是控制？更新包括哪三类操作？</span></li><li><span class="question-no">02</span><span class="question-text">为什么关系操作采用成组处理？逻辑操作单位与 RDBMS 的物理执行方式有什么不同？</span></li><li><span class="question-no">03</span><span class="question-text">五种基本操作是哪五种？它们怎样处理关系？连接、除和交为什么属于导出操作？</span></li><li><span class="question-no">04</span><span class="question-text">关系代数和关系演算如何表达查询？什么叫关系完备性？</span></li><li><span class="question-no">05</span><span class="question-text">SQL 的 DQL、DDL、DML、DCL 分别承担什么功能？为什么查询通常不要求用户指定存取路径？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">查出库存不足商品和扣减库存分别属于哪类请求？判断依据是什么？</span></li><li><span class="question-no">02</span><span class="question-text">关系操作采用成组处理，逻辑操作单位与物理执行方式有什么不同？</span></li><li><span class="question-no">03</span><span class="question-text">五种基本操作是哪五种？连接、除和交为什么属于导出操作？</span></li><li><span class="question-no">04</span><span class="question-text">对“找出选修 81002 的学生姓名”，关系代数强调的是什么？</span></li><li><span class="question-no">05</span><span class="question-text">SQL 的 DQL、DDL、DML、DCL 分别承担什么功能？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-2-1.html" title="上一节：2.1 关系模型的数据结构及形式化定义" aria-label="上一节：2.1 关系模型的数据结构及形式化定义">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -219,7 +232,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
+    <div class="numeric-progress">16/16</div>
     <div class="semantic-label">SECTION QUESTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
