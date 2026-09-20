@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 13.1 DBMS 功能、层次结构与运行过程 | HUST</title>
-  <meta name="description" content="从一次 SELECT 看见数据库管理系统的层次协作">
+  <meta name="description" content="追踪一条成绩 SELECT 怎样检查名称权限、选择索引、查缓冲区，并在未命中时让操作系统读取数据块">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="13-1">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -31,7 +31,7 @@
       <h1>DBMS 功能、层次结构与运行过程</h1>
       <p class="cover-description">从一条 SELECT 看见 DBMS 各层如何协作</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">列举 DBMS 的六类基本功能，并说明其运行目标</span></li><li><span class="list-marker">02</span><span class="list-text">区分应用层、语言处理层、数据存取层、数据存储层与操作系统的职责边界</span></li><li><span class="list-marker">03</span><span class="list-text">把一次带条件的 <code>SELECT</code> 映射到对应层次及接口</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据字典如何支撑语义检查、权限检查、优化和物理定位</span></li><li><span class="list-marker">05</span><span class="list-text">区分集合请求、单记录操作、页面／缓冲区操作和物理文件块读写</span></li><li><span class="list-marker">06</span><span class="list-text">用分层接口解释物理／设备独立性与可维护性</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">从应用 SELECT 一路指出谁查表名权限、谁选索引、谁查缓冲区、谁读物理块</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">列举 DBMS 的六类基本功能，并说明其运行目标</span></li><li><span class="list-marker">02</span><span class="list-text">说明应用、语言处理、数据存取、数据存储和操作系统分别接收什么、交出什么</span></li><li><span class="list-marker">03</span><span class="list-text">把一次带条件的 <code>SELECT</code> 映射到对应层次及接口</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据字典如何支撑语义检查、权限检查、优化和物理定位</span></li><li><span class="list-marker">05</span><span class="list-text">区分集合请求、单记录操作、页面／缓冲区操作和物理文件块读写</span></li><li><span class="list-marker">06</span><span class="list-text">用分层接口解释物理／设备独立性与可维护性</span></li></ol></div></div></div>
     <div class="numeric-progress">2/12</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
@@ -54,11 +54,10 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:2fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
-    <h2 class="slide-title">DBMS 的六类工作</h2>
-    <div class="slide-content"><p class="slide-lead">六类功能共同保障共享数据的可用性、正确性和可维护性</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-dbms-layers-image2.png" data-full-src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-dbms-layers-image2.png" alt="DBMS 围绕共享数据提供定义、存取、运行管理与互操作能力" tabindex="0" role="button" aria-label="放大图片：DBMS 围绕共享数据提供定义、存取、运行管理与互操作能力" decoding="async"></figure>
-<div class="cards-grid cards-compact reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义与创建</h3></article><article class="content-card emphasis-card substep" tabindex="0"><h3>组织与存储</h3></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据存取</h3></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务与运行</h3></article><article class="content-card emphasis-card substep" tabindex="0"><h3>建立与维护</h3></article><article class="content-card emphasis-card substep" tabindex="0"><h3>互操作与新型数据</h3></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>六类功能共同支撑 DBMS 对共享数据的管理</p></div></div>
+    <h2 class="slide-title">从建表到恢复，DBMS 要做六类工作</h2>
+    <div class="slide-content"><p class="slide-lead">还要建表、选文件索引、提交事务、备份恢复、改结构，并让程序连接数据库</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-dbms-layers-image2.webp" data-full-src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-dbms-layers-image2.webp" alt="DBMS 围绕共享数据提供定义、存取、运行管理与互操作能力" tabindex="0" role="button" aria-label="放大图片：DBMS 围绕共享数据提供定义、存取、运行管理与互操作能力" decoding="async"></figure>
+<div class="cards-grid cards-compact reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>建表、定约束、登记目录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存储</h3><p>安排表、索引、文件、页面和缓冲</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存取</h3><p>查询增删改，按扫描或索引找记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务</h3><p>提交、回滚、并发、日志和恢复</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>维护</h3><p>装载、改模式、监控和备份</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>接口与数据</h3><p>接入应用，处理多种格式和类型</p></article></div></div></div>
     <div class="numeric-progress">3/12</div>
     <div class="semantic-label">DBMS FUNCTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -68,7 +67,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
     <h2 class="slide-title">DBMS 由应用、操作系统和内部三层组成</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>更换索引或文件布局后，应用层的 SELECT 也要跟着改吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>更换索引或文件布局后，应用层的 SELECT 也要跟着改吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">应用层发请求，操作系统供物理 I/O；DBMS 内部三层靠接口协作</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 30% 45%"><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>位置／层次</th><th>处理对象</th><th>关键职责</th></tr></thead><tbody><tr><td>应用层（外部接口）</td><td>请求和事务</td><td>接收用户及程序调用</td></tr><tr><td>DBMS：语言处理层</td><td>SQL、关系和视图</td><td>解析、检查、优化和生成调用</td></tr><tr><td>DBMS：数据存取层</td><td>单个元组与逻辑存取路径</td><td>查找、更新、封锁和日志</td></tr><tr><td>DBMS：数据存储层</td><td>数据页和系统缓冲区</td><td>页面读写、缓冲和外存交换</td></tr><tr><td>操作系统（物理 I/O 基础）</td><td>物理文件块</td><td>提供文件与设备读写原语</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>应用不必知道页面、文件和设备细节；更换索引或文件布局时，上层 SQL 接口通常可以保持不变</p></div></div>
@@ -80,8 +79,8 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
-    <h2 class="slide-title">数据字典连接语义检查、优化与物理定位</h2>
-    <div class="slide-content"><p class="slide-lead">数据字典也称系统目录，为语言处理、数据存取和运行管理提供元数据</p>
+    <h2 class="slide-title">查 SELECT 前，先从数据字典回答四问</h2>
+    <div class="slide-content"><p class="slide-lead">表列存在吗、用户能读吗、条件命中多少行、有哪些索引？答案来自系统目录</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="SQL 对象名、用户身份与统计／存储信息 → 数据字典（系统目录） → 对象定义、属性、视图、权限、约束、统计信息与存取路径"><span class="relation-term">SQL 对象名、用户身份与统计／存储信息</span><span class="relation-operator">→</span><span class="relation-term">数据字典（系统目录）</span><span class="relation-operator">→</span><span class="relation-term">对象定义、属性、视图、权限、约束、统计信息与存取路径</span></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>对象不存在时语义检查失败；用户没有权限时拒绝执行；统计信息和存取路径帮助优化器选择计划并定位数据</p></div></div>
     <div class="numeric-progress">5/12</div>
@@ -92,10 +91,10 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
-    <h2 class="slide-title">SELECT 的一次 DBMS 运行链路</h2>
+    <h2 class="slide-title">一条成绩 SELECT 怎样到达磁盘再返回</h2>
     <div class="slide-content"><p class="slide-lead">案例：<code>SELECT Sno, Cno, Grade FROM SC WHERE Sno = &#x27;20180003&#x27;</code></p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-query-pipeline.svg" data-full-src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-query-pipeline.svg" alt="一次 SELECT 沿应用层、DBMS 三层调用操作系统完成读取并返回" tabindex="0" role="button" aria-label="放大图片：一次 SELECT 沿应用层、DBMS 三层调用操作系统完成读取并返回" decoding="async"></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用发出请求，DBMS 分层处理，操作系统读取数据页，最后返回结果</p></div></div>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-query-pipeline.svg" data-full-src="resources/decks/dbpa-13-1/assets/generated/dbpa-ch13-query-pipeline.svg" alt="一次 SELECT 沿应用层、DBMS 三层调用操作系统完成读取并返回" tabindex="0" role="button" aria-label="放大图片：一次 SELECT 沿应用层、DBMS 三层调用操作系统完成读取并返回" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用交出 SQL；DBMS 检查、选计划并查缓冲区；只有未命中时操作系统才读块，记录再逐层返回应用</p></div></div>
     <div class="numeric-progress">6/12</div>
     <div class="semantic-label">QUERY RUNTIME</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
@@ -105,7 +104,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
     <h2 class="slide-title">SELECT 的五步执行路径</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>SELECT 只是读取数据，应该可以直接跳到文件吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>SELECT 只是读取数据，应该可以直接跳到文件吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">同一请求从应用经 DBMS 到操作系统，再返回结果</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">应用层发送带关系名和条件的 <code>SELECT</code></span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">语言处理层依据数据字典检查语法、语义和权限</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">优化器依据统计信息和存取路径生成执行计划</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">数据存取层把集合计划落实为单个元组的访问动作</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">数据存储层先查系统缓冲区；命中则直接取记录，未命中才由操作系统读取数据页，DBMS 最后返回记录和执行状态</span></li></ol></div></div></div>
     <div class="numeric-progress">7/12</div>
@@ -128,7 +127,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1 <span>|</span> 13.1</div>
     <h2 class="slide-title">集合请求和物理操作处在不同尺度</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>逻辑存取路径也算一个独立的物理层吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>逻辑存取路径也算一个独立的物理层吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">应用表达需要哪些记录，DBMS 决定从哪里以及按什么路径读取</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="集合请求　→　单个元组　→　数据页（先查系统缓冲区）　→　物理文件块"><span class="relation-term">集合请求</span><span class="relation-operator">→</span><span class="relation-term">单个元组</span><span class="relation-operator">→</span><span class="relation-term">数据页（先查系统缓冲区）</span><span class="relation-operator">→</span><span class="relation-term">物理文件块</span></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>逻辑存取路径是定位方式，不是独立的物理层次；文件组织或索引改变时，上层 SQL 通常不必改变</p></div></div>
@@ -140,10 +139,10 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">DBMS 通过层次接口组织多类管理功能</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>功能</h3><p>定义与创建、组织存储、数据存取、事务运行、建立维护和互操作</p></article><article class="content-card emphasis-card" tabindex="0"><h3>层次</h3><p>应用接口、DBMS 内部三层、操作系统物理 I/O 基础</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行</h3><p>字典检查、计划生成、单记录访问、缓冲区读取和结果返回组成查询运行链路</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据字典连接检查、优化和物理定位；稳定接口让应用不必依赖物理存储路径</p></div></div>
+    <h2 class="slide-title">逐层写出：收到什么、做什么、交给谁</h2>
+    <div class="slide-content"><p class="slide-lead">从 SQL 开始，依次记录内部计划、元组请求、页面号、物理块和返回记录</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 应用提出集合请求</h3><p>记录 SQL、事务边界与预期结果；应用说“要什么”，不指定页面或设备</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 语言处理层检查并计划</h3><p>用数据字典检查对象、权限、约束和统计；失败时不进入物理读盘</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 存取与存储层逐步具体化</h3><p>把集合计划变成元组动作，再变成缓冲区和页面请求</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 操作系统完成 I/O</h3><p>缓冲未命中才读物理块；结果与状态沿接口返回</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>追踪尺度：集合 → 元组 → 页面 → 物理块；上层不依赖具体存储布局</p></div></div>
     <div class="numeric-progress">10/12</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>

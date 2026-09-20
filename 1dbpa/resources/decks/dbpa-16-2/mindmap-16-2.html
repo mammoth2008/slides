@@ -15,6 +15,7 @@
     .markmap-node > circle { fill: #a8542b; }
     .markmap-link { stroke: rgba(21, 35, 45, .22); }
   </style>
+  <link rel="stylesheet" href="../../theme/mindmap.css">
 </head>
 <body>
   <svg id="mindmap"></svg>
@@ -22,7 +23,7 @@
   <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
   <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
   <script>
-    const tree = {"content":"HTAP 与大数据时代的新型数据仓库","children":[{"content":"新鲜度问题","children":[{"content":"订单提交：事务系统已经确认写入","children":[]},{"content":"分析可见：复制、转换或刷新完成后进入报表","children":[]}]},{"content":"HTAP 方案","children":[{"content":"单引擎：同一系统组织事务与分析负载","children":[]},{"content":"多引擎：专业系统分工并承担同步成本","children":[]},{"content":"行列组织：写入、扫描、转换与资源竞争","children":[]}]},{"content":"仓库压力","children":[{"content":"数据变化：订单、日志、图片与复杂分析","children":[]},{"content":"移动路径：业务源、ETL、仓库与 OLAP","children":[]},{"content":"业务变化：新字段沿整条链传导","children":[]}]},{"content":"方案判断","children":[{"content":"三项要求：可见时间、事务隔离与移动成本","children":[]},{"content":"异构共存：连接器交换数据但不统一语义","children":[]},{"content":"选择起点：单引擎、多引擎或共存平台","children":[]}]}]};
+    const tree = {"content":"HTAP 与大数据时代的新型数据仓库","children":[{"content":"新订单何时进报表","children":[{"content":"从 16.1 接手：仓库按批次刷新，所以报表会晚于下单","children":[]},{"content":"写出时刻：提交、同步、转换和报表可见分别在几点","children":[]}]},{"content":"一个系统还是多个系统","children":[{"content":"比较去向：订单和报表放在单引擎、多引擎还是行列副本","children":[]}]},{"content":"下单与分析一起增长","children":[{"content":"数据增多：订单表之外还有点击日志和商品图片","children":[]},{"content":"避免争用：长查询不能拖慢短事务，同步失败后要能恢复","children":[]}]},{"content":"订单怎样走到报表","children":[{"content":"追踪复制：业务源、ETL、仓库和 OLAP 分别等多久","children":[]},{"content":"增加字段：退货原因要在哪些程序和表中修改","children":[]}]},{"content":"选择系统组合","children":[{"content":"写明选择哪个组合、为什么不选另一个，以及用哪些时间和资源指标检查","children":[]},{"content":"交给 17.1：硬件变化如何重写存储与执行假设","children":[]}]}]};
     const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
     const api = window.markmap;
     window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);

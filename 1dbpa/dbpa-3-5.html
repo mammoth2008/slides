@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 3.5 空值的处理 | HUST</title>
-  <meta name="description" content="理解 NULL 的语义、约束与三值逻辑">
+  <meta name="description" content="用“成绩尚未录入”区分 NULL、0 和空串，推导 IS NULL、UNKNOWN、WHERE 与聚集函数的实际结果">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="3-5">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.5</div>
       <h1>空值的处理</h1>
-      <p class="cover-description">为什么没有值会改变查询结果</p>
+      <p class="cover-description">先说明成绩为什么缺失，再计算比较、筛选和统计结果</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@ NULL 不是普通的值。本节从业务语义开始，逐步解释判断、约
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">NULL 的业务语义会影响约束判断、运算结果和查询筛选</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 NULL 与 0、空串和文字 &#x27;NULL&#x27;，并解释未知、不适用和不便提供三类语境</span></li><li><span class="list-marker">02</span><span class="list-text">追踪 NULL 由插入、更新和外连接产生的路径</span></li><li><span class="list-marker">03</span><span class="list-text">用 IS NULL 与 IS NOT NULL 正确筛选空值</span></li><li><span class="list-marker">04</span><span class="list-text">解释 NOT NULL、主码和 UNIQUE 的约束边界</span></li><li><span class="list-marker">05</span><span class="list-text">用 UNKNOWN 解释比较和逻辑运算</span></li><li><span class="list-marker">06</span><span class="list-text">判断 WHERE 与 HAVING 会保留哪些结果</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">说明成绩、生日或外连接中的 NULL 从哪来，再计算比较、筛选和聚集结果</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 NULL 与 0、空串和文字 &#x27;NULL&#x27;，并解释未知、不适用和不便提供三类语境</span></li><li><span class="list-marker">02</span><span class="list-text">追踪 NULL 由插入、更新和外连接产生的路径</span></li><li><span class="list-marker">03</span><span class="list-text">用 IS NULL 与 IS NOT NULL 正确筛选空值</span></li><li><span class="list-marker">04</span><span class="list-text">判断 NOT NULL、主码和 UNIQUE 是否允许 NULL，以及多个 NULL 的行为要查哪个 DBMS</span></li><li><span class="list-marker">05</span><span class="list-text">用 UNKNOWN 解释比较和逻辑运算</span></li><li><span class="list-marker">06</span><span class="list-text">判断 WHERE 与 HAVING 会保留哪些结果</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
@@ -55,7 +55,7 @@ NULL 不是普通的值。本节从业务语义开始，逐步解释判断、约
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5 <span>|</span> 3.5.1</div>
     <h2 class="slide-title">NULL 不是 0、空串或一段文字</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>Grade 是 NULL，就等于学生考了 0 分吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>Grade 是 NULL，就等于学生考了 0 分吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">NULL 表示当前没有确定且可用的值；具体原因可能是未知、不适用或不便提供</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>语境</th><th>含义</th><th>例子</th></tr></thead><tbody><tr><td>未知</td><td>应该有值但目前不知道</td><td>漏填出生日期</td></tr><tr><td>不适用</td><td>当前对象或状态不需要这个值</td><td>缺考没有成绩</td></tr><tr><td>不便提供</td><td>值可能存在，但当前不宜填写</td><td>不愿公开的联系方式</td></tr></tbody></table></div>
 <div class="component component-text text-inset"><p><code>0</code> 是已知数值零；<code>&#x27;&#x27;</code> 是已知的空字符串；<code>&#x27;NULL&#x27;</code> 是四个字符的文字；<code>NULL</code> 不是它们中的任何一个</p></div></div>
@@ -81,13 +81,17 @@ NULL 不是普通的值。本节从业务语义开始，逐步解释判断、约
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5 <span>|</span> 3.5.1</div>
     <h2 class="slide-title">INSERT 省略列：DEFAULT 与 NULL</h2>
-    <div class="slide-content"><p class="slide-lead">省略 INSERT 列表中的列不会删除表列，而是让该元组在该列取 NULL 或默认值</p>
+    <div class="slide-content"><p class="slide-lead">省略 INSERT 中的列不会删除表列，而是让该元组取 NULL 或默认值</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
-05</span><code class="language-sql">INSERT INTO SC(Sno, Cno, Semester)
-VALUES ('20180006', '81004', '20211');
+05
+06
+07</span><code class="language-sql">INSERT INTO SC
+  (Sno, Cno, Semester)
+VALUES
+  ('20180006', '81004', '20211');
 
 -- Grade、Teachingclass 未列出，因此取 NULL
 -- 显式写 NULL 也会得到相同结果</code></pre></div></div></div>
@@ -101,7 +105,7 @@ VALUES ('20180006', '81004', '20211');
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5 <span>|</span> 3.5.2</div>
     <h2 class="slide-title">判断空值必须使用 IS NULL</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>Grade = NULL 看起来最直接，为什么查不到缺考记录？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>Grade = NULL 看起来最直接，为什么查不到缺考记录？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">等号比较不能把 NULL 当成普通常量</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -117,10 +121,10 @@ WHERE Grade IS NULL;</code></pre></div></div>
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5 <span>|</span> 3.5.3</div>
-    <h2 class="slide-title">约束决定一列能不能取空值</h2>
-    <div class="slide-content"><p class="slide-lead">主码、非空和唯一约束的边界不同</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>约束</th><th>空值边界</th><th>课堂判断</th></tr></thead><tbody><tr><td><code>NOT NULL</code></td><td>禁止该列为空</td><td>必须提供值或默认值</td></tr><tr><td>主码（<code>Student.Sno</code>）</td><td>不能为空且必须唯一</td><td>不能用 NULL 标识主体</td></tr><tr><td>复合主码（<code>SC.(Sno, Cno)</code>）</td><td>组合唯一且两个组成列都不能为 NULL</td><td><code>Sno</code>、<code>Cno</code> 单列可以重复</td></tr><tr><td><code>UNIQUE</code>（扩展示例）</td><td>标准约束；多个 NULL 的处理由 DBMS 定义</td><td>当前 Student/SC 基础 DDL 未定义；MySQL 8.4 的可空 UNIQUE 可允许多个 NULL</td></tr><tr><td>可空外码（<code>Course.Cpno</code>）</td><td>NULL 不要求匹配父表；非 NULL 必须有效</td><td>空外码不等于无效外码</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>UNIQUE 本身是标准约束；可空 UNIQUE 的多个 NULL 只是产品边界，不是当前 Student/SC 已有的约束</p></div></div>
+    <h2 class="slide-title">主码不能空，可空外码可以暂缺</h2>
+    <div class="slide-content"><p class="slide-lead">对 UNIQUE 中多个 NULL 的处理，使用前要核对目标 DBMS</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>约束</th><th>NULL 规则</th><th>课堂判断</th></tr></thead><tbody><tr><td><code>NOT NULL</code></td><td>禁止该列为空</td><td>必须提供值或默认值</td></tr><tr><td>主码（<code>Student.Sno</code>）</td><td>不能为空且必须唯一</td><td>不能用 NULL 标识主体</td></tr><tr><td>复合主码（<code>SC.(Sno, Cno)</code>）</td><td>组合唯一且两个组成列都不能为 NULL</td><td><code>Sno</code>、<code>Cno</code> 单列可以重复</td></tr><tr><td><code>UNIQUE</code>（扩展示例）</td><td>标准约束；多个 NULL 的处理由 DBMS 定义</td><td>当前 Student/SC 基础 DDL 未定义；实际行为必须查目标 DBMS 手册</td></tr><tr><td>可空外码（<code>Course.Cpno</code>）</td><td>NULL 不要求匹配父表；非 NULL 必须有效</td><td>空外码不等于无效外码</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>UNIQUE 本身是标准约束；可空 UNIQUE 能否出现多个 NULL 要查目标 DBMS，而且当前 Student/SC 基础 DDL 没有这项约束</p></div></div>
     <div class="numeric-progress">7/15</div>
     <div class="semantic-label">NULL CONSTRAINTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
@@ -141,12 +145,11 @@ WHERE Grade IS NULL;</code></pre></div></div>
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5 <span>|</span> 3.5.4</div>
-    <h2 class="slide-title">三值逻辑：由典型规则推导 UNKNOWN</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-blank" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-blank.94dc32661d72.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>NOT UNKNOWN 以后，怎么还是 UNKNOWN？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">下表列出涉及 UNKNOWN 的典型组合；交换 x、y 可得到对称组合，完整真值表还包含其他组合</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-5/assets/generated/dbpa-ch03-null-filter.svg" data-full-src="resources/decks/dbpa-3-5/assets/generated/dbpa-ch03-null-filter.svg" alt="TRUE、FALSE 与 UNKNOWN 经过 WHERE 筛选，只有 TRUE 被保留" tabindex="0" role="button" aria-label="放大图片：TRUE、FALSE 与 UNKNOWN 经过 WHERE 筛选，只有 TRUE 被保留" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 26% 26% 26%"><colgroup><col style="width:22%"><col style="width:26%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>x</th><th>y</th><th>x AND y</th><th>x OR y</th></tr></thead><tbody><tr><td>TRUE</td><td>UNKNOWN</td><td>UNKNOWN</td><td>TRUE</td></tr><tr><td>FALSE</td><td>UNKNOWN</td><td>FALSE</td><td>UNKNOWN</td></tr><tr><td>UNKNOWN</td><td>UNKNOWN</td><td>UNKNOWN</td><td>UNKNOWN</td></tr></tbody></table></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>FALSE AND UNKNOWN = FALSE　｜　TRUE OR UNKNOWN = TRUE　｜　NOT UNKNOWN 仍然是 UNKNOWN</p></div></div></div></div>
+    <h2 class="slide-title">三值逻辑：由典型组合推导 UNKNOWN</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-blank" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-blank.fec9e3565415.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>NOT UNKNOWN 以后，怎么还是 UNKNOWN？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">三值逻辑（Three-valued logic）同时处理 TRUE、FALSE 与 UNKNOWN</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-5/assets/generated/dbpa-ch03-null-filter.svg" data-full-src="resources/decks/dbpa-3-5/assets/generated/dbpa-ch03-null-filter.svg" alt="TRUE、FALSE 与 UNKNOWN 经过 WHERE 筛选，只有 TRUE 被保留" tabindex="0" role="button" aria-label="放大图片：TRUE、FALSE 与 UNKNOWN 经过 WHERE 筛选，只有 TRUE 被保留" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="68% 32%"><colgroup><col style="width:68%"><col style="width:32%"></colgroup><thead><tr><th>表达式</th><th>结果</th></tr></thead><tbody><tr><td><code>TRUE AND UNKNOWN</code></td><td><code>UNKNOWN</code></td></tr><tr><td><code>FALSE AND UNKNOWN</code></td><td><code>FALSE</code></td></tr><tr><td><code>TRUE OR UNKNOWN</code></td><td><code>TRUE</code></td></tr><tr><td><code>FALSE OR UNKNOWN</code></td><td><code>UNKNOWN</code></td></tr><tr><td><code>NOT UNKNOWN</code></td><td><code>UNKNOWN</code></td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">THREE VALUED LOGIC</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -162,23 +165,13 @@ WHERE Grade IS NULL;</code></pre></div></div>
 03
 04
 05
-06
-07
-08
-09
-10
-11</span><code class="language-sql">-- 只找确实不及格的学生
-SELECT Sno
-FROM SC
-WHERE Grade &lt; 60
-  AND Cno = '81001';
+06</span><code class="language-sql">SELECT Sno FROM SC
+WHERE Grade &lt; 60 AND Cno = '81001';
 
--- 如果业务也要包含缺考
-SELECT Sno
-FROM SC
+SELECT Sno FROM SC
 WHERE Cno = '81001'
   AND (Grade &lt; 60 OR Grade IS NULL);</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>第一条只返回确实不及格的学生；第二条把缺考记录显式纳入。WHERE 与 HAVING 都只保留 TRUE，第二条用 OR 把 NULL 记录纳入结果</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>第一条只找确实不及格的学生；第二条用 OR 把缺考的 NULL 记录纳入结果</p></div></div>
     <div class="numeric-progress">10/15</div>
     <div class="semantic-label">QUERY FILTER</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
@@ -199,11 +192,11 @@ WHERE Cno = '81001'
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5</div>
-    <h2 class="slide-title">处理 NULL 时要依次检查语义、约束和结果</h2>
-    <div class="slide-content"><p class="slide-lead">只记住谓词或真值表的一格，不能说明实际查询结果</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="判断 NULL 时依次检查业务语境、NULL 来源、运算结果以及 WHERE 条件是否为 TRUE"><span class="relation-term">判断 NULL 时依次检查业务语境、NULL 来源、运算结果以及 WHERE 条件是否为 TRUE</span></div></div>
+    <h2 class="slide-title">遇到 NULL，先问从哪来</h2>
+    <div class="slide-content"><p class="slide-lead">最后还要逐行计算条件是否为 TRUE，并检查聚集函数跳过了哪些值</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="依次检查业务语境、NULL 来源、运算结果，以及筛选条件是否为 TRUE"><span class="relation-term">依次检查业务语境、NULL 来源、运算结果，以及筛选条件是否为 TRUE</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>先问含义</h3><p>先确定 NULL 表示未知、不适用还是不便提供</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>再看约束</h3><p>再检查列是否允许为空，以及它是否是主码或外码</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>最后查结果</h3><p>最后确认查询是否要显式纳入 NULL，或更新是否应写入 NULL 而不是 0、空串或默认值</p></article></div></div></div>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>同一个 NULL，在成绩列和外连接结果里能按同一种含义解释吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.598c0de4d4b4.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>同一个 NULL，在成绩列和外连接结果里能按同一种含义解释吗？</p></div></div></div></aside>
     <div class="numeric-progress">12/15</div>
     <div class="semantic-label">NULL REASONING</div>
     <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
@@ -212,10 +205,10 @@ WHERE Cno = '81001'
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5</div>
-    <h2 class="slide-title">用语义、约束和三值逻辑判断 NULL</h2>
-    <div class="slide-content"><p class="slide-lead">NULL 不只是显示为空，它还会改变约束判断、运算结果和查询筛选</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>产生</h3><p>INSERT、UPDATE 和外连接都可能生成 NULL，但生成位置和业务含义不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>判断</h3><p>判断 NULL 时使用 IS NULL 与 IS NOT NULL，而不是普通等号比较</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>约束</h3><p>NOT NULL、主码、UNIQUE 与可空外码对 NULL 的约束边界不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>运算与筛选</h3><p>比较和 AND／OR／NOT 可能得到 UNKNOWN；WHERE、HAVING 只保留 TRUE，聚集函数通常跳过 NULL</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>缺失值的业务含义必须和 SQL 运算规则同时说明；UPDATE 设为 NULL、设为 0、删除元组是三种不同的数据语义</p></div></div>
+    <h2 class="slide-title">练习：解释三条成绩为何进入不同结果</h2>
+    <div class="slide-content"><p class="slide-lead">给定 <code>SC</code> 中三条 81001 记录：甲为 80 分，乙为 <code>NULL</code>（缺考），丙为 50 分</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>解释语义</h3><p>说明乙的 <code>NULL</code> 与 0 分、空串或删除选课记录有什么不同，并指出该列是否允许为空</p></article><article class="content-card emphasis-card" tabindex="0"><h3>推导筛选</h3><p>分别预测 <code>Grade &lt; 60</code>、<code>Grade IS NULL</code>、<code>Grade &lt; 60 OR Grade IS NULL</code> 会返回谁，并解释每行条件值</p></article><article class="content-card emphasis-card" tabindex="0"><h3>验证聚集</h3><p>计算 <code>COUNT(*)</code>、<code>COUNT(Grade)</code> 和 <code>AVG(Grade)</code>，再说明把缺考当成 0 会怎样改变业务结论</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先写出每条记录的业务状态，再逐步计算谓词和聚集；只背“NULL 特殊”不能证明查询结果</p></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
@@ -224,8 +217,8 @@ WHERE Cno = '81001'
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-5/mindmap-3-5.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-5/mindmap-3-5.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">14/15</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
@@ -235,7 +228,7 @@ WHERE Cno = '81001'
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.5</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">NULL 与 0、空串或文字 NULL 有何不同？为什么 Grade = NULL 查不到缺考记录？</span></li><li><span class="question-no">02</span><span class="question-text">外连接为什么会产生补位空值，而不是把 NULL 写回基本表？</span></li><li><span class="question-no">03</span><span class="question-text">FALSE AND UNKNOWN、TRUE OR UNKNOWN、NOT UNKNOWN 分别是什么结果？</span></li><li><span class="question-no">04</span><span class="question-text">如果某学生的 Grade 全为 NULL，COUNT(Grade)、AVG(Grade) 和 HAVING AVG(Grade) &gt;= 60 分别会怎样？</span></li><li><span class="question-no">05</span><span class="question-text">当前 Student/SC 基础 DDL 没有 UNIQUE；另设可空 UNIQUE 时，为什么不能把 MySQL 8.4 的多个 NULL 行为推广到其他 DBMS？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">一名学生尚未考试时，为什么把 <code>Grade</code> 设为 0、设为 <code>NULL</code> 或删除选课记录会表达三种不同状态？</span></li><li><span class="question-no">02</span><span class="question-text">外连接补出的 <code>NULL</code> 与基本表中存储的 <code>NULL</code> 在来源上有什么不同，后续筛选为什么仍需显式判断？</span></li><li><span class="question-no">03</span><span class="question-text">对条件 <code>Grade &lt; 60 OR Grade IS NULL</code>，请分别推导 50、80、<code>NULL</code> 三条记录的真值与筛选结果</span></li><li><span class="question-no">04</span><span class="question-text">某组 <code>Grade</code> 全为 <code>NULL</code> 时，<code>COUNT(*)</code>、<code>COUNT(Grade)</code>、<code>AVG(Grade)</code> 和 <code>HAVING AVG(Grade) &gt;= 60</code> 各得到什么？</span></li><li><span class="question-no">05</span><span class="question-text">为一列增加可空 <code>UNIQUE</code> 前，哪些规则来自 SQL 概念，哪些多个 <code>NULL</code> 行为必须向目标 DBMS 核查？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-4.html" title="上一节：3.4 数据更新" aria-label="上一节：3.4 数据更新">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 14.3 分布式、云原生与数据库发展展望 | HUST</title>
-  <meta name="description" content="从需求、硬件和网络理解数据库未来架构">
+  <meta name="description" content="当单机装不下、热点集中或节点故障时，比较分片、副本、共识、计算存储解耦与 HTAP 的实际作用">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="14-3">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 14.3</div>
       <h1>分布式、云原生与数据库发展展望</h1>
-      <p class="cover-description">业务需求和硬件条件共同约束数据库架构取舍</p>
+      <p class="cover-description">单机装不下、一个节点坏了、报表又要看刚提交订单时，系统怎样继续工作</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -45,8 +45,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">从规模、热点和故障压力判断分片与副本分别解决什么</span></li><li><span class="list-marker">02</span><span class="list-text">说明高速网络、多核、大内存和 NVM 如何改变成本中心</span></li><li><span class="list-marker">03</span><span class="list-text">解释分片、路由、副本和共识之间的职责关系</span></li><li><span class="list-marker">04</span><span class="list-text">比较传统云数据库托管与云原生资源解耦的收益和代价</span></li><li><span class="list-marker">05</span><span class="list-text">说明 HTAP、DB4AI 和多模型对新鲜度、隔离、接口与治理提出的要求</span></li><li><span class="list-marker">06</span><span class="list-text">用“需求—硬件—架构—取舍”分析一个未来数据库方向</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">分片扩容量，副本存多份，共识决定提交；写跨片、复制、实时分析的等待</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">从规模、热点和故障压力判断分片与副本分别解决什么</span></li><li><span class="list-marker">02</span><span class="list-text">说明高速网络、多核、大内存和 NVM 让哪些读写更快，以及网络故障、持久化和协调为何仍有代价</span></li><li><span class="list-marker">03</span><span class="list-text">解释分片、路由、副本和共识之间的职责关系</span></li><li><span class="list-marker">04</span><span class="list-text">比较传统云数据库托管与云原生资源解耦的收益和代价</span></li><li><span class="list-marker">05</span><span class="list-text">说明 HTAP、DB4AI 和多模型对新鲜度、隔离、接口与治理提出的要求</span></li><li><span class="list-marker">06</span><span class="list-text">对一种新架构写出原问题、使用的硬件或网络条件、请求怎样执行以及新增故障和运维工作</span></li></ol></div></div></div>
     <div class="numeric-progress">2/12</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
@@ -55,12 +55,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">分片把规模压力转成可路由任务</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>分片之后，每个请求都能独立在一个节点完成吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">好的分片把请求尽量留在目标分片，减少跨节点通信</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" data-full-src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" alt="请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" tabindex="0" role="button" aria-label="放大图片：请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" decoding="async"><figcaption>概念关系图：分片路由、复制与提交协调</figcaption></figure>
-<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>识别</h3><p>定位容量压力或访问热点</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>切分</h3><p>按键或范围把不同数据划入分片</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>路由</h3><p>把请求发送到持有目标数据的分片</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>本地化</h3><p>尽量在目标分片完成查询或事务</p></div></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分片把规模问题拆开，但跨片查询和跨片事务仍需通信与协调，热点变化时还可能需要重新分布</p></div></div>
+    <h2 class="slide-title">按订单号分片：先找到保存订单的节点</h2>
+    <div class="slide-content"><p class="slide-lead">单个订单在一个分片完成可少通信；同时改多个分片仍要跨节点协调</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" data-full-src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" alt="请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" tabindex="0" role="button" aria-label="放大图片：请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" decoding="async"><figcaption>概念关系图：分片路由、复制与提交协调</figcaption></figure>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>识别</h3><p>定位容量压力或访问热点</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>切分</h3><p>按键或范围把不同数据划入分片</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>路由</h3><p>把请求发送到持有目标数据的分片</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>本地化</h3><p>尽量在目标分片完成查询或事务</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>分片之后，每个请求都能独立在一个节点完成吧？</p></div></div></div></aside>
     <div class="numeric-progress">3/12</div>
     <div class="semantic-label">DIVIDE AND CONQUER</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -70,7 +69,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
     <h2 class="slide-title">分片、副本与共识的职责</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分片、副本和共识解决的是同一个问题吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分片、副本和共识解决的是同一个问题吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">能否继续服务取决于副本位置、法定人数和故障范围</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>分片</h3><p>拆分不同数据，扩展容量与并行；跨片查询和事务需要协调</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多副本</h3><p>保存同一分片的多份数据；冗余带来存储和复制延迟</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共识</h3><p>协调副本对提交状态的一致判断；失去法定多数时可能等待</p></article></div>
 <div class="component component-text text-inset substep reveal-self"><p>副本保存多个状态；共识决定哪个状态可以作为提交结果</p></div></div>
@@ -83,8 +82,8 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">硬件变化重塑数据库成本中心</h2>
-    <div class="slide-content"><p class="slide-lead">硬件变化改变性能成本中心，但不消除持久性、网络故障和分布式协调问题</p>
+    <h2 class="slide-title">内存、CPU、网络更快后，慢点会移动</h2>
+    <div class="slide-content"><p class="slide-lead">数据驻内存，查询并行、远程读加快；断电恢复、断网、跨节点提交仍需处理</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>硬件条件</th><th>带来的机会</th><th>必须承担的取舍</th></tr></thead><tbody><tr><td>多核与众核</td><td>并行查询与事务执行</td><td>共享状态与并发控制成本</td></tr><tr><td>大内存与 NVM（非易失性存储器）</td><td>更多数据驻留内存，部分访问与持久化代价下降</td><td>存储层次、持久性与恢复仍需设计</td></tr><tr><td>高速网络与 RDMA（远程直接内存访问）</td><td>降低远程访问代价，支持计算与存储解耦尝试</td><td>网络故障、远程一致性与资源隔离</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>硬件变化可以降低部分访问成本，但内存数据库仍需设计存储、查询和恢复</p></div></div>
     <div class="numeric-progress">5/12</div>
@@ -95,8 +94,8 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">云原生可以解耦计算与存储</h2>
-    <div class="slide-content"><p class="slide-lead">托管服务简化部署；资源解耦可以提高弹性，但也增加网络、协调和运维边界</p>
+    <h2 class="slide-title">查询增多扩计算，数据增长扩存储</h2>
+    <div class="slide-content"><p class="slide-lead">计算、存储分开扩容，少闲置；远程读仍靠网络，元数据、隔离、恢复更复杂</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 25% 29%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:25%"><col style="width:29%"></colgroup><thead><tr><th>路径</th><th>资源组织</th><th>适合的变化</th><th>新增边界</th></tr></thead><tbody><tr><td>传统云托管</td><td>数据库实例与基础设施绑定程度较高</td><td>简化部署与运维</td><td>扩展粒度受实例形态影响</td></tr><tr><td>云原生路线</td><td>计算、服务与存储可以按负载解耦</td><td>查询量或数据量变化时弹性调整</td><td>网络、元数据、隔离与运维复杂度</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>云原生按负载选择计算、服务与存储的解耦边界</p></div></div>
     <div class="numeric-progress">6/12</div>
@@ -122,9 +121,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
     <h2 class="slide-title">DB4AI 的数据库支撑</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.c35e2d766676.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>数据库管好训练数据，就能自动保证模型准确和合规吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>数据库管好训练数据，就能自动保证模型准确和合规吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">DB4AI 支撑人工智能的数据处理与治理；模型准确性和数据合规仍需额外验证</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>声明式处理</h3><p>筛选、连接并构造训练数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询与资源优化</h3><p>选择数据处理计划和资源路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>异构执行</h3><p>协调 CPU、GPU 等资源，同时承担数据搬运代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据治理</h3><p>管理权限、血缘、敏感数据与质量规则</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>声明式处理</h3><p>筛选、连接并构造训练数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询与资源优化</h3><p>选择数据处理计划和资源路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>异构执行</h3><p>协调 CPU、GPU 等资源，同时承担数据搬运代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据治理</h3><p>管理权限、血缘、敏感数据与质量规则</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>DB4AI 能支撑数据准备、查询优化、异构执行和治理，但不能替代模型评估与合规判断；GPU 细节取决于具体实现</p></div></div>
     <div class="numeric-progress">8/12</div>
     <div class="semantic-label">DB4AI</div>
@@ -146,10 +145,9 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
-    <h2 class="slide-title">需求、硬件、架构与取舍</h2>
-    <div class="slide-content"><p class="slide-lead">每个新架构只缓解部分压力，也会带来协调、恢复、隔离或治理成本</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>规模与热点</h3><p>分片与迁移缓解规模压力，但系统仍要承担跨片通信和重新分布成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>节点故障</h3><p>副本与共识支持受控集群的提交协调；复制、存储和仲裁会增加成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>资源弹性</h3><p>云原生可以按负载解耦资源；网络、元数据和运维边界更复杂</p></article><article class="content-card emphasis-card" tabindex="0"><h3>实时与异构</h3><p>HTAP、DB4AI 与多模型扩大应用范围；新鲜度、隔离和治理要求上升</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>需求压力 → 硬件条件 → 架构机制 → 协调、恢复、隔离与治理代价</p></div></div>
+    <h2 class="slide-title">给一个分布式方案做故障与延迟检查</h2>
+    <div class="slide-content"><p class="slide-lead">写数据位置、副本数、提交可达数；再查跨片事务、断网、报表延迟能否接受</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 分片、副本、共识各做什么</h3><p>用分片处理数据分布与热点，用副本处理节点冗余，用共识协调提交；不能用同一个词替代三项职责</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 坏几个节点还能提交</h3><p>说明副本放置、可达法定人数和故障范围；跨片事务、失去多数或网络分区时可能等待或失败</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 计算扩容与报表延迟</h3><p>分别判断计算量、数据量和分析新鲜度；资源解耦与 HTAP 仍要承担网络、同步、隔离和运维成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 测延迟、恢复和降级</h3><p>写出延迟、可见性、恢复、治理和降级条件；产品版本、具体协议、性能数字与配置必须另行核查</p></article></div></div></div>
     <div class="numeric-progress">10/12</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>

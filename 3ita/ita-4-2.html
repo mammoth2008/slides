@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ITA 4.2 验证、证据与异常处理 | HUST</title>
-  <meta name="description" content="用证据检查主张，处理来源冲突、时效问题和工作流异常">
+  <meta name="description" content="对照原始摘录判断主张是否成立，并在缺证、冲突、无权限或工具失败时写清下一步">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="智能技术及应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="4-2">
-  <meta name="version" content="2608.1">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -25,13 +25,13 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/ita-4-2/assets/cover-evidence-exceptions.png" alt="">
+    <img class="cover-image" src="resources/decks/ita-4-2/assets/cover-evidence-exceptions.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">ITA · 4.2</div>
       <h1>验证、证据与异常处理</h1>
       <p class="cover-description">用一条新证据更新 Nova 的当前判断</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -42,7 +42,7 @@
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 从主张到证据</div>
     <h2 class="slide-title">学习目标</h2>
     <div class="slide-content"><p class="slide-lead">完成本讲后，你应该能够</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分主张、来源、证据摘录和判断</span></li><li><span class="list-marker">02</span><span class="list-text">检查来源是否支持主张、是否过时或存在矛盾</span></li><li><span class="list-marker">03</span><span class="list-text">保留可复查的证据记录</span></li><li><span class="list-marker">04</span><span class="list-text">识别缺证、冲突、权限和运行异常</span></li><li><span class="list-marker">05</span><span class="list-text">为异常指定停止、回退、补证或人工接管路径</span></li></ol></div></div></div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分主张、来源、证据摘录和判断</span></li><li><span class="list-marker">02</span><span class="list-text">检查来源是否支持主张、是否过时或存在矛盾</span></li><li><span class="list-marker">03</span><span class="list-text">记录发布者、日期、原始位置、最小摘录、当前判断和负责人</span></li><li><span class="list-marker">04</span><span class="list-text">从实际结果中识别缺证、来源冲突、无权访问和工具失败</span></li><li><span class="list-marker">05</span><span class="list-text">写清每种异常发生后是停止、退回哪一步、补什么证据，还是交给谁决定</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
@@ -51,11 +51,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 从主张到证据</div>
-    <h2 class="slide-title">现有两条引用为什么仍只能得到 `unknown`？</h2>
+    <h2 class="slide-title">为什么两条引用仍只能判为 unknown？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component component-text text-focal"><p>主张：Nova 支持部署在客户自有环境中</p></div>
 <div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>官方说明｜2026-06-12</h3><p>“服务运行在供应商云，客户可通过私有网络端点访问”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>媒体转述｜2026-06-13</h3><p>“Nova 提供企业级私有访问”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>当前缺口</h3><p>两条材料都没有说明服务运行在客户自有环境</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>引用提到“私有”，仍要检查它说的是访问方式还是运行位置</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="62" data-character-exposure="58" data-character-scale="0.9" style="--character-along:62%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.628f58dc4f4a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>“私有访问”具体支持了哪一部分？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="62" data-character-exposure="58" data-character-scale="0.9" style="--character-along:62%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.a7b04cd953f2.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>“私有访问”具体支持了哪一部分？</p></div></div></div></aside>
     <div class="numeric-progress">3/15</div>
     <div class="semantic-label">OPENING CASE</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
@@ -67,7 +67,7 @@
     <h2 class="slide-title">一条最小证据链</h2>
     <div class="slide-content"><p class="slide-lead">主张被拆成可以逐项核查的句子</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="主张 → 来源 → 原始摘录 → 支持关系 → 当前判断"><span class="relation-term">主张</span><span class="relation-operator">→</span><span class="relation-term">来源</span><span class="relation-operator">→</span><span class="relation-term">原始摘录</span><span class="relation-operator">→</span><span class="relation-term">支持关系</span><span class="relation-operator">→</span><span class="relation-term">当前判断</span></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-4-2/assets/previews/p0-evidence-chain.webp" data-full-src="resources/decks/ita-4-2/assets/p0-evidence-chain.png" data-full-width="1448" data-full-height="1086" alt="从主张、来源和原始摘录到当前判断的最小证据链" tabindex="0" role="button" aria-label="放大图片：从主张、来源和原始摘录到当前判断的最小证据链" decoding="async"><figcaption>图片只示意链条结构；课堂判断以主张、摘录和支持关系为准</figcaption></figure></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-4-2/assets/previews/p0-evidence-chain.webp" data-full-src="resources/decks/ita-4-2/assets/p0-evidence-chain.webp" data-full-width="1448" data-full-height="1086" alt="从主张、来源和原始摘录到当前判断的最小证据链" tabindex="0" role="button" aria-label="放大图片：从主张、来源和原始摘录到当前判断的最小证据链" decoding="async"><figcaption>图片只示意链条结构；课堂判断以主张、摘录和支持关系为准</figcaption></figure></div></div>
     <div class="numeric-progress">4/15</div>
     <div class="semantic-label">EVIDENCE CHAIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
@@ -77,7 +77,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 从主张到证据</div>
     <h2 class="slide-title">来源至少要看五件事</h2>
-    <div class="slide-content"><p class="slide-lead">来源越接近一手事实，也要越清楚它实际支持了什么</p>
+    <div class="slide-content"><p class="slide-lead">官方或一手来源也要逐句确认：它支持访问方式、运行位置还是其他说法</p>
 <div class="slide-main-content"><div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">身份</h3><div class="key-value-value"><p>谁发布，是否接近一手事实</p></div></div><div class="key-value-item"><h3 class="key-value-key">时间</h3><div class="key-value-value"><p>何时发布，是否超过任务允许的时效</p></div></div><div class="key-value-item"><h3 class="key-value-key">匹配</h3><div class="key-value-value"><p>是否真的支持当前主张和范围</p></div></div><div class="key-value-item"><h3 class="key-value-key">上下文</h3><div class="key-value-value"><p>限制、条件和例外是否被保留</p></div></div><div class="key-value-item"><h3 class="key-value-key">可复查</h3><div class="key-value-value"><p>另一位检查者能否回到原始位置</p></div></div></div></div></div>
     <div class="numeric-progress">5/15</div>
     <div class="semantic-label">SOURCE CHECK</div>
@@ -100,7 +100,7 @@
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 处理冲突与时效</div>
     <h2 class="slide-title">新证据出现后，判断应该怎样变化？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>先暂停</h3><p>旧状态是 <code>unknown</code>，不要直接覆盖原记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>再比较</h3><p>新增管理员指南：“当前版本不提供客户自有环境部署”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>最后判断</h3><p>更新为“不支持”，并记录新证据、日期和修改理由</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-thinking" data-character-edge="right" data-character-along="62" data-character-exposure="56" data-character-scale="0.9" style="--character-along:62%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-thinking.6c3c9e7dc9dd.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>来源冲突时，先保留差异，再决定语气</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-thinking" data-character-edge="right" data-character-along="62" data-character-exposure="56" data-character-scale="0.9" style="--character-along:62%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-thinking.22a6a0af1e04.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>新证据不能抹掉旧状态；判断为何改变也要成为记录</p></div></div></div></aside>
     <div class="numeric-progress">7/15</div>
     <div class="semantic-label">CONFLICT</div>
     <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
@@ -109,9 +109,9 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 处理冲突与时效</div>
-    <h2 class="slide-title">不确定性要有名字</h2>
-    <div class="slide-content"><p class="slide-lead">给不确定性命名，流程才知道下一步不能假装确定</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>支持</h3><p>证据直接覆盖主张和范围</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>部分支持</h3><p>证据覆盖了一部分，限制仍需说明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>待核实</h3><p>来源缺失、冲突或已过时</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不支持</h3><p>现有证据不能推出这条主张</p></article></div></div></div>
+    <h2 class="slide-title">用四种状态区分能否继续</h2>
+    <div class="slide-content"><p class="slide-lead">来源缺失、相互冲突或已经过时时，标记“待核实”，不要生成确定结论</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>支持</h3><p>证据直接覆盖主张和范围</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>部分支持</h3><p>证据覆盖了一部分，限制仍需说明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>待核实</h3><p>来源缺失、冲突或已过时</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不支持</h3><p>现有证据直接反驳主张，或在明确核查范围内排除了主张条件</p></article></div></div></div>
     <div class="numeric-progress">8/15</div>
     <div class="semantic-label">STATUS</div>
     <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
@@ -120,11 +120,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 处理冲突与时效</div>
-    <h2 class="slide-title">异常是流程状态，不是噪音</h2>
-    <div class="slide-content"><p class="slide-lead">异常状态必须能触发不同的行动路径</p>
-<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">缺证</h3><div class="key-value-value"><p>没有直接支持 → 补证或标记待核实</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">冲突／过时</h3><div class="key-value-value"><p>来源说法不一致或超过时效 → 暂停并比较版本、范围和日期</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">权限</h3><div class="key-value-value"><p>无法合法读取或使用 → 停止并请求授权</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">格式</h3><div class="key-value-value"><p>字段不全或格式不合格 → 回到整理节点</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">运行</h3><div class="key-value-value"><p>工具、脚本或连接失败 → 保留错误，重试、走备用路径或接管</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">判断风险</h3><div class="key-value-value"><p>证据充分但采用有风险 → 交给责任人批准</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>异常被命名，才可能触发不同的处理路径</p></div></div>
-    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="bottom-stop-handoff" data-character-edge="bottom" data-character-along="80" data-character-exposure="45" data-character-scale="0.9" style="--character-along:80%;--character-exposure:45;--character-hidden:55%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:-100px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/bottom-stop-handoff.287e42f06426.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>证据、权限或运行状态不允许继续时，停止也是流程结果</p></div></div></div></aside>
+    <h2 class="slide-title">缺证、无权限或工具失败时，必须停下来</h2>
+    <div class="slide-content"><p class="slide-lead">每种情况都要记录发生了什么，以及下一步补材料、请求权限、重试还是停止</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">缺证</h3><div class="key-value-value"><p>没有直接支持 → 补证或标记待核实</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">冲突／过时</h3><div class="key-value-value"><p>来源说法不一致或超过时效 → 暂停并比较版本、范围和日期</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">权限</h3><div class="key-value-value"><p>无法合法读取或使用 → 停止并请求授权</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">格式</h3><div class="key-value-value"><p>字段不全或格式不合格 → 回到整理节点</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">运行</h3><div class="key-value-value"><p>工具、脚本或连接失败 → 保留错误，重试、走备用路径或接管</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">采用需批准</h3><div class="key-value-value"><p>证据充分但结论会影响对外承诺或重要决定 → 交给责任人批准</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="bottom-stop-handoff" data-character-edge="bottom" data-character-along="80" data-character-exposure="45" data-character-scale="0.9" style="--character-along:80%;--character-exposure:45;--character-hidden:55%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:-100px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/bottom-stop-handoff.4fba6386812e.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>无法访问来源或工具失败时，记录原因并停止，不要生成看似完整的结论</p></div></div></div></aside>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">EXCEPTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -144,8 +143,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 让异常安全停下</div>
     <h2 class="slide-title">为自己的画布写一条异常规则</h2>
-    <div class="slide-content"><p class="slide-lead">选择一个关键检查点，补充</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">触发条件：什么观察结果算异常</span></li><li><span class="list-marker">■</span><span class="list-text">证据状态与去向：先判定支持、部分支持、待核实或不支持，再选择继续、回退补证、停止或请求权限／人工接管</span></li><li><span class="list-marker">■</span><span class="list-text">责任人：谁决定是否继续</span></li><li><span class="list-marker">■</span><span class="list-text">记录：下一位处理者需要知道什么</span></li></ul></div></div></div>
+    <div class="slide-content"><p class="slide-lead">从 4.1 的检查点卡中选一份一旦出错就会进入汇报的产物，补充</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">触发条件：什么观察结果算异常</span></li><li><span class="list-marker">■</span><span class="list-text">当前判断与下一步：先写支持、部分支持、待核实或不支持，再写继续、退回哪一步补证、停止或请求权限／人工决定</span></li><li><span class="list-marker">■</span><span class="list-text">责任人：谁决定是否继续</span></li><li><span class="list-marker">■</span><span class="list-text">记录：下一位处理者需要知道什么</span></li></ul></div></div></div>
     <div class="numeric-progress">11/15</div>
     <div class="semantic-label">CLASSROOM WORK</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
@@ -155,10 +154,10 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 让异常安全停下</div>
     <h2 class="slide-title">验证也会让旧判断发生变化</h2>
-    <div class="slide-content"><p class="slide-lead">下一讲再把“继续还是停止”的选择放入智能体循环</p>
+    <div class="slide-content"><p class="slide-lead">下一讲让智能体读取这些状态，再决定继续调用工具、退回补证还是停止</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="旧状态 `unknown` + 新的直接反证 → 更新为“不支持”并退回汇报节点"><span class="relation-term">旧状态 <code>unknown</code></span><span class="relation-operator">+</span><span class="relation-term">新的直接反证</span><span class="relation-operator">→</span><span class="relation-term">更新为“不支持”并退回汇报节点</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>状态</h3><p>同时保留旧状态、新状态和判断改变时间</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>反馈</h3><p>把“不支持”传回比较和汇报节点，修正候选结论</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>下一步</h3><p>由负责人决定停止采用，或提出新的、更窄主张继续核查</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>验证不只判断通过或失败，也负责用新证据修正旧结论</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>出现直接反证时，保留旧判断并新增“不支持”，再把候选结论退回修改</p></div></div>
     <div class="numeric-progress">12/15</div>
     <div class="semantic-label">TRANSFER</div>
     <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
@@ -167,10 +166,9 @@
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH04 <span>|</span> 4.2</div>
-    <h2 class="slide-title">本讲回顾</h2>
-    <div class="slide-content"><p class="slide-lead">证据把判断连接回来源，异常把错误变成可处理的分支</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>证据链</h3><p>主张、来源、摘录、关系与判断逐项对齐</p></article><article class="content-card emphasis-card" tabindex="0"><h3>来源检查</h3><p>身份、时间、匹配、上下文和可复查性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>异常状态</h3><p>缺证、冲突、过时、权限、运行和判断风险</p></article><article class="content-card emphasis-card" tabindex="0"><h3>安全路径</h3><p>继续、待核实、补证/回退、停止/请求权限或人工接管</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可靠不是永远给出答案，而是在证据不足时知道如何停下</p></div></div>
+    <h2 class="slide-title">练习：保留 unknown，记录“不支持”</h2>
+    <div class="slide-content"><p class="slide-lead">只看旧状态与新增管理员指南，写出新摘录、修改理由、退回步骤和决定人</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>主张与范围</h3><p>写清“当前版本、客户自有环境部署”，不让“私有访问”替换运行位置</p></article><article class="content-card emphasis-card" tabindex="0"><h3>新证据</h3><p>记录发布者、日期、原始位置与最小摘录；只有直接反证才能改为“不支持”</p></article><article class="content-card emphasis-card" tabindex="0"><h3>状态与版本</h3><p>保留旧 <code>unknown</code>，新增“不支持”、修改时间、理由与适用版本，不覆盖历史</p></article><article class="content-card emphasis-card" tabindex="0"><h3>退回哪里，谁来决定</h3><p>把候选汇报退回比较节点；说明负责人停止采用或缩小主张时，5.1 的循环应读取哪些状态</p></article></div></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>

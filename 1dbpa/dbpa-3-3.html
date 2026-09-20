@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 3.3 数据查询 | HUST</title>
-  <meta name="description" content="从单表查询逐步构造连接、嵌套、集合与派生表查询">
+  <meta name="description" content="从“显示哪些列、保留哪些行、一行代表什么”出发，逐步写出单表、连接、子查询、集合运算和派生表查询">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="3-3">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.3</div>
       <h1>数据查询</h1>
-      <p class="cover-description">把自然语言问题组合成结果关系</p>
+      <p class="cover-description">先写清要哪些列、从哪些表取、保留哪些行，再选择 SQL 子句</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">一个 SQL 查询先从输入关系形成结果关系，再用连接、嵌套、集合和派生表组合更复杂的条件</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">读懂 SELECT 查询块各子句的作用</span></li><li><span class="list-marker">02</span><span class="list-text">完成单表筛选、排序、聚集与分组</span></li><li><span class="list-marker">03</span><span class="list-text">根据关系联系选择合适的连接方式</span></li><li><span class="list-marker">04</span><span class="list-text">用子查询表达单值、集合与存在性条件</span></li><li><span class="list-marker">05</span><span class="list-text">判断集合运算和派生表的使用前提</span></li><li><span class="list-marker">06</span><span class="list-text">区分查询结果语义与实际执行计划</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">把“谁选了哪门课、得多少分”拆成目标列、表和筛选条件，再写成 SQL</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">根据业务问题指出输入关系、目标列和筛选条件，并写出基本查询块</span></li><li><span class="list-marker">02</span><span class="list-text">区分行筛选、分组、组筛选、排序和分页对结果的不同影响</span></li><li><span class="list-marker">03</span><span class="list-text">根据匹配条件和主体保留要求选择连接方式</span></li><li><span class="list-marker">04</span><span class="list-text">根据中间结果形状选择子查询、集合运算或派生表</span></li><li><span class="list-marker">05</span><span class="list-text">检查重复行、<code>NULL</code>、别名作用域和目标 DBMS 支持的语法，并区分查询结果与执行计划</span></li></ol></div></div></div>
     <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
@@ -55,14 +55,14 @@
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
     <h2 class="slide-title">一个 SELECT 查询块从关系生成结果</h2>
-    <div class="slide-content"><p class="slide-lead">FROM 提供输入关系，WHERE 筛选元组，SELECT 形成结果列</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-block.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-block.svg" alt="FROM、WHERE、SELECT 从输入关系形成结果关系的语义路径" tabindex="0" role="button" aria-label="放大图片：FROM、WHERE、SELECT 从输入关系形成结果关系的语义路径" decoding="async"></figure>
+    <div class="slide-content"><p class="slide-lead"><code>FROM</code> 提供输入关系，<code>WHERE</code> 筛选元组，<code>SELECT</code> 形成结果列</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-block.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-block.svg" alt="FROM、WHERE、SELECT 从输入关系形成结果关系的语义路径" tabindex="0" role="button" aria-label="放大图片：FROM、WHERE、SELECT 从输入关系形成结果关系的语义路径" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03</span><code class="language-sql">SELECT Sname, Smajor
 FROM Student
-WHERE Smajor = '信息安全';</code></pre></div></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="按结果语义，FROM 提供查询对象，WHERE 选择元组，SELECT 形成结果列；这不等于 DBMS 固定的实际执行顺序"><span class="relation-term">按结果语义，FROM 提供查询对象，WHERE 选择元组，SELECT 形成结果列；这不等于 DBMS 固定的实际执行顺序</span></div></div></div></div></div>
+WHERE Smajor = '信息安全';</code></pre></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按结果语义，<code>FROM</code> 提供查询对象，<code>WHERE</code> 选择元组，<code>SELECT</code> 形成结果列；这不等于 DBMS 固定的实际执行顺序</p></div></div>
     <div class="numeric-progress">3/20</div>
     <div class="semantic-label">QUERY BLOCK</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
@@ -72,7 +72,7 @@ WHERE Smajor = '信息安全';</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.1</div>
     <h2 class="slide-title">选择目标列，再决定是否消除重复</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个 Sno 出现多次，直接 DISTINCT 就能修好数据吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个 <code>Sno</code> 出现多次，直接 <code>DISTINCT</code> 就能修好数据吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">投影改变列，<code>DISTINCT</code> 决定结果中是否消除重复</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 36% 30%"><colgroup><col style="width:34%"><col style="width:36%"><col style="width:30%"></colgroup><thead><tr><th>写法</th><th>结果语义</th><th>适用判断</th></tr></thead><tbody><tr><td><code>SELECT Sno FROM SC</code></td><td>选出每条选课记录的学号</td><td>同一学生可出现多次</td></tr><tr><td><code>SELECT DISTINCT Sno FROM SC</code></td><td>只保留不同学号</td><td>需要学生集合</td></tr><tr><td><code>SELECT Sname AS name FROM Student</code></td><td>选择列并改结果列标题</td><td>结果需要更清楚的列名</td></tr><tr><td><code>SELECT * FROM Student</code></td><td>选择全部列</td><td>临时查看或探索数据</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>关系代数常按集合理解，SQL 默认保留重复行</p></div></div>
@@ -84,17 +84,17 @@ WHERE Smajor = '信息安全';</code></pre></div></div>
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.1</div>
-    <h2 class="slide-title">WHERE 把自然语言条件变成元组筛选</h2>
-    <div class="slide-content"><p class="slide-lead">WHERE 先筛选单个元组，聚集结果由 HAVING 筛选</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>比较与范围</h3><p><code>=</code>、<code>&gt;</code>、<code>BETWEEN AND</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>集合与匹配</h3><p><code>IN</code>、<code>NOT IN</code>、<code>LIKE</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑组合</h3><p><code>AND</code>、<code>OR</code>、<code>NOT</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>空值入口</h3><p><code>IS NULL</code>、<code>IS NOT NULL</code>；三值逻辑留到 3.5</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>WHERE 先于分组作用于元组</p></div></div>
+    <h2 class="slide-title">用四种条件筛选 SC 中的选课记录</h2>
+    <div class="slide-content"><p class="slide-lead">先把自然语言中的比较、集合、模式和缺失状态写成可检查的元组条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>成绩下限</h3><p><code>Grade &gt;= 80</code> 保留成绩达到 80 的记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>课程集合</h3><p><code>Cno IN (&#x27;81001&#x27;, &#x27;81002&#x27;)</code> 保留两门指定课程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>教学班模式</h3><p><code>Teachingclass LIKE &#x27;81001-%&#x27;</code> 保留课程 81001 的教学班记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>缺失成绩</h3><p><code>Grade IS NULL</code> 判断尚无成绩；三值逻辑留到 3.5</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>混用 <code>AND</code>、<code>OR</code>、<code>NOT</code> 时，用括号明确哪些条件先组合；<code>WHERE</code> 仍在分组前逐行判断</p></div></div>
     <div class="numeric-progress">5/20</div>
     <div class="semantic-label">WHERE PREDICATES</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-code-table"
       data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.1</div>
     <h2 class="slide-title">排序与分页改变结果呈现，不改变基本表</h2>
     <div class="slide-content"><p class="slide-lead"><code>ORDER BY</code> 作用于查询结果，<code>LIMIT</code> 控制返回行数</p>
@@ -103,14 +103,14 @@ WHERE Smajor = '信息安全';</code></pre></div></div>
 03
 04
 05
-06</span><code class="language-sql">-- MySQL 8.4 常见分页语法
+06</span><code class="language-sql">-- MySQL 风格分页语法
 SELECT Sno, Grade
 FROM SC
 WHERE Cno = '81003'
 ORDER BY Grade DESC, Sno ASC
 LIMIT 10 OFFSET 0;</code></pre></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 65%"><colgroup><col style="width:35%"><col style="width:65%"></colgroup><thead><tr><th>子句</th><th>作用</th></tr></thead><tbody><tr><td><code>ORDER BY Grade DESC</code></td><td>按成绩降序排列结果</td></tr><tr><td><code>LIMIT 10</code></td><td>只返回前 10 行</td></tr><tr><td><code>LIMIT 5 OFFSET 2</code></td><td>跳过 2 行后返回 5 行</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先得到满足条件的结果，再决定显示顺序与窗口；LIMIT/OFFSET 是 MySQL 常见语法，分页要有稳定的次排序列</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先得到满足条件的结果，再决定显示顺序与窗口；示例使用 MySQL 风格 <code>LIMIT/OFFSET</code>，授课时按实际版本核对，分页还要有稳定的次排序列</p></div></div>
     <div class="numeric-progress">6/20</div>
     <div class="semantic-label">ORDER AND LIMIT</div>
     <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
@@ -131,15 +131,14 @@ WHERE Semester = '20202';</code></pre></div></div>
     <div class="semantic-label">AGGREGATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-group-table"
       data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.1</div>
     <h2 class="slide-title">WHERE 筛选行，HAVING 筛选组</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>AVG(Grade) 是分组后才得到，为什么不能写进 WHERE？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">WHERE 在分组前筛选元组，HAVING 在分组后筛选组</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="WHERE 筛选行 → GROUP BY 分组 → HAVING 筛选组"><span class="relation-term">WHERE 筛选行</span><span class="relation-operator">→</span><span class="relation-term">GROUP BY 分组</span><span class="relation-operator">→</span><span class="relation-term">HAVING 筛选组</span></div></div>
-<div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p><code>AVG(Grade)</code> 是分组后才得到，为什么不能写进 <code>WHERE</code>？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead"><code>WHERE</code> 在分组前筛选元组，<code>HAVING</code> 在分组后筛选组</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
@@ -147,8 +146,9 @@ WHERE Semester = '20202';</code></pre></div></div>
 FROM SC
 WHERE Semester = '20202'
 GROUP BY Cno
-HAVING COUNT(*) &gt; 10;</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>条件位置</th><th>作用对象</th><th>例子</th></tr></thead><tbody><tr><td><code>WHERE</code></td><td>单个元组</td><td>学期为 20202</td></tr><tr><td><code>GROUP BY</code></td><td>形成分组</td><td>按课程号分组</td></tr><tr><td><code>HAVING</code></td><td>一个分组</td><td>人数大于 10</td></tr></tbody></table></div></div></div>
+HAVING COUNT(*) &gt; 10;</code></pre></div></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>条件位置</th><th>作用对象</th><th>例子</th></tr></thead><tbody><tr><td><code>WHERE</code></td><td>单个元组</td><td>学期为 20202</td></tr><tr><td><code>GROUP BY</code></td><td>形成分组</td><td>按课程号分组</td></tr><tr><td><code>HAVING</code></td><td>一个分组</td><td>人数大于 10</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先用 <code>WHERE</code> 筛选行，再用 <code>GROUP BY</code> 分组，最后用 <code>HAVING</code> 筛选组</p></div></div>
     <div class="numeric-progress">8/20</div>
     <div class="semantic-label">GROUP AND HAVING</div>
     <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
@@ -158,9 +158,9 @@ HAVING COUNT(*) &gt; 10;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.2</div>
     <h2 class="slide-title">连接用键把多个关系组合成一个结果</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.ce9e907da191.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>少写一个连接条件，结果行数怎么突然暴涨了？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.751969dbb8ad.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>少写一个连接条件，结果行数怎么突然暴涨了？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">结果列来自多个表，连接条件决定哪些元组能够配对</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-join-result.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-join-result.svg" alt="Student、SC、Course 按键连接并形成学号、学生姓名、课程名和成绩结果" tabindex="0" role="button" aria-label="放大图片：Student、SC、Course 按键连接并形成学号、学生姓名、课程名和成绩结果" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-join-result.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-join-result.svg" alt="Student、SC、Course 按键连接并形成学号、学生姓名、课程名和成绩结果" tabindex="0" role="button" aria-label="放大图片：Student、SC、Course 按键连接并形成学号、学生姓名、课程名和成绩结果" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -169,7 +169,8 @@ HAVING COUNT(*) &gt; 10;</code></pre></div></div>
 SELECT s.Sno, s.Sname, c.Cname, sc.Grade
 FROM Student AS s
 JOIN SC AS sc ON s.Sno = sc.Sno
-JOIN Course AS c ON sc.Cno = c.Cno;</code></pre></div></div></div></div></div>
+JOIN Course AS c ON sc.Cno = c.Cno;</code></pre></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先确认连接键是否唯一，再检查每次 <code>JOIN</code> 是否会一对多地复制行；结果列来自中间连接结果，不只是原始表</p></div></div>
     <div class="numeric-progress">9/20</div>
     <div class="semantic-label">JOIN QUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
@@ -178,28 +179,28 @@ JOIN Course AS c ON sc.Cno = c.Cno;</code></pre></div></div></div></div></div>
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.2</div>
-    <h2 class="slide-title">连接要分别判断匹配、保留和拓扑</h2>
-    <div class="slide-content"><p class="slide-lead">连接形式同时涉及匹配条件、未匹配元组的保留规则和关系拓扑</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 32% 43%"><colgroup><col style="width:25%"><col style="width:32%"><col style="width:43%"></colgroup><thead><tr><th>判断维度</th><th>常见选择</th><th>先问什么</th></tr></thead><tbody><tr><td>连接谓词</td><td>等值、非等值、复合条件</td><td>哪些元组能够配对？</td></tr><tr><td>保留规则</td><td>内连接、左／右外连接</td><td>未匹配元组是否保留？</td></tr><tr><td>关系拓扑</td><td>两表、多表、自身连接</td><td>需要几个关系副本？</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>连接判断包括匹配条件、未匹配元组的保留规则和关系拓扑。FULL OUTER JOIN 属于标准 SQL，MySQL 8.4 没有直接语法；MySQL 8.4 可直接使用左／右外连接</p></div></div>
+    <h2 class="slide-title">连接前先问：怎么配、谁留下</h2>
+    <div class="slide-content"><p class="slide-lead">先定哪些行能配对、没配上的留不留；同一张表重复出现时分别起别名</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 32% 43%"><colgroup><col style="width:25%"><col style="width:32%"><col style="width:43%"></colgroup><thead><tr><th>判断维度</th><th>常见选择</th><th>先问什么</th></tr></thead><tbody><tr><td>连接谓词</td><td>等值、非等值、复合条件</td><td>哪些元组能够配对？</td></tr><tr><td>保留规则</td><td>内连接、左／右外连接</td><td>未匹配元组是否保留？</td></tr><tr><td>表的组合</td><td>两表、多表、自身连接</td><td>需要几个表或表别名？</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>连接判断包括配对条件、未匹配行是否保留和表的组合；使用 <code>FULL OUTER JOIN</code> 等写法前，按目标 DBMS 版本核对官方文档</p></div></div>
     <div class="numeric-progress">10/20</div>
     <div class="semantic-label">JOIN VARIANTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="d3" class="step slide-surface role-content layout-focus"
+<section id="d3" class="step slide-surface role-content layout-split axis-horizontal order-group-table"
       data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.2</div>
     <h2 class="slide-title">外连接保留没有匹配项的主体记录</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-astonished" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-astonished.9a0502aee1e4.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>LEFT JOIN 后一加 WHERE，未选课学生怎么又消失了？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">左外连接可以列出 Student 中所有学生，包括尚未选课的学生</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-astonished" data-character-edge="left" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-astonished.b6705ee6e65e.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p><code>LEFT JOIN</code> 后一加 <code>WHERE</code>，未选课学生怎么又消失了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">左外连接可以列出 <code>Student</code> 中所有学生，包括尚未选课的学生</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03</span><code class="language-sql">SELECT s.Sno, s.Sname, sc.Cno, sc.Grade
 FROM Student AS s
-LEFT OUTER JOIN SC AS sc ON s.Sno = sc.Sno;</code></pre></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="左外连接保留左表全部元组，右表无匹配时用 `NULL` 补位；`WHERE` 再筛选右表列，可能把这些主体行排除"><span class="relation-term">左外连接保留左表全部元组，右表无匹配时用 <code>NULL</code> 补位；<code>WHERE</code> 再筛选右表列，可能把这些主体行排除</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>结果部分</th><th>内连接</th><th>左外连接</th></tr></thead><tbody><tr><td>已选课学生</td><td>保留</td><td>保留</td></tr><tr><td>未选课学生</td><td>舍弃</td><td>保留并补空值</td></tr><tr><td>业务含义</td><td>只看匹配记录</td><td>以左表为完整主体</td></tr></tbody></table></div></div></div>
+LEFT OUTER JOIN SC AS sc ON s.Sno = sc.Sno;</code></pre></div></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>结果部分</th><th>内连接</th><th>左外连接</th></tr></thead><tbody><tr><td>已选课学生</td><td>保留</td><td>保留</td></tr><tr><td>未选课学生</td><td>舍弃</td><td>保留并补空值</td></tr><tr><td>业务含义</td><td>只看匹配记录</td><td>以左表为完整主体</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>左外连接保留左表全部元组，右表无匹配时用 <code>NULL</code> 补位；<code>WHERE</code> 再筛选右表列，可能把这些主体行排除</p></div></div>
     <div class="numeric-progress">11/20</div>
     <div class="semantic-label">OUTER JOIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
@@ -220,7 +221,8 @@ FROM Student
 WHERE Smajor IN
       (SELECT Smajor
        FROM Student
-       WHERE Sname = '刘晨');</code></pre></div></div></div></div>
+       WHERE Sname = '刘晨');</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先单独运行内层查询，确认它返回的是专业集合；外层再用 <code>IN</code> 判断哪些学生属于这个集合</p></div></div>
     <div class="numeric-progress">12/20</div>
     <div class="semantic-label">NESTED QUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -230,7 +232,7 @@ WHERE Smajor IN
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.3</div>
     <h2 class="slide-title">子查询返回什么，决定外层条件怎么写</h2>
-    <div class="slide-content"><p class="slide-lead">子查询结果若为单值，可用 <code>=</code> 或 <code>&gt;</code> 比较；若为集合，可用 <code>IN</code>、<code>ANY</code> 或 <code>ALL</code>；若只判断是否存在，可用 <code>EXISTS</code> 或 <code>NOT EXISTS</code></p>
+    <div class="slide-content"><p class="slide-lead">单值用 <code>=</code> 或 <code>&gt;</code>，集合用 <code>IN</code>、<code>ANY</code> 或 <code>ALL</code>，存在性用 <code>EXISTS</code> 判断</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -257,7 +259,7 @@ WHERE EXISTS (
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.3</div>
     <h2 class="slide-title">相关子查询让内层条件随外层元组变化</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.91cf706c7a32.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>x 和 y 都是 SC，相关条件到底连的是哪两行？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>x</code> 和 <code>y</code> 都是 <code>SC</code>，相关条件到底连的是哪两行？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">先标出父查询列，再判断每一行对应的内层结果</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -270,14 +272,14 @@ WHERE x.Grade &gt;=
       (SELECT AVG(y.Grade)
        FROM SC y
        WHERE y.Sno = x.Sno);</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>y.Sno = x.Sno</code> 是相关条件：x.Sno 来自父查询，y.Sno 来自内层查询。Grade 为 NULL 时的比较留到 3.5。相同问题也可以用连接、聚集或派生表表达，应先验证结果是否正确，再比较写法</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>y.Sno = x.Sno</code> 是相关条件：<code>x.Sno</code> 来自父查询，<code>y.Sno</code> 来自内层查询。<code>Grade</code> 为 <code>NULL</code> 时的比较留到 3.5。相同问题也可以用连接、聚集或派生表表达，应先验证结果是否正确，再比较写法</p></div></div>
     <div class="numeric-progress">14/20</div>
     <div class="semantic-label">CORRELATED QUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
   </section>
-<section id="f1" class="step slide-surface role-content layout-focus"
+<section id="f1" class="step slide-surface role-content layout-split axis-horizontal order-code-table"
       data-x="1500" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3 <span>|</span> 3.3.4</div>
     <h2 class="slide-title">集合运算组合结构相同的查询结果</h2>
     <div class="slide-content"><p class="slide-lead">先检查列数、对应列类型、列顺序与业务含义，再决定并、交或差</p>
@@ -295,7 +297,7 @@ SELECT Sno
 FROM SC
 WHERE Cno = '81002';</code></pre></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 39% 37%"><colgroup><col style="width:24%"><col style="width:39%"><col style="width:37%"></colgroup><thead><tr><th>运算</th><th>结果</th><th>业务提问</th></tr></thead><tbody><tr><td><code>UNION</code></td><td>两个结果的并集</td><td>满足任一条件</td></tr><tr><td><code>INTERSECT</code></td><td>两个结果的交集</td><td>同时满足两个条件</td></tr><tr><td><code>EXCEPT</code></td><td>左结果减去右结果</td><td>满足左条件且排除右条件</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不加 <code>ALL</code> 的集合运算默认按集合语义去重；<code>UNION ALL</code> 明确保留重复行。<code>UNION</code>、<code>INTERSECT</code>、<code>EXCEPT</code> 属于标准 SQL，MySQL 对这些运算的支持范围需要按授课时版本核对</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不加 <code>ALL</code> 的集合运算默认按集合语义去重；<code>UNION ALL</code> 明确保留重复行。标准 SQL 名称不保证每个产品都以相同方式支持，授课时按官方文档核对</p></div></div>
     <div class="numeric-progress">15/20</div>
     <div class="semantic-label">SET QUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
@@ -330,27 +332,27 @@ WHERE SC.Grade &gt;= Avg_SC.Avg_grade;</code></pre></div></div></div>
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
     <h2 class="slide-title">同一查询语义可以对应不同执行路径</h2>
     <div class="slide-content"><p class="slide-lead">SQL 描述结果条件，数据库管理系统（DBMS）再选择具体访问方式</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-plan.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-plan.svg" alt="同一查询语义可以对应全表扫描、索引查找或不同连接次序" tabindex="0" role="button" aria-label="放大图片：同一查询语义可以对应全表扫描、索引查找或不同连接次序" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-plan.svg" data-full-src="resources/decks/dbpa-3-3/assets/generated/dbpa-ch03-query-plan.svg" alt="同一查询语义可以对应全表扫描、索引查找或不同连接次序" tabindex="0" role="button" aria-label="放大图片：同一查询语义可以对应全表扫描、索引查找或不同连接次序" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04</span><code class="language-sql">EXPLAIN
 SELECT s.Sname, c.Cname, sc.Grade
 FROM Student s JOIN SC sc ON s.Sno = sc.Sno
-JOIN Course c ON sc.Cno = c.Cno;</code></pre></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户先写结果语义，DBMS 再选择执行计划；具体产品决定语法与边界，<code>EXPLAIN</code> 可以观察当前产品的执行路径</p></div></div></div></div>
+JOIN Course c ON sc.Cno = c.Cno;</code></pre></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户先写结果语义，DBMS 再选择执行计划；<code>EXPLAIN</code> 可以观察当前产品的扫描、索引和连接顺序，具体语法查对应版本手册</p></div></div>
     <div class="numeric-progress">17/20</div>
     <div class="semantic-label">SEMANTICS AND PLAN</div>
     <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-content layout-focus"
+<section id="review" class="step slide-surface role-review layout-focus"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
-    <h2 class="slide-title">用结果关系组织数据查询</h2>
-    <div class="slide-content"><p class="slide-lead">查询先确定输入关系，再筛选元组、形成结果列，并按需组合中间结果</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>单表</h3><p>单表查询决定目标列、行条件、去重、排序、聚集和分组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多表</h3><p>多表查询用连接条件和别名组合关系，并明确外连接的保留规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>组合</h3><p>嵌套、集合和派生表可以表达复杂条件；它们产生的中间结果在形状和作用域上不同</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>SQL 写法应先满足结果关系，再比较可读性和产品边界</p></div></div>
+    <h2 class="slide-title">练习：为一个新查询画出结果关系</h2>
+    <div class="slide-content"><p class="slide-lead">任选订单或玩家数据中的一个查询，不先背关键词，按三步画出结果形成过程</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>写清输入与结果</h3><p>指出需要哪些关系、最终显示哪些列，以及一行结果代表什么</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>画出组合路径</h3><p>标出行筛选、分组、连接、子查询或集合组合，并给关键中间关系命名</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查重复、空值和作用域</h3><p>解释重复从哪里来、空值怎样进入、派生表在哪个查询块有效，以及哪些语法需要核对产品版本</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先用样例数据核对列、行数和每行含义，再比较不同写法与执行计划，并查目标 DBMS 是否支持所用语法</p></div></div>
     <div class="numeric-progress">18/20</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
@@ -359,8 +361,8 @@ JOIN Course c ON sc.Cno = c.Cno;</code></pre></div></div>
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-3/mindmap-3-3.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-3/mindmap-3-3.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">19/20</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
@@ -370,7 +372,7 @@ JOIN Course c ON sc.Cno = c.Cno;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text"><code>SELECT</code>、<code>DISTINCT</code>、<code>WHERE</code>、<code>GROUP BY</code> 与 <code>HAVING</code> 分别处理什么？<code>WHERE</code> 与 <code>HAVING</code> 的先后如何？</span></li><li><span class="question-no">02</span><span class="question-text">连接如何区分匹配条件、保留规则和关系拓扑？左外连接中的 SQL <code>NULL</code> 表示什么？</span></li><li><span class="question-no">03</span><span class="question-text">子查询返回单值、集合或存在性结果时，如何选择 <code>=</code>、<code>IN</code>、<code>EXISTS</code>？<code>y.Sno = x.Sno</code> 为什么表示相关？</span></li><li><span class="question-no">04</span><span class="question-text">集合运算的兼容、重复和版本边界如何判断？派生表为何需别名，与基本表/视图有何异同？如何用 <code>EXPLAIN</code> 观察执行计划？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">要查询 20202 学期中选课人数超过 10 的课程，应怎样依次使用 <code>WHERE</code>、<code>GROUP BY</code>、<code>HAVING</code> 和 <code>SELECT</code>？每一步产生什么结果？</span></li><li><span class="question-no">02</span><span class="question-text">要列出所有学生及其选课情况，为什么需要左外连接？若在 <code>WHERE</code> 中筛选右表课程号，未选课学生为什么可能再次消失？</span></li><li><span class="question-no">03</span><span class="question-text">子查询返回单值、集合或存在性结果时，如何选择 <code>=</code>、<code>IN</code> 或 <code>EXISTS</code>？怎样判断一个子查询是否引用了父查询当前行？</span></li><li><span class="question-no">04</span><span class="question-text">两个查询结果做集合运算前，除了列数和类型，还要检查哪些业务含义？什么时候应保留重复行？</span></li><li><span class="question-no">05</span><span class="question-text">“每名学生高于自己平均分的课程”怎样分别用相关子查询和派生表表达？验证结果后，<code>EXPLAIN</code> 还能提供什么不同证据？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-2.html" title="上一节：3.2 数据定义" aria-label="上一节：3.2 数据定义">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

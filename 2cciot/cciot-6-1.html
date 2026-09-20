@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CCIOT 6.1 体验云存储 | HUST</title>
-  <meta name="description" content="从云存储服务边界出发，比较文件、块和对象存储，并完成一条对象存储的创建、访问、版本和回收链">
+  <title>CCIoT 6.1 体验云存储 | HUST</title>
+  <meta name="description" content="比较文件、块和对象存储，并在临时桶中上传、下载、更新和删除对象，核对旧版本是否仍保留">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="云计算与物联网">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
@@ -25,11 +25,11 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/cciot-6-1/assets/cover-cloud-storage-image2.png" alt="">
+    <img class="cover-image" src="resources/decks/cciot-6-1/assets/cover-cloud-storage-image2.webp" alt="">
     <div class="cover-copy">
-      <div class="cover-section">CCIOT · 6.1</div>
+      <div class="cover-section">CCIoT · 6.1</div>
       <h1>体验云存储</h1>
-      <p class="cover-description">让数据拥有可访问、可管理的云端边界</p>
+      <p class="cover-description">从一个临时桶开始，上传、下载、更新，并确认删除后有没有旧版本</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -42,10 +42,10 @@
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">沿着访问语义和生命周期证据解释云存储服务如何工作</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释云存储交付的数据服务边界</span></li><li><span class="list-marker">02</span><span class="list-text">区分服务对象分类与存储形式分类</span></li><li><span class="list-marker">03</span><span class="list-text">比较文件、块和对象存储的访问语义</span></li><li><span class="list-marker">04</span><span class="list-text">说明桶、对象、元数据和权限的关系</span></li><li><span class="list-marker">05</span><span class="list-text">沿着创建、上传、读取、版本和回收完成对象存储演示</span></li><li><span class="list-marker">06</span><span class="list-text">根据访问与生命周期证据定位云存储问题</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">说明应用怎样读写、用户怎样控权限，以及对象更新删除后服务还留什么</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较本地存储与云存储中谁维护设备、谁管理数据、权限和备份</span></li><li><span class="list-marker">02</span><span class="list-text">区分服务对象分类与存储形式分类</span></li><li><span class="list-marker">03</span><span class="list-text">比较文件、块和对象存储的访问语义</span></li><li><span class="list-marker">04</span><span class="list-text">说明桶怎样容纳对象、元数据记录什么，以及身份和策略怎样决定能否读取</span></li><li><span class="list-marker">05</span><span class="list-text">创建临时桶，上传并下载对象，更新同名对象，再检查删除和旧版本</span></li><li><span class="list-marker">06</span><span class="list-text">遇到桶不可见、访问被拒、下载失败或删除后仍占容量时，按身份、权限、网络和版本排查</span></li></ol></div></div></div>
     <div class="numeric-progress">2/23</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
@@ -53,15 +53,13 @@
 <section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
     <h2 class="slide-title">云存储把数据管理做成在线服务</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="top-misconception" data-character-edge="top" data-character-along="84" data-character-exposure="55" data-character-scale="0.9" style="--character-along:84%;--character-exposure:55;--character-hidden:45%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:470px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/top-misconception.c8f95a50adb8.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>云存储，就是把硬盘搬到网上</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="top-misconception" data-character-edge="top" data-character-along="84" data-character-exposure="55" data-character-scale="0.9" style="--character-along:84%;--character-exposure:55;--character-hidden:45%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:470px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/top-misconception.b11c3536600a.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>云存储，就是把硬盘搬到网上</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">用户通过网络存放、读取和保护数据，并按需扩展容量</p>
 <div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>本地存储</h3><p>使用方直接拥有或管理设备和文件系统</p>
-<p>容量、备份、替换和跨设备访问由自己安排</p></article></div>
-<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>云存储</h3><p>平台管理底层存储资源</p>
-<p>用户通过服务入口按需管理数据与权限</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云存储首先是一种在线数据服务，不是一句容量无限的宣传语</p></div></div>
+<p>容量、备份、替换和跨设备访问由自己安排</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>云存储</h3><p>平台管理底层存储资源</p>
+<p>用户通过服务入口按需管理数据与权限</p></article></div></div></div>
     <div class="numeric-progress">3/23</div>
     <div class="semantic-label">CLOUD STORAGE</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
@@ -69,12 +67,12 @@
 <section id="a3" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
     <h2 class="slide-title">可扩展、可靠和灵活都需要条件</h2>
-    <div class="slide-content"><p class="slide-lead">数据服务的结果取决于冗余、网络、权限和管理策略</p>
+    <div class="slide-content"><p class="slide-lead">容量、恢复、多设备访问要分别检查网络、权限、配额、备份、恢复记录</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="本地数据 → 网络入口 → 云存储服务 → 多设备访问与管理"><span class="relation-term">本地数据</span><span class="relation-operator">→</span><span class="relation-term">网络入口</span><span class="relation-operator">→</span><span class="relation-term">云存储服务</span><span class="relation-operator">→</span><span class="relation-term">多设备访问与管理</span></div></div>
-<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">可扩展</h3><div class="key-value-value"><p>容量可以按需求增加，但带宽、请求、预算和配额仍有边界</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">可靠</h3><div class="key-value-value"><p>副本、冗余和备份可以降低部分风险，但不替代恢复演练</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">灵活</h3><div class="key-value-value"><p>跨设备访问依赖网络、身份、权限和服务可用性</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">安全</h3><div class="key-value-value"><p>桶策略、身份、加密、审计和数据分类共同形成保护边界</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“放到云端”改变了管理方式，却没有取消数据责任</p></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">可扩展</h3><div class="key-value-value"><p>容量可以按需增加，但带宽、请求次数、预算和配额仍有限</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">可靠</h3><div class="key-value-value"><p>副本可减轻设备故障；备份仍需用恢复演练证明可用</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">灵活</h3><div class="key-value-value"><p>跨设备访问依赖网络、身份、权限和服务可用性</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">安全</h3><div class="key-value-value"><p>配置桶策略、身份、加密和审计，并按数据类型授权</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>平台维护底层设备后，用户仍要设置权限、保留备份、测试恢复并删除不再需要的版本</p></div></div>
     <div class="numeric-progress">4/23</div>
     <div class="semantic-label">SERVICE CONDITIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
@@ -82,7 +80,7 @@
 <section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 云存储服务</div>
     <h2 class="slide-title">练习：服务边界／存储形式</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 28% 38%"><colgroup><col style="width:34%"><col style="width:28%"><col style="width:38%"></colgroup><thead><tr><th>场景</th><th>判断轴</th><th>仍需核查的边界</th></tr></thead><tbody><tr><td>硬盘接在个人电脑上</td><td>服务边界：本地／云／待判断</td><td>容量、备份和跨设备访问</td></tr><tr><td>云主机挂载一块虚拟磁盘</td><td>存储形式：文件／块／对象／待判断</td><td>主机、卷和应用的依赖</td></tr><tr><td>通过接口读取照片对象</td><td>存储形式：文件／块／对象／待判断</td><td>权限、网络和对象状态</td></tr><tr><td>多地保存备份副本</td><td>存储形式：文件／块／对象／待判断</td><td>副本策略和恢复是否验证</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先找数据如何进入、如何读取和谁负责保护，再判断是不是云存储服务</p></div></div>
@@ -96,11 +94,11 @@
 <section id="b1" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
-    <h2 class="slide-title">“公有”与“对象”描述的是两条分类轴</h2>
-    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confirm" data-character-edge="right" data-character-along="48" data-character-exposure="70" data-character-scale="0.9" style="--character-along:48%;--character-exposure:70;--character-hidden:30%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confirm.1a0e1b15f21a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>公有描述服务对象，对象描述数据组织方式</p></div></div></div></aside>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
+    <h2 class="slide-title">“公有”说谁提供，“对象”说怎样读写</h2>
+    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confirm" data-character-edge="right" data-character-along="48" data-character-exposure="70" data-character-scale="0.9" style="--character-along:48%;--character-exposure:70;--character-hidden:30%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confirm.160795f5f17c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>公有描述服务对象，对象描述数据组织方式</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">一条问谁控制，另一条问应用怎样读写</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="服务对象与控制边界 ↔ 数据访问与组织形式"><span class="relation-term">服务对象与控制边界 ↔ 数据访问与组织形式</span></div></div>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="谁提供、谁能使用 ↔ 目录、挂载磁盘或 API 对象"><span class="relation-term">谁提供、谁能使用 ↔ 目录、挂载磁盘或 API 对象</span></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 33% 36%"><colgroup><col style="width:31%"><col style="width:33%"><col style="width:36%"></colgroup><thead><tr><th>分类轴</th><th>典型类型</th><th>它回答的问题</th></tr></thead><tbody><tr><td>服务对象与控制</td><td>个人、私有、公有、混合云存储</td><td>谁建设、谁使用、谁承担管理责任</td></tr><tr><td>数据访问与组织</td><td>文件、块、对象存储</td><td>应用通过什么接口和语义读写</td></tr><tr><td>两轴交叉</td><td>公有云对象存储、私有云文件存储</td><td>同一服务同时具有两种属性</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不要把“公有云存储”和“对象存储”当成同一层级的答案</p></div></div>
     <div class="numeric-progress">6/23</div>
@@ -110,11 +108,11 @@
 <section id="b2" class="step slide-surface role-content layout-grid"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
-    <h2 class="slide-title">按服务对象看，存储边界可以这样安排</h2>
-    <div class="slide-content"><p class="slide-lead">分类重点是控制、共享范围和责任分配</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>个人云</h3><p>个人设备与账户之间的同步、备份和访问</p></article><article class="content-card emphasis-card" tabindex="0"><h3>私有云</h3><p>组织控制服务边界和内部用户，设备与平台可以自建或委托管理</p></article><article class="content-card emphasis-card" tabindex="0"><h3>公有云</h3><p>服务商管理共享基础设施，用户在服务边界内管理数据和权限</p></article><article class="content-card emphasis-card" tabindex="0"><h3>混合云</h3><p>组合不同控制边界，需明确数据去向与迁移</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一类文件、块或对象服务可以出现在不同的控制边界中</p></div></div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
+    <h2 class="slide-title">个人、组织或云厂商可以管理存储服务</h2>
+    <div class="slide-content"><p class="slide-lead">先看谁提供设备和平台、谁能使用，再看谁维护数据、权限和备份</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>个人云</h3><p>个人设备与账户之间的同步、备份和访问</p></article><article class="content-card emphasis-card" tabindex="0"><h3>私有云</h3><p>组织决定哪些内部用户能使用，设备与平台可以自建或委托管理</p></article><article class="content-card emphasis-card" tabindex="0"><h3>公有云</h3><p>服务商管理共享基础设施，用户管理自己账户中的数据和权限</p></article><article class="content-card emphasis-card" tabindex="0"><h3>混合云</h3><p>数据同时放在本地和云端，需要记录复制到哪里以及怎样迁移</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>文件、块或对象存储都可能由个人、组织或公有云厂商提供</p></div></div>
     <div class="numeric-progress">7/23</div>
     <div class="semantic-label">CONTROL BOUNDARIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
@@ -122,10 +120,9 @@
 <section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 存储分类</div>
     <h2 class="slide-title">练习：给场景标上两条属性</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 31% 37%"><colgroup><col style="width:32%"><col style="width:31%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>请先填写服务对象轴</th><th>请再填写存储形式轴</th></tr></thead><tbody><tr><td>公有云中的照片对象</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>企业内部共享目录</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>云主机的数据库数据盘</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>本地与云端共同保存备份</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先标控制边界，再标访问形式，两个答案可以同时成立</p></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 31% 37%"><colgroup><col style="width:32%"><col style="width:31%"><col style="width:37%"></colgroup><thead><tr><th>场景</th><th>服务对象</th><th>存储形式</th></tr></thead><tbody><tr><td>公有云中的照片对象</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>企业内部共享目录</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>云主机的数据库数据盘</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr><tr><td>本地与云端共同保存备份</td><td>个人／私有／公有／混合</td><td>文件／块／对象／待判断</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">8/23</div>
     <div class="semantic-label">CLASSIFICATION JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:34.7826%"></div></div>
@@ -136,12 +133,12 @@
 <section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
     <h2 class="slide-title">文件、块和对象回答不同的读写问题</h2>
-    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.936981e72281.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>产品名相同，读写语义也可能不同</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confirm" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confirm.13f6e318a053.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>产品名相同，读写语义也可能不同</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">存储类型先看访问语义，不按产品名称判断</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 31% 29% 23%"><colgroup><col style="width:17%"><col style="width:31%"><col style="width:29%"><col style="width:23%"></colgroup><thead><tr><th>类型</th><th>应用看到什么</th><th>适合场景</th><th>关键边界</th></tr></thead><tbody><tr><td>文件</td><td>目录与文件系统</td><td>共享目录、协作文件</td><td>依赖文件接口和权限</td></tr><tr><td>块</td><td>可挂载的磁盘块</td><td>云主机卷、数据库</td><td>由主机管理文件系统</td></tr><tr><td>对象</td><td>数据与元数据封装</td><td>图片、视频、文档、备份</td><td>通过接口 API 或网络访问</td></tr></tbody></table></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-6-1/assets/previews/storage-semantics-image2.webp" data-full-src="resources/decks/cciot-6-1/assets/storage-semantics-image2.png" data-full-width="1448" data-full-height="1086" alt="文件、块和对象三种存储访问语义的对比示意" tabindex="0" role="button" aria-label="放大图片：文件、块和对象三种存储访问语义的对比示意" decoding="async"></figure></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-6-1/assets/previews/storage-semantics-image2.webp" data-full-src="resources/decks/cciot-6-1/assets/storage-semantics-image2.webp" data-full-width="1448" data-full-height="1086" alt="文件、块和对象三种存储访问语义的对比示意" tabindex="0" role="button" aria-label="放大图片：文件、块和对象三种存储访问语义的对比示意" decoding="async"></figure></div></div>
     <div class="numeric-progress">9/23</div>
     <div class="semantic-label">STORAGE SEMANTICS</div>
     <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
@@ -149,14 +146,14 @@
 <section id="c2" class="step slide-surface role-content layout-grid"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
     <h2 class="slide-title">选择存储语义要先看访问方式</h2>
     <div class="slide-content"><p class="slide-lead">不把“更快”或“更便宜”当作脱离场景的排名</p>
 <div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>数据库数据盘</h3><p>需要主机直接挂载并频繁更新</p>
 <p>块存储更贴近这种磁盘语义</p></article><article class="content-card emphasis-card" tabindex="0"><h3>团队共享目录</h3><p>需要目录、文件名和协作权限</p>
 <p>文件存储更贴近这种共享语义</p></article><article class="content-card emphasis-card" tabindex="0"><h3>图片与备份归档</h3><p>需要海量保存、接口访问和元数据</p>
 <p>对象存储更贴近这种数据服务</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>当访问语义改变，容量和性能之外的管理方式也会改变</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>块存储要由主机管理文件系统，文件存储提供目录接口，对象存储通过 API 和元数据读写</p></div></div>
     <div class="numeric-progress">10/23</div>
     <div class="semantic-label">USE CASES</div>
     <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
@@ -164,7 +161,7 @@
 <section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 文件块对象</div>
     <h2 class="slide-title">练习：判断存储形式或服务角色</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 26% 37%"><colgroup><col style="width:37%"><col style="width:26%"><col style="width:37%"></colgroup><thead><tr><th>需求</th><th>请先判断存储形式或服务角色</th><th>请写出判断依据</th></tr></thead><tbody><tr><td>多台主机共同读取素材目录</td><td>文件／块／对象／证据不足</td><td>填写目录、文件接口或其他访问语义证据</td></tr><tr><td>虚拟机的系统盘</td><td>文件／块／对象／证据不足</td><td>填写挂载、主机或磁盘语义证据</td></tr><tr><td>海量视频备份与下载</td><td>文件／块／对象／证据不足</td><td>填写对象、元数据或接口访问证据</td></tr><tr><td>容器镜像分发</td><td>仓库服务／底层存储待判断</td><td>填写版本化分发和镜像读取证据</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">11/23</div>
@@ -177,12 +174,11 @@
 <section id="d1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
     <h2 class="slide-title">对象把数据和描述信息封装在一起</h2>
-    <div class="slide-content"><p class="slide-lead">桶划定管理边界，元数据描述对象；版本、删除和恢复由具体服务决定</p>
+    <div class="slide-content"><p class="slide-lead">桶管权限和生命周期，元数据记大小、类型、时间；版本删除恢复看具体服务</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>定位：桶 + 对象名称 → 对象</p><p>读写：接口 API ↔ 对象数据 + 元数据</p></div></div>
-<div class="component component-list list-key-value has-column-widths" data-column-widths="20% 80%" style="--key-value-columns:minmax(0,20fr) minmax(0,80fr)"><div class="key-value-item"><h3 class="key-value-key">桶</h3><div class="key-value-value"><p>对象的逻辑容器，也是策略和生命周期规则的边界</p></div></div><div class="key-value-item"><h3 class="key-value-key">对象数据</h3><div class="key-value-value"><p>图片、视频、文档、日志和备份等实际内容</p></div></div><div class="key-value-item"><h3 class="key-value-key">元数据</h3><div class="key-value-value"><p>大小、类型、时间、标签、校验值或其他描述属性</p></div></div><div class="key-value-item"><h3 class="key-value-key">对象名称</h3><div class="key-value-value"><p>用于寻址和组织，带有路径前缀也不等于本地目录</p></div></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>对象存储的管理能力来自数据、元数据、桶和访问策略的组合</p></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="20% 80%" style="--key-value-columns:minmax(0,20fr) minmax(0,80fr)"><div class="key-value-item"><h3 class="key-value-key">桶</h3><div class="key-value-value"><p>对象的逻辑容器，也是策略和生命周期边界</p></div></div><div class="key-value-item"><h3 class="key-value-key">对象数据</h3><div class="key-value-value"><p>图片、视频、文档、日志和备份等实际内容</p></div></div><div class="key-value-item"><h3 class="key-value-key">元数据</h3><div class="key-value-value"><p>记录大小、类型、时间、标签、校验值等属性</p></div></div><div class="key-value-item"><h3 class="key-value-key">对象名称</h3><div class="key-value-value"><p>用于寻址和组织；路径前缀不等于本地目录</p></div></div></div></div></div></div>
     <div class="numeric-progress">12/23</div>
     <div class="semantic-label">OBJECT MODEL</div>
     <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
@@ -190,9 +186,9 @@
 <section id="d2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
     <h2 class="slide-title">读取对象的四项检查</h2>
-    <div class="slide-content"><p class="slide-lead">课堂默认使用私有桶，公开访问需要明确风险和用途</p>
+    <div class="slide-content"><p class="slide-lead">课堂默认私有桶；明确访问者、公开时长并获授权后才开公开入口</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>身份</h3><p>谁在请求对象，使用哪个账户、角色或临时凭证</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>权限</h3><p>桶策略、对象权限和最小访问范围是否允许本次操作</p></article></div>
 <div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>网络</h3><p>请求能否到达服务入口，出口和访问路径是否正常</p></article><article class="content-card emphasis-card" tabindex="0"><h3>对象状态</h3><p>对象是否存在、是否被标记删除、版本是否可读</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“找不到对象”可能来自名称、权限、网络或版本状态，而不只是对象不存在</p></div></div>
@@ -203,7 +199,7 @@
 <section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 对象存储对象模型</div>
     <h2 class="slide-title">练习：对象为什么读不出来？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 29% 36%"><colgroup><col style="width:35%"><col style="width:29%"><col style="width:36%"></colgroup><thead><tr><th>现象</th><th>请先判断检查对象</th><th>请写出判断依据</th></tr></thead><tbody><tr><td>桶列表看不到目标桶</td><td>身份／名称／其他</td><td>填写账户、名称、位置或列表权限证据</td></tr><tr><td>对象存在但返回拒绝</td><td>策略／权限／其他</td><td>填写读取者身份和最小权限证据</td></tr><tr><td>下载任务一直失败</td><td>网络／对象状态／其他</td><td>填写服务入口、版本或请求日志证据</td></tr><tr><td>删除后仍占用容量</td><td>版本／删除机制／其他</td><td>填写旧版本、删除标记或保留策略证据</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>逐项核对身份、策略、网络、名称和版本状态</p></div></div>
@@ -217,11 +213,11 @@
 <section id="e1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
     <h2 class="slide-title">演示从无敏感信息的样例对象开始</h2>
-    <div class="slide-content"><p class="slide-lead">演示只使用样例、最小权限和生命周期证据，不展示购买页面或账号细节</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">课前验证存储服务、最小权限、网络路径和样例文件</span></li><li><span class="list-marker">02</span><span class="list-text">创建临时桶，明确访问边界、存储类别、冗余和加密选择</span></li><li><span class="list-marker">03</span><span class="list-text">只使用本次演示的数据，不上传真实个人信息或生产文件</span></li><li><span class="list-marker">04</span><span class="list-text">保留对象列表、版本状态和下载结果作为课堂证据</span></li></ol></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>课堂演示的目标是理解对象关系和生命周期，不是记住某个控制台菜单</p></div></div>
+    <div class="slide-content"><p class="slide-lead">演示使用样例文件和临时授权，并保留对象列表、下载结果、版本与删除记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">课前验证存储服务、最小权限、网络路径和样例文件</span></li><li><span class="list-marker">02</span><span class="list-text">创建临时桶，写清谁能访问、使用哪种存储类别以及是否启用冗余和加密</span></li><li><span class="list-marker">03</span><span class="list-text">只使用本次演示的数据，不上传真实个人信息或生产文件</span></li><li><span class="list-marker">04</span><span class="list-text">保留对象列表、版本状态和下载结果作为课堂证据</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>即使控制台菜单改变，仍按创建桶、上传、下载、更新、检查版本和删除的顺序操作</p></div></div>
     <div class="numeric-progress">15/23</div>
     <div class="semantic-label">DEMO PREPARATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:65.2174%"></div></div>
@@ -229,9 +225,9 @@
 <section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
     <h2 class="slide-title">观察一份对象从进入到回收</h2>
-    <div class="slide-content"><p class="slide-lead">每个动作都要记录对象、状态和权限的变化</p>
+    <div class="slide-content"><p class="slide-lead">记录对象名称、当前版本、谁能读取，以及删除后列表和容量怎样变化</p>
 <div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -241,8 +237,7 @@
 → 下载或读取对象
 → 若服务支持并启用版本控制，更新同名对象并观察版本
 → 按服务支持的删除机制选择恢复、保留或彻底回收</code></pre></div></div></div>
-<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>先看桶</h3><p>桶策略、存储类别和冗余边界</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>再看内容</h3><p>对象名称、大小、类型、版本和元数据</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>最后看访问</h3><p>身份、权限、网络和下载结果</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>收尾看清单</h3><p>对象版本、删除标记、桶和临时授权</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>云存储实践的完整性来自创建、读取、保护、恢复和回收</p></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>先看桶</h3><p>桶策略、存储类别和冗余边界</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>再看内容</h3><p>对象名称、大小、类型、版本和元数据</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>最后看访问</h3><p>身份、权限、网络和下载结果</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>收尾看清单</h3><p>对象版本、删除标记、桶和临时授权</p></div></div></div></div></div>
     <div class="numeric-progress">16/23</div>
     <div class="semantic-label">OBJECT LIFECYCLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:69.5652%"></div></div>
@@ -250,7 +245,7 @@
 <section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 生命周期演示</div>
     <h2 class="slide-title">练习：每个结果分别证明了什么？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>观察结果</th><th>请先判断它能证明什么</th><th>还需要继续核对什么</th></tr></thead><tbody><tr><td>桶创建成功</td><td>存储容器／基础策略／其他</td><td>对象读写、权限和访问路径</td></tr><tr><td>对象出现在列表</td><td>对象记录／可见状态／其他</td><td>下载路径、权限和内容一致性</td></tr><tr><td>下载内容一致</td><td>本次读取结果／其他</td><td>备份、恢复和长期保留策略</td></tr><tr><td>对象列表为空</td><td>当前列表可见状态／其他</td><td>旧版本、删除标记、软删除或保留对象</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一个列表状态只证明当前可见状态，不能证明已经完整回收</p></div></div>
@@ -264,7 +259,7 @@
 <section id="f1" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
     <h2 class="slide-title">版本、删除与回收需要分开判断</h2>
     <div class="slide-content"><p class="slide-lead">支持并启用版本控制时，同名对象更新或删除可能留下可读取版本</p>
 <div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>版本路径：版本 1 → 版本 2 → 选择版本恢复</p><p>删除路径：删除标记／软删除 → 撤销、保留或彻底回收（依服务实现）</p></div></div>
@@ -276,10 +271,10 @@
 <section id="f2" class="step slide-surface role-content layout-grid"
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
-    <h2 class="slide-title">云存储的可靠性来自持续治理</h2>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
+    <h2 class="slide-title">云存储可靠，也要维护权限、备份、回收</h2>
     <div class="slide-content"><p class="slide-lead">服务商托管设备，不等于用户不再负责数据</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>数据保护</h3><p>分类数据、管理权限、加密数据、备份并演练恢复</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行控制</h3><p>监测容量、请求、网络、访问日志和成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>长期边界</h3><p>评估区域、迁移、接口、出口和供应商锁定风险</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>数据保护</h3><p>分类数据、管理权限、加密数据、备份并演练恢复</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行控制</h3><p>监测容量、请求、网络、访问日志和成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>长期使用</h3><p>记录数据所在区域、导出接口、出口费用和迁移办法，避免数据只能留在一个服务中</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>冗余不等于备份，扩容不等于无限带宽，公开链接也不等于安全共享</p></div></div>
     <div class="numeric-progress">19/23</div>
     <div class="semantic-label">STORAGE GOVERNANCE</div>
@@ -288,9 +283,9 @@
 <section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 治理与回收</div>
     <h2 class="slide-title">练习：云存储的“安全”需要什么证据？</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-astonished.9d1728b250be.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>桶已经删除，备份副本还会留下吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-astonished.e48a20bc1983.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>桶已经删除，备份副本还会留下吗？</p></div></div></div></aside>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 29% 38%"><colgroup><col style="width:33%"><col style="width:29%"><col style="width:38%"></colgroup><thead><tr><th>现象</th><th>请先判断不能直接推出什么</th><th>请列出仍需验证的证据</th></tr></thead><tbody><tr><td>桶设置为私有</td><td>绝对安全／其他</td><td>填写身份、策略、临时授权和日志证据</td></tr><tr><td>开启多副本</td><td>可以替代备份／其他</td><td>填写恢复目标、版本和异地策略证据</td></tr><tr><td>容量可以增加</td><td>访问没有瓶颈／其他</td><td>填写带宽、请求、出口和预算证据</td></tr><tr><td>桶删除成功</td><td>数据不可恢复／其他</td><td>填写版本、删除机制和备份副本证据</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">20/23</div>
     <div class="semantic-label">GOVERNANCE JUDGMENT</div>
@@ -302,10 +297,10 @@
 <section id="review" class="step slide-surface role-review layout-focus"
       data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">分析云存储时，沿着服务边界、存储语义、对象模型和生命周期逐项判断</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">服务边界：云存储通过网络交付数据存放、读取和管理能力</span></li><li><span class="list-marker">02</span><span class="list-text">分类轴：服务对象与控制边界和数据访问形式可以交叉</span></li><li><span class="list-marker">03</span><span class="list-text">类型选择：文件、块、对象分别对应不同访问语义</span></li><li><span class="list-marker">04</span><span class="list-text">对象模型：桶组织对象，元数据描述对象，策略控制访问</span></li><li><span class="list-marker">05</span><span class="list-text">生命周期：创建、上传、读取、版本、恢复和回收都需要证据</span></li><li><span class="list-marker">06</span><span class="list-text">治理责任：冗余、权限、备份、网络、成本和迁移仍需管理</span></li></ol></div></div></div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1</div>
+    <h2 class="slide-title">练习：为论坛图片提交存储与回收方案</h2>
+    <div class="slide-content"><p class="slide-lead">不看前页结论，说明图片怎样进入、被读取、被保护并最终退出云存储</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">分别写出谁提供服务、谁能使用，以及应用通过目录、挂载磁盘还是对象 API 读写</span></li><li><span class="list-marker">02</span><span class="list-text">在文件、块和对象存储之间选择，并用论坛图片的读写方式解释依据</span></li><li><span class="list-marker">03</span><span class="list-text">说明图片放在哪个桶、使用什么对象名称和元数据，以及哪个身份按哪条策略读取</span></li><li><span class="list-marker">04</span><span class="list-text">针对“对象存在但返回拒绝”，依次核对请求者身份、桶策略、对象权限、网络和版本状态</span></li><li><span class="list-marker">05</span><span class="list-text">写出更新、删除、恢复与彻底回收时要观察的版本和标记证据</span></li><li><span class="list-marker">06</span><span class="list-text">区分冗余、备份和恢复演练的作用，并说明对象可读为何仍不能证明论坛发帖任务完成</span></li></ol></div></div></div>
     <div class="numeric-progress">21/23</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
@@ -313,7 +308,7 @@
 <section id="map" class="step slide-surface role-map layout-single"
       data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">本节思维导图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-6-1/mindmap-6-1.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">22/23</div>
@@ -323,9 +318,9 @@
 <section id="questions" class="step slide-surface role-questions layout-single"
       data-x="1500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH06 <span>|</span> 6.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">云存储交付的服务边界与本地存储有什么不同？</span></li><li><span class="question-no">02</span><span class="question-text">为什么“公有”与“对象”属于两条分类轴？</span></li><li><span class="question-no">03</span><span class="question-text">文件、块和对象存储分别适合什么访问语义？</span></li><li><span class="question-no">04</span><span class="question-text">桶、对象、元数据和权限如何共同组织数据？</span></li><li><span class="question-no">05</span><span class="question-text">如何完成一条从创建桶到对象回收的演示链？</span></li><li><span class="question-no">06</span><span class="question-text">为什么冗余、扩容和私有访问都不能单独证明数据安全？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">本地存储与云存储中，谁维护设备，谁管理数据、权限和备份？</span></li><li><span class="question-no">02</span><span class="question-text">为什么“公有”与“对象”属于两条分类轴？</span></li><li><span class="question-no">03</span><span class="question-text">文件、块和对象存储分别适合什么访问语义？</span></li><li><span class="question-no">04</span><span class="question-text">上传一张图片后，桶、对象名称、元数据、身份和策略分别做什么？</span></li><li><span class="question-no">05</span><span class="question-text">从创建桶到彻底回收对象，要执行并记录哪些步骤？</span></li><li><span class="question-no">06</span><span class="question-text">为什么冗余、扩容和私有访问都不能单独证明数据安全？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="cciot-5-1.html" title="上一节：5.1 体验容器云" aria-label="上一节：5.1 体验容器云">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

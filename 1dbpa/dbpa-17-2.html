@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 17.2 内存数据库实现、恢复与异构展望 | HUST</title>
-  <meta name="description" content="用硬件感知算法和可靠性机制实现内存数据库，并比较异构执行路线">
+  <meta name="description" content="用订单表布局、并发更新和崩溃恢复比较三种内存数据库做法">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="17-2">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 17.2</div>
       <h1>内存数据库实现、恢复与异构展望</h1>
-      <p class="cover-description">内存布局、并发恢复和异构执行需要协同设计</p>
+      <p class="cover-description">订单怎样排列、两人同时改单怎样协调、崩溃后怎样重做，必须一起考虑</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较行、列、向量化和实时编译四种处理模型</span></li><li><span class="list-marker">02</span><span class="list-text">解释 CSB+、Radix 分区和 NUMA-aware 排序合并分别优化哪些硬件代价</span></li><li><span class="list-marker">03</span><span class="list-text">区分锁、乐观并发控制、无锁结构和快照隔离 snapshot isolation 的协调方式</span></li><li><span class="list-marker">04</span><span class="list-text">解释日志、检查点、重做、热点优先和并行恢复的关系</span></li><li><span class="list-marker">05</span><span class="list-text">按迁移成本、负载边界和硬件条件比较三类实现路线</span></li><li><span class="list-marker">06</span><span class="list-text">分析异构硬件与 HTAP 的同步、调度和资源隔离边界</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">按订单读写、崩溃恢复时间、现有系统改动量，选择内存数据库做法</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较行、列、向量化和实时编译四种处理模型</span></li><li><span class="list-marker">02</span><span class="list-text">解释 CSB+、Radix 分区和 NUMA-aware 排序合并分别优化哪些硬件代价</span></li><li><span class="list-marker">03</span><span class="list-text">区分锁、乐观并发控制、无锁结构和快照隔离 snapshot isolation 的协调方式</span></li><li><span class="list-marker">04</span><span class="list-text">解释日志、检查点、重做、热点优先和并行恢复的关系</span></li><li><span class="list-marker">05</span><span class="list-text">比较在原系统旁加内存路径、重建独立 IMDB 和把批量分析交给 GPU 三种做法</span></li><li><span class="list-marker">06</span><span class="list-text">说明 HTAP 中新订单何时进入列存，以及长分析怎样避免拖慢短事务</span></li></ol></div></div></div>
     <div class="numeric-progress">2/14</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
@@ -54,10 +54,10 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">内存布局的三种方式</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.827a630e355d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>行组是行存、列存之外的第三种独立布局吗？</p></div></div></div></aside>
+    <h2 class="slide-title">ORDER：磁盘页、内存列；行组属列存</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.92d3f5c87d7d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>行组是行存、列存之外的第三种独立布局吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">同一 ORDER 表可以用不同布局服务事务、分析和追加</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-storage-layout.svg" data-full-src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-storage-layout.svg" alt="同一 ORDER 表的三种存储布局对照：磁盘 page-slot、内存列存储，以及列存储中的可增长行组" tabindex="0" role="button" aria-label="放大图片：同一 ORDER 表的三种存储布局对照：磁盘 page-slot、内存列存储，以及列存储中的可增长行组" decoding="async"><figcaption>行组是列存储中的一种可增长组织方式；三种布局都仍需配合日志、恢复和持久化路径</figcaption></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-storage-layout.svg" data-full-src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-storage-layout.svg" alt="同一 ORDER 表的三种存储布局对照：磁盘 page-slot、内存列存储，以及列存储中的可增长行组" tabindex="0" role="button" aria-label="放大图片：同一 ORDER 表的三种存储布局对照：磁盘 page-slot、内存列存储，以及列存储中的可增长行组" decoding="async"><figcaption>行组是列存储中的一种可增长组织方式；三种布局都仍需配合日志、恢复和持久化路径</figcaption></figure>
 <div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="ORDER 表的三种布局：磁盘页槽、内存列存与列存中的可增长行组"><span class="relation-term">ORDER 表的三种布局：磁盘页槽、内存列存与列存中的可增长行组</span></div></div>
 <div class="component component-text text-inset substep reveal-self"><p>行存储与列存储是典型适配，具体结构取决于负载；行组属于列存储，是可增长的组织单元</p></div></div></div>
     <div class="numeric-progress">3/14</div>
@@ -68,9 +68,9 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">同一表达式可采用多种处理模型</h2>
-    <div class="slide-content"><p class="slide-lead">行处理、列处理、向量化和实时编译分别摊薄不同的重复开销</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-query-models.svg" data-full-src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-query-models.svg" alt="Price、Quantity 和 Tax 表达式在行处理、列处理和向量化模型中的执行差异；实时编译由正文另行说明" tabindex="0" role="button" aria-label="放大图片：Price、Quantity 和 Tax 表达式在行处理、列处理和向量化模型中的执行差异；实时编译由正文另行说明" decoding="async"><figcaption>行、列和向量化是图示的处理模型；向量大小按 Cache 与工作负载调优，实时编译属于另一类执行优化</figcaption></figure>
+    <h2 class="slide-title">价格 × 数量 × 税率：四种执行方式</h2>
+    <div class="slide-content"><p class="slide-lead">四种做法减少的工作不同：找字段、反复调用函数、中间结果或解释执行</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-query-models.svg" data-full-src="resources/decks/dbpa-17-2/assets/generated/dbpa-ch17-query-models.svg" alt="Price、Quantity 和 Tax 表达式在行处理、列处理和向量化模型中的执行差异；实时编译由正文另行说明" tabindex="0" role="button" aria-label="放大图片：Price、Quantity 和 Tax 表达式在行处理、列处理和向量化模型中的执行差异；实时编译由正文另行说明" decoding="async"><figcaption>行、列和向量化是图示的处理模型；向量大小按 Cache 与工作负载调优，实时编译属于另一类执行优化</figcaption></figure>
 <div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">行处理逐条访问记录属性并计算；它重复的是记录迭代、属性定位和函数调用，不是 SQL 语法解析</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">列处理批量访问整列，减少重复函数调用，但可能产生较大的临时列空间</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">向量化按 Cache 与工作负载选择连续数据块，保留列处理批量优势并降低中间结果代价</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">实时编译把热点表达式编译为机器码或中间级字节码，减少记录解析和函数调用；是否采用取决于系统实现</span></li></ol></div></div></div>
     <div class="numeric-progress">4/14</div>
     <div class="semantic-label">QUERY MODELS</div>
@@ -80,8 +80,8 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">硬件敏感的数据结构与算法</h2>
-    <div class="slide-content"><p class="slide-lead">等价算法的硬件代价可能不同</p>
+    <h2 class="slide-title">Cache line、TLB、NUMA 影响快慢</h2>
+    <div class="slide-content"><p class="slide-lead">CSB+、Radix 分区和 NUMA-aware 排序合并分别减少不同的等待</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>技术</th><th>关注的硬件问题</th><th>直观收益</th></tr></thead><tbody><tr><td>CSB+ 树</td><td>按 Cache line 连续组织节点组，减少指针和地址跳转</td><td>缓存友好的索引访问</td></tr><tr><td>Radix 哈希连接</td><td>分区后让哈希表更接近 Cache 容量，减少 Cache 和 TLB 失效</td><td>分区探测局部性更好；付出分区时间和空间</td></tr><tr><td>NUMA-aware 排序合并</td><td>先在节点内局部排序，再处理跨节点归并</td><td>减少远程访问；仍需承担归并协调</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>硬件敏感算法通过布局、分区和归并改善局部性；收益取决于数据规模、带宽和跨节点竞争</p></div></div>
     <div class="numeric-progress">5/14</div>
@@ -92,11 +92,10 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">内存事务的并发取舍</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>无锁结构没有锁，就不会有同步和冲突成本了吧？</p></div></div></div></aside>
+    <h2 class="slide-title">同时改库存：锁、乐观、无锁要处理冲突</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>无锁结构没有锁，就不会有同步和冲突成本了吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">锁粒度、乐观并发控制、无锁结构和快照隔离分别改变协调方式</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>锁粒度</h3><p>较大粒度可减少锁管理元数据，但可能扩大冲突范围；短事务不等于低冲突</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>乐观并发控制</h3><p>乐观并发控制在低冲突负载下可减少等待；提交检查失败时需要重试或回滚</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>无锁结构</h3><p>无锁结构用原子操作降低锁竞争，但仍需处理同步、可见性和内存回收成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>快照隔离</h3><p>快照隔离为 OLAP 只读查询提供一致视图；它是并发隔离机制，不是恢复快照</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>当订单更新与长分析共享数据时，需要同时判断冲突范围、读视图、提交检查和资源占用</p></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>锁粒度</h3><p>较大粒度可减少锁管理元数据，但可能扩大冲突范围；短事务不等于低冲突</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>乐观并发控制</h3><p>乐观并发控制在低冲突负载下可减少等待；提交检查失败时需要重试或回滚</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>无锁结构</h3><p>无锁结构用原子操作降低锁竞争，但仍需处理同步、可见性和内存回收成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>快照隔离</h3><p>快照隔离为 OLAP 只读查询提供一致视图；它是并发隔离机制，不是恢复快照</p></article></div></div></div>
     <div class="numeric-progress">6/14</div>
     <div class="semantic-label">CONCURRENCY</div>
     <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
@@ -106,7 +105,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
     <h2 class="slide-title">日志、检查点与并行恢复</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>并行恢复只把日志切开就够了吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>并行恢复只把日志切开就够了吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">快照隔离处理并发读视图；恢复根据日志和检查点重建可用状态</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">日志写入非易失性介质，为后续重做提供依据</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">检查点保存恢复基线，仍需结合日志重做；它不一定是完整可重启状态</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">预提交或组提交降低提交等待，但不消除日志成本</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">崩溃后可按策略优先恢复热点数据，其他数据随后装载</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">数据分区与日志分区保持对应，多核心才能更安全地并行恢复</span></li></ol></div>
 <div class="component component-text text-inset substep reveal-self"><p>并行恢复可以缩短等待，但持久性写入、检查点、重做顺序和并行协调仍有代价</p></div></div></div>
@@ -118,9 +117,9 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">三类内存实现路线</h2>
-    <div class="slide-content"><p class="slide-lead">三种方案是并列的架构选择，适用条件取决于负载、迁移成本和硬件边界</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 25% 25% 25%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><thead><tr><th>方案</th><th>基础边界</th><th>迁移／同步代价</th><th>适用条件与限制</th></tr></thead><tbody><tr><td>混合加速引擎</td><td>在传统系统旁增加内存行／列路径</td><td>接口复用；仍有副本、转换和资源竞争</td><td>适合渐进升级；仍需隔离事务与分析</td></tr><tr><td>独立内存数据库</td><td>重做存储、索引和执行底层</td><td>迁移与运维边界较大</td><td>适合愿意重做系统的低延迟事务或分析</td></tr><tr><td>GPU 数据库</td><td>CPU 与 GPU 异构执行</td><td>需要承担数据传输、恢复和控制流成本</td><td>适合规则、大批量、计算密集型分析</td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">保留、重建 IMDB、GPU 分析：三选一</h2>
+    <div class="slide-content"><p class="slide-lead">先问现有接口要不要保留、哪些查询必须低延迟、数据要搬到 GPU 多少次</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 25% 25% 25%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><thead><tr><th>做法</th><th>现有系统怎样变</th><th>要多做的迁移或同步</th><th>什么时候值得考虑</th></tr></thead><tbody><tr><td>混合加速引擎</td><td>在传统系统旁增加内存行／列路径</td><td>复用接口，但要维护副本、转换和资源分配</td><td>想逐步升级，又能接受同步工作</td></tr><tr><td>独立内存数据库</td><td>重做存储、索引和执行底层</td><td>迁移数据、改运维脚本并重建恢复流程</td><td>事务或分析必须低延迟，且愿意重做系统</td></tr><tr><td>GPU 数据库</td><td>CPU 控制流程，GPU 批量计算</td><td>搬运数据，并处理设备故障和不规则分支</td><td>规则、大批量、计算密集的分析足够多</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">8/14</div>
     <div class="semantic-label">THREE OPTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
@@ -129,10 +128,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">以订单系统判断三类路线的适用条件</h2>
-    <div class="slide-content"><p class="slide-lead">判断路线时，要看数据放在哪里、各引擎执行什么，以及迁移和同步的代价</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>混合引擎</h3><p>混合引擎保留已有订单系统接口，可增加内存行／列路径；副本同步和资源隔离仍有代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>独立系统</h3><p>独立系统适合事务与分析都要求低延迟且愿意重做布局、索引和恢复的场景；迁移与运维边界更大</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPU 引擎</h3><p>区域销售汇总等规则、大批量的分析适合 GPU；数据传输、控制流和恢复路径必须可控</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>方案选择取决于负载、数据规模、迁移成本和 CPU／GPU 边界，三类方案是并列路线</p></div></div>
+    <h2 class="slide-title">用点查、改单和地区汇总决定三种做法</h2>
+    <div class="slide-content"><p class="slide-lead">分别写订单放在哪里、谁执行点查和汇总、旧接口改多少、每份副本何时更新</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>混合引擎</h3><p>混合引擎保留已有订单系统接口，可增加内存行／列路径；副本同步和资源隔离仍有代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>独立系统</h3><p>独立系统适合事务与分析都要求低延迟且愿意重做布局、索引和恢复；代价是迁移数据并修改运维脚本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPU 引擎</h3><p>区域销售汇总等规则、大批量的分析适合 GPU；数据传输、控制流和恢复路径必须可控</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不要只按产品名称选择：先统计点查、改单和地区汇总各占多少，再计算迁移工作和 CPU／GPU 传输时间</p></div></div>
     <div class="numeric-progress">9/14</div>
     <div class="semantic-label">IMPLEMENTATION EXAMPLES</div>
     <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
@@ -141,8 +140,8 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">异构硬件的三层权衡</h2>
-    <div class="slide-content"><p class="slide-lead">硬件机会需要数据库重新设计存储、执行和恢复，统一引擎并非必然结果</p>
+    <h2 class="slide-title">DRAM／NVM 到 CPU／GPU：都经互连</h2>
+    <div class="slide-content"><p class="slide-lead">存放位置、计算设备和传输路径会一起影响查询时间与崩溃恢复</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储层</h3><p>DRAM 与 NVM 按访问频率、容量、成本和持久性分工；数据放置本身有代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>计算层</h3><p>CPU、GPU、FPGA 等处理器按算子和并行度分工；并非所有查询都适合加速</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>互连层</h3><p>PCIe、RDMA、NVLink 等可降低传输代价，但不能消除数据移动、同步和恢复问题</p></article></div>
 <div class="component component-text text-inset substep reveal-self"><p>异构数据库仍需同时优化数据放置、查询执行、恢复和资源调度</p></div></div></div>
     <div class="numeric-progress">10/14</div>
@@ -153,23 +152,22 @@
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2 <span>|</span> 17.2</div>
-    <h2 class="slide-title">HTAP 展望：行列、同步与隔离需要协同</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.c35e2d766676.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>行存和列存放在同一个系统里，就自动成为 HTAP 了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">行列布局、数据可见性和资源隔离共同决定 HTAP 的实现边界</p>
+    <h2 class="slide-title">行列同系统：新订单何时可见</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>行存和列存放在同一个系统里，就自动成为 HTAP 了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">除了行列布局，还要说明订单何时同步到分析端，以及长查询能占用多少资源</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储融合</h3><p>事务行存与分析列存可以并存或转换；行列适配是典型路线，不是 HTAP 的唯一形式</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据可见性</h3><p>日志、副本、提交语义和查询调度共同决定分析何时看到最新事实</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>资源隔离</h3><p>长分析不能挤占短事务；CPU／GPU 调度能缓解冲突，但不保证零延迟</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>HTAP 的实现需要在存储、可见性和资源隔离之间做取舍，不保证单一物理存储、始终读取最新数据或自动消除资源竞争</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>HTAP 不保证只存一份数据、报表始终读到刚提交的订单，也不保证长查询自动避开下单资源</p></div></div>
     <div class="numeric-progress">11/14</div>
     <div class="semantic-label">HTAP OUTLOOK</div>
     <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-content layout-focus"
+<section id="review" class="step slide-surface role-review layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2</div>
-    <h2 class="slide-title">内存数据库实现需要同时满足性能、可靠性与迁移边界</h2>
-    <div class="slide-content"><p class="slide-lead">性能取决于硬件敏感优化，故障恢复取决于恢复设计，方案选择受迁移和负载边界约束</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储</h3><p>行列布局与行组的选择取决于负载和增长方式</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>执行</h3><p>列处理、向量化和实时编译降低重复执行与 Cache 访问代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可靠性</h3><p>并发控制、日志、检查点、热点优先和并行恢复共同决定故障后的恢复路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>方案</h3><p>混合、独立和 GPU 方案都要处理 HTAP 的同步与资源隔离</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>性能优化和恢复设计必须同时考虑；方案选择还要看局部性、负载边界和迁移成本</p></div></div>
+    <h2 class="slide-title">订单与地区汇总选型：回答四问</h2>
+    <div class="slide-content"><p class="slide-lead">写清怎样读写、怎样排列、冲突和崩溃怎样处理、现有系统要改多少</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 三种操作各占多少</h3><p>统计订单点写、点查和地区汇总的比例与数据量，再画出数据在 CPU、GPU、DRAM、NVM 之间怎样移动</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 表怎样放、表达式怎样算</h3><p>选择行、列或行组，再决定逐行、向量化或实时编译；指出减少的是函数调用、Cache 失效还是中间结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 同时改单和突然崩溃怎么办</h3><p>选择锁、乐观、无锁或快照视图，再按顺序写从检查点、日志重做到热点表恢复可查的过程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 选一种并说明要改多少</h3><p>比较混合、独立和 GPU 做法，列出要修改的接口、同步的副本、长查询可用的资源，以及失败时怎样退回旧系统</p></article></div></div></div>
     <div class="numeric-progress">12/14</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
@@ -189,7 +187,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么把全部磁盘数据装入 DRAM 仍不自动等于内存数据库？</span></li><li><span class="question-no">02</span><span class="question-text">向量化如何利用 Cache，为什么比整列处理更节省中间结果空间？</span></li><li><span class="question-no">03</span><span class="question-text">CSB+、Radix 分区和 NUMA-aware 排序合并如何改善局部性，又付出什么成本？</span></li><li><span class="question-no">04</span><span class="question-text">订单系统崩溃后，日志、检查点、热点优先和并行恢复如何接续？</span></li><li><span class="question-no">05</span><span class="question-text">订单系统中的区域销售分析应如何在混合、独立和 GPU 路线之间选择？</span></li><li><span class="question-no">06</span><span class="question-text">HTAP 的新鲜度、提交可见性和资源隔离分别受什么机制约束？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么把全部磁盘数据装入 DRAM 仍不自动等于内存数据库？</span></li><li><span class="question-no">02</span><span class="question-text">向量化如何利用 Cache，为什么比整列处理更节省中间结果空间？</span></li><li><span class="question-no">03</span><span class="question-text">CSB+、Radix 分区和 NUMA-aware 排序合并如何改善局部性，又付出什么成本？</span></li><li><span class="question-no">04</span><span class="question-text">订单系统崩溃后，日志、检查点、热点优先和并行恢复如何接续？</span></li><li><span class="question-no">05</span><span class="question-text">订单系统中的区域销售分析应如何在混合、独立和 GPU 路线之间选择？</span></li><li><span class="question-no">06</span><span class="question-text">HTAP 中，新订单何时出现在报表、分析端能读到哪次提交、长查询能占多少资源，分别由哪些做法决定？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-17-1.html" title="上一节：17.1 内存数据库概述与新硬件" aria-label="上一节：17.1 内存数据库概述与新硬件">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 5.1 数据库完整性与约束 | HUST</title>
-  <meta name="description" content="用实体、参照和用户定义约束维护数据库状态">
+  <meta name="description" content="用主码拒绝重复选课、用外码拒绝 S999、用 CHECK 拒绝 130 分，并处理删除学生后的选课记录">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="5-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,14 +29,14 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 5.1</div>
       <h1>数据库完整性与约束</h1>
-      <p class="cover-description">让每一次数据变化都满足已定义的语义规则</p>
+      <p class="cover-description">插入、修改或删除记录时，由 DBMS 检查主码、外码和取值规则</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
 <!-- speaker-notes
-本单元把完整性约束统一为定义、检查和违约处理三步。重点是判断规则保护的对象和变化时机。
+本单元把完整性约束分为定义、检查和违约处理三步。重点是看哪条记录发生了什么变化、触发哪条规则、DBMS 接受还是拒绝。
 -->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">数据库完整性约束把现实语义、表间相容性和业务规则交给 DBMS 定义与检查</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分完整性与安全性的防范对象</span></li><li><span class="list-marker">02</span><span class="list-text">描述定义、检查和违约处理三项功能</span></li><li><span class="list-marker">03</span><span class="list-text">用 PRIMARY KEY 保证实体完整性</span></li><li><span class="list-marker">04</span><span class="list-text">用 FOREIGN KEY 保证非 NULL 外码引用存在，并维护表间相容性</span></li><li><span class="list-marker">05</span><span class="list-text">用 NOT NULL、UNIQUE、CHECK 表达业务规则，并用约束名和域支持维护</span></li><li><span class="list-marker">06</span><span class="list-text">按业务语义选择拒绝、级联或置空，并判断置空前提</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">判断插入、修改或删除会触发哪条约束、检查哪些记录，以及 DBMS 怎样处理</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分完整性与安全性的防范对象</span></li><li><span class="list-marker">02</span><span class="list-text">说明约束保存在哪里、什么变化会触发检查、违约后怎样处理</span></li><li><span class="list-marker">03</span><span class="list-text">用 PRIMARY KEY 保证实体完整性</span></li><li><span class="list-marker">04</span><span class="list-text">用 FOREIGN KEY 保证非 NULL 外码引用存在，并维护表间相容性</span></li><li><span class="list-marker">05</span><span class="list-text">用 NOT NULL、UNIQUE、CHECK 表达业务规则，并用约束名和域支持维护</span></li><li><span class="list-marker">06</span><span class="list-text">根据删除后是否应保留选课等记录，选择拒绝、级联或置空，并判断外码能否为空</span></li></ol></div></div></div>
     <div class="numeric-progress">2/16</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
@@ -54,10 +54,10 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.1</div>
-    <h2 class="slide-title">完整性约束限定合法数据库状态及其变化</h2>
-    <div class="slide-content"><p class="slide-lead">完整性与安全性都保护数据库，但完整性约束数据状态，安全性控制访问行为</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>关注点</th><th>防范对象</th><th>典型问题</th></tr></thead><tbody><tr><td>完整性</td><td>数据正确且表间相容</td><td>成绩超范围、孤立外码</td></tr><tr><td>安全性</td><td>非法用户或非法操作</td><td>未授权读取、越权修改</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整性规则描述合法数据库状态以及状态如何变化</p></div></div>
+    <h2 class="slide-title">从“谁写的”转向“写完是否合法”</h2>
+    <div class="slide-content"><p class="slide-lead">教师有权修改成绩回答安全问题；<code>Grade=130</code> 能否进入数据库回答完整性问题</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>现场请求</th><th>要检查什么</th><th>主要是哪类问题</th></tr></thead><tbody><tr><td>无权限学生执行 <code>UPDATE SC</code></td><td>主体、操作、客体和授权路径</td><td>安全性</td></tr><tr><td>有权限教师写入 <code>Grade=130</code></td><td>成绩范围和数据库状态</td><td>完整性</td></tr><tr><td>向 SC 写入不存在的 <code>S999</code></td><td>外码能否找到 Student 主码</td><td>完整性</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>教师账号可能有权执行 UPDATE，但 <code>Grade=130</code> 仍会因成绩约束被拒绝；权限和取值合法性是两次不同检查</p></div></div>
     <div class="numeric-progress">3/16</div>
     <div class="semantic-label">INTEGRITY SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
@@ -66,11 +66,11 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.1</div>
-    <h2 class="slide-title">DBMS 用三项功能形成一个运行循环</h2>
-    <div class="slide-content"><p class="slide-lead">启用约束并由 DBMS 执行时，正常写入路径都会经过相应检查</p>
+    <h2 class="slide-title">先存规则，数据变化时检查，违约后处理</h2>
+    <div class="slide-content"><p class="slide-lead">插入 <code>(S01,C01)</code> 检查组合主码；写入 <code>S999</code> 检查 Student；成绩 130 检查范围</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="定义约束后，数据变化会触发相关状态检查；一般违约会被拒绝，参照动作按已定义策略处理"><span class="relation-term">定义约束后，数据变化会触发相关状态检查；一般违约会被拒绝，参照动作按已定义策略处理</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>DBMS 把语义规则存入模式与数据字典</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查</h3><p>DBMS 按约束类型在数据变化后或提交时验证</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>一般违约会被拒绝；参照动作可以拒绝、级联或置空</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>应用程序已经校验过，DBMS 就不用再设约束了吧？</p></div></div></div></aside>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>DBMS 把主码、外码和 CHECK 等规则存入模式与数据字典</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查</h3><p>相关行被插入、修改或删除时按规则检查；立即检查还是事务结束前检查要看目标 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>一般违约会被拒绝；参照动作可以拒绝、级联或置空</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>应用程序已经校验过，DBMS 就不用再设约束了吧？</p></div></div></div></aside>
     <div class="numeric-progress">4/16</div>
     <div class="semantic-label">INTEGRITY CONTROL</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -81,7 +81,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.2</div>
     <h2 class="slide-title">组合主码让每条选课记录有稳定身份</h2>
     <div class="slide-content"><p class="slide-lead">Sno、Cno 可各自重复；组合值必须唯一非空，且组合主码需表级定义</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-5-1/assets/generated/dbpa-ch05-primary-foreign.svg" data-full-src="resources/decks/dbpa-5-1/assets/generated/dbpa-ch05-primary-foreign.svg" alt="Student、Course 与 SC 之间的主码和外码联系" tabindex="0" role="button" aria-label="放大图片：Student、Course 与 SC 之间的主码和外码联系" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-5-1/assets/generated/dbpa-ch05-primary-foreign.svg" data-full-src="resources/decks/dbpa-5-1/assets/generated/dbpa-ch05-primary-foreign.svg" alt="Student、Course 与 SC 之间的主码和外码联系" tabindex="0" role="button" aria-label="放大图片：Student、Course 与 SC 之间的主码和外码联系" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -101,8 +101,8 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.2</div>
-    <h2 class="slide-title">组合主码约束如何生效</h2>
-    <div class="slide-content"><p class="slide-lead">唯一与非空是完整性语义；索引只是实现手段</p>
+    <h2 class="slide-title">重复插入 `(S01,C01)`，组合主码会拒绝</h2>
+    <div class="slide-content"><p class="slide-lead">规则要求 <code>(Sno,Cno)</code> 唯一且非空；索引可加速检查，但不等于规则</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>语义／实现</th><th>违反或作用</th><th>目的</th></tr></thead><tbody><tr><td>组合值唯一</td><td>拒绝重复插入或修改</td><td>避免重复选课</td></tr><tr><td>主码属性非空</td><td>拒绝 NULL</td><td>保证元组可识别</td></tr><tr><td>主码索引</td><td>加速查找与检查</td><td>实现手段，不等于语义</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">6/16</div>
     <div class="semantic-label">ENTITY INTEGRITY</div>
@@ -120,19 +120,14 @@
 04
 05
 06
-07
-08
-09</span><code class="language-sql">-- CREATE TABLE SC 中的外码子句；标准 SQL／MySQL 8.4 InnoDB 常见语法示意
-CREATE TABLE SC
-(
+07</span><code class="language-sql">CREATE TABLE SC (
   Sno CHAR(8) NOT NULL,
   Cno CHAR(5) NOT NULL,
   PRIMARY KEY (Sno, Cno),
   FOREIGN KEY (Sno) REFERENCES Student(Sno),
   FOREIGN KEY (Cno) REFERENCES Course(Cno)
 );</code></pre></div></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="SC.Sno=&#x27;S999&#x27; 且 Student 中没有 S999　→　参照完整性违约，拒绝写入"><span class="relation-term">SC.Sno</span><span class="relation-operator">=</span><span class="relation-term">&#x27;S999&#x27; 且 Student 中没有 S999</span><span class="relation-operator">→</span><span class="relation-term">参照完整性违约，拒绝写入</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>外码是否允许为空，要结合主属性、NOT NULL 和业务语义判断；空值不等于引用了不存在的对象</p></div></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="SC.Sno=&#x27;S999&#x27; 且 Student 中没有 S999　→　参照完整性违约，拒绝写入"><span class="relation-term">SC.Sno</span><span class="relation-operator">=</span><span class="relation-term">&#x27;S999&#x27; 且 Student 中没有 S999</span><span class="relation-operator">→</span><span class="relation-term">参照完整性违约，拒绝写入</span></div></div></div></div>
     <div class="numeric-progress">7/16</div>
     <div class="semantic-label">REFERENTIAL INTEGRITY</div>
     <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
@@ -142,7 +137,7 @@ CREATE TABLE SC
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.3</div>
     <h2 class="slide-title">参照完整性：同时检查两端变化</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>删除 Student 时，历史 SC 应拒绝、级联，还是保留？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>删除 Student 时，历史 SC 应拒绝、级联，还是保留？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">SC 是参照表；Student 和 Course 是被参照表</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>变化</th><th>可能问题</th><th>默认思路</th></tr></thead><tbody><tr><td>SC 插入外码</td><td>找不到 Student 或 Course 主码</td><td>拒绝（NO ACTION / RESTRICT）</td></tr><tr><td>SC 修改外码</td><td>新值无对应主码</td><td>拒绝（NO ACTION / RESTRICT）</td></tr><tr><td>Student／Course 删除被引用主码</td><td>SC 出现悬空引用</td><td>拒绝或按策略处理</td></tr><tr><td>Student／Course 修改被引用主码</td><td>原引用可能失效</td><td>拒绝或按策略处理</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未指定动作时通常拒绝；级联或置空必须在外码定义中显式选择</p></div></div>
@@ -154,8 +149,8 @@ CREATE TABLE SC
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.3</div>
-    <h2 class="slide-title">参照动作的处理要服从业务语义</h2>
-    <div class="slide-content"><p class="slide-lead">级联不是默认答案，而是一种有后果的设计选择</p>
+    <h2 class="slide-title">删 Student 前，先决定 SC 记录是否保留</h2>
+    <div class="slide-content"><p class="slide-lead">保留选课历史就拒绝删学生；外码在主码中，不能置空。语法查目标 DBMS</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -167,8 +162,7 @@ CREATE TABLE SC
 FOREIGN KEY (Cno) REFERENCES Course(Cno)
   ON DELETE NO ACTION
   ON UPDATE CASCADE</code></pre></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>拒绝</h3><p>拒绝策略阻止会破坏引用的删除或修改</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>级联</h3><p>级联策略在从属关系明确时同步相关变化</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>置空</h3><p>置空策略保留记录但解除引用；外码必须允许 NULL 且不能属于主码</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例 Sno、Cno 不能 SET NULL；MySQL 8.4 InnoDB 中，<code>NO ACTION</code> 与 <code>RESTRICT</code> 同为立即拒绝</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>拒绝</h3><p>阻止破坏引用的删除或修改</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>级联</h3><p>从属关系明确时同步变化</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>置空</h3><p>保留记录并解除引用；外码须可空且不在主码中</p></article></div></div></div>
     <div class="numeric-progress">9/16</div>
     <div class="semantic-label">REFERENTIAL ACTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
@@ -177,8 +171,9 @@ FOREIGN KEY (Cno) REFERENCES Course(Cno)
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.4</div>
-    <h2 class="slide-title">业务语义可以写成列级与元组级约束</h2>
-    <div class="slide-content"><p class="slide-lead">把规则放在 DBMS 中，可以让所有应用面对同一边界</p>
+    <h2 class="slide-title">把“成绩只能 0–100”等规则写进表定义</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-astonished.4547b8a999cc.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Ssex = NULL 时，CHECK 竟然可能放行？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">无论教务系统、脚本还是导入工具写入，DBMS 都会用同一条规则检查</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -188,9 +183,7 @@ FOREIGN KEY (Cno) REFERENCES Course(Cno)
 07
 08
 09
-10
-11</span><code class="language-sql">CREATE TABLE Student
-(
+10</span><code class="language-sql">CREATE TABLE Student (
   Sno CHAR(8) PRIMARY KEY,
   Sname CHAR(20) NOT NULL,
   Semail VARCHAR(100) UNIQUE,
@@ -200,9 +193,7 @@ FOREIGN KEY (Cno) REFERENCES Course(Cno)
 -- SC 已有 Grade 列，仅展示新增约束片段
 ALTER TABLE SC ADD CONSTRAINT CK_SC_Grade
   CHECK (Grade &gt;= 0 AND Grade &lt;= 100);</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>变化</th><th>约束结果</th><th>处理</th></tr></thead><tbody><tr><td>Semail 重复非 NULL 值</td><td>UNIQUE 违约</td><td>拒绝</td></tr><tr><td>Ssex = NULL</td><td>CHECK 为 UNKNOWN</td><td>MySQL 8.4 可能放行</td></tr><tr><td>Ssex = &#x27;其他&#x27;</td><td>CHECK 为 FALSE</td><td>拒绝</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>UNIQUE</code> 的可空列可能允许多个 NULL；若要求“非空且合规”，要同时写 NOT NULL 与 CHECK</p></div></div>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-astonished.2cd8778a2e2a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Ssex = NULL 时，CHECK 竟然可能放行？</p></div></div></div></aside>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>变化</th><th>约束结果</th><th>处理</th></tr></thead><tbody><tr><td>Semail 重复非 NULL 值</td><td>UNIQUE 违约</td><td>拒绝</td></tr><tr><td>Ssex = NULL</td><td>CHECK 为 UNKNOWN</td><td>不因该 CHECK 被拒绝</td></tr><tr><td>Ssex = &#x27;其他&#x27;</td><td>CHECK 为 FALSE</td><td>拒绝</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">10/16</div>
     <div class="semantic-label">USER DEFINED RULES</div>
     <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
@@ -211,18 +202,14 @@ ALTER TABLE SC ADD CONSTRAINT CK_SC_Grade
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.4</div>
-    <h2 class="slide-title">约束范围决定它能表达什么</h2>
-    <div class="slide-content"><p class="slide-lead">约束范围可以从单列扩展到同一元组、可复用域以及跨表规则</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="列级 CHECK　→　元组级 CHECK　→　域（复用）／ASSERTION（跨表或聚集）"><span class="relation-term">列级 CHECK</span><span class="relation-operator">→</span><span class="relation-term">元组级 CHECK</span><span class="relation-operator">→</span><span class="relation-term">域（复用）／ASSERTION（跨表或聚集）</span></div></div>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">属性级 CHECK：限制一个列的取值范围或集合</span></li></ol>
-<ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">元组级 CHECK：比较同一元组中的多个属性</span></li></ol>
-<ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">域用于复用取值规则；ASSERTION 用于表达跨表或聚集规则</span></li></ol></div>
+    <h2 class="slide-title">约束查一列、一行，还是跨表数据</h2>
+    <div class="slide-content"><p class="slide-lead"><code>Ssex</code> 只看一列，起止日期比较同一行；跨表或聚集改用 ASSERTION、触发器</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">属性级 CHECK：限制一个列的取值范围或集合</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">元组级 CHECK：比较同一元组中的多个属性</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">域用于复用取值规则；ASSERTION 用于表达跨表或聚集规则</span></li></ol></div>
 <div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02</span><code class="language-sql">-- 元组级 CHECK 片段
 CHECK (StartDate &lt;= EndDate)</code></pre></div>
-<p>同一行的两个列共同决定能否通过检查</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>元组级 CHECK 不能直接表达跨表存在性；复杂跨表规则需要 ASSERTION、触发器等机制</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.827a630e355d.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>CHECK 能看同一行，为什么不能直接检查另一张表？</p></div></div></div></aside>
+<p>同一行的两个列共同决定能否通过检查</p></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.92d3f5c87d7d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>CHECK 能看同一行，为什么不能直接检查另一张表？</p></div></div></div></aside>
     <div class="numeric-progress">11/16</div>
     <div class="semantic-label">CONSTRAINT SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
@@ -231,8 +218,8 @@ CHECK (StartDate &lt;= EndDate)</code></pre></div>
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.5-5.6</div>
-    <h2 class="slide-title">约束命名让规则可以维护</h2>
-    <div class="slide-content"><p class="slide-lead">约束修改要同时考虑语义、已有数据和 DBMS 语法</p>
+    <h2 class="slide-title">约束命名后，ALTER TABLE 才能找到它</h2>
+    <div class="slide-content"><p class="slide-lead">改学号范围前，先找出不合规旧数据，再按目标 DBMS 语法重建规则</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -243,16 +230,7 @@ CHECK (StartDate &lt;= EndDate)</code></pre></div>
 08
 09
 10
-11
-12
-13
-14
-15
-16
-17
-18</span><code class="language-sql">-- 标准 SQL 语义示意：把旧范围改为新范围
-CREATE TABLE Student
-(
+11</span><code class="language-sql">CREATE TABLE Student (
   Sno CHAR(8),
   CONSTRAINT StudentKey PRIMARY KEY (Sno),
   CONSTRAINT CK_Student_SnoRange CHECK (Sno BETWEEN '10000000' AND '29999999')
@@ -262,13 +240,7 @@ ALTER TABLE Student
 DROP CONSTRAINT CK_Student_SnoRange;
 
 ALTER TABLE Student
-ADD CONSTRAINT CK_Student_SnoRange
-CHECK (Sno BETWEEN '90000000' AND '99999999');
-
--- MySQL 8.4 删除 CHECK 约束使用 DROP CHECK
-ALTER TABLE Student
-DROP CHECK CK_Student_SnoRange;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>维护约束时先明确要删除或新增的规则，再按当前 DBMS 选择语法；新增规则前要检查已有数据和依赖应用</p></div></div>
+ADD CONSTRAINT CK_Student_SnoRange CHECK (Sno BETWEEN '90000000' AND '99999999');</code></pre></div></div></div></div>
     <div class="numeric-progress">12/16</div>
     <div class="semantic-label">MAINTAINABLE CONSTRAINTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
@@ -278,7 +250,7 @@ DROP CHECK CK_Student_SnoRange;</code></pre></div></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.5-5.6</div>
     <h2 class="slide-title">域：集中管理共享取值规则</h2>
-    <div class="slide-content"><p class="slide-lead">域可以复用类型与约束；下例采用标准／其他 DBMS 语法，不用于 MySQL 8.4 实践</p>
+    <div class="slide-content"><p class="slide-lead">域复用类型与约束；示例语法能否执行须查目标产品</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -294,7 +266,7 @@ CREATE TABLE Student
   Ssex GenderDomain,
   EmergencyContactSex GenderDomain
 );</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>域负责复用取值规则；<code>ASSERTION</code> 可表达跨表或聚集约束，二者均是标准／其他 DBMS 概念，MySQL 8.4 实践用列定义和 <code>CHECK</code></p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>域负责复用取值规则；<code>ASSERTION</code> 表达跨表或聚集约束。二者的产品支持都要核查，不能把概念语法直接当作实验脚本</p></div></div>
     <div class="numeric-progress">13/16</div>
     <div class="semantic-label">DOMAIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
@@ -303,10 +275,9 @@ CREATE TABLE Student
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">用完整性类型和维护边界判断约束</h2>
-    <div class="slide-content"><p class="slide-lead">每项约束都要说明保护对象、检查边界和违约处理</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>实体</h3><p>PRIMARY KEY 保证组合值唯一，并要求主码属性非空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>参照</h3><p>非 NULL 外码必须引用真实主码，参照动作还要选择处理策略</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户定义</h3><p>NOT NULL、UNIQUE 和 CHECK 表达用户规则，还要注意 NULL／UNKNOWN</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>约束维护</h3><p>约束名、ALTER TABLE 和域支持模式维护，具体语法取决于 DBMS</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>实体和用户定义约束通常在违约时拒绝；参照约束还可以按定义级联或置空</p></div></div>
+    <h2 class="slide-title">诊断四次数据变化并给出处理结果</h2>
+    <div class="slide-content"><p class="slide-lead">逐项写明触发的约束、检查内容、变化后保留的记录、处理结果和策略</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>重复选课</h3><p>再次插入 <code>(S01,C01)</code>：组合主码检查重复，拒绝；单看 Sno 或 Cno 重复不能得出结论</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除学生</h3><p>Student 的 S01 仍被 SC 引用：按外码定义拒绝、级联或置空；本例主码外码不能置空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写入空性别</h3><p>只有 <code>CHECK (Ssex IN ...)</code> 时结果为 UNKNOWN，不因该 CHECK 被拒绝；要求必填还需 <code>NOT NULL</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>收紧成绩范围</h3><p>新增或替换命名 CHECK 前，先找出不合规旧数据和依赖应用，再按目标 DBMS 选择修改语法</p></article></div></div></div>
     <div class="numeric-progress">14/16</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
@@ -315,8 +286,8 @@ CREATE TABLE Student
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-1/mindmap-5-1.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">从插入、修改或删除找到要检查的规则</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-1/mindmap-5-1.html" title="从插入、修改或删除找到要检查的规则"></iframe></div></div>
     <div class="numeric-progress">15/16</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
@@ -326,7 +297,7 @@ CREATE TABLE Student
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">Student 无 S999，向 SC 插入 S999／C01 会违反什么约束？</span></li><li><span class="question-no">02</span><span class="question-text">Sno、Cno 为何可重复，而组合主码不能重复或含 NULL？</span></li><li><span class="question-no">03</span><span class="question-text">删除被 SC 引用的学生时，RESTRICT／CASCADE／SET NULL 各怎样处理？本例为何不能 SET NULL？</span></li><li><span class="question-no">04</span><span class="question-text">可空 <code>UNIQUE</code> 遇到两个 NULL 会怎样？何时还需 NOT NULL？</span></li><li><span class="question-no">05</span><span class="question-text">CHECK 如何处理 <code>Ssex=NULL</code> 与 <code>Ssex=&#x27;其他&#x27;</code>？能否检查另一表？</span></li><li><span class="question-no">06</span><span class="question-text">约束命名为何便于 ALTER TABLE？域与 ASSERTION 有何产品边界？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">Student 无 S999，向 SC 插入 S999／C01 会违反什么约束？</span></li><li><span class="question-no">02</span><span class="question-text">Sno、Cno 为何可重复，而组合主码不能重复或含 NULL？</span></li><li><span class="question-no">03</span><span class="question-text">删除被 SC 引用的学生时，RESTRICT／CASCADE／SET NULL 各怎样处理？本例为何不能 SET NULL？</span></li><li><span class="question-no">04</span><span class="question-text">可空 <code>UNIQUE</code> 遇到两个 NULL 会怎样？何时还需 NOT NULL？</span></li><li><span class="question-no">05</span><span class="question-text">CHECK 如何处理 <code>Ssex=NULL</code> 与 <code>Ssex=&#x27;其他&#x27;</code>？能否检查另一表？</span></li><li><span class="question-no">06</span><span class="question-text">约束命名为何便于 ALTER TABLE？新增约束前要检查哪些旧记录？目标 DBMS 是否支持域与 ASSERTION 的哪些语法？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-4-2.html" title="上一节：4.2 其他安全保护机制" aria-label="上一节：4.2 其他安全保护机制">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

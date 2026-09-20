@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 8.1 SQL 扩展与过程化 SQL 基础 | HUST</title>
-  <meta name="description" content="从 SQL 表达边界走向递归查询和过程控制（教材 8.1 与 8.2.1—8.2.3）">
+  <meta name="description" content="用递归 CTE 查全部先修课，用日期函数找生日，并用变量、分支和循环计算 GPA（教材 8.1 与 8.2.1—8.2.3）">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="8-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,14 +29,14 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 8.1</div>
       <h1>SQL 扩展与过程化 SQL 基础</h1>
-      <p class="cover-description">从集合查询扩展到递归和过程控制</p>
+      <p class="cover-description">普通查询不够时：逐层找先修课、处理日期、按课程累加 GPA</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
 <!-- speaker-notes
-本单元以四个应用任务说明基本 SQL 的边界，再用递归、内置函数和过程化 SQL 扩展表达能力。
+本单元比较四个任务：逐层查先修课用递归 CTE，生日窗口用日期函数，GPA 累加用过程块，评价界面交给应用代码。
 -->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">任务类型决定递归、函数或过程控制等最小表达路径</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">为递归、日期处理、状态计算和交互任务选择最小表达路径</span></li><li><span class="list-marker">02</span><span class="list-text">写出普通 WITH 的命名结果和主查询，并说明单语句作用域</span></li><li><span class="list-marker">03</span><span class="list-text">标出递归 CTE 的种子项、递归项、终止条件和去重策略</span></li><li><span class="list-marker">04</span><span class="list-text">用内置函数组合生日窗口，并说明跨年、NULL 和 DBMS 边界</span></li><li><span class="list-marker">05</span><span class="list-text">画出过程块的声明、执行、控制流和异常分支，指出循环终止</span></li><li><span class="list-marker">06</span><span class="list-text">用 GPA 和异常案例区分数据库端、存储程序与应用接口的边界</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">各任务选最简单做法，说明递归或循环何时停、错误怎样返回、哪些交给应用</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断全部先修课、生日提醒、GPA 和评价反馈分别需要递归、函数、过程块还是应用代码</span></li><li><span class="list-marker">02</span><span class="list-text">写出普通 WITH 的命名结果和主查询，并说明单语句作用域</span></li><li><span class="list-marker">03</span><span class="list-text">标出递归 CTE 的种子项、递归项、终止条件和去重策略</span></li><li><span class="list-marker">04</span><span class="list-text">用内置函数组合生日窗口，并说明跨年、NULL 和 DBMS 边界</span></li><li><span class="list-marker">05</span><span class="list-text">画出过程块的声明、执行、控制流和异常分支，指出循环终止</span></li><li><span class="list-marker">06</span><span class="list-text">用 GPA 和异常案例说明哪些计算留在当前 SQL 块，哪些需要存储程序，哪些由应用界面处理</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
@@ -54,12 +54,12 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">基本 SQL 擅长集合变换，不擅长所有流程</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要 SQL 能写出来，业务逻辑就都应该留在数据库端吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先按任务的困难类型选择扩展路径</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" alt="集合查询、递归、内置函数和高级语言接口的任务边界" tabindex="0" role="button" aria-label="放大图片：集合查询、递归、内置函数和高级语言接口的任务边界" decoding="async"></figure>
+    <h2 class="slide-title">先看任务卡在哪里，再决定是否扩展 SQL</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要 SQL 能写出来，业务逻辑就都应该留在数据库端吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">一层查询；多层、日期窗口、累计或用户输入，选递归、函数、过程块或应用</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" alt="集合查询、递归、内置函数和高级语言接口的任务边界" tabindex="0" role="button" aria-label="放大图片：集合查询、递归、内置函数和高级语言接口的任务边界" decoding="async"></figure>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 27% 25%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:27%"><col style="width:25%"></colgroup><thead><tr><th>任务</th><th>输入 → 输出</th><th>主要困难</th><th>最小路径</th></tr></thead><tbody><tr><td>全部先修课</td><td><code>Course</code> → 多层课程</td><td>层次递归</td><td><code>WITH RECURSIVE</code></td></tr><tr><td>一周生日提醒</td><td>出生日期 → 日期窗口</td><td>日期、字符串和边界</td><td>内置函数</td></tr><tr><td>GPA 计算</td><td>成绩与学分 → GPA</td><td>分支、循环和状态</td><td>过程化 SQL 基础；持久化封装需要存储程序</td></tr><tr><td>评价反馈</td><td>输入评价 → 交互反馈</td><td>界面、应用编排和跨系统状态</td><td>高级语言接口；交互逻辑由应用层实现</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>任务类型可以组合数据库端扩展与外部应用路径；这些路径并不互斥</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>同一个功能可以让数据库计算 GPA、让 Java 接收结果并在页面显示；先给每一层分配清楚的输入和输出</p></div></div>
     <div class="numeric-progress">3/15</div>
     <div class="semantic-label">SQL BOUNDARY</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
@@ -68,8 +68,8 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">数据库端扩展：过程块不等于存储程序</h2>
-    <div class="slide-content"><p class="slide-lead">三条路径分别补足不同的表达能力</p>
+    <h2 class="slide-title">临时过程块、存储程序和应用代码不同</h2>
+    <div class="slide-content"><p class="slide-lead"><code>WITH</code> 管查询，过程块管流程，存储程序留在 DBMS，应用管界面与跨系统调用</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="新 SQL 子句　＋　内置函数　＋　过程化 SQL 块"><span class="relation-term">新 SQL 子句　＋　内置函数　＋　过程化 SQL 块</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>子句</h3><p><code>WITH</code> 和 <code>WITH RECURSIVE</code> 组织中间结果和递归层次</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>函数</h3><p>内置函数复用日期、字符串和聚合计算，具体语法要核对 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>过程</h3><p>过程化 SQL 增加变量、状态、分支、循环和异常处理</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>过程化 SQL 块提供过程控制；存储过程和存储函数提供持久化封装，高级语言接口负责应用层交互</p></div></div>
@@ -82,7 +82,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
     <h2 class="slide-title">WITH 把复杂查询拆成可命名的中间结果</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>给中间结果起了名字，DBMS 就一定先物化它并加速查询吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>给中间结果起了名字，DBMS 就一定先物化它并加速查询吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">命名结果只在紧接的一条 SQL 语句中有效</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -98,8 +98,7 @@
   GROUP BY TeachingClass
 )
 SELECT MAX(avg_grade) - MIN(avg_grade) AS difference
-FROM class_avg;</code></pre></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="命名中间结果　→　同一语句内引用　→　语句结束后名称失效"><span class="relation-term">命名中间结果</span><span class="relation-operator">→</span><span class="relation-term">同一语句内引用</span><span class="relation-operator">→</span><span class="relation-term">语句结束后名称失效</span></div></div></div>
+FROM class_avg;</code></pre></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>WITH 的结果只在当前语句中有效；它不创建长期表，也不保证一定物化或提速</p></div></div>
     <div class="numeric-progress">5/15</div>
     <div class="semantic-label">WITH</div>
@@ -110,9 +109,9 @@ FROM class_avg;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
     <h2 class="slide-title">WITH RECURSIVE 按层扩张结果集</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>每轮都可能扩张新行，怎样保证递归最终会停下？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>每轮都可能扩张新行，怎样保证递归最终会停下？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">种子查询定义第一层，递归查询生成后续层</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" alt="数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" tabindex="0" role="button" aria-label="放大图片：数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" alt="数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" tabindex="0" role="button" aria-label="放大图片：数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>L1：数据库系统概论 → 数据结构；L2：数据结构 → 程序设计基础与 C 语言；L3：没有新课程 → 停止</p></div></div></div></div>
     <div class="numeric-progress">6/15</div>
     <div class="semantic-label">RECURSIVE QUERY</div>
@@ -161,8 +160,8 @@ SELECT cno FROM prereq;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
     <h2 class="slide-title">过程化 SQL 块为基本 SQL 加入程序控制</h2>
-    <div class="slide-content"><p class="slide-lead">过程块分为声明、执行和异常处理分支；存储过程与存储函数还需要持久化对象定义</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="[DECLARE：变量、常量] BEGIN 赋值、SQL、条件和循环 [EXCEPTION：发生错误时进入] END"><span class="relation-term">[DECLARE：变量、常量] BEGIN 赋值、SQL、条件和循环 [EXCEPTION：发生错误时进入] END</span></div></div></div>
+    <div class="slide-content"><p class="slide-lead">过程块包含声明、执行和异常分支；过程与函数还需持久化对象定义</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text"><code>DECLARE</code>：声明变量与常量</span></li><li><span class="list-marker">02</span><span class="list-text"><code>BEGIN</code>：执行赋值、SQL、条件与循环</span></li><li><span class="list-marker">03</span><span class="list-text"><code>EXCEPTION</code>：发生错误时进入异常分支</span></li><li><span class="list-marker">04</span><span class="list-text"><code>END</code>：结束当前过程块</span></li></ol></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>声明部分和异常部分的具体写法依赖目标 DBMS；块可以嵌套，游标、存储过程参数和持久化封装属于其他过程化 SQL 能力</p></div></div>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">PROCEDURAL BLOCK</div>
@@ -172,12 +171,11 @@ SELECT cno FROM prereq;</code></pre></div></div>
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
-    <h2 class="slide-title">变量、条件和循环让业务规则可表达</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f0d43de25a1b.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>状态一直在变，为什么循环还是停不下来？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">控制流要服务于明确的状态变化</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>变量</h3><p>初始化并保存状态，例如 <code>v_total := 0</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>常量</h3><p>先初始化，作用域内不可重新赋值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p><code>IF grade IS NULL</code> 要先定义业务分支；UNKNOWN 不能当作 TRUE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>循环</h3><p><code>LOOP</code>、<code>WHILE</code>、<code>FOR</code> 都必须有可验证的终止条件</p></article></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="内层块通常可访问外层变量，同名变量可能遮蔽外层变量，具体可见性由目标 DBMS 决定；状态更新 → 条件变化 → 结束或显式退出"><span class="relation-term">内层块通常可访问外层变量，同名变量可能遮蔽外层变量，具体可见性由目标 DBMS 决定；状态更新</span><span class="relation-operator">→</span><span class="relation-term">条件变化</span><span class="relation-operator">→</span><span class="relation-term">结束或显式退出</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>控制流和状态模型描述状态变化；多行结果集的逐行读取需要游标</p></div></div>
+    <h2 class="slide-title">变量累计，条件分支，循环逐门处理</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f749626b83cb.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>状态一直在变，为什么循环还是停不下来？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">算 GPA 时，每门课都更新总学分和绩点；课程处理完或显式退出时停止</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>变量</h3><p>初始化并保存状态，例如 <code>v_total := 0</code>；内层同名变量可能遮蔽外层变量</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>常量</h3><p>先初始化，作用域内不可重新赋值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p><code>IF grade IS NULL</code> 要先定义业务分支；UNKNOWN 不能当作 TRUE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>循环</h3><p><code>LOOP</code>、<code>WHILE</code>、<code>FOR</code> 都必须有可验证的终止条件</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>变量、条件和循环只描述处理步骤；若要从多行查询中逐行取得课程成绩，还需要游标</p></div></div>
     <div class="numeric-progress">10/15</div>
     <div class="semantic-label">STATE AND CONTROL</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
@@ -201,7 +199,7 @@ SELECT cno FROM prereq;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
     <h2 class="slide-title">异常处理：说明业务后果与事务边界</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>已经捕获异常，数据库就会自动回滚吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>已经捕获异常，数据库就会自动回滚吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">异常处理决定如何响应错误；是否回滚取决于事务边界、提交点和目标 DBMS</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>捕获</h3><p>识别异常，或让异常向上层传播</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>判断</h3><p>判断能否继续、记录、重试或终止</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>按业务规则处理；回滚不是捕获异常后的必然动作</p></article></div>
 <div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="总学分为 0 → GPA 无法计算 → 返回提示或 `NULL`，不等于自动回滚；约束冲突 → 写入失败 → 记录、传播或按事务策略撤销修改"><span class="relation-term">总学分为 0</span><span class="relation-operator">→</span><span class="relation-term">GPA 无法计算</span><span class="relation-operator">→</span><span class="relation-term">返回提示或 <code>NULL</code>，不等于自动回滚；约束冲突</span><span class="relation-operator">→</span><span class="relation-term">写入失败</span><span class="relation-operator">→</span><span class="relation-term">记录、传播或按事务策略撤销修改</span></div></div></div>
@@ -214,10 +212,9 @@ SELECT cno FROM prereq;</code></pre></div></div>
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
-    <h2 class="slide-title">用任务边界选择 SQL 扩展</h2>
-    <div class="slide-content"><p class="slide-lead">先识别任务，再选择最小的表达能力</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>WITH／递归</h3><p>说明作用域、种子、递归项、终止和去重</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>函数</h3><p>处理日期、字符串、聚合、NULL 和 DBMS 差异</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>过程块</h3><p>组织变量、作用域、控制流和异常处理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>应用边界</h3><p>区分数据库端逻辑、游标／存储程序和 JDBC／MVC 应用交互</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>游标负责逐行处理结果集；存储过程和存储函数把过程控制封装为持久化模块</p></div></div>
+    <h2 class="slide-title">四个任务分别用哪种最简单做法</h2>
+    <div class="slide-content"><p class="slide-lead">先试普通集合 SQL；确需递归或循环时，写清数据来源、终止条件和结果去向</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>全部先修课</h3><p>选择递归 CTE；标出种子、递归项、空层停止，并为多路径或环补去重、深度或访问边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一周生日提醒</h3><p>组合日期与字符串函数；明确 <code>[today,today+7天)</code>、跨年、<code>NULL</code> 和 2 月 29 日策略，再核查产品函数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPA 计算</h3><p>用变量保存两个总量，按成绩分支并逐门累加；从查询逐行取数需要游标，要让其他调用者长期使用再定义存储程序</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>评价与反馈</h3><p>界面接收文字、检查登录用户并调用数据库的过程交给 JDBC／MVC 应用；数据库负责保存评价和执行已确定的约束</p></article></div></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
@@ -226,8 +223,8 @@ SELECT cno FROM prereq;</code></pre></div></div>
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-1/mindmap-8-1.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">普通查询做不到哪一步，就选对应工具</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-1/mindmap-8-1.html" title="普通查询做不到哪一步，就选对应工具"></iframe></div></div>
     <div class="numeric-progress">14/15</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>

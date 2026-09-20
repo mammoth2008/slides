@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 9.2 B+ 树、哈希与位图索引 | HUST</title>
-  <meta name="description" content="按查询类型选择平衡树、哈希和位图索引">
+  <meta name="description" content="为范围查找、等值查找和低基数筛选比较 B+ 树、哈希、位图与全表扫描">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="9-2">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 9.2</div>
       <h1>B+ 树、哈希与位图索引</h1>
-      <p class="cover-description">让查询类型决定访问结构</p>
+      <p class="cover-description">范围查找走叶链，等值查找算桶号，低基数条件做位运算</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,7 +44,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">B+ 树、哈希和位图索引的查询路径与维护代价各不相同</p>
+    <div class="slide-content"><p class="slide-lead">按 WHERE 画出 B+ 树、哈希或位图的查找步骤，说明增删和高频写入改什么</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 9.1 多级索引在规模和维护上的瓶颈</span></li><li><span class="list-marker">02</span><span class="list-text">画出 B+ 树的点查找、范围查找和叶链路径</span></li><li><span class="list-marker">03</span><span class="list-text">解释 B+ 树插入分裂、删除合并和索引键修改</span></li><li><span class="list-marker">04</span><span class="list-text">用桶、溢出链和增长策略解释哈希查找与维护</span></li><li><span class="list-marker">05</span><span class="list-text">用位与、位或和计数完成低基数条件组合</span></li><li><span class="list-marker">06</span><span class="list-text">根据选择性、规模、更新频率和空间代价选择结构</span></li></ol></div></div></div>
     <div class="numeric-progress">2/16</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -55,10 +55,10 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">按查询类型选择索引结构</h2>
-    <div class="slide-content"><p class="slide-lead">大规模下仍需判断定位、维护成本，以及何时扫描更便宜</p>
+    <div class="slide-content"><p class="slide-lead">命中少量行时索引可能省块；命中多数行时回表增多，顺序扫描可能更便宜</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>查询类型</th><th>候选结构</th><th>还要检查的条件</th></tr></thead><tbody><tr><td>随机等值</td><td>B+ 树或哈希</td><td>选择性、规模、分布与溢出</td></tr><tr><td>范围与排序</td><td>B+ 树</td><td>叶链有序，但大范围可能接近扫描</td></tr><tr><td>低基数筛选</td><td>位图</td><td>基数、读写比例与是否要回表</td></tr><tr><td>高频写入</td><td>少量必要索引</td><td>维护成本可能超过查询收益</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>候选结构不一定更快；索引扫描是否合适还取决于查询处理、优化器和顺序扫描成本</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个等值条件，数据分布改变后还会选同一种索引吗？</p></div></div></div></aside>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>建有索引不等于一定使用：优化器会比较命中行数、回表块数和顺序扫描成本后选择计划</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个等值条件，数据分布改变后还会选同一种索引吗？</p></div></div></div></aside>
     <div class="numeric-progress">3/16</div>
     <div class="semantic-label">INDEX CHOICE</div>
     <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
@@ -69,7 +69,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">B+ 树用平衡多级结构处理大规模索引</h2>
     <div class="slide-content"><p class="slide-lead">B+ 树把多级索引块组成平衡树，根到叶的路径长度相同</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" alt="B+ 树的根、中间和叶结点以及叶结点之间的有序链" tabindex="0" role="button" aria-label="放大图片：B+ 树的根、中间和叶结点以及叶结点之间的有序链" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" alt="B+ 树的根、中间和叶结点以及叶结点之间的有序链" tabindex="0" role="button" aria-label="放大图片：B+ 树的根、中间和叶结点以及叶结点之间的有序链" decoding="async"></figure>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>根结点</h3><p>根结点根据键值范围选择子树</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>中间结点</h3><p>保存分隔键和子指针，按区间继续向下</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>叶结点</h3><p>保存索引项和记录指针，并连接兄弟叶</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>B+ 树的叶链提供有序入口；叶项指向基本表记录，不等于把完整数据记录放进索引结点</p></div></div>
     <div class="numeric-progress">4/16</div>
@@ -93,7 +93,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">叶结点链让 B+ 树适合范围查询</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果只有下界 <code>Sno &gt;= 20180011</code>，叶链要在哪里停止？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果只有下界 <code>Sno &gt;= 20180011</code>，叶链要在哪里停止？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">先找入口，再顺序扫描后续叶结点；范围很大时可能接近顺序扫描</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">入口：定位 <code>Sno BETWEEN 20180011 AND 20180016</code> 的起点</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">扫描：读取当前叶结点的后续键值</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">连接：沿兄弟叶指针继续移动</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">结束：读到大于 <code>20180016</code> 的键时停止</span></li></ol></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>开放范围只在到达文件末尾或查询边界时停止；结果覆盖大多数记录时仍要比较顺序扫描成本</p></div></div>
@@ -120,7 +120,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">哈希索引把属性值直接映射到桶</h2>
     <div class="slide-content"><p class="slide-lead">哈希索引的桶保存索引属性值与记录指针；哈希存储的桶直接保存数据记录</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" alt="哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" tabindex="0" role="button" aria-label="放大图片：哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" alt="哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" tabindex="0" role="button" aria-label="放大图片：哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="属性值　→　哈希函数　→　桶号　→　索引项　→　记录"><span class="relation-term">属性值</span><span class="relation-operator">→</span><span class="relation-term">哈希函数</span><span class="relation-operator">→</span><span class="relation-term">桶号</span><span class="relation-operator">→</span><span class="relation-term">索引项</span><span class="relation-operator">→</span><span class="relation-term">记录</span></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>哈希索引服务于等值定位，不提供键值顺序；它与哈希存储的桶内容不同</p></div></div></div></div>
     <div class="numeric-progress">8/16</div>
@@ -132,7 +132,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">哈希查找先检查目标桶，再检查溢出链</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.ce9e907da191.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>桶号已经算出来了，为什么失败查找还会很慢？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.751969dbb8ad.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>桶号已经算出来了，为什么失败查找还会很慢？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">均匀分布且溢出不严重时路径较短，但失败查找也要检查完整溢出链</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>哈希函数</h3><p>尽量把索引项均匀分散到各桶</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>桶搜索</h3><p>按桶号查找，命中则沿记录指针定位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>溢出链</h3><p>桶满后沿附加桶继续搜索，查不到才判定不存在</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>因为失败查找仍要检查完整溢出链；范围条件不能利用哈希桶的键值顺序，插入和删除也要维护桶及记录指针</p></div></div>
@@ -144,8 +144,8 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">静态哈希通过重组或动态哈希应对增长</h2>
-    <div class="slide-content"><p class="slide-lead">桶数量和索引空间需要随工作负载变化</p>
+    <h2 class="slide-title">桶越来越满时，重组或改用可扩展桶</h2>
+    <div class="slide-content"><p class="slide-lead">记录增加会拉长溢出链；可重组更多桶，也可让目录和桶逐步扩展</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>结构或策略</th><th>桶／索引如何变化</th><th>主要问题</th></tr></thead><tbody><tr><td>静态哈希索引</td><td>桶数预先固定</td><td>增长后溢出链变长</td></tr><tr><td>周期重组（增长策略）</td><td>定期增加桶并重组索引</td><td>重组耗时且可能影响查询</td></tr><tr><td>动态哈希索引</td><td>随数据逐步扩展桶或目录</td><td>管理逻辑更复杂</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>周期重组是静态哈希的应对策略，不是第三种结构；动态哈希可减轻严重溢出但不保证没有溢出，可扩展哈希和线性哈希只作实现方向提示</p></div></div>
     <div class="numeric-progress">10/16</div>
@@ -158,7 +158,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">位图索引把低基数属性变成位向量</h2>
     <div class="slide-content"><p class="slide-lead">每个可能值对应一条向量，每个位置对应一条记录</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" alt="性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" tabindex="0" role="button" aria-label="放大图片：性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" alt="性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" tabindex="0" role="button" aria-label="放大图片：性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="属性取值　→　对应位向量　→　记录位置上的 1"><span class="relation-term">属性取值</span><span class="relation-operator">→</span><span class="relation-term">对应位向量</span><span class="relation-operator">→</span><span class="relation-term">记录位置上的 1</span></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>低基数属性对应的向量数量少，因此适合用位图表示；每条向量长度仍由记录数决定</p></div></div></div></div>
     <div class="numeric-progress">11/16</div>
@@ -181,8 +181,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
     <h2 class="slide-title">位图索引要同时考虑低基数和读多写少</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要属性基数低，位图也一定适合频繁更新吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">空间代价随基数增长，频繁写入也会增加维护成本；优化器仍需结合成本选择路径</p>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要属性基数低，位图也一定适合频繁更新吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">取值越多，位向量越多；频繁增删记录还要改位，并可能造成并发等待</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>低基数</h3><p>低基数属性的向量数量少，组合和统计较直接</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高基数</h3><p>高基数属性的向量数量多，标准位图可能膨胀</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>编码位图</h3><p>编码位图减少向量数量，但查询时可能检查全部编码向量</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不一定。位图更适合读多写少；更新频繁时要评估位图维护和并发代价</p></div></div>
     <div class="numeric-progress">13/16</div>
@@ -193,10 +193,9 @@
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
-    <h2 class="slide-title">用查询类型选择索引结构</h2>
-    <div class="slide-content"><p class="slide-lead">不同索引结构的差异体现在定位路径和维护代价上</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>B+ 树</h3><p>B+ 树支持平衡随机查找、叶链范围扫描和分裂合并维护</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>哈希</h3><p>哈希索引支持等值定位，并需要处理溢出链和增长策略</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>位图</h3><p>位图索引适合低基数筛选和位与／位或组合，但要权衡读写代价</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>选择索引要结合查询类型、选择性、数据规模、更新频率和空间代价，并比较索引扫描与顺序扫描的成本</p></div></div>
+    <h2 class="slide-title">为四种实际查询选择索引或全表扫描</h2>
+    <div class="slide-content"><p class="slide-lead">写出 WHERE、查找路径、增删改动，以及命中太多行时为何改用扫描</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>学号范围查询</h3><p>B+ 树先走根—中间—叶定位起点，再沿叶链到上界；更新时承担分裂、合并和多层维护</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>学号等值查询</h3><p>哈希计算桶号后检查目标桶与溢出链；它不能按键顺序提供范围入口，增长时还要处理扩桶或重组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>性别＋专业统计</h3><p>低基数位图用按位与组合条件并计数；需要完整元组时仍回表，频繁更新要评估并发维护</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高频写入且筛选很宽</h3><p>减少非必要索引并比较顺序扫描；存在索引不等于优化器必须使用，选择性和维护成本可能改变选择</p></article></div></div></div>
     <div class="numeric-progress">14/16</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
@@ -205,8 +204,8 @@
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-9-2/mindmap-9-2.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">看 WHERE 和命中比例，再选索引或扫描</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-9-2/mindmap-9-2.html" title="看 WHERE 和命中比例，再选索引或扫描"></iframe></div></div>
     <div class="numeric-progress">15/16</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>

@@ -15,6 +15,7 @@
     .markmap-node > circle { fill: #a8542b; }
     .markmap-link { stroke: rgba(21, 35, 45, .22); }
   </style>
+  <link rel="stylesheet" href="../../theme/mindmap.css">
 </head>
 <body>
   <svg id="mindmap"></svg>
@@ -22,7 +23,7 @@
   <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
   <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
   <script>
-    const tree = {"content":"触发器","children":[{"content":"5.7.1 定义触发器","children":[{"content":"ECA 规则、时机、粒度与 OLD／NEW（MySQL 为行级）","children":[]},{"content":"标准／其他 DBMS：WHEN、REFERENCING、FOR EACH STATEMENT","children":[]},{"content":"MySQL 8.4：IF、FOR EACH ROW、OLD／NEW","children":[]}]},{"content":"5.7.2 执行触发器","children":[{"content":"执行顺序、失败和触发链","children":[]}]},{"content":"5.7.3 删除触发器","children":[{"content":"对象维护、权限边界与产品删除语法","children":[]}]}]};
+    const tree = {"content":"触发器","children":[{"content":"5.7.1 · 先把规则写完整","children":[{"content":"事件＋条件＋动作 → BEFORE／AFTER → ROW／STATEMENT → OLD／NEW 或变化集合","children":[]},{"content":"需要单行事实还是集合事实 → 再核查目标 DBMS 的条件与粒度语法","children":[]}]},{"content":"5.7.2 · 再画实际会执行什么","children":[{"content":"原始 SQL → 写 SC_U → 写 AuditLog → 检查顺序、失败、回滚、循环和执行次数","children":[]}]},{"content":"5.7.3 · 删除前后检查","children":[{"content":"找哪些业务依赖它、谁有权限删除 → 停用或删除 → 检查残留表、日志和调用方","children":[]}]}]};
     const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
     const api = window.markmap;
     window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);

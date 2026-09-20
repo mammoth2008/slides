@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 3.2 数据定义 | HUST</title>
-  <meta name="description" content="用 SQL 定义模式、基本表、数据类型和索引，并理解数据字典">
+  <meta name="description" content="用 CREATE、ALTER 和 DROP 定义 Student、Course、SC 的列、类型、主外码和索引，并判断现有数据或依赖会让哪些变更失败">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="3-2">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.2</div>
       <h1>数据定义</h1>
-      <p class="cover-description">把关系模式和完整性要求定义为数据库对象</p>
+      <p class="cover-description">定义表需要属性名、属性类型、主码和外码</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 数据定义把关系模式、约束和存取路径定义为 DBMS 管理的对象</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 SQL 数据定义涉及哪些对象及其命名关系</span></li><li><span class="list-marker">02</span><span class="list-text">定义模式、基本表，并区分列级约束和表级约束</span></li><li><span class="list-marker">03</span><span class="list-text">根据取值范围、长度/精度和运算需求选择数据类型</span></li><li><span class="list-marker">04</span><span class="list-text">在 Student、Course、SC 定义中表达主码、外码和其他约束</span></li><li><span class="list-marker">05</span><span class="list-text">判断 ALTER、DROP、RESTRICT、CASCADE 带来的结构变化与依赖风险</span></li><li><span class="list-marker">06</span><span class="list-text">解释索引的产品边界、收益与代价，以及数据字典如何支撑 DBMS 运行</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">定义 <code>Student</code>、<code>Course</code> 和 <code>SC</code></p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 SQL 数据定义涉及哪些对象及其命名关系</span></li><li><span class="list-marker">02</span><span class="list-text">定义模式、基本表，并区分列级约束和表级约束</span></li><li><span class="list-marker">03</span><span class="list-text">根据取值范围、长度/精度和运算需求选择数据类型</span></li><li><span class="list-marker">04</span><span class="list-text">在 <code>Student</code>、<code>Course</code>、<code>SC</code> 定义中表达主码、外码和其他约束</span></li><li><span class="list-marker">05</span><span class="list-text">判断 <code>ALTER</code>、<code>DROP</code>、<code>RESTRICT</code>、<code>CASCADE</code> 的作用</span></li><li><span class="list-marker">06</span><span class="list-text">说明索引可能加快哪些查询、会增加哪些成本，DBMS 会从数据字典读取什么</span></li></ol></div></div></div>
     <div class="numeric-progress">2/18</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
@@ -54,9 +54,9 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.1</div>
-    <h2 class="slide-title">SQL 数据定义围绕数据库对象展开</h2>
-    <div class="slide-content"><p class="slide-lead">不同对象有不同的创建、修改和删除方式</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 24% 24% 24%"><colgroup><col style="width:28%"><col style="width:24%"><col style="width:24%"><col style="width:24%"></colgroup><thead><tr><th>对象</th><th>创建</th><th>删除</th><th>修改</th></tr></thead><tbody><tr><td>模式</td><td>CREATE SCHEMA</td><td>DROP SCHEMA</td><td>标准无统一修改语句</td></tr><tr><td>基本表</td><td>CREATE TABLE</td><td>DROP TABLE</td><td>ALTER TABLE</td></tr><tr><td>视图</td><td>CREATE VIEW</td><td>DROP VIEW</td><td>3.6 专门讲解</td></tr><tr><td>索引（DBMS 扩展）</td><td>产品提供的 CREATE INDEX</td><td>产品提供的 DROP INDEX</td><td>产品提供的 ALTER INDEX 等语句</td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">CREATE、ALTER、DROP</h2>
+    <div class="slide-content"><p class="slide-lead">删除前要检查外码、视图等依赖</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25.99% 24.818% 24.313% 24.879%"><colgroup><col style="width:25.99%"><col style="width:24.818%"><col style="width:24.313%"><col style="width:24.879%"></colgroup><thead><tr><th>对象</th><th>创建</th><th>删除</th><th>修改</th></tr></thead><tbody><tr><td>模式</td><td><code>CREATE SCHEMA</code></td><td><code>DROP SCHEMA</code></td><td>没有统一修改语句</td></tr><tr><td>基本表</td><td><code>CREATE TABLE</code></td><td><code>DROP TABLE</code></td><td><code>ALTER TABLE</code></td></tr><tr><td>视图</td><td><code>CREATE VIEW</code></td><td><code>DROP VIEW</code></td><td>3.6 专门讲解</td></tr><tr><td>索引（DBMS 提供）</td><td><code>CREATE INDEX</code></td><td><code>DROP INDEX</code></td><td><code>ALTER INDEX</code> 等</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">3/18</div>
     <div class="semantic-label">DEFINITION OBJECTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
@@ -65,13 +65,12 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.1</div>
-    <h2 class="slide-title">模式先建立对象的命名空间</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.e2aa44e190bb.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>Student 这个表名，在不同业务里重名怎么办？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">模式提供命名空间，表、视图和索引可以在其中定义</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-schema-namespace.svg" data-full-src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-schema-namespace.svg" alt="数据库实例、数据库、模式与表视图索引的对象命名层次" tabindex="0" role="button" aria-label="放大图片：数据库实例、数据库、模式与表视图索引的对象命名层次" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-sql">CREATE SCHEMA "S-C-SC" AUTHORIZATION WANG;</code></pre></div>
-<p>:::</p>
-<div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">模式</h3><div class="key-value-value"><p>组织数据库对象的命名空间</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">AUTHORIZATION</h3><div class="key-value-value"><p>标识模式的授权者或所有者</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">执行权限</h3><div class="key-value-value"><p>执行 CREATE SCHEMA 的用户需要 DBA 权限，或已经获得 CREATE SCHEMA 权限</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">删除方式</h3><div class="key-value-value"><p>DROP SCHEMA 需要明确 RESTRICT 或 CASCADE</p></div></div></div></div></div></div>
+    <h2 class="slide-title">模式提供对象的命名空间</h2>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="46.578" data-character-exposure="45.472" data-character-scale="0.9" style="--character-along:46.578%;--character-exposure:45.472;--character-hidden:54.528%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.5660f5fb2d46.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>Student</code> 这个表名，在不同业务里重名怎么办？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">表、视图和索引定义在模式提供的命名空间中</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-schema-namespace.svg" data-full-src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-schema-namespace.svg" alt="数据库实例、数据库、模式与表视图索引的对象命名层次" tabindex="0" role="button" aria-label="放大图片：数据库实例、数据库、模式与表视图索引的对象命名层次" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-sql">CREATE SCHEMA "S-C-SC" AUTHORIZATION WANG;</code></pre></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24.442% 75.558%" style="--key-value-columns:minmax(0,24.442fr) minmax(0,75.558fr)"><div class="key-value-item substep"><h3 class="key-value-key">模式</h3><div class="key-value-value"><p>组织数据库对象的命名空间</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">授权</h3><div class="key-value-value"><p>标识模式的授权者或所有者</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">执行权限</h3><div class="key-value-value"><p>执行 <code>CREATE SCHEMA</code> 的用户需要 DBA 权限，或已经获得 <code>CREATE SCHEMA</code> 权限</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">删除方式</h3><div class="key-value-value"><p><code>DROP SCHEMA</code> 需要明确 <code>RESTRICT</code> 或 <code>CASCADE</code></p></div></div></div></div></div></div>
     <div class="numeric-progress">4/18</div>
     <div class="semantic-label">CREATE SCHEMA</div>
     <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
@@ -80,7 +79,7 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">CREATE TABLE 把关系模式落成基本表</h2>
+    <h2 class="slide-title">CREATE TABLE 定义列、类型和约束</h2>
     <div class="slide-content"><p class="slide-lead">表定义同时描述列、类型和完整性约束</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -95,7 +94,7 @@
   Sbirthdate DATE,
   Smajor VARCHAR(40)
 );</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>建表同时定义字段、数据类型和约束。Sno 是学生的唯一标识；Sname 允许重复，除非业务规则另行要求唯一</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>建表同时定义字段、数据类型和约束。<code>Sno</code> 是学生的唯一标识</p></div></div>
     <div class="numeric-progress">5/18</div>
     <div class="semantic-label">CREATE TABLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:27.7778%"></div></div>
@@ -104,7 +103,7 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">Course 的先修课可以引用同一个表</h2>
+    <h2 class="slide-title">Course 的先修课外码</h2>
     <div class="slide-content"><p class="slide-lead">外码不一定跨表，也可以引用本表的主码</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -119,15 +118,14 @@
   Cpno CHAR(5),
   FOREIGN KEY (Cpno) REFERENCES "S-C-SC".Course(Cno)
 );</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>Cpno</code> 为 <code>NULL</code> 表示没有先修课；非空时必须对应 Course 中已有的 <code>Cno</code></p>
-<p>本例只记录一门直接先修课，多门先修课需要不同的关系设计</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>Cpno</code> 为 <code>NULL</code> 表示没有先修课；非空时必须对应 Course 中已有的 <code>Cno</code></p></div></div>
     <div class="numeric-progress">6/18</div>
     <div class="semantic-label">SELF REFERENCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+<section id="b3" class="step slide-surface role-content layout-split axis-vertical order-code-list"
       data-x="1500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
     <h2 class="slide-title">表级定义表达跨列或跨表约束</h2>
     <div class="slide-content"><p class="slide-lead"><code>SC</code> 的复合主码涉及两列，两个外码分别引用其他表</p>
@@ -139,8 +137,8 @@
   Sno CHAR(8), Cno CHAR(5), Grade SMALLINT,
   PRIMARY KEY (Sno, Cno),
   FOREIGN KEY (Sno) REFERENCES Student(Sno),
-  FOREIGN KEY (Cno) REFERENCES Course(Cno));</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>表级约束：PRIMARY KEY (Sno, Cno) 保证组合唯一、两列非空；外码：SC.Sno→Student.Sno、SC.Cno→Course.Cno；DBMS 将约束存入数据字典并在操作时检查；同一学生同一课程只登记一次</p></div></div>
+  FOREIGN KEY (Cno) REFERENCES Course(Cno));</code></pre></div></div>
+<div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">复合主码</h3><div class="key-value-value"><p><code>(Sno, Cno)</code> 整体唯一，两个组成列均非空</p></div></div><div class="key-value-item"><h3 class="key-value-key">两个外码</h3><div class="key-value-value"><p><code>Sno</code> 引用已有学生，<code>Cno</code> 引用已有课程</p></div></div><div class="key-value-item"><h3 class="key-value-key">检查责任</h3><div class="key-value-value"><p>DBMS 记录约束，并在写入前检查目标状态</p></div></div></div></div></div>
     <div class="numeric-progress">7/18</div>
     <div class="semantic-label">TABLE CONSTRAINTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:38.8889%"></div></div>
@@ -149,11 +147,11 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">数据类型把域落实为 SQL 定义</h2>
-    <div class="slide-content"><p class="slide-lead">类型选择要同时考虑取值范围和后续运算</p>
+    <h2 class="slide-title">不同数据类型</h2>
+    <div class="slide-content"><p class="slide-lead">先列出允许的值、最大长度或精度，以及后续是否比较、求和或计算平均值</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>字符</h3><p><code>CHAR(n)</code> 适合定长值，<code>VARCHAR(n)</code> 适合长度变化的文本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数值</h3><p><code>SMALLINT</code>、<code>INT</code>、<code>BIGINT</code> 和 <code>DECIMAL(p,s)</code> 适合不同范围与精度</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>时间</h3><p><code>DATE</code>、<code>TIME</code> 和 <code>TIMESTAMP</code> 支持时间相关比较和运算</p></article></div>
-<div class="component component-text text-inset"><p>业务域在 SQL 中落为“数据类型 + 长度/精度 + 必要的完整性约束”；类型名称、范围和扩展可能随 DBMS 与版本变化</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>成绩需要计算平均值，优先选择数值类型而不是普通字符串</p></div></div>
+<div class="component component-text text-inset"><p>设计时要写成“数据类型 + 长度/精度 + 必要的完整性约束”</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>正式执行前需要核对目标 DBMS 和版本支持的类型名称与范围</p></div></div>
     <div class="numeric-progress">8/18</div>
     <div class="semantic-label">DATA TYPES</div>
     <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
@@ -162,20 +160,20 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">选数据类型时要从业务使用倒推</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>成绩只要能存，写成 VARCHAR 也没关系吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">类型不是字段名称的翻译，而是对值域和运算的约束</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>属性</th><th>主要需求</th><th>类型判断</th></tr></thead><tbody><tr><td>Sname</td><td>长度变化的姓名文本</td><td><code>VARCHAR(n)</code>，n 按业务最大长度选择</td></tr><tr><td>Grade</td><td>0—100 百分制、比较和求平均</td><td><code>SMALLINT</code> 加必要的范围约束</td></tr><tr><td>Sbirthdate</td><td>日期比较</td><td>DATE</td></tr><tr><td>OrderAmount</td><td>精确金额运算和两位小数</td><td><code>DECIMAL(10,2)</code> 或 <code>NUMERIC(10,2)</code></td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">选数据类型的流程</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="61.306" data-character-exposure="62.199" data-character-scale="0.9" style="--character-along:61.306%;--character-exposure:62.199;--character-hidden:37.801%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>成绩只要能存，写成 <code>VARCHAR</code> 也没关系吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">看该列允许存什么值、以后怎样运算，再决定用字符、数值还是日期类型</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15.218% 39.311% 45.471%"><colgroup><col style="width:15.218%"><col style="width:39.311%"><col style="width:45.471%"></colgroup><thead><tr><th>属性</th><th>主要需求</th><th>类型判断</th></tr></thead><tbody><tr><td><code>Sname</code></td><td>长度变化的姓名文本</td><td><code>VARCHAR(n)</code>，n 按业务最大长度选择</td></tr><tr><td><code>Grade</code></td><td>0—100 百分制、比较和求平均</td><td><code>SMALLINT</code> 加必要的范围约束</td></tr><tr><td><code>Sbirthdate</code></td><td>日期比较</td><td><code>DATE</code></td></tr><tr><td><code>OrderAmount</code></td><td>精确金额运算和两位小数</td><td><code>DECIMAL(10,2)</code> 或 <code>NUMERIC(10,2)</code></td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">9/18</div>
     <div class="semantic-label">TYPE JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+<section id="c1" class="step slide-surface role-content layout-split axis-vertical order-code-list"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">ALTER TABLE 让结构随需求演进</h2>
-    <div class="slide-content"><p class="slide-lead">表结构变化必须结合现有数据和依赖对象判断</p>
+    <h2 class="slide-title">修改列前，先检查现有记录</h2>
+    <div class="slide-content"><p class="slide-lead">已有值可能无法转换或不满足新约束，视图和应用程序也可能仍按旧列读取</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -183,7 +181,7 @@
 ALTER TABLE "S-C-SC".Course ADD CONSTRAINT UQ_Course_Cname UNIQUE (Cname);
 ALTER TABLE "S-C-SC".Student DROP COLUMN Semail RESTRICT;
 ALTER TABLE "S-C-SC".Student ALTER COLUMN Sbirthdate TYPE CHAR(10);</code></pre></div></div>
-<div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">增加</h3><div class="key-value-value"><p>增加列或新的完整性约束</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">删除</h3><div class="key-value-value"><p>删除列或约束时要检查依赖，并选择 RESTRICT 或 CASCADE</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">修改</h3><div class="key-value-value"><p>修改列名、数据类型或其他定义；已有数据可能无法转换</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">设计判断</h3><div class="key-value-value"><p>新定义必须与现有数据、视图和应用兼容；已有重复数据时新增 UNIQUE 可能失败</p></div></div></div></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="20.573% 79.427%" style="--key-value-columns:minmax(0,20.573fr) minmax(0,79.427fr)"><div class="key-value-item substep"><h3 class="key-value-key">增加</h3><div class="key-value-value"><p>增加列或新的完整性约束</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">删除</h3><div class="key-value-value"><p>删除列或约束时要检查依赖，并选择 <code>RESTRICT</code> 或 <code>CASCADE</code></p></div></div><div class="key-value-item substep"><h3 class="key-value-key">修改</h3><div class="key-value-value"><p>修改列名、数据类型或其他定义；已有数据可能无法转换</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">设计判断</h3><div class="key-value-value"><p>新定义必须与现有数据、视图和应用兼容；已有重复数据时新增 <code>UNIQUE</code> 可能失败</p></div></div></div></div></div>
     <div class="numeric-progress">10/18</div>
     <div class="semantic-label">ALTER TABLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
@@ -193,9 +191,9 @@ ALTER TABLE "S-C-SC".Student ALTER COLUMN Sbirthdate TYPE CHAR(10);</code></pre>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
     <h2 class="slide-title">删除对象时必须先处理依赖关系</h2>
-    <div class="slide-content"><p class="slide-lead">RESTRICT 与 CASCADE 的含义取决于正在删除或修改的对象</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37.5% 37.5%"><colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup><thead><tr><th>对象操作</th><th>RESTRICT</th><th>CASCADE</th></tr></thead><tbody><tr><td>DROP SCHEMA</td><td>模式中已有对象时拒绝</td><td>连同模式内对象一起删除</td></tr><tr><td>DROP TABLE</td><td>被 SC、视图等依赖时拒绝</td><td>可能连带删除依赖对象</td></tr><tr><td>DROP COLUMN / CONSTRAINT</td><td>被其他定义引用时拒绝</td><td>可能移除相关依赖定义</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>CASCADE 不是更方便的默认选项；具体依赖范围和处理策略仍需核对 DBMS 产品手册</p></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>RESTRICT</code> 与 <code>CASCADE</code> 的含义取决于正在删除或修改的对象</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22.121% 39.284% 38.595%"><colgroup><col style="width:22.121%"><col style="width:39.284%"><col style="width:38.595%"></colgroup><thead><tr><th>对象操作</th><th>RESTRICT</th><th>CASCADE</th></tr></thead><tbody><tr><td><code>DROP SCHEMA</code></td><td>模式中已有对象时拒绝</td><td>连同模式内对象一起删除</td></tr><tr><td><code>DROP TABLE</code></td><td>被外码、视图等依赖时拒绝</td><td>可能删除依赖对象或依赖定义</td></tr><tr><td><code>DROP COLUMN / CONSTRAINT</code></td><td>被其他定义引用时拒绝</td><td>可能移除依赖的视图、约束或其他定义</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不要把 <code>CASCADE</code> 当作默认选项</p></div></div>
     <div class="numeric-progress">11/18</div>
     <div class="semantic-label">DROP DEPENDENCIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:61.1111%"></div></div>
@@ -204,35 +202,36 @@ ALTER TABLE "S-C-SC".Student ALTER COLUMN Sbirthdate TYPE CHAR(10);</code></pre>
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.2</div>
-    <h2 class="slide-title">删除表会改变数据库结构和后续可用对象</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.ce9e907da191.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>我只想清空数据，怎么连表结构也没了？</p></div></div></div></aside>
+    <h2 class="slide-title">删除表会改变数据库结构</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="87.039" data-character-exposure="68.336" data-character-scale="0.88" style="--character-along:87.039%;--character-exposure:68.336;--character-hidden:31.664%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.751969dbb8ad.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>我只想清空数据，怎么连表结构也没了？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">删除前要先确认数据、约束、视图和应用依赖</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
-05</span><code class="language-sql">-- 二选一，不要连续执行
+05
+06</span><code class="language-sql">-- 二选一，不要连续执行
 DROP TABLE "S-C-SC".Student RESTRICT;
 -- SC.Sno 仍引用 Student.Sno，操作被拒绝
 DROP TABLE "S-C-SC".Student CASCADE;
--- 可能连带删除 SC 或其他依赖对象，具体以产品手册为准</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DROP TABLE 删除表定义及其数据；DELETE FROM 只删除数据行并保留表结构</p></div></div>
+-- 可能删除相关视图、外码约束或其他依赖定义；不等于必然删除 SC 表
+-- 精确级联范围以目标 DBMS 的产品手册为准</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>DROP TABLE</code> 删除表定义及其数据；<code>DELETE FROM</code> 只删除数据行并保留表结构</p></div></div>
     <div class="numeric-progress">12/18</div>
     <div class="semantic-label">DROP TABLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
+<section id="d1" class="step slide-surface role-content layout-split axis-vertical order-code-list"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.3</div>
     <h2 class="slide-title">索引提供额外的存取路径</h2>
     <div class="slide-content"><p class="slide-lead">索引是常见 RDBMS 扩展：查询可能受益，但会增加空间与更新成本</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-index-dictionary.svg" data-full-src="resources/decks/dbpa-3-2/assets/generated/dbpa-ch03-index-dictionary.svg" alt="用户查询、索引、数据字典与 DBMS 存取路径选择的关系" tabindex="0" role="button" aria-label="放大图片：用户查询、索引、数据字典与 DBMS 存取路径选择的关系" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02</span><code class="language-sql">CREATE INDEX Idx_StuSname
-ON "S-C-SC".Student(Sname);</code></pre></div>
-<p>:::</p>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户只说明查询目标和条件；RDBMS 根据条件、统计信息和可用路径决定是否使用索引</p></div></div></div></div>
+ON "S-C-SC".Student(Sname);</code></pre></div></div>
+<div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="15% 85%" style="--key-value-columns:minmax(0,15fr) minmax(0,85fr)"><div class="key-value-item substep"><h3 class="key-value-key">建立</h3><div class="key-value-value"><p><code>CREATE INDEX</code> 在表的一列或多列上建立索引，提供额外的存取路径</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">修改</h3><div class="key-value-value"><p><code>ALTER INDEX</code> 可按目标 DBMS 支持的语法重命名或调整索引</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">删除</h3><div class="key-value-value"><p><code>DROP INDEX</code> 删除不再需要的索引；系统也会从数据字典移除其定义</p></div></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>RDBMS 根据条件、统计信息和可用路径决定是否使用索引</p></div></div>
     <div class="numeric-progress">13/18</div>
     <div class="semantic-label">INDEX</div>
     <div class="progress-track"><div class="progress-fill" style="width:72.2222%"></div></div>
@@ -241,10 +240,10 @@ ON "S-C-SC".Student(Sname);</code></pre></div>
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.3</div>
-    <h2 class="slide-title">索引是查询速度与维护成本之间的取舍</h2>
-    <div class="slide-content"><p class="slide-lead">建立索引要看查询频率、选择性和更新代价；选择性高表示命中元组少</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>收益</h3><p>高频且高选择性的列通常更可能受益于索引</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>成本</h3><p>低选择性或小表的收益可能有限；频繁更新会增加维护成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>责任</h3><p>DBA 或表属主决定建立、修改和删除索引；普通索引不改变唯一性约束</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.8910005fdc51.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>如果表很小、更新很频繁，还值得建索引吗？</p></div></div></div></aside>
+    <h2 class="slide-title">哪些表适合建立索引？</h2>
+    <div class="slide-content"><p class="slide-lead">建立索引要看查询频率、选择性和更新成本</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>收益</h3><p>高频且高选择性的查询条件更可能受益，例如按唯一订单号定位唯一一条记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>成本</h3><p>低选择性或元组数量较少的表，收益可能有限；频繁更新的状态列还会增加维护成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>责任</h3><p>DBA 或表属主提出候选索引，DBMS 依据统计信息决定是否使用；普通索引不自动增加唯一性约束</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>如果表很小、更新很频繁，还值得建索引吗？</p></div></div></div></aside>
     <div class="numeric-progress">14/18</div>
     <div class="semantic-label">INDEX TRADEOFF</div>
     <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
@@ -254,9 +253,9 @@ ON "S-C-SC".Student(Sname);</code></pre></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2 <span>|</span> 3.2.4</div>
     <h2 class="slide-title">数据字典记录数据库的定义信息</h2>
-    <div class="slide-content"><p class="slide-lead">数据字典是 DBMS 内部系统目录，记录对象、依赖和运行所需的元数据</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 32.5% 32.5%"><colgroup><col style="width:35%"><col style="width:32.5%"><col style="width:32.5%"></colgroup><thead><tr><th>数据字典中的信息</th><th>用途</th><th>示例</th></tr></thead><tbody><tr><td>对象定义</td><td>识别表、列、视图和索引</td><td>Student 的列和类型</td></tr><tr><td>约束与权限</td><td>检查合法操作</td><td>主码、外码和授权</td></tr><tr><td>统计信息</td><td>支持查询处理和优化</td><td>表规模与索引信息</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DDL 更新 DBMS 内部数据字典；后续约束检查、查询处理和优化都读取这些定义信息，数据字典不是普通业务表</p></div></div>
+    <div class="slide-content"><p class="slide-lead">数据字典记录表、列、权限、依赖和统计信息</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30.132% 37.367% 32.501%"><colgroup><col style="width:30.132%"><col style="width:37.367%"><col style="width:32.501%"></colgroup><thead><tr><th>数据字典中的信息</th><th>用途</th><th>示例</th></tr></thead><tbody><tr><td>对象定义</td><td>识别表、列、视图和索引</td><td><code>Student</code> 的列和类型</td></tr><tr><td>约束与权限</td><td>检查合法操作</td><td>主码、外码和授权</td></tr><tr><td>统计信息</td><td>支持查询处理和优化</td><td>表规模与索引信息</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DDL 会更新数据字典；DBMS 从数据字典中读取约束、权限和统计信息</p></div></div>
     <div class="numeric-progress">15/18</div>
     <div class="semantic-label">DATA DICTIONARY</div>
     <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
@@ -265,10 +264,10 @@ ON "S-C-SC".Student(Sname);</code></pre></div>
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2</div>
-    <h2 class="slide-title">用对象、约束和存取路径理解数据定义</h2>
-    <div class="slide-content"><p class="slide-lead">数据定义把关系模型、约束和存取路径落成 DBMS 可以管理的对象</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>对象与约束</h3><p>模式提供命名空间；表定义列、类型、列级约束和表级约束</p></article><article class="content-card emphasis-card" tabindex="0"><h3>类型与结构变化</h3><p>类型实现业务域；ALTER 和 DROP 必须考虑现有数据、依赖与 RESTRICT / CASCADE</p></article><article class="content-card emphasis-card" tabindex="0"><h3>索引与数据字典</h3><p>索引是常见 RDBMS 扩展，改变存取路径并增加维护成本；数据字典记录 DBMS 所需定义</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>写 DDL 前先确认对象关系、业务语义、依赖范围和目标 DBMS 的语法边界</p></div></div>
+    <h2 class="slide-title">练习：审查一份 Student—SC 变更方案</h2>
+    <div class="slide-content"><p class="slide-lead">为 <code>Student</code> 增加邮箱并支持查询，先检查目标结构、迁移和依赖</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>定义目标状态</h3><p>写出新列所属的模式与表、候选数据类型，以及是否允许空值或重复</p></article><article class="content-card emphasis-card" tabindex="0"><h3>检查迁移风险</h3><p>检查已有数据能否满足新约束，视图、程序和外码是否依赖旧结构</p></article><article class="content-card emphasis-card" tabindex="0"><h3>决定存取路径</h3><p>根据查询频率、选择性和更新成本判断是否建索引，并指出数据字典需要新增哪些定义</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>填写现有记录、检查重复或空值，并列出会受影响的外码、视图和程序</p></div></div>
     <div class="numeric-progress">16/18</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
@@ -277,8 +276,8 @@ ON "S-C-SC".Student(Sname);</code></pre></div>
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-2/mindmap-3-2.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-2/mindmap-3-2.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">17/18</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:94.4444%"></div></div>
@@ -288,7 +287,7 @@ ON "S-C-SC".Student(Sname);</code></pre></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">在 <code>&quot;S-C-SC&quot;</code> 中，模式名、表名和 <code>AUTHORIZATION</code> 各表示什么？从 <code>SC</code> 指出复合主码和两个外码，并解释 <code>PRIMARY KEY (Sno,Cno)</code> 的组合唯一与非空语义？</span></li><li><span class="question-no">02</span><span class="question-text"><code>Grade</code>、<code>Sname</code>、<code>Sbirthdate</code> 和 <code>OrderAmount</code> 应依据哪些值域、长度/精度及后续运算选型？<code>DROP TABLE Student</code> 的 <code>RESTRICT</code>、<code>CASCADE</code> 与 <code>DELETE FROM Student</code> 有何区别？</span></li><li><span class="question-no">03</span><span class="question-text"><code>CREATE INDEX</code> 是否属于 SQL 标准统一语句？普通索引如何处理重复姓名，如何权衡高/低选择性及频繁更新列的收益和代价？数据字典记录哪些对象、约束、权限、依赖和统计信息，又如何支撑约束检查、查询处理与优化？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">两个业务都想使用 <code>Student</code> 表名时，模式如何消除歧义？</span></li><li><span class="question-no">02</span><span class="question-text">为 <code>SC</code> 增加“教学班”后，设置什么数据类型？它应该是主码吗？</span></li><li><span class="question-no">03</span><span class="question-text">把 <code>Grade</code> 从字符改成数值前，需要检查哪些数据、约束、视图和应用依赖？</span></li><li><span class="question-no">04</span><span class="question-text">清空 <code>Student</code> 数据与删除 <code>Student</code> 表的区别是什么？</span></li><li><span class="question-no">05</span><span class="question-text">某列查询频繁但取值只有“是/否”且更新很多，是否建索引，为什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-1.html" title="上一节：3.1 SQL 概述" aria-label="上一节：3.1 SQL 概述">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

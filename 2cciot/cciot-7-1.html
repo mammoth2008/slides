@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>CCIOT 7.1 体验云应用 | HUST</title>
-  <meta name="description" content="从云资源组合出发，理解大数据与 AI 云应用、Web 与数据库架构，以及高可用和弹性伸缩的运行策略">
+  <title>CCIoT 7.1 体验云应用 | HUST</title>
+  <meta name="description" content="沿一条带图片的论坛帖子，检查日志处理、AI 候选、Web 请求、数据库写入、图片存储和实例故障切换">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="云计算与物联网">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="7-1">
-  <meta name="version" content="2608.1">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -25,13 +25,13 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/cciot-7-1/assets/cover-cloud-application-image2.png" alt="">
+    <img class="cover-image" src="resources/decks/cciot-7-1/assets/cover-cloud-application-image2.webp" alt="">
     <div class="cover-copy">
-      <div class="cover-section">CCIOT · 7.1</div>
+      <div class="cover-section">CCIoT · 7.1</div>
       <h1>体验云应用</h1>
       <p class="cover-description">让校园志愿者论坛能发帖、存图并经受一次故障</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.1</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -42,10 +42,10 @@
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">学习目标</h2>
     <div class="slide-content"><p class="slide-lead">沿一次论坛发帖，判断云应用怎样交付并持续提供服务</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">沿论坛发帖解释计算、数据库、对象存储和入口的关系</span></li><li><span class="list-marker">02</span><span class="list-text">用 4V 判断论坛日志带来的处理压力，并读懂处理流程</span></li><li><span class="list-marker">03</span><span class="list-text">区分 AI 生成候选与人核验、发布的责任</span></li><li><span class="list-marker">04</span><span class="list-text">根据请求路径定位入口、应用、数据库或对象故障</span></li><li><span class="list-marker">05</span><span class="list-text">区分高可用、负载均衡和弹性伸缩的作用</span></li><li><span class="list-marker">06</span><span class="list-text">用用户任务、故障变化和资源清单完成验收与回收</span></li></ol></div></div></div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明发布请求怎样经过入口和应用实例，再把正文写入数据库、图片写入对象存储</span></li><li><span class="list-marker">02</span><span class="list-text">用 4V 判断论坛日志带来的处理压力，并读懂处理流程</span></li><li><span class="list-marker">03</span><span class="list-text">区分 AI 生成候选与人核验、发布的责任</span></li><li><span class="list-marker">04</span><span class="list-text">根据请求路径定位入口、应用、数据库或对象故障</span></li><li><span class="list-marker">05</span><span class="list-text">区分高可用、负载均衡和弹性伸缩的作用</span></li><li><span class="list-marker">06</span><span class="list-text">完成一次发帖和再次读取，停止实例 A 验证切换，并按清单删除测试记录、图片和权限</span></li></ol></div></div></div>
     <div class="numeric-progress">2/23</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
@@ -53,15 +53,13 @@
 <section id="a2" class="step slide-surface role-case layout-split teaching-semantic axis-horizontal order-cards-cards"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
     <h2 class="slide-title">校园志愿者论坛今天要上线</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-astonished" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-astonished.6c5886ef2779.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>服务器已经运行，怎么论坛还不能发帖？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-astonished" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-astonished.088c04cf6102.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>服务器已经运行，怎么论坛还不能发帖？</p></div></div></div></aside>
     <div class="slide-content"><div class="slide-main-content"><p>学生要能发布活动帖、上传图片，并在一台实例故障时继续访问</p>
 <div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>底层资源</h3><p>服务器或容器运行论坛，网络提供访问入口</p>
-<p>数据库保存标题和正文，对象存储保存活动图片</p></article></div>
-<div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>用户任务</h3><p>填写活动标题和正文，上传一张图片并点击发布</p>
-<p>刷新页面后，自己和另一位学生都能读到同一条帖子</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户能完成发帖，底层资源的组合才成为可用的云应用</p></div></div>
+<p>数据库保存标题和正文，对象存储保存活动图片</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户任务</h3><p>填写活动标题和正文，上传一张图片并点击发布</p>
+<p>刷新页面后，自己和另一位学生都能读到同一条帖子</p></article></div></div></div>
     <div class="numeric-progress">3/23</div>
     <div class="semantic-label">CLOUD APPLICATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
@@ -69,8 +67,8 @@
 <section id="a3" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
-    <h2 class="slide-title">一次发帖会穿过四层状态</h2>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
+    <h2 class="slide-title">资源创建到帖子可读：检查四种结果</h2>
     <div class="slide-content"><p class="slide-lead">每一层都有自己的证据，前一层成功不能替代后一层</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="云资源 → 论坛进程 → Web 入口 → 发帖结果"><span class="relation-term">云资源</span><span class="relation-operator">→</span><span class="relation-term">论坛进程</span><span class="relation-operator">→</span><span class="relation-term">Web 入口</span><span class="relation-operator">→</span><span class="relation-term">发帖结果</span></div></div>
 <div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">资源证据</h3><div class="key-value-value"><p>实例、数据库和图片桶已经创建</p></div></div><div class="key-value-item"><h3 class="key-value-key">组件证据</h3><div class="key-value-value"><p>论坛进程启动，并能连接数据库与图片桶</p></div></div><div class="key-value-item"><h3 class="key-value-key">接口证据</h3><div class="key-value-value"><p>论坛首页可达，发布请求到达应用实例</p></div></div><div class="key-value-item"><h3 class="key-value-key">任务证据</h3><div class="key-value-value"><p>帖子正文和图片保存成功，刷新后仍能读取</p></div></div></div></div>
@@ -82,7 +80,7 @@
 <section id="a4" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 云应用服务</div>
     <h2 class="slide-title">练习：现在可以宣布论坛上线吗？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 22% 36%"><colgroup><col style="width:42%"><col style="width:22%"><col style="width:36%"></colgroup><thead><tr><th>已观察到的结果</th><th>能否宣布上线</th><th>请说明还缺什么</th></tr></thead><tbody><tr><td>云服务器运行，论坛进程尚未检查</td><td>可以／不可以／证据不足</td><td>应用进程、入口和用户任务</td></tr><tr><td>数据库连接成功，尚未写入帖子</td><td>可以／不可以／证据不足</td><td>发帖、保存和再次读取</td></tr><tr><td>网页返回 200，页面显示“系统维护”</td><td>可以／不可以／证据不足</td><td>业务页面与用户任务</td></tr><tr><td>用户发帖并上传图片，刷新后仍能读取</td><td>可以／不可以／证据不足</td><td>故障变化与回收状态</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>宣布上线前，至少要亲自完成一次用户任务</p></div></div>
@@ -96,9 +94,9 @@
 <section id="b1" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
     <h2 class="slide-title">论坛日志为什么需要 4V 视角？</h2>
-    <div class="slide-content"><p class="slide-lead">同一批访问记录会同时带来规模、时效、格式和价值提取问题</p>
+    <div class="slide-content"><p class="slide-lead">日志数百万条、报名时涌入、混有正文图片；一次点击不能代表活动热度</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>体量 Volume</h3><p>一学期积累数百万条浏览、搜索和报名记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>速度 Velocity</h3><p>报名开放后的访问高峰要求及时统计和响应</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多样性 Variety</h3><p>访问日志、帖子正文、活动图片和报名表并存</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>价值密度 Value</h3><p>单次点击意义有限，聚合后才能判断活动关注度</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节用教材 4V 判断处理压力，15.1 再加入真实性讨论数据能否用于判断</p></div></div>
     <div class="numeric-progress">6/23</div>
@@ -108,13 +106,13 @@
 <section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
     <h2 class="slide-title">怎样用日志回答“哪个活动最受关注”？</h2>
-    <aside class="character-intervention character-edge-left character-intent-perspective substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.936981e72281.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>统计变化要能追到是哪一步造成的</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="left-confirm" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-confirm.13f6e318a053.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>清洗前后都要记录条数、时区和去重规则，才能解释统计为何变化</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">从原始访问记录到活动统计，每一步都要留下可检查的输入和输出</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">收集：记录页面、会话和访问时间</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">清洗：去掉重复请求，统一时区，排除测试流量</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">存储与计算：统计访问、报名和图片下载次数</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">分析与验证：把指标对回活动名称，再请业务人员核对异常</span></li></ol></div></div>
 <div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>若刷新一次页面产生三条重复日志，直接计数会夸大活动热度</p></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-7-1/assets/previews/big-data-pipeline-image2.webp" data-full-src="resources/decks/cciot-7-1/assets/big-data-pipeline-image2.png" data-full-width="1448" data-full-height="1086" alt="云上大数据从采集、存储、处理到决策的流水线示意" tabindex="0" role="button" aria-label="放大图片：云上大数据从采集、存储、处理到决策的流水线示意" decoding="async"></figure></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-7-1/assets/previews/big-data-pipeline-image2.webp" data-full-src="resources/decks/cciot-7-1/assets/big-data-pipeline-image2.webp" data-full-width="1448" data-full-height="1086" alt="云上大数据从采集、存储、处理到决策的流水线示意" tabindex="0" role="button" aria-label="放大图片：云上大数据从采集、存储、处理到决策的流水线示意" decoding="async"></figure></div></div>
     <div class="numeric-progress">7/23</div>
     <div class="semantic-label">DATA PIPELINE</div>
     <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
@@ -122,8 +120,8 @@
 <section id="b3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
-    <h2 class="slide-title">练习：怎样把论坛日志变成可信的活动统计？</h2>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 大数据处理</div>
+    <h2 class="slide-title">练习：怎样从论坛日志得到可信统计？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 24% 33%"><colgroup><col style="width:43%"><col style="width:24%"><col style="width:33%"></colgroup><thead><tr><th>已观察到的数据</th><th>选择处理动作</th><th>说明输出证据</th></tr></thead><tbody><tr><td>一次页面刷新产生三条相同请求</td><td>去重／换图表／扩容</td><td>去重规则与记录数变化</td></tr><tr><td>一部分时间是 UTC，一部分是北京时间</td><td>统一时区／删图片／加实例</td><td>统一后的时间字段与口径</td></tr><tr><td>每日新增日志约 5 GB，单机空间将满</td><td>分区存储／改标题／人工浏览</td><td>容量、分区与读取结果</td></tr><tr><td>图表只有访问量，没有活动名称</td><td>补充关联／删除数据／缩容</td><td>活动名称与指标一一对应</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">8/23</div>
     <div class="semantic-label">DATA JUDGMENT</div>
@@ -135,11 +133,11 @@
 <section id="c1" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
     <h2 class="slide-title">AI 为论坛生成活动文案候选</h2>
     <div class="slide-content"><p class="slide-lead">平台根据活动信息生成草稿和配图，但不能替人确认能否发布</p>
 <div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>输入：活动主题、时间、地点、受众和图片要求</p><p>输出：标题、正文和配图候选 → 人工核验 → 论坛发布</p></div></div>
-<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">数据</h3><div class="key-value-value"><p>活动信息和论坛写作要求构成业务上下文</p></div></div><div class="key-value-item"><h3 class="key-value-key">算法与模型</h3><div class="key-value-value"><p>模型根据输入生成文案或图片候选</p></div></div><div class="key-value-item"><h3 class="key-value-key">云端算力</h3><div class="key-value-value"><p>支持推理，并通过接口把能力交给论坛</p></div></div><div class="key-value-item"><h3 class="key-value-key">应用入口</h3><div class="key-value-value"><p>编辑者在发布页面查看、修改或拒绝候选</p></div></div></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">数据</h3><div class="key-value-value"><p>输入中要写明活动主题、时间、地点、受众和论坛写作要求</p></div></div><div class="key-value-item"><h3 class="key-value-key">算法与模型</h3><div class="key-value-value"><p>模型根据输入生成文案或图片候选</p></div></div><div class="key-value-item"><h3 class="key-value-key">云端算力</h3><div class="key-value-value"><p>运行模型推理；论坛调用接口后收到标题、正文或配图候选</p></div></div><div class="key-value-item"><h3 class="key-value-key">应用入口</h3><div class="key-value-value"><p>编辑者在发布页面查看、修改或拒绝候选</p></div></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>生成完成只说明候选已经返回，不说明内容可以发布</p></div></div>
     <div class="numeric-progress">9/23</div>
     <div class="semantic-label">AI IN THE CLOUD</div>
@@ -148,15 +146,13 @@
 <section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
     <h2 class="slide-title">平台生成候选，人决定能否发布</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.a6f0f0381a37.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>文字通顺、图片好看，就可以直接发布</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-misconception" data-character-edge="right" data-character-along="55" data-character-exposure="76" data-character-scale="0.9" style="--character-along:55%;--character-exposure:76;--character-hidden:24%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-misconception.eae17282b58e.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>文字通顺、图片好看，就可以直接发布</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">活动时间、地点、版权和隐私都必须回到原始材料核对</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>平台擅长</h3><p>根据输入生成活动标题、正文和配图候选</p>
-<p>保存输入、候选与修改记录，便于比较</p></article></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>人需要负责</h3><p>核对时间地点、图片版权、人物肖像和校方标识</p>
-<p>决定修改、拒绝还是发布，并承担发布责任</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>平台可以生成，发布者必须核验并承担责任</p></div></div>
+<p>保存输入、候选与修改记录，便于比较</p></article><article class="content-card emphasis-card" tabindex="0"><h3>人需要负责</h3><p>核对时间地点、图片版权、人物肖像和校方标识</p>
+<p>决定修改、拒绝还是发布，并承担发布责任</p></article></div></div></div>
     <div class="numeric-progress">10/23</div>
     <div class="semantic-label">HUMAN JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
@@ -164,7 +160,7 @@
 <section id="c3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> AI 云应用</div>
     <h2 class="slide-title">练习：这四个候选可以怎样处理？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="51% 21% 28%"><colgroup><col style="width:51%"><col style="width:21%"><col style="width:28%"></colgroup><thead><tr><th>候选结果</th><th>选择：发布／修改／拒绝</th><th>说明核验依据</th></tr></thead><tbody><tr><td>草稿写“周六 9:00”，原通知是 10:00</td><td>发布／修改／拒绝</td><td>原通知中的活动时间</td></tr><tr><td>配图含校徽和无法确认授权的陌生人照片</td><td>发布／修改／拒绝</td><td>标识规范、版权与肖像授权</td></tr><tr><td>文案称“报名人数翻倍”，没有历史数据</td><td>发布／修改／拒绝</td><td>统计记录与比较口径</td></tr><tr><td>草稿已核对时间地点，图片来自授权素材库</td><td>发布／修改／拒绝</td><td>核验记录与发布范围</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">11/23</div>
@@ -177,13 +173,13 @@
 <section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
     <h2 class="slide-title">一次论坛发帖会访问哪些组件？</h2>
     <div class="slide-content"><p class="slide-lead">浏览器先经过论坛入口和应用，再分别保存正文与图片</p>
 <div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-panel"><div class="reading-panel"><p>请求路径：浏览器 → 论坛入口 → 应用实例 数据分支：帖子正文 → 数据库；活动图片 → 对象存储</p></div></div>
 <div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">访问入口</h3><div class="key-value-value"><p>接收论坛域名请求并转发给健康实例</p></div></div><div class="key-value-item"><h3 class="key-value-key">应用实例</h3><div class="key-value-value"><p>校验用户与表单，协调正文和图片的保存</p></div></div><div class="key-value-item"><h3 class="key-value-key">云数据库</h3><div class="key-value-value"><p>保存用户、活动标题、正文和发布时间</p></div></div><div class="key-value-item"><h3 class="key-value-key">对象存储</h3><div class="key-value-value"><p>保存活动图片，并按权限返回对象地址</p></div></div></div></div>
 <div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>论坛是否发帖成功，要同时检查正文记录和图片对象</p></div></div>
-<figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-7-1/assets/previews/web-elastic-architecture-image2.webp" data-full-src="resources/decks/cciot-7-1/assets/web-elastic-architecture-image2.png" data-full-width="1448" data-full-height="1086" alt="Web 请求经过入口、应用实例、数据库和对象存储并支持弹性扩展的示意" tabindex="0" role="button" aria-label="放大图片：Web 请求经过入口、应用实例、数据库和对象存储并支持弹性扩展的示意" decoding="async"></figure></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-7-1/assets/previews/web-elastic-architecture-image2.webp" data-full-src="resources/decks/cciot-7-1/assets/web-elastic-architecture-image2.webp" data-full-width="1448" data-full-height="1086" alt="Web 请求经过入口、应用实例、数据库和对象存储并支持弹性扩展的示意" tabindex="0" role="button" aria-label="放大图片：Web 请求经过入口、应用实例、数据库和对象存储并支持弹性扩展的示意" decoding="async"></figure></div></div>
     <div class="numeric-progress">12/23</div>
     <div class="semantic-label">WEB APPLICATION STACK</div>
     <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
@@ -191,12 +187,12 @@
 <section id="d2" class="step slide-surface role-content layout-grid"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
     <h2 class="slide-title">多实例架构要区分计算副本和数据状态</h2>
     <div class="slide-content"><p class="slide-lead">应用实例可以复制，用户状态不能只放在单个实例</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>无状态逻辑</h3><p>路由、校验和页面生成可以部署到多个实例</p></article><article class="content-card emphasis-card" tabindex="0"><h3>结构化状态</h3><p>账户、活动帖正文和发布时间放在数据库中统一管理</p></article><article class="content-card emphasis-card" tabindex="0"><h3>非结构化内容</h3><p>活动图片放在对象存储并通过权限访问</p></article></div>
 <div class="component component-text text-panel"><div class="reading-panel"><p>镜像说明启动环境；不等于数据备份与恢复</p><p>副本说明运行实例；不等于数据副本</p></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>高可用应用必须把计算副本与数据保护分开设计</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>增加论坛应用实例不会自动备份数据库和图片；数据仍要单独设置副本、备份和恢复</p></div></div>
     <div class="numeric-progress">13/23</div>
     <div class="semantic-label">STATE AND DATA</div>
     <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
@@ -204,10 +200,10 @@
 <section id="d3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> Web 应用架构</div>
     <h2 class="slide-title">练习：沿一次发帖请求定位故障</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 25% 33%"><colgroup><col style="width:42%"><col style="width:25%"><col style="width:33%"></colgroup><thead><tr><th>现象</th><th>优先检查对象</th><th>需要的证据</th></tr></thead><tbody><tr><td>浏览器提示“找不到论坛域名”</td><td>域名解析与入口</td><td>解析结果、网络连通和入口日志</td></tr><tr><td>页面打开，但用户被判定为不存在</td><td>应用与用户数据库</td><td>认证查询、连接状态和用户记录</td></tr><tr><td>正文可读，图片请求返回 403</td><td>对象存储与访问权限</td><td>对象地址、权限策略和请求日志</td></tr><tr><td>实例 A 发帖报错，实例 B 正常</td><td>实例 A 与后端池</td><td>两台实例日志、依赖和版本差异</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先沿请求路径缩小范围，再用日志和数据状态确认故障</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>例如图片返回 403 时，先核对对象地址和权限，再看对象存储请求日志</p></div></div>
     <div class="numeric-progress">14/23</div>
     <div class="semantic-label">WEB DIAGNOSIS</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
@@ -218,10 +214,10 @@
 <section id="e1" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
     <h2 class="slide-title">论坛高峰和实例故障需要三种机制</h2>
     <div class="slide-content"><p class="slide-lead">三者常一起出现，但分别回答服务能否继续、流量发给谁和实例需要多少</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 30% 46%"><colgroup><col style="width:24%"><col style="width:30%"><col style="width:46%"></colgroup><thead><tr><th>机制</th><th>主要问题</th><th>关键动作</th></tr></thead><tbody><tr><td>高可用</td><td>一台论坛实例故障后能否继续发帖</td><td>冗余、健康检查、故障转移</td></tr><tr><td>负载均衡</td><td>访问请求怎样分给多个论坛实例</td><td>监听、分发、剔除不健康后端</td></tr><tr><td>弹性伸缩</td><td>报名高峰需要多少论坛实例</td><td>按策略扩容、缩容和设置边界</td></tr></tbody></table></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 30% 46%"><colgroup><col style="width:24%"><col style="width:30%"><col style="width:46%"></colgroup><thead><tr><th>机制</th><th>主要问题</th><th>关键动作</th></tr></thead><tbody><tr><td>高可用</td><td>一台论坛实例故障后能否继续发帖</td><td>冗余、健康检查、故障转移</td></tr><tr><td>负载均衡</td><td>访问请求怎样分给多个论坛实例</td><td>监听、分发、剔除不健康后端</td></tr><tr><td>弹性伸缩</td><td>报名高峰需要多少论坛实例</td><td>按策略扩容、缩容并设置最少和最多实例数</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>负载均衡分发请求，弹性伸缩改变实例数量，高可用应对组件故障</p></div></div>
     <div class="numeric-progress">15/23</div>
     <div class="semantic-label">RESILIENCE MECHANISMS</div>
@@ -230,13 +226,12 @@
 <section id="e2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
     <h2 class="slide-title">报名高峰与实例故障会触发不同变化</h2>
     <div class="slide-content"><p class="slide-lead">先观察请求、健康状态和实例数量，再判断是哪种机制生效</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>请求高峰</h3><p>负载均衡把报名请求分给多个健康实例</p>
-<p>伸缩策略按条件增加或减少实例</p></article></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>实例故障</h3><p>健康检查把故障的论坛实例移出后端池</p>
-<p>流量可转向健康实例；平台按策略决定是否补充实例</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>请求高峰</h3><p>负载均衡把请求分给健康实例</p>
+<p>伸缩策略按条件增减实例</p></article><article class="content-card emphasis-card" tabindex="0"><h3>实例故障</h3><p>健康检查把故障实例移出后端池</p>
+<p>流量转向健康实例；平台按策略补充实例</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若登录会话只存在单个实例，流量切换后用户仍可能掉线</p></div></div>
     <div class="numeric-progress">16/23</div>
     <div class="semantic-label">ELASTIC ARCHITECTURE</div>
@@ -245,7 +240,7 @@
 <section id="e3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 高可用与弹性</div>
     <h2 class="slide-title">练习：论坛发生了什么变化？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="47% 22% 31%"><colgroup><col style="width:47%"><col style="width:22%"><col style="width:31%"></colgroup><thead><tr><th>观察结果</th><th>主要机制或问题</th><th>判断依据</th></tr></thead><tbody><tr><td>请求依次到达实例 A、B、C</td><td>负载均衡／伸缩／数据设计</td><td>请求被分给多个健康后端</td></tr><tr><td>A 健康检查失败，后续请求只到 B、C</td><td>高可用与负载均衡</td><td>A 被剔除，健康实例继续服务</td></tr><tr><td>CPU 连续 5 分钟超过 70%，实例从 2 台增至 4 台</td><td>弹性伸缩</td><td>负载达到阈值且实例数变化</td></tr><tr><td>请求从 A 切到 B 后登录状态丢失</td><td>会话状态设计</td><td>会话没有放在共享状态中</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">17/23</div>
@@ -258,7 +253,7 @@
 <section id="f1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
     <h2 class="slide-title">发布前先写出论坛的验收任务</h2>
     <div class="slide-content"><p class="slide-lead">验收不是看完控制台绿灯，而是亲自完成任务并观察一次变化</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">发帖：提交活动标题、正文和图片</span></li><li><span class="list-marker">02</span><span class="list-text">再读：刷新页面，并由另一位用户打开同一条帖子</span></li><li><span class="list-marker">03</span><span class="list-text">故障：停止实例 A，确认请求转向实例 B 且帖子仍可读</span></li><li><span class="list-marker">04</span><span class="list-text">回收：按清单删除测试实例、监听器、数据库记录、图片和权限</span></li></ol></div></div>
@@ -270,7 +265,7 @@
 <section id="f2" class="step slide-surface role-content layout-split axis-horizontal order-code-list"
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
     <h2 class="slide-title">观察论坛从发布到回收</h2>
     <div class="slide-content"><p class="slide-lead">让同一条活动帖贯穿部署、故障切换和清理</p>
 <div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
@@ -284,8 +279,7 @@
 → 通过论坛入口发帖并再次读取
 → 停止实例 A，确认流量转到实例 B
 → 保存证据并回收测试资源</code></pre></div></div></div>
-<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>看结构</h3><p>入口、实例、数据库和图片桶是否连接</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>看运行</h3><p>A、B 的健康检查、流量和日志是否变化</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>看任务</h3><p>帖子正文和图片在故障前后是否都能读取</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>回收资源</h3><p>实例、监听器、测试记录、图片对象和权限</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一条帖子把结构、运行和用户任务证据连在一起</p></div></div>
+<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>看结构</h3><p>入口、实例、数据库和图片桶是否连接</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>看运行</h3><p>A、B 的健康检查、流量和日志是否变化</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>看任务</h3><p>帖子正文和图片在故障前后是否都能读取</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>回收资源</h3><p>实例、监听器、测试记录、图片对象和权限</p></div></div></div></div></div>
     <div class="numeric-progress">19/23</div>
     <div class="semantic-label">DEMO SEQUENCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:82.6087%"></div></div>
@@ -293,9 +287,9 @@
 <section id="f3" class="step slide-surface role-case layout-focus teaching-semantic"
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 发布与回收</div>
     <h2 class="slide-title">练习：这些结果足以通过哪项验收？</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.4c8a4fc3cee2.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>同一条帖子要在发布、故障和回收阶段都能对上证据</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-confirm.13122efc5989.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>同一条帖子要在发布、故障和回收阶段都能对上证据</p></div></div></div></aside>
     <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 26% 32%"><colgroup><col style="width:42%"><col style="width:26%"><col style="width:32%"></colgroup><thead><tr><th>观察结果</th><th>可通过的验收项</th><th>仍不能证明什么</th></tr></thead><tbody><tr><td>两台论坛实例均显示运行</td><td>实例已启动</td><td>发帖、读图与故障切换</td></tr><tr><td>A、B 的健康检查均通过</td><td>两台后端可接收请求</td><td>用户任务与数据结果正确</td></tr><tr><td>停止 A 后，B 仍能打开原帖子</td><td>故障切换与帖子读取</td><td>扩容策略和完整回收</td></tr><tr><td>实例和监听器已删除</td><td>部分计算与入口已回收</td><td>测试记录、图片对象和权限已清理</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每项观察只通过对应验收，不能替代其他结果</p></div></div>
     <div class="numeric-progress">20/23</div>
@@ -308,10 +302,10 @@
 <section id="review" class="step slide-surface role-review layout-focus"
       data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">沿一条活动帖，判断论坛是否真正完成交付</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">发帖任务：正文进入数据库，图片进入对象存储，入口和实例协同处理请求</span></li><li><span class="list-marker">02</span><span class="list-text">日志处理：4V 帮助识别规模、时效、格式和价值提取压力</span></li><li><span class="list-marker">03</span><span class="list-text">AI 候选：平台生成文案和配图，人核验事实、版权、隐私与发布范围</span></li><li><span class="list-marker">04</span><span class="list-text">故障定位：沿入口、应用、数据库和对象存储逐层查证据</span></li><li><span class="list-marker">05</span><span class="list-text">运行变化：负载均衡分流，弹性伸缩改变实例数，高可用维持连续性</span></li><li><span class="list-marker">06</span><span class="list-text">交付闭环：同一条帖子要经受发布、再次读取、故障切换和资源回收</span></li></ol></div></div></div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1</div>
+    <h2 class="slide-title">练习：验收故障前后都可用的论坛发帖</h2>
+    <div class="slide-content"><p class="slide-lead">用同一活动帖画路径、核对正文图片、停止实例 A，再检查资源是否清理</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">画出浏览器、入口、应用实例、数据库和对象存储之间的请求与数据分支</span></li><li><span class="list-marker">02</span><span class="list-text">从论坛日志中选择一项 4V 压力，写出清洗前后的输入、动作和输出证据</span></li><li><span class="list-marker">03</span><span class="list-text">对一份 AI 文案候选作出发布、修改或拒绝判断，并标明事实、版权和隐私依据</span></li><li><span class="list-marker">04</span><span class="list-text">针对正文可读但图片返回 403，沿请求路径提出下一项最小证据</span></li><li><span class="list-marker">05</span><span class="list-text">停止实例 A，区分负载均衡、高可用和弹性伸缩分别发生了什么，并验证原帖子仍可读</span></li><li><span class="list-marker">06</span><span class="list-text">核对实例、监听器、数据库记录、图片与权限的回收；再把发帖输入换成传感器读数，补写设备是谁、怎样联网、多久上传一次以及失败后怎样重试</span></li></ol></div></div></div>
     <div class="numeric-progress">21/23</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
@@ -319,7 +313,7 @@
 <section id="map" class="step slide-surface role-map layout-single"
       data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">本节思维导图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/cciot-7-1/mindmap-7-1.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">22/23</div>
@@ -329,9 +323,9 @@
 <section id="questions" class="step slide-surface role-questions layout-single"
       data-x="1500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">CCIOT <span>|</span> CH07 <span>|</span> 7.1</div>
+    <div class="breadcrumb">CCIoT <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">发布一条带图片的活动帖会经过哪些组件？</span></li><li><span class="question-no">02</span><span class="question-text">哪些论坛日志现象分别体现 4V？</span></li><li><span class="question-no">03</span><span class="question-text">AI 生成活动文案后，人必须核验哪些内容？</span></li><li><span class="question-no">04</span><span class="question-text">正文可读但图片返回 403 时，应沿哪条路径检查？</span></li><li><span class="question-no">05</span><span class="question-text">停止实例 A 后，哪些证据能证明论坛仍可用？</span></li><li><span class="question-no">06</span><span class="question-text">如何用业务、状态、可靠性和回收证据证明云应用已完成交付？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">发布一条带图片的活动帖会经过哪些组件？</span></li><li><span class="question-no">02</span><span class="question-text">哪些论坛日志现象分别体现 4V？</span></li><li><span class="question-no">03</span><span class="question-text">AI 生成活动文案后，人必须核验哪些内容？</span></li><li><span class="question-no">04</span><span class="question-text">正文可读但图片返回 403 时，应沿哪条路径检查？</span></li><li><span class="question-no">05</span><span class="question-text">停止实例 A 后，哪些证据能证明论坛仍可用？</span></li><li><span class="question-no">06</span><span class="question-text">哪些发帖、再次读取、实例切换和资源清理记录能证明论坛已完成交付？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="cciot-6-1.html" title="上一节：6.1 体验云存储" aria-label="上一节：6.1 体验云存储">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

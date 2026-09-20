@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 12.1 并发异常、隔离级别与封锁协议 | HUST</title>
-  <meta name="description" content="从并发异常推导事务隔离与三级封锁协议">
+  <meta name="description" content="用两个售票点同时扣减 16 张票的轨迹识别异常，再选择隔离级别和 S／X 锁规则">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="12-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 12.1</div>
       <h1>并发异常、隔离级别与封锁协议</h1>
-      <p class="cover-description">从并发异常推导隔离与封锁规则</p>
+      <p class="cover-description">两个售票点同时读到 16，怎样避免最后只扣掉一张票</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -45,7 +45,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+    <div class="slide-content"><p class="slide-lead">从两个事务的读写顺序找出丢失更新和脏读，并标出要等待的 S／X 锁请求</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">识别并发操作造成的四类异常</span></li><li><span class="list-marker">02</span><span class="list-text">比较四个事务隔离级别</span></li><li><span class="list-marker">03</span><span class="list-text">解释 X 锁、S 锁及其相容关系</span></li><li><span class="list-marker">04</span><span class="list-text">区分一级、二级和三级封锁协议</span></li><li><span class="list-marker">05</span><span class="list-text">根据一致性需求选择隔离强度或封锁协议</span></li><li><span class="list-marker">06</span><span class="list-text">说明封锁如何把冲突请求变成等待</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -56,7 +56,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
     <h2 class="slide-title">并发提高资源利用率，也会交错事务操作</h2>
-    <div class="slide-content"><p class="slide-lead">并发提高利用率，但交错调度必须保持事务隔离和正确结果</p>
+    <div class="slide-content"><p class="slide-lead">两个售票请求可并发，但各卖一张后库存须从 16 变 14，不能因覆盖写停在 15</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>执行方式</th><th>运行特点</th><th>主要风险</th></tr></thead><tbody><tr><td>串行执行</td><td>一次只有一个事务</td><td>资源空闲、吞吐下降</td></tr><tr><td>交错并发</td><td>单处理机轮流推进</td><td>读写顺序可能覆盖</td></tr><tr><td>同时并发</td><td>多处理机真正并行</td><td>冲突更难直接观察</td></tr></tbody></table></div>
 <div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="调度是多个事务操作的交错次序　｜　串行：`R1(A) → W1(A) → R2(A) → W2(A)`　｜　交错：`R1(A) → R2(A) → W1(A) → W2(A)`"><span class="relation-term">调度是多个事务操作的交错次序　｜　串行：`R1(A)</span><span class="relation-operator">→</span><span class="relation-term">W1(A)</span><span class="relation-operator">→</span><span class="relation-term">R2(A)</span><span class="relation-operator">→</span><span class="relation-term">W2(A)<code>　｜　交错：</code>R1(A)</span><span class="relation-operator">→</span><span class="relation-term">R2(A)</span><span class="relation-operator">→</span><span class="relation-term">W1(A)</span><span class="relation-operator">→</span><span class="relation-term">W2(A)`</span></div></div></div></div>
     <div class="numeric-progress">3/15</div>
@@ -67,11 +67,11 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">两个售票点各自读到 16，最后可能只扣掉一张票</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>两个事务都成功提交了，结果就一定正确吧？</p></div></div></div></aside>
+    <h2 class="slide-title">两个售票点都读到 16，最终只扣一张票</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>两个事务都成功提交了，结果就一定正确吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">后一次写入的 15 覆盖先前写入的 15</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" alt="两个事务都读到余额 16 后交错写回 15 形成丢失修改" tabindex="0" role="button" aria-label="放大图片：两个事务都读到余额 16 后交错写回 15 形成丢失修改" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="T1: R(A=16) → W(A=15) → COMMIT　　T2: R(A=16) → W(A=15) → COMMIT"><span class="relation-term">T1: R(A</span><span class="relation-operator">=</span><span class="relation-term">16)</span><span class="relation-operator">→</span><span class="relation-term">W(A</span><span class="relation-operator">=</span><span class="relation-term">15)</span><span class="relation-operator">→</span><span class="relation-term">COMMIT　　T2: R(A</span><span class="relation-operator">=</span><span class="relation-term">16)</span><span class="relation-operator">→</span><span class="relation-term">W(A</span><span class="relation-operator">=</span><span class="relation-term">15)</span><span class="relation-operator">→</span><span class="relation-term">COMMIT</span></div></div>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" alt="两个事务都读到余额 16 后交错写回 15 形成丢失修改" tabindex="0" role="button" aria-label="放大图片：两个事务都读到余额 16 后交错写回 15 形成丢失修改" decoding="async"></figure>
+<div class="component content-group group-align-start"><div class="component component-text text-inset"><p><code>T1: R(A=16) → W(A=15) → COMMIT</code>；<code>T2: R(A=16) → W(A=15) → COMMIT</code></p></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>串行执行两次应得到 14；交错执行得到 15，后写入覆盖了前一更新</p></div></div></div></div>
     <div class="numeric-progress">4/15</div>
     <div class="semantic-label">LOST UPDATE</div>
@@ -83,7 +83,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
     <h2 class="slide-title">四类并发异常表现为不同的操作结果</h2>
     <div class="slide-content"><p class="slide-lead">根据操作顺序识别异常，再选择隔离方式</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>丢失修改</h3><p>后一次写入覆盖先前写入，导致前一更新丢失：<code>R1→R2→W1→W2</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>脏读</h3><p>事务读取另一个事务随后撤销的未提交值：<code>W1→R2→ROLLBACK1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不可重复读</h3><p>同一事务两次读取同一数据项，结果不同：<code>R1→W2→COMMIT2→R1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>幻读</h3><p>同一事务两次按谓词查询，其他事务插入或删除匹配记录，结果集发生变化</p></article></div></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>丢失修改</h3><p>后一次写入覆盖先前写入，导致前一更新丢失：<code>R1→R2→W1→W2</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>脏读</h3><p>事务读取另一个事务随后撤销的未提交值：<code>W1→R2→ROLLBACK1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不可重复读</h3><p>同一事务两次读取同一数据项，结果不同：<code>R1→W2→COMMIT2→R1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>幻读</h3><p>同一事务两次按谓词查询，其他事务插入或删除匹配记录，结果集发生变化</p></article></div></div></div>
     <div class="numeric-progress">5/15</div>
     <div class="semantic-label">DATA ANOMALIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
@@ -92,8 +92,8 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">隔离级别：在一致性与并发度间取舍</h2>
-    <div class="slide-content"><p class="slide-lead">级别越高，能排除的异常越多，系统代价通常越大</p>
+    <h2 class="slide-title">隔离增强，异常少，等待或版本开销增加</h2>
+    <div class="slide-content"><p class="slide-lead">先写业务不能接受脏读、重复读变化还是新增匹配行，再选最低满足级别</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="读未提交　→　读已提交　→　可重复读　→　可串行化"><span class="relation-term">读未提交</span><span class="relation-operator">→</span><span class="relation-term">读已提交</span><span class="relation-operator">→</span><span class="relation-term">可重复读</span><span class="relation-operator">→</span><span class="relation-term">可串行化</span></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可串行化表示结果等价于某个串行次序；具体调度还要检查冲突操作</p></div></div>
     <div class="numeric-progress">6/15</div>
@@ -105,8 +105,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
     <h2 class="slide-title">四级隔离对异常的保证逐步增强</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>隔离级别就是固定的一套加锁规则吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">四级都能避免丢失修改，但其他保证不同</p>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>隔离级别就是固定的一套加锁规则吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">本表只比脏读、不可重复读和幻读；是否防丢失修改看写冲突、锁或版本规则</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 18% 18% 18% 16%"><colgroup><col style="width:30%"><col style="width:18%"><col style="width:18%"><col style="width:18%"><col style="width:16%"></colgroup><thead><tr><th>隔离级别</th><th>脏读</th><th>不可重复读</th><th>幻读</th><th>典型代价方向</th></tr></thead><tbody><tr><td>读未提交</td><td>可能</td><td>可能</td><td>可能</td><td>低</td></tr><tr><td>读已提交</td><td>避免</td><td>可能</td><td>可能</td><td>较低</td></tr><tr><td>可重复读</td><td>避免</td><td>避免</td><td>可能</td><td>较高</td></tr><tr><td>可串行化</td><td>避免</td><td>避免</td><td>避免</td><td>高</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>隔离级别描述事务可以观察到的结果；封锁、MVCC 等是不同实现路线，幻读还涉及范围或谓词保护</p></div></div>
     <div class="numeric-progress">7/15</div>
@@ -120,7 +120,7 @@
     <h2 class="slide-title">封锁把访问冲突变成可管理的等待</h2>
     <div class="slide-content"><p class="slide-lead">事务先申请锁，获准后才能按规则读写</p>
 <div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>申请</h3><p>事务针对同一数据对象请求 S 锁或 X 锁</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>检查</h3><p>数据库判断新请求与已有锁是否相容</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>调度</h3><p>相容则获准读写，不相容则进入等待</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>释放</h3><p>事务按封锁协议释放锁，等待者才可能继续</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不相容请求进入等待，由持锁事务释放锁后再继续；这属于并发控制，不是恢复动作</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不相容请求等待持锁事务释放；这是并发控制，不是恢复动作</p></div></div>
     <div class="numeric-progress">8/15</div>
     <div class="semantic-label">LOCKING</div>
     <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
@@ -131,7 +131,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
     <h2 class="slide-title">S 锁允许并发读，X 锁保护写入</h2>
     <div class="slide-content"><p class="slide-lead">相容性决定第二个事务能否立即继续</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" alt="S 锁和 X 锁的相容矩阵" tabindex="0" role="button" aria-label="放大图片：S 锁和 X 锁的相容矩阵" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" alt="S 锁和 X 锁的相容矩阵" tabindex="0" role="button" aria-label="放大图片：S 锁和 X 锁的相容矩阵" decoding="async"></figure>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>S 锁 共享型</h3><p>持有者可以读，其他事务还能申请 S 锁，但不能申请 X 锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>X 锁 排他型</h3><p>持有者可以读写，其他事务不能申请任何类型的锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求冲突</h3><p>不相容请求进入等待；例如 T1 持有 S(A) 时，T2 请求 X(A) 不能立即继续</p></article></div></div></div>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">S AND X LOCKS</div>
@@ -141,8 +141,8 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">三级协议的差别在于申请哪些锁以及何时释放锁</h2>
-    <div class="slide-content"><p class="slide-lead">对读—改—写的数据项，先取得 X 锁再读入；所有协议都把 X 锁持有到事务结束</p>
+    <h2 class="slide-title">三级封锁协议何时申请和释放 S／X 锁</h2>
+    <div class="slide-content"><p class="slide-lead">读—改—写前先取 X 锁；各协议都持有 X 锁到事务结束</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 26% 26% 26%"><colgroup><col style="width:22%"><col style="width:26%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>协议</th><th>写入前与读—改—写</th><th>读前</th><th>释放规则</th></tr></thead><tbody><tr><td>一级</td><td>加 X 锁</td><td>不强制加 S 锁</td><td>X 锁到事务结束</td></tr><tr><td>二级</td><td>加 X 锁</td><td>加 S 锁</td><td>S 锁读完释放，X 锁到事务结束</td></tr><tr><td>三级</td><td>加 X 锁</td><td>加 S 锁</td><td>S 锁、X 锁都到事务结束</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“读前加 X 锁”特指读—改—写场景；所有协议至少要求在写入前取得 X 锁，三级协议还把 S 锁持有到结束</p></div></div>
     <div class="numeric-progress">10/15</div>
@@ -156,7 +156,7 @@
     <h2 class="slide-title">持锁时间决定能阻止哪一种异常</h2>
     <div class="slide-content"><p class="slide-lead">从一级到三级，读取保护越来越强</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">一级：读未提交；X 锁持有到事务结束，防止丢失修改</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">二级：读已提交；读前加 S 锁、读完释放，防止脏读</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">三级：可重复读；S 锁也持有到事务结束，防止不可重复读</span></li></ol></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>在三级协议的抽象中，协议语义对应可串行化；幻读还需要范围或谓词保护</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三级协议把已读取数据项的 S 锁和写入项的 X 锁保持到事务结束，可防不可重复读；若没有范围或谓词保护，仍不能据此宣称完整可串行化</p></div></div>
     <div class="numeric-progress">11/15</div>
     <div class="semantic-label">PROTOCOL GUARANTEES</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
@@ -165,11 +165,11 @@
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">应按业务风险选择隔离强度</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.c78a923d637f.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>隔离越强，任何业务都应该直接选最高级别吧？</p></div></div></div></aside>
+    <h2 class="slide-title">先写不能发生的错误，再选择隔离级别</h2>
+    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.54a679689b42.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>隔离越强，任何业务都应该直接选最高级别吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">趋势统计和资金扣账对一致性的要求不同</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>业务情境</th><th>关注风险</th><th>隔离目标与实现选择</th></tr></thead><tbody><tr><td>允许暂时不一致读结果的趋势统计</td><td>少量暂时误差</td><td>可从较低隔离、较高并发的方案开始评估</td></tr><tr><td>普通订单查询</td><td>不读未提交数据</td><td>可从读已提交起步，再按实现选择锁或 MVCC</td></tr><tr><td>余额扣账</td><td>不能重复或覆盖</td><td>需要更强隔离或显式 X 锁，按业务语义判断</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>判断顺序是业务风险 → 可接受异常 → 隔离目标 → 锁或其他实现；表中只给出情境示例，具体默认值取决于产品与配置</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>例如扣库存不能覆盖另一次写入，订单查询不能看到回滚值；写清错误后，再核对产品用锁还是 MVCC 实现及其默认级别</p></div></div>
     <div class="numeric-progress">12/15</div>
     <div class="semantic-label">CHOOSE THE LEVEL</div>
     <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
@@ -178,10 +178,10 @@
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">并发控制从识别异常开始，再把隔离要求落实为锁规则</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:4"><article class="content-card emphasis-card" tabindex="0"><h3>异常</h3><p>四类异常包括丢失修改、脏读、不可重复读和幻读</p></article><article class="content-card emphasis-card" tabindex="0"><h3>隔离</h3><p>四个级别逐步加强一致性保证</p></article><article class="content-card emphasis-card" tabindex="0"><h3>封锁</h3><p>S/X 锁决定不相容请求是否等待</p></article><article class="content-card emphasis-card" tabindex="0"><h3>协议</h3><p>申请与释放时机决定协议的保证范围</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>并发异常 → 隔离目标 → S/X 锁相容性 → 协议申请与释放时机</p></div></div>
+    <h2 class="slide-title">售票并发：哪次读写错、哪次请求等待</h2>
+    <div class="slide-content"><p class="slide-lead">串行结果应为 14；在交错轨迹找覆盖写，再标 S/X 请求、等待者和释放时刻</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 标记异常</h3><p>用串行结果作参照，按最小轨迹判断丢失修改、脏读、不可重复读或幻读</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 写出隔离目标</h3><p>先写不可接受的异常，再选最低隔离目标；不用产品名替代判断</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 画出等待点</h3><p>标出同一对象上的 S／X 请求；相容继续，不相容则注明等待者与释放者</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 检查持锁边界</h3><p>标明加锁与释放时刻，再判断三级协议各能阻止哪些异常</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整答案连接：操作轨迹 → 异常 → 隔离目标 → 加锁与释放规则</p></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 3.1 SQL 概述 | HUST</title>
-  <meta name="description" content="理解 SQL 的标准化、语言特征与三级模式支持">
+  <meta name="description" content="区分标准 SQL 与厂商写法，判断请求是建表、查询、改数据还是改权限，并说明 DBMS 怎样执行逻辑请求">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="3-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.1</div>
       <h1>SQL 概述</h1>
-      <p class="cover-description">用共同语言操作关系数据库</p>
+      <p class="cover-description">需要哪些列、满足哪些条件，其他交给 DBMS</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 把关系数据库的共同语言、使用方式和抽象层次连接起来</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 SQL 从 SEQUEL、System R 走向 ANSI/ISO 标准的基本过程</span></li><li><span class="list-marker">02</span><span class="list-text">解释功能综合、非过程化、面向集合、统一使用方式和简洁易学五个语言特征</span></li><li><span class="list-marker">03</span><span class="list-text">判断请求属于数据定义、查询、数据操纵还是数据控制</span></li><li><span class="list-marker">04</span><span class="list-text">区分交互式 SQL、API/驱动调用和嵌入式 SQL</span></li><li><span class="list-marker">05</span><span class="list-text">把外模式、基本表、视图、内模式和存储文件放回三级模式</span></li><li><span class="list-marker">06</span><span class="list-text">说明标准 SQL、DBMS 实现子集、厂商扩展与 3.2—3.6 学习路线的关系</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">判断 SQL 操作的目的，并理解用户与 DBMS 的分工</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 SQL 的发展基本过程</span></li><li><span class="list-marker">02</span><span class="list-text">举例解释 SQL 的五个语言特征</span></li><li><span class="list-marker">03</span><span class="list-text">判断某项请求属于数据定义、查询、数据操纵还是数据控制</span></li><li><span class="list-marker">04</span><span class="list-text">区分交互式 SQL、API/驱动调用和嵌入式 SQL</span></li><li><span class="list-marker">05</span><span class="list-text">把外模式、基本表、视图、内模式和存储文件放回三级模式</span></li><li><span class="list-marker">06</span><span class="list-text">说明标准 SQL、DBMS 实现子集、厂商扩展与 3.2—3.6 学习路线的关系</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
@@ -54,23 +54,23 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.1</div>
-    <h2 class="slide-title">SQL 从关系数据库原型走向共同语言</h2>
-    <div class="slide-content"><p class="slide-lead">标准化让不同数据库系统能够共享一套语言基础</p>
-<div class="slide-main-content"><div class="component component-text text-inset"><p>SEQUEL → System R 实现 → 改名为 SQL → ANSI / ISO 标准</p></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 38% 37%"><colgroup><col style="width:25%"><col style="width:38%"><col style="width:37%"></colgroup><thead><tr><th>节点</th><th>发生什么</th><th>教学意义</th></tr></thead><tbody><tr><td>1974</td><td>Boyce 与 Chamberlin 提出 SEQUEL</td><td>关系数据库语言的早期原型</td></tr><tr><td>System R</td><td>IBM 关系数据库原型实现 SEQUEL</td><td>从研究走向系统</td></tr><tr><td>后来</td><td>名称简化为 SQL</td><td>更易记忆，也便于形成统一称呼</td></tr><tr><td>1986—1987</td><td>ANSI 与 ISO 相继通过标准</td><td>形成共同语言基础</td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">共同标准让 SQL 跨系统传递请求</h2>
+    <div class="slide-content"><p class="slide-lead">形成共同语言基础</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>SEQUEL（/ˈsiːkwəl/）→ System R 实现 → 改名为 SQL → ANSI / ISO 标准</p></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18.198% 48.766% 33.036%"><colgroup><col style="width:18.198%"><col style="width:48.766%"><col style="width:33.036%"></colgroup><thead><tr><th>节点</th><th>事件</th><th>意义</th></tr></thead><tbody><tr><td>1974</td><td>Boyce 与 Chamberlin 提出 SEQUEL</td><td>关系数据库语言的原型</td></tr><tr><td>System R</td><td>IBM 关系数据库原型实现 SEQUEL</td><td>从研究走向系统</td></tr><tr><td>后来</td><td>名称简化为 SQL（读作 S、Q、L）</td><td>形成延续至今的共同称呼</td></tr><tr><td>1986—1987</td><td>ANSI 与 ISO 相继通过标准</td><td>形成共同语言基础</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">3/15</div>
     <div class="semantic-label">SQL ORIGIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
+<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-cards-text"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.1</div>
-    <h2 class="slide-title">标准 SQL、DBMS 实现与厂商方言要分开</h2>
-    <div class="slide-content"><p class="slide-lead">阅读一条 SQL 命令时，先区分标准、实现与方言三个层次</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>SQL 标准</h3><p>为不同系统提供共同的语法与语义基础</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DBMS 实现</h3><p>通常只实现标准的一个子集，支持范围和数据类型也可能不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>厂商方言</h3><p>在标准之上加入扩展、限制或不同的语法行为</p></article></div>
+    <h2 class="slide-title">标准 SQL、DBMS 实现与不同方言</h2>
+    <div class="slide-content"><p class="slide-lead">阅读一条 SQL 命令时，先看 DBMS</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>SQL 标准</h3><p>提供共同的语法与语义基础</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DBMS 实现</h3><p>通常只实现标准的一个子集，支持范围和数据类型也可能不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>厂商方言</h3><p>在标准之上加入扩展、限制或不同的语法行为</p></article></div>
 <div class="component component-text text-inset"><p>遇到产品命令时，判断它是否属于标准、当前 DBMS 是否实现或属于厂商扩展；记录产品与版本，并查阅产品手册</p></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>产品手册里的 SQL 写法，都属于标准 SQL 吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="57.772" data-character-exposure="59.244" data-character-scale="0.9" style="--character-along:57.772%;--character-exposure:59.244;--character-hidden:40.756%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>产品手册里的 SQL 写法，都属于标准 SQL 吧？</p></div></div></div></aside>
     <div class="numeric-progress">4/15</div>
     <div class="semantic-label">STANDARD AND DIALECT</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
@@ -79,11 +79,11 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.2</div>
-    <h2 class="slide-title">SQL 把多种能力统一到一套语言中</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 统一承载定义、查询、操纵与控制</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-sql-capabilities-image2.png" data-full-src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-sql-capabilities-image2.png" alt="SQL 把定义、查询、操纵与控制统一到一个能力体系" tabindex="0" role="button" aria-label="放大图片：SQL 把定义、查询、操纵与控制统一到一个能力体系" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>建立和改变数据库对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询</h3><p>从关系中得到结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>操纵</h3><p>插入、修改和删除元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>控制</h3><p>安全性、完整性与并发控制</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一语言体系还参与事务处理、数据库维护和重构；具体命令和支持范围随标准及 DBMS 实现而异</p></div></div>
+    <h2 class="slide-title">建表、查询、改数据和授权</h2>
+    <div class="slide-content"><p class="slide-lead">授权：谁能执行哪些操作</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-sql-capabilities-image2.webp" data-full-src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-sql-capabilities-image2.webp" alt="SQL 把定义、查询、操纵与控制统一到一个能力体系" tabindex="0" role="button" aria-label="放大图片：SQL 把定义、查询、操纵与控制统一到一个能力体系" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>建立和改变数据库对象，例如模式与基本表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询</h3><p>从关系中得到结果，例如学生姓名与成绩集合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>操纵</h3><p>插入、修改和删除一组元组，改变关系实例</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>控制</h3><p>限制谁能做什么，并维护完整性与并发边界</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不同 DBMS 支持的数据类型、命令和扩展可能不同</p></div></div>
     <div class="numeric-progress">5/15</div>
     <div class="semantic-label">SQL FEATURES</div>
     <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
@@ -92,24 +92,24 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.2</div>
-    <h2 class="slide-title">SQL 让用户说明要什么，不必说明怎么找</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>SQL 没写访问步骤，系统到底怎么找到数据？</p></div></div></div></aside>
+    <h2 class="slide-title">SQL 让用户说明要什么</h2>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="58.827" data-character-exposure="63.002" data-character-scale="0.9" style="--character-along:58.827%;--character-exposure:63.002;--character-hidden:36.998%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>SQL 没写访问步骤，系统到底怎么找到数据？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">用户说明逻辑对象、属性和条件；DBMS 决定执行路径</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 32.5% 32.5%"><colgroup><col style="width:35%"><col style="width:32.5%"><col style="width:32.5%"></colgroup><thead><tr><th>请求方式</th><th>用户需要说明</th><th>系统负责什么</th></tr></thead><tbody><tr><td>过程化访问方式</td><td>访问路径、处理顺序和循环</td><td>用户自己组织访问过程</td></tr><tr><td>SQL 非过程化</td><td>目标关系、属性和条件</td><td>RDBMS 规划路径并执行</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>案例：查询选修 81002 的学生姓名和成绩。用户指定逻辑对象、目标属性和条件，不指定扫描哪个文件、使用哪条索引或如何循环</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非过程化不是“没有执行过程”，而是把执行路径的选择交给 DBMS；存储结构变化时，逻辑请求通常可以保持稳定</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28.497% 39.002% 32.501%"><colgroup><col style="width:28.497%"><col style="width:39.002%"><col style="width:32.501%"></colgroup><thead><tr><th>请求方式</th><th>用户需要说明</th><th>系统负责什么</th></tr></thead><tbody><tr><td>过程化访问方式</td><td>访问路径、处理顺序和循环</td><td>用户自己组织访问过程</td></tr><tr><td>SQL 非过程化</td><td>目标关系、属性和条件</td><td>RDBMS 规划路径并执行</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>案例：查询选某门课程的学生信息。用户指定逻辑对象、目标属性和条件，不指定扫描哪个文件、使用哪条索引或如何循环</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>执行路径的选择交给 DBMS；这可以看成是物理独立性的体现</p></div></div>
     <div class="numeric-progress">6/15</div>
     <div class="semantic-label">NON PROCEDURAL</div>
     <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.2</div>
-    <h2 class="slide-title">SQL 面向集合处理数据</h2>
-    <div class="slide-content"><p class="slide-lead">查询、插入、删除和更新都可一次处理一组元组</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>查询集合 / 更新集合</h3><p>查询一次得到一组元组；插入、删除或更新一次处理一组元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>关系闭包</h3><p>查询结果仍然可以作为关系继续处理</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用户按集合描述操作；DBMS 仍可逐行、通过索引或采用其他方式执行</p></div></div>
+    <h2 class="slide-title">一条 SQL 请求可以处理一组元组</h2>
+    <div class="slide-content"><p class="slide-lead">先看输入集合、命中集合和结果，再判断系统内部采用什么执行步骤</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30.233% 39.811% 29.956%"><colgroup><col style="width:30.233%"><col style="width:39.811%"><col style="width:29.956%"></colgroup><thead><tr><th>请求</th><th>作用对象</th><th>可观察结果</th></tr></thead><tbody><tr><td>查询选修某课的学生</td><td><code>SC</code> 中满足条件的元组集合</td><td>一个结果关系</td></tr><tr><td>把某课成绩统一加分</td><td>命中的多条选课记录</td><td>一次请求改变一组元组</td></tr><tr><td>删除已取消的选课</td><td>状态为“已取消”的记录集合</td><td>查询命中的集合被移除</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DBMS 内部仍可能逐行处理或通过索引找到这些记录</p></div></div>
     <div class="numeric-progress">7/15</div>
     <div class="semantic-label">SET ORIENTED</div>
     <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
@@ -118,10 +118,10 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.2</div>
-    <h2 class="slide-title">统一的 SQL 语法可以服务交互和应用程序</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 可独立执行，也可通过接口或嵌入机制使用；核心语句结构一致</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>交互式 SQL</h3><p>用户在交互环境中直接输入 SQL 命令操作数据库</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>API / 驱动调用</h3><p>Java、Python 程序通常通过驱动或 API 把 SQL 请求发送给 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>嵌入式 SQL</h3><p>由预编译器或特定机制把 SQL 写入高级语言程序</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>接口形式可以不同，但核心 SQL 语句结构基本一致；API/驱动调用不等于严格意义的嵌入式 SQL</p></div></div>
+    <h2 class="slide-title">统一的 SQL 语法</h2>
+    <div class="slide-content"><p class="slide-lead">SQL 可独立执行，也可通过接口或嵌入机制使用</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>交互式 SQL</h3><p>用户在交互环境（如 MySQL Workbench 或终端）中直接输入 SQL 命令操作数据库</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>API / 驱动调用</h3><p>Java、Python 程序通常通过驱动或 API 把 SQL 请求发送给 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>嵌入式 SQL</h3><p>由预编译器或特定机制把 SQL 写入高级语言程序</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>接口形式可以不同，但核心 SQL 语句结构基本一致</p></div></div>
     <div class="numeric-progress">8/15</div>
     <div class="semantic-label">SQL USAGE</div>
     <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
@@ -130,10 +130,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.2</div>
-    <h2 class="slide-title">SQL 语言简洁且易学易用：9 个核心动词</h2>
-    <div class="slide-content"><p class="slide-lead">语言简洁不等于功能简单</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 25% 50%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:50%"></colgroup><thead><tr><th>功能</th><th>核心动词</th><th>后续学习位置</th></tr></thead><tbody><tr><td>数据定义</td><td>CREATE、DROP、ALTER</td><td>3.2</td></tr><tr><td>数据查询</td><td>SELECT</td><td>3.3</td></tr><tr><td>数据操纵</td><td>INSERT、UPDATE、DELETE</td><td>3.4</td></tr><tr><td>数据控制</td><td>GRANT、REVOKE</td><td>后续安全性章节</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>九个动词覆盖核心功能，不代表完整 SQL 只有九个动词。建立表、查询数据、修改数据、授予权限分别属于 DDL、查询、DML、DCL</p></div></div>
+    <h2 class="slide-title">四类 SQL 请求</h2>
+    <div class="slide-content"><p class="slide-lead">创建对象、返回结果、改变记录、改变用户权限</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="13.921% 34.493% 51.586%"><colgroup><col style="width:13.921%"><col style="width:34.493%"><col style="width:51.586%"></colgroup><thead><tr><th>功能</th><th>核心动词</th><th>请求产生的结果</th></tr></thead><tbody><tr><td>数据定义</td><td><code>CREATE</code>、<code>DROP</code>、<code>ALTER</code></td><td>创建或改变模式、表、视图、索引等对象</td></tr><tr><td>数据查询</td><td><code>SELECT</code></td><td>返回结果关系，不改变基本表</td></tr><tr><td>数据操纵</td><td><code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code></td><td>改变关系中的元组集合</td></tr><tr><td>数据控制</td><td><code>GRANT</code>、<code>REVOKE</code></td><td>改变用户对对象和操作的权限</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>重点是创建、返回或改变了什么</p></div></div>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">CORE VERBS</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -145,20 +145,20 @@
     <h2 class="slide-title">SQL 支持数据库三级模式结构</h2>
     <div class="slide-content"><p class="slide-lead">用户通过基本表和视图使用逻辑数据，DBMS 管理内部存储</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-three-schema-sql.svg" data-full-src="resources/decks/dbpa-3-1/assets/generated/dbpa-ch03-three-schema-sql.svg" alt="SQL 连接外模式、基本表和内模式存储结构的三层映射" tabindex="0" role="button" aria-label="放大图片：SQL 连接外模式、基本表和内模式存储结构的三层映射" decoding="async"></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37.5% 37.5%"><colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup><thead><tr><th>抽象层次</th><th>SQL 中的对应</th><th>层次作用</th></tr></thead><tbody><tr><td>外模式</td><td>视图和部分基本表</td><td>面向角色的局部逻辑结构</td></tr><tr><td>模式</td><td>基本表</td><td>数据库的全局逻辑结构</td></tr><tr><td>内模式</td><td>存储文件、索引及物理结构</td><td>DBMS 管理的存储组织</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>基本表是模式中的逻辑关系对象；存储文件和索引属于内模式，不是一张表对应一个文件的固定关系。用户或 DBA 定义索引，DBMS 在数据变化时维护，优化器在查询规划时决定是否使用</p></div></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27.92% 34.577% 37.503%"><colgroup><col style="width:27.92%"><col style="width:34.577%"><col style="width:37.503%"></colgroup><thead><tr><th>层次</th><th>SQL 中的对应</th><th>层次作用</th></tr></thead><tbody><tr><td>外模式</td><td>视图和部分基本表</td><td>面向角色的局部逻辑结构</td></tr><tr><td>模式</td><td>基本表</td><td>数据库的全局逻辑结构</td></tr><tr><td>内模式</td><td>存储文件、索引及物理结构</td><td>DBMS 管理的存储组织</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>基本表与存储文件并非一一对应；索引由用户或 DBA 定义、由 DBMS 维护</p></div></div>
     <div class="numeric-progress">10/15</div>
     <div class="semantic-label">SQL AND THREE SCHEMAS</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-text-cards"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.3</div>
     <h2 class="slide-title">视图是从基本表或其他视图导出的虚表</h2>
     <div class="slide-content"><p class="slide-lead">用户可以把普通视图当作关系使用，但查询结果仍来自基础对象</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>基本表</h3><p>模式中的逻辑关系对象，数据由 DBMS 持久化管理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>视图（普通视图）</h3><p>保存定义，不独立保存查询结果；查询时从基础对象得到结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>逻辑作用</h3><p>为不同用户提供局部数据视图</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-perspective substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-astonished" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-astonished.9a0502aee1e4.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>换一个视图，同一批基本表就能服务不同角色？</p></div></div></div></aside>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">基本表</h3><div class="key-value-value"><p><code>Student</code>、<code>Course</code>、<code>SC</code> 是模式中的逻辑关系对象，数据由 DBMS 持久化管理</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">普通视图</h3><div class="key-value-value"><p>“教师所授课程成绩”保存查询定义，使用时从基础对象生成当前结果</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">可观察变化</h3><div class="key-value-value"><p>当 <code>SC</code> 中的成绩改变后，再查询普通视图会得到新结果，而不需要复制并同步另一张结果表</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-astonished" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-astonished.e675b5e9cced.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>换一个视图，同一批基本表就能服务不同角色？</p></div></div></div></aside>
     <div class="numeric-progress">11/15</div>
     <div class="semantic-label">VIEW AS VIRTUAL TABLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
@@ -167,8 +167,8 @@
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 3.1.3</div>
-    <h2 class="slide-title">SQL 学习从对象定义走向数据操作</h2>
-    <div class="slide-content"><p class="slide-lead">3.2—3.6 依次把 SQL 的一类能力落实为可执行语句</p>
+    <h2 class="slide-title">SQL：定义、查询、更新、空值、视图</h2>
+    <div class="slide-content"><p class="slide-lead">后续每一节都把一种数据库任务写成可执行 SQL</p>
 <div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>3.2 数据定义</h3><p>模式、表、索引与数据字典</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>3.3 数据查询</h3><p>单表、连接、嵌套、集合与派生表</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>3.4 数据更新</h3><p>插入、修改与删除</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>3.5 空值</h3><p>判断与三值逻辑</p></div></div><div class="process-item substep"><span class="process-marker">05</span><div class="process-content"><h3>3.6 视图</h3><p>定义、查询、更新与作用</p></div></div></div></div></div>
     <div class="numeric-progress">12/15</div>
     <div class="semantic-label">SQL LEARNING MAP</div>
@@ -178,10 +178,10 @@
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1</div>
-    <h2 class="slide-title">用标准、特征和抽象层次理解 SQL</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 是关系数据库的共同语言，也是用户进入三级模式的入口</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>标准化</h3><p>标准提供共同基础，DBMS 实现子集，厂商可能增加扩展或差异</p></article><article class="content-card emphasis-card" tabindex="0"><h3>语言特征</h3><p>功能综合、非过程化、面向集合、统一使用方式且简洁易学</p></article><article class="content-card emphasis-card" tabindex="0"><h3>抽象层次</h3><p>外模式、基本表和普通视图服务用户；内模式管理存储文件和索引</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>学习 SQL 既要理解标准概念，也要确认具体 DBMS 的实现差异；建立对象、查询数据、改变数据、授予权限分别属于 DDL、查询、DML、DCL</p></div></div>
+    <h2 class="slide-title">练习：分析一个业务请求</h2>
+    <div class="slide-content"><p class="slide-lead">任务：客服要查询某次申诉涉及的玩家、道具和处理状态</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>判断请求</h3><p>指出它属于定义、查询、操纵还是控制，并说明会生成结果还是改变数据库状态</p></article><article class="content-card emphasis-card" tabindex="0"><h3>描述集合</h3><p>写出需要的逻辑对象、目标属性和筛选条件，预测结果关系的每个元组代表什么</p></article><article class="content-card emphasis-card" tabindex="0"><h3>追踪责任</h3><p>指出用户负责说明什么、DBMS 负责选择什么，并标出标准/方言需要核查的位置</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>这是什么类型的操作、需要哪些表列和条件、每行结果代表什么</p></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
@@ -190,8 +190,8 @@
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-1/mindmap-3-1.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-1/mindmap-3-1.html" title="本节思维导图"></iframe></div></div>
     <div class="numeric-progress">14/15</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
@@ -201,7 +201,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">SEQUEL、System R、SQL、ANSI/ISO 之间是什么关系？标准化解决了什么问题？</span></li><li><span class="question-no">02</span><span class="question-text">SQL 的五个主要语言特征是什么？其中非过程化和面向集合分别减轻了用户什么负担？</span></li><li><span class="question-no">03</span><span class="question-text">交互式 SQL、API/驱动调用和嵌入式 SQL 有什么区别？它们为什么仍能共享 SQL 的核心语句结构？</span></li><li><span class="question-no">04</span><span class="question-text">外模式、模式、内模式分别对应什么？基本表、普通视图、存储文件和索引分别属于哪个层次？</span></li><li><span class="question-no">05</span><span class="question-text">如果 DBMS 更换存储文件或索引，为什么同一个逻辑查询通常不必改写？遇到产品特有命令时还需要确认什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">某产品手册给出一条只有该产品支持的建表写法。你要核对哪些标准说明、产品版本和厂商文档，才能判断它属于共同语法还是扩展？</span></li><li><span class="question-no">02</span><span class="question-text">“查询全部不及格学生”为什么同时体现非过程化与面向集合？</span></li><li><span class="question-no">03</span><span class="question-text">同一条查询从交互终端移入 Java 应用后，表、列和条件为何不变？</span></li><li><span class="question-no">04</span><span class="question-text"><code>SC</code> 的物理文件和索引改变后，为什么面向基本表或普通视图的逻辑查询通常可以保持稳定？</span></li><li><span class="question-no">05</span><span class="question-text">把“查询订单”改成“撤销一批订单”后，它是返回哪些行，还是修改哪些订单记录？应归入哪类 SQL 功能？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-2-4.html" title="上一节：2.4 关系代数" aria-label="上一节：2.4 关系代数">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

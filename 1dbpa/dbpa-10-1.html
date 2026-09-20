@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 10.1 查询处理与操作算法 | HUST</title>
-  <meta name="description" content="从 SQL 请求到选择和连接执行算法">
+  <meta name="description" content="把 SQL 依次分析、检查和优化，再按选择率、块数、索引与内存比较扫描和连接算法">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="10-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 10.1</div>
       <h1>查询处理与操作算法</h1>
-      <p class="cover-description">把 SQL 请求变成可执行的访问路径</p>
+      <p class="cover-description">同一条 SQL，可以全表扫描或走索引，也可以用四种连接算法</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,7 +44,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">查询处理经过分析、检查、优化和执行四个阶段</p>
+    <div class="slide-content"><p class="slide-lead">指出 SQL 在哪步报错，再根据命中行数、块、索引和内存筛选扫描与连接算法</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">描述查询处理的四个阶段</span></li><li><span class="list-marker">02</span><span class="list-text">说明查询检查使用哪些数据库信息</span></li><li><span class="list-marker">03</span><span class="list-text">比较全表扫描和索引扫描</span></li><li><span class="list-marker">04</span><span class="list-text">解释四种连接算法的基本思想</span></li><li><span class="list-marker">05</span><span class="list-text">依据选择率、块数量和内存条件判断候选算法</span></li><li><span class="list-marker">06</span><span class="list-text">说明同一 SQL 可以有多种执行策略</span></li></ol></div></div></div>
     <div class="numeric-progress">2/11</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -56,7 +56,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 10.1</div>
     <h2 class="slide-title">DBMS 把 SQL 请求转换成执行计划</h2>
     <div class="slide-content"><p class="slide-lead">用户只表达结果需求，系统负责选择操作路径</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-query-processing-image2.png" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-query-processing-image2.png" alt="SQL 请求经分析、检查、优化与执行形成结果" tabindex="0" role="button" aria-label="放大图片：SQL 请求经分析、检查、优化与执行形成结果" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-query-processing-image2.webp" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-query-processing-image2.webp" alt="SQL 请求经分析、检查、优化与执行形成结果" tabindex="0" role="button" aria-label="放大图片：SQL 请求经分析、检查、优化与执行形成结果" decoding="async"></figure>
 <div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="分析（结构）　→　检查（语义）　→　优化（路径）　→　执行（结果）"><span class="relation-term">分析（结构）</span><span class="relation-operator">→</span><span class="relation-term">检查（语义）</span><span class="relation-operator">→</span><span class="relation-term">优化（路径）</span><span class="relation-operator">→</span><span class="relation-term">执行（结果）</span></div></div></div></div>
     <div class="numeric-progress">3/11</div>
     <div class="semantic-label">QUERY PIPELINE</div>
@@ -67,8 +67,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 10.1</div>
     <h2 class="slide-title">四个阶段各有输入、判断和输出</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>SQL 语法检查通过，就可以跳过语义检查直接执行了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">SQL 语法正确后，DBMS 还要确认它在当前数据库中有意义，再比较可行的执行路径</p>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>SQL 语法检查通过，就可以跳过语义检查直接执行了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">语法正确后，DBMS 还需核对数据库语义，再比较可行执行路径</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 42% 36%"><colgroup><col style="width:22%"><col style="width:42%"><col style="width:36%"></colgroup><thead><tr><th>阶段</th><th>主要工作</th><th>输出或失败</th></tr></thead><tbody><tr><td>查询分析</td><td>词法、关键字和语法</td><td>语法结构；语法错误</td></tr><tr><td>查询检查</td><td>表、列、视图、权限和完整性约束</td><td>合法的内部关系表示；对象或权限错误</td></tr><tr><td>查询优化</td><td>比较访问路径和操作算法</td><td>候选与选定执行策略；估计不佳</td></tr><tr><td>查询执行</td><td>生成并运行代码或计划</td><td>查询结果；运行时错误</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不可以。查询检查还要核对对象、视图、权限和约束，检查通过后才形成内部关系表示</p></div></div>
     <div class="numeric-progress">4/11</div>
@@ -94,9 +94,9 @@
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 10.1</div>
     <h2 class="slide-title">索引扫描先找指针，再访问数据块</h2>
     <div class="slide-content"><p class="slide-lead">低选择率时通常比全表扫描更划算，但记录分散时随机 I/O 可能抵消收益</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-selection-scan.svg" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-selection-scan.svg" alt="全表扫描顺序读取所有块，索引扫描先找入口再读取少量目标块" tabindex="0" role="button" aria-label="放大图片：全表扫描顺序读取所有块，索引扫描先找入口再读取少量目标块" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-selection-scan.svg" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-selection-scan.svg" alt="全表扫描顺序读取所有块，索引扫描先找入口再读取少量目标块" tabindex="0" role="button" aria-label="放大图片：全表扫描顺序读取所有块，索引扫描先找入口再读取少量目标块" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="`Sno = &#x27;20180003&#x27;`：单点定位　｜　`Sbirthdate &gt;= ...`：范围定位　｜　多条件：比较索引入口与合并代价"><span class="relation-term">`Sno</span><span class="relation-operator">=</span><span class="relation-term">&#x27;20180003&#x27;<code>：单点定位　｜　</code>Sbirthdate &gt;</span><span class="relation-operator">=</span><span class="relation-term">...`：范围定位　｜　多条件：比较索引入口与合并代价</span></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>选择率低且目标记录集中时，索引更有机会获益；最终仍由优化器结合工作负载判断</p></div></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>选择率低且目标记录集中时，索引可能少读块；若命中行分散在许多块，随机回表可能让全表扫描更便宜</p></div></div></div></div>
     <div class="numeric-progress">6/11</div>
     <div class="semantic-label">INDEX SCAN</div>
     <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
@@ -106,7 +106,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 10.1</div>
     <h2 class="slide-title">连接算法取决于块数、内存和已有结构</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>只要内存足够，哈希连接就能处理任意连接条件吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>只要内存足够，哈希连接就能处理任意连接条件吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">输入规模和物理状态不同，最快的算法也可能不同</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 34% 42%"><colgroup><col style="width:24%"><col style="width:34%"><col style="width:42%"></colgroup><thead><tr><th>算法</th><th>基本思想</th><th>适用线索</th></tr></thead><tbody><tr><td>嵌套循环</td><td>外表逐个匹配内表</td><td>外表块数较少可减少重复扫描；最通用</td></tr><tr><td>排序—合并</td><td>排序后同步扫描</td><td>输入已排序或排序代价可接受的等值连接</td></tr><tr><td>索引连接</td><td>外表值查内表索引</td><td>内表连接属性有索引，逐值查找有利</td></tr><tr><td>哈希连接</td><td>小表建桶，大表匹配</td><td>等值连接且建桶关系适合内存</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。哈希连接主要用于等值连接；连接条件、排序状态和内表索引会改变候选算法</p></div></div>
@@ -119,10 +119,10 @@
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1 <span>|</span> 10.1</div>
     <h2 class="slide-title">Student 与 SC 的连接算法会随条件变化</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.a4ddf8f0bc68.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>Student 一定要做外表或建桶表吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>Student 一定要做外表或建桶表吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">同一连接条件会因块数、排序、索引、内存和中间结果规模而选择不同路径</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-join-algorithms.svg" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-join-algorithms.svg" alt="Student 与 SC 的四种连接算法及其依赖条件" tabindex="0" role="button" aria-label="放大图片：Student 与 SC 的四种连接算法及其依赖条件" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>外表块数较少</h3><p>嵌套循环可减少内表重复读</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输入已排序</h3><p>排序—合并可避免或减少排序代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内表连接键有索引</h3><p>索引连接可按外表值定位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>等值连接且建桶适合内存</h3><p>哈希连接可按桶匹配</p></article></div></div>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-join-algorithms.svg" data-full-src="resources/decks/dbpa-10-1/assets/generated/dbpa-ch10-join-algorithms.svg" alt="Student 与 SC 的四种连接算法及其依赖条件" tabindex="0" role="button" aria-label="放大图片：Student 与 SC 的四种连接算法及其依赖条件" decoding="async"></figure>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>外表块数较少</h3><p>嵌套循环可减少内表重复读</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输入已排序</h3><p>排序—合并可避免或减少排序代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内表连接键有索引</h3><p>索引连接可按外表值定位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>等值连接且建桶适合内存</h3><p>哈希连接可按桶匹配</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不一定。Student 只是示例；实际两侧可按块数、索引和内存条件互换</p></div></div>
     <div class="numeric-progress">8/11</div>
     <div class="semantic-label">JOIN TRADEOFFS</div>
@@ -132,10 +132,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1</div>
-    <h2 class="slide-title">用查询处理连接 SQL 与执行算法</h2>
-    <div class="slide-content"><p class="slide-lead">查询处理把声明式 SQL 连接到文件、块、索引和操作算法</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>阶段</h3><p>分析、检查、优化和执行构成查询处理阶段</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p>选择率、块数、内存和记录分布影响算法选择</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>连接</h3><p>嵌套循环、排序—合并、索引连接和哈希连接各有成本风险</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>等价变换、选择率、块 I/O 和代价估算共同支持较优计划选择</p></div></div>
+    <h2 class="slide-title">为 Student⋈SC 逐项排除不合适的算法</h2>
+    <div class="slide-content"><p class="slide-lead">确认 SQL 通过检查，估计行数和块数，再查排序、索引、等值条件和内存</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>SQL 停在哪一步</h3><p>语法错误停在分析；对象、视图或权限错误停在检查；合法内部表示才进入优化与执行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>扫描读多少块</h3><p>对 <code>Sno=&#x27;20180003&#x27;</code> 比较主码索引与全表扫描；对高命中范围条件补上分散回表的块代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>哪种连接满足前提</h3><p>列出外表块数、输入排序、内表索引、等值条件和建桶内存，再保留满足前提的连接算法</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本节先排除前提不满足的算法；下一节再估算各可行方案会读写多少块、产生多大中间结果</p></div></div>
     <div class="numeric-progress">9/11</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
@@ -144,8 +144,8 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-10-1/mindmap-10-1.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">从 WHERE 和 JOIN 画出执行步骤</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-10-1/mindmap-10-1.html" title="从 WHERE 和 JOIN 画出执行步骤"></iframe></div></div>
     <div class="numeric-progress">10/11</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>

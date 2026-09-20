@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 11.1 事务、故障与恢复策略 | HUST</title>
-  <meta name="description" content="用事务边界和故障分类理解 UNDO 与 REDO">
+  <meta name="description" content="根据转账是否提交、数据页是否落盘和磁盘是否损坏，选择 UNDO、REDO 或从副本重建">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="11-1">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,14 +29,14 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 11.1</div>
       <h1>事务、故障与恢复策略</h1>
-      <p class="cover-description">让数据库从错误状态回到一致状态</p>
+      <p class="cover-description">转账中断后：撤销半笔转账，还是补做已提交更新</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
 <!-- speaker-notes
-本单元以转账中断为入口，建立事务、ACID、故障分类和 UNDO／REDO 的恢复方向。
+本单元从转账中断开始，判断事务有没有提交、哪些余额已写入，以及何时用 UNDO 或 REDO。
 -->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
@@ -44,7 +44,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">事务边界、ACID 和故障范围共同决定恢复方向</p>
+    <div class="slide-content"><p class="slide-lead">查看提交、数据页和磁盘，决定撤销未完成事务、补做已提交事务或恢复副本</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明事务边界和提交回滚语义</span></li><li><span class="list-marker">02</span><span class="list-text">解释 ACID 四个特性</span></li><li><span class="list-marker">03</span><span class="list-text">区分三类故障的影响范围</span></li><li><span class="list-marker">04</span><span class="list-text">说明恢复为什么依赖冗余数据</span></li><li><span class="list-marker">05</span><span class="list-text">根据故障影响范围、事务状态和介质可信性选择 UNDO、REDO 或副本恢复</span></li><li><span class="list-marker">06</span><span class="list-text">区分恢复和并发控制的职责</span></li></ol></div></div></div>
     <div class="numeric-progress">2/11</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -55,9 +55,9 @@
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
     <h2 class="slide-title">事务把相关操作绑定为不可分割的单位</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>COMMIT</code> 返回成功，就说明每个数据页都已经写回磁盘了吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>COMMIT</code> 返回成功，就说明每个数据页都已经写回磁盘了吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">一个程序可以包含多个事务；一个事务要么全部提交，要么全部撤销</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.png" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.png" alt="事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" tabindex="0" role="button" aria-label="放大图片：事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" decoding="async"></figure>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.webp" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-recovery-image2.webp" alt="事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" tabindex="0" role="button" aria-label="放大图片：事务、日志、故障和恢复路径的全章概览，事务边界由文字关系式说明" decoding="async"></figure>
 <div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEGIN TRANSACTION　→　数据库操作序列　→　COMMIT 或 ROLLBACK"><span class="relation-term">BEGIN TRANSACTION</span><span class="relation-operator">→</span><span class="relation-term">数据库操作序列</span><span class="relation-operator">→</span><span class="relation-term">COMMIT 或 ROLLBACK</span></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不等于。<code>COMMIT</code> 接受事务结果并承诺持久保存，日志、缓冲和存储实现共同兑现这一承诺</p></div></div>
     <div class="numeric-progress">3/11</div>
@@ -68,10 +68,10 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
-    <h2 class="slide-title">ACID 把可靠事务拆成四个相互支撑的目标</h2>
-    <div class="slide-content"><p class="slide-lead">转账案例能同时展示原子性和一致性</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>原子性</h3><p>全做或全不做，防止半套更新</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一致性</h3><p>遵守约束并从一致状态到一致状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>隔离性</h3><p>并发控制可见性和交错影响</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>持续性</h3><p>提交结果在故障后仍应保留</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复直接支撑原子性、一致性和持续性；隔离性主要由并发控制保证</p></div></div>
+    <h2 class="slide-title">用一笔 A→B 转账检查 ACID 四个性质</h2>
+    <div class="slide-content"><p class="slide-lead">A 扣 10 与 B 加 10 要一起完成，别人看不到中间余额，提交后断电也不能丢</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>原子性</h3><p>A 扣款与 B 入账要么都发生，要么都撤销</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一致性</h3><p>转账前后总额仍为 150，余额和其他约束都成立</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>隔离性</h3><p>其他事务不能看到 <code>A=90、B=50</code> 这个未提交中间状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>持久性</h3><p>提交成功后，即使系统崩溃也应恢复为 <code>A=90、B=60</code></p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>UNDO 避免只完成半笔转账，REDO 保住已提交余额；隔离性主要由并发控制保证</p></div></div>
     <div class="numeric-progress">4/11</div>
     <div class="semantic-label">ACID</div>
     <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
@@ -81,7 +81,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
     <h2 class="slide-title">转账不能提交“只扣款未入账”</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.ce9e907da191.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>A 已扣款、B 还没入账，恢复能只保留第一步吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.751969dbb8ad.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>A 已扣款、B 还没入账，恢复能只保留第一步吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">事务边界把两个更新绑定在一起，未提交暂态不应对外可见</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 24% 31% 27%"><colgroup><col style="width:18%"><col style="width:24%"><col style="width:31%"><col style="width:27%"></colgroup><thead><tr><th>时刻</th><th>余额示意</th><th>事务语义</th><th>对外状态</th></tr></thead><tbody><tr><td>开始</td><td>A=100，B=50</td><td>事务已开始</td><td>一致状态</td></tr><tr><td>中间</td><td>A=90，B=50</td><td>未提交事务内部暂态</td><td>对外不可见</td></tr><tr><td>提交</td><td>A=90，B=60</td><td>结果被接受并承诺持久</td><td>新的一致状态</td></tr><tr><td>故障</td><td>可能停在中间</td><td>未完成事务</td><td>按故障状态恢复</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。未提交的半套更新必须撤销，转账事务只能整体提交或整体回滚</p></div></div>
@@ -93,10 +93,10 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
-    <h2 class="slide-title">恢复：回到已知可信的一致状态</h2>
-    <div class="slide-content"><p class="slide-lead">恢复子系统利用系统中保存的冗余信息</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="故障状态　→　后备副本、日志或镜像　→　已知可信的一致状态"><span class="relation-term">故障状态</span><span class="relation-operator">→</span><span class="relation-term">后备副本、日志或镜像</span><span class="relation-operator">→</span><span class="relation-term">已知可信的一致状态</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复目标不一定是故障发生前的最新时刻，而是可以验证的一致状态；日志、检查点和镜像把恢复方向落实为具体实现</p></div>
+    <h2 class="slide-title">恢复先找可信数据，再按日志补做或撤销</h2>
+    <div class="slide-content"><p class="slide-lead">后备副本提供起点，日志说明之后哪些事务提交、哪些没有完成</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="故障后的数据　→　后备副本、日志或镜像　→　约束成立且已提交事务完整的状态"><span class="relation-term">故障后的数据</span><span class="relation-operator">→</span><span class="relation-term">后备副本、日志或镜像</span><span class="relation-operator">→</span><span class="relation-term">约束成立且已提交事务完整的状态</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复不保证回到故障前最后一秒，而要回到约束成立且事务状态说得清的时刻；日志、检查点和镜像决定能恢复到哪里</p></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>恢复的基本原理是用别处保存的数据重建被破坏或不正确的部分</p></div></div>
     <div class="numeric-progress">6/11</div>
     <div class="semantic-label">RECOVERY GOAL</div>
@@ -118,9 +118,9 @@
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1 <span>|</span> 11.1</div>
     <h2 class="slide-title">故障范围决定 UNDO、REDO 或副本恢复</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>系统故障后，为什么既要 UNDO 又可能要 REDO？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">恢复方向来自事务是否完成、更新是否写入，以及哪一份介质仍然可信</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" alt="三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" tabindex="0" role="button" aria-label="放大图片：三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" decoding="async"></figure>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>系统故障后，为什么既要 UNDO 又可能要 REDO？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead"><code>COMMIT</code>、数据页落盘和磁盘可读性，决定 UNDO、REDO 或恢复副本</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" data-full-src="resources/decks/dbpa-11-1/assets/generated/dbpa-ch11-failure-recovery.svg" alt="三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" tabindex="0" role="button" aria-label="放大图片：三类故障按影响范围分别对应 UNDO、UNDO 加 REDO 或副本重装" decoding="async"></figure>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>情况</th><th>动作</th><th>目标</th></tr></thead><tbody><tr><td>事务未完成且更新已写入</td><td>UNDO</td><td>撤销未完成更新</td></tr><tr><td>系统故障后未完成／已提交事务</td><td>未完成 UNDO；已提交 REDO</td><td>处理缓冲区丢失造成的两类缺口</td></tr><tr><td>介质数据损坏</td><td>重装可信副本并结合相关日志按状态 UNDO／REDO</td><td>从可信状态重建</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>未完成事务可能已有写入，需要 UNDO；已提交事务的数据页可能尚未落盘，需要 REDO。介质恢复还要根据副本状态结合日志判断恢复动作</p></div></div>
     <div class="numeric-progress">8/11</div>
@@ -131,10 +131,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
-    <h2 class="slide-title">用事务状态和故障范围选择恢复动作</h2>
-    <div class="slide-content"><p class="slide-lead">事务定义一致性边界，恢复把故障后的数据库带回一致状态</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>事务</h3><p>用边界、提交与回滚定义逻辑工作单位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>目标</h3><p>ACID 职责边界：恢复支撑原子性、一致性和持续性，并发控制支撑隔离性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>恢复</h3><p>按故障范围选择 UNDO、REDO 或副本恢复</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>日志、检查点和镜像把冗余数据落实为可执行的恢复证据</p></div></div>
+    <h2 class="slide-title">恢复练习：先看提交、落盘和磁盘</h2>
+    <div class="slide-content"><p class="slide-lead">先判断事务是否完成、结果是否落盘、介质是否可信，再选择动作</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>转账中断</h3><p>A 已扣款、B 尚未入账，也没有提交记录：事务未完成，原子性要求撤销已经生效的部分</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>系统崩溃</h3><p>磁盘仍可信；T1 未提交、T2 已提交但部分页面未写回：对 T1 执行 UNDO，对 T2 缺失的结果执行 REDO</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>介质损坏</h3><p>原数据库文件不再可信：先从可信副本重建，再结合相关日志按事务状态补做或撤销</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>完整答案要说明有没有 <code>COMMIT</code>、哪些页可能已写、日志是否完整、原磁盘能否读取，以及恢复后 A、B 应是多少</p></div></div>
     <div class="numeric-progress">9/11</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
@@ -154,7 +154,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH11 <span>|</span> 11.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">转账中 A 已扣款、B 未入账时，为什么这是未提交事务内部暂态？</span></li><li><span class="question-no">02</span><span class="question-text">ACID 四个特性分别防范什么风险？恢复和并发控制各负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">事务 T1 未完成、T2 已提交时发生系统故障，分别选择什么恢复方向？</span></li><li><span class="question-no">04</span><span class="question-text">为什么系统故障通常保留可信磁盘，而介质故障需要可信副本？</span></li><li><span class="question-no">05</span><span class="question-text">为什么动态转储的介质恢复不能简单记成“只 REDO”？</span></li><li><span class="question-no">06</span><span class="question-text">为什么恢复技术依赖冗余数据？日志、检查点和镜像如何把冗余数据用于恢复？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">转账中 A 已扣款、B 未入账时，为什么这是未提交事务内部暂态？</span></li><li><span class="question-no">02</span><span class="question-text">ACID 四个特性分别防范什么风险？恢复和并发控制各负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">事务 T1 未完成、T2 已提交时发生系统故障，分别应执行 UNDO 还是 REDO？</span></li><li><span class="question-no">04</span><span class="question-text">为什么系统故障通常保留可信磁盘，而介质故障需要可信副本？</span></li><li><span class="question-no">05</span><span class="question-text">为什么动态转储的介质恢复不能简单记成“只 REDO”？</span></li><li><span class="question-no">06</span><span class="question-text">为什么恢复技术依赖冗余数据？日志、检查点和镜像如何把冗余数据用于恢复？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-10-2.html" title="上一节：10.2 查询优化与执行计划" aria-label="上一节：10.2 查询优化与执行计划">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 6.2 依赖推理与模式分解 | HUST</title>
-  <meta name="description" content="用公理、闭包和分解准则验证关系模式设计">
+  <meta name="description" content="用 Armstrong 公理与闭包检验依赖，并判断分表后能否局部检查约束、连接时是否多出假记录">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="6-2">
-  <meta name="version" content="2608.2">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 6.2</div>
       <h1>依赖推理与模式分解</h1>
-      <p class="cover-description">用依赖保持与无损连接检验模式分解</p>
+      <p class="cover-description">分表以后，原规则还能检查吗？连接回来会不会多出原本不存在的记录？</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.2</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,7 +44,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">Armstrong 公理、属性闭包和分解准则把函数依赖判断变成可计算的设计工具</p>
+    <div class="slide-content"><p class="slide-lead">用计算回答：依赖能否推出、约束能否在子表检查、连接是否产生伪元组</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用 Armstrong 公理推导函数依赖</span></li><li><span class="list-marker">02</span><span class="list-text">求属性闭包并判断候选码</span></li><li><span class="list-marker">03</span><span class="list-text">用闭包检验依赖集等价并构造最小覆盖</span></li><li><span class="list-marker">04</span><span class="list-text">判断分解是否保持函数依赖</span></li><li><span class="list-marker">05</span><span class="list-text">区分无损连接与依赖保持</span></li><li><span class="list-marker">06</span><span class="list-text">描述 3NF、BCNF 与 4NF 分解的保证与代价</span></li></ol></div></div></div>
     <div class="numeric-progress">2/17</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -54,11 +54,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.3</div>
-    <h2 class="slide-title">三条公理把依赖语义变成推理规则</h2>
-    <div class="slide-content"><p class="slide-lead">传递律可以推出 <code>A→B</code>、<code>B→C</code> 所蕴含的 <code>A→C</code></p>
+    <h2 class="slide-title">用三条公理逐步证明依赖能否推出</h2>
+    <div class="slide-content"><p class="slide-lead">例如 <code>Sno→School</code> 且 <code>School→Mname</code>，用传递律可推出 <code>Sno→Mname</code></p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>公理</th><th>形式</th><th>直观含义</th></tr></thead><tbody><tr><td>自反律</td><td><code>Y ⊆ X</code> 则 <code>X → Y</code></td><td>已有属性决定其子集</td></tr><tr><td>增广律</td><td><code>X → Y</code> 则 <code>XZ → YZ</code></td><td>两端共同增加上下文</td></tr><tr><td>传递律</td><td><code>X → Y</code> 且 <code>Y → Z</code>，则 <code>X → Z</code></td><td>依赖链可以传递</td></tr></tbody></table></div>
 <div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="例：`A→B`、`B→C`　⇒　`A→C`（传递律） 派生规则：合并 `X→Y、X→Z⇒X→YZ`；分解 `X→YZ⇒X→Y`；伪传递 `X→Y、WY→Z⇒XW→Z`"><span class="relation-term">例：`A</span><span class="relation-operator">→</span><span class="relation-term">B<code>、</code>B</span><span class="relation-operator">→</span><span class="relation-term">C<code>　⇒　</code>A</span><span class="relation-operator">→</span><span class="relation-term">C<code>（传递律） 派生规则：合并 </code>X</span><span class="relation-operator">→</span><span class="relation-term">Y、X</span><span class="relation-operator">→</span><span class="relation-term">Z⇒X</span><span class="relation-operator">→</span><span class="relation-term">YZ<code>；分解 </code>X</span><span class="relation-operator">→</span><span class="relation-term">YZ⇒X</span><span class="relation-operator">→</span><span class="relation-term">Y<code>；伪传递 </code>X</span><span class="relation-operator">→</span><span class="relation-term">Y、WY</span><span class="relation-operator">→</span><span class="relation-term">Z⇒XW</span><span class="relation-operator">→</span><span class="relation-term">Z`</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>公理系统既有效又完备，推出的依赖恰好对应逻辑蕴涵</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>Armstrong 公理具有有效性和完备性：按规则推出的依赖成立，所有由 F 逻辑蕴涵的函数依赖也都能推出</p></div></div>
     <div class="numeric-progress">3/17</div>
     <div class="semantic-label">ARMSTRONG AXIOMS</div>
     <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
@@ -68,8 +68,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.3</div>
     <h2 class="slide-title">属性闭包回答 X 能推出哪些属性</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>AB+</code> 已经等于 <code>U</code>，所以 <code>AB</code> 必然是候选码吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">反复应用左部已包含在当前集合中的依赖，直到集合不再变化；先判断超码，再检查真子集</p>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>AB+</code> 已经等于 <code>U</code>，所以 <code>AB</code> 必然是候选码吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">反复应用左部已在集合中的依赖，直到不再变化；先判超码，再查真子集</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -83,8 +83,7 @@ B+ = BD
 AB+：
   AB → ABCD   （AB→C、B→D）
   ABCD → ABCDE （C→E）</code></pre></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="若 Y ⊆ X_F+　→　F 能推出 X → Y 若 X_F+ = U　→　X 是超码 本例：`A+≠U`、`B+≠U`　→　`AB` 的真子集都不是超码　→　`AB` 是候选码"><span class="relation-term">若 Y ⊆ X_F</span><span class="relation-operator">+</span><span class="relation-operator">→</span><span class="relation-term">F 能推出 X</span><span class="relation-operator">→</span><span class="relation-term">Y 若 X_F</span><span class="relation-operator">+</span><span class="relation-operator">=</span><span class="relation-term">U</span><span class="relation-operator">→</span><span class="relation-term">X 是超码 本例：`A</span><span class="relation-operator">+</span><span class="relation-term">≠U<code>、</code>B</span><span class="relation-operator">+</span><span class="relation-term">≠U`</span><span class="relation-operator">→</span><span class="relation-term"><code>AB</code> 的真子集都不是超码</span><span class="relation-operator">→</span><span class="relation-term"><code>AB</code> 是候选码</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>AB+ = U</code> 只先说明 <code>AB</code> 是超码；还要检查真子集，才能判定候选码</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>推出依赖</h3><p><code>Y ⊆ X_F+</code> ⇒ <code>F ⊨ X→Y</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>判断超码</h3><p><code>X_F+ = U</code> ⇒ <code>X</code> 是超码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>确认候选码</h3><p><code>X</code> 是超码，且真子集都不是超码</p></article></div></div></div>
     <div class="numeric-progress">4/17</div>
     <div class="semantic-label">ATTRIBUTE CLOSURE</div>
     <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
@@ -93,9 +92,9 @@ AB+：
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.3</div>
-    <h2 class="slide-title">最小依赖集保留语义，减少推理负担</h2>
-    <div class="slide-content"><p class="slide-lead">最小覆盖不改变规则语义，只保留不可由其他规则替代的部分</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>拆分右部</h3><p>把每条依赖的右部拆成一个属性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除冗余依赖</h3><p>删除后依赖集闭包不改变的规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>简化左部</h3><p>删除左部中不影响依赖语义的属性</p></article></div>
+    <h2 class="slide-title">最小覆盖删去可由其他规则推出的依赖</h2>
+    <div class="slide-content"><p class="slide-lead">最小覆盖与原依赖集闭包相同；右部为单属性，删去冗余依赖和左部多余属性</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>拆分右部</h3><p>把每条依赖的右部拆成一个属性</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除冗余依赖</h3><p>删除后依赖集闭包不改变的规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>简化左部</h3><p>若删掉左部某属性后仍能推出右部，就删除这个多余属性</p></article></div>
 <div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="覆盖：`F^+=G^+`。微例：`A→BC` 先拆成 `A→B、A→C`；若 `A→C` 可由其他依赖推出，就删除它"><span class="relation-term">覆盖：`F^</span><span class="relation-operator">+</span><span class="relation-operator">=</span><span class="relation-term">G^</span><span class="relation-operator">+</span><span class="relation-term"><code>。微例：</code>A</span><span class="relation-operator">→</span><span class="relation-term">BC<code> 先拆成 </code>A</span><span class="relation-operator">→</span><span class="relation-term">B、A</span><span class="relation-operator">→</span><span class="relation-term">C<code>；若 </code>A</span><span class="relation-operator">→</span><span class="relation-term">C` 可由其他依赖推出，就删除它</span></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不同处理顺序可能得到多个等价的最小依赖集</p></div></div>
     <div class="numeric-progress">5/17</div>
@@ -106,10 +105,10 @@ AB+：
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.4</div>
-    <h2 class="slide-title">分解把一个关系模式拆成多个局部模式</h2>
-    <div class="slide-content"><p class="slide-lead">属性并集覆盖原模式只是起点，还要检查局部约束与连接后的可恢复性</p>
+    <h2 class="slide-title">分表后检查：属性、约束和记录能否恢复</h2>
+    <div class="slide-content"><p class="slide-lead">子表要覆盖原表属性；还要检查依赖能否在子表执行、连接是否产生伪元组</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="ρ = {R1(U1,F1), ..., Rk(Uk,Fk)} U = U1 ∪ ... ∪ Uk Fi = {X→Y | X→Y∈F+ 且 XY⊆Ui}"><span class="relation-term">ρ</span><span class="relation-operator">=</span><span class="relation-term">{R1(U1,F1), ..., Rk(Uk,Fk)} U</span><span class="relation-operator">=</span><span class="relation-term">U1 ∪ ... ∪ Uk Fi</span><span class="relation-operator">=</span><span class="relation-term">{X</span><span class="relation-operator">→</span><span class="relation-term">Y | X</span><span class="relation-operator">→</span><span class="relation-term">Y∈F</span><span class="relation-operator">+</span><span class="relation-term">且 XY⊆Ui}</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Fi</code> 是 <code>F+</code> 在 <code>Ui</code> 上的投影，不是只筛选原始依赖；分解后的约束和可恢复性都要单独验证</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Fi</code> 是 <code>F+</code> 在 <code>Ui</code> 上的投影，不是只把原依赖按列筛一遍；每张子表实际能检查的依赖要从闭包中求出</p></div></div>
     <div class="numeric-progress">6/17</div>
     <div class="semantic-label">DECOMPOSITION</div>
     <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
@@ -118,11 +117,11 @@ AB+：
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.4</div>
-    <h2 class="slide-title">保持函数依赖意味着约束仍能局部检查</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.2273b00834e5.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分解后每张表都有自己的约束，就算保持了原依赖吧？</p></div></div></div></aside>
+    <h2 class="slide-title">依赖保持：不连接子表也能检查原规则</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分解后每张表都有自己的约束，就算保持了原依赖吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">分解后的局部依赖闭包应与原依赖闭包等价</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="F+　＝　(F1 ∪ F2 ∪ … ∪ Fk)+"><span class="relation-term">F</span><span class="relation-operator">+</span><span class="relation-term">＝　(F1 ∪ F2 ∪ … ∪ Fk)</span><span class="relation-operator">+</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>检查对象</th><th>需要回答</th><th>设计价值</th></tr></thead><tbody><tr><td>原依赖集</td><td>哪些规则必须保持</td><td>业务语义</td></tr><tr><td>局部依赖集</td><td>哪些规则能在子表检查</td><td>约束维护</td></tr><tr><td>闭包比较</td><td>两者是否等价</td><td>判断保持依赖</td></tr></tbody></table></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>检查对象</th><th>需要回答</th><th>实际影响</th></tr></thead><tbody><tr><td>原依赖集</td><td>哪些规则必须保持</td><td>原表中的业务规则</td></tr><tr><td>局部依赖集</td><td>哪些规则能在子表检查</td><td>写入时是否必须先连接多表</td></tr><tr><td>闭包比较</td><td>两者是否等价</td><td>判断保持依赖</td></tr></tbody></table></div>
 <div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="反例：`R(Sno,School,Mname)` 分解为 `(Sno,School)` 与 `(Sno,Mname)` 后，`School→Mname` 不能由局部依赖保持"><span class="relation-term">反例：<code>R(Sno,School,Mname)</code> 分解为 <code>(Sno,School)</code> 与 <code>(Sno,Mname)</code> 后，`School</span><span class="relation-operator">→</span><span class="relation-term">Mname` 不能由局部依赖保持</span></div></div></div></div>
     <div class="numeric-progress">7/17</div>
     <div class="semantic-label">DEPENDENCY PRESERVING</div>
@@ -144,9 +143,9 @@ AB+：
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">无损连接要求投影自然连接能恢复原关系</h2>
-    <div class="slide-content"><p class="slide-lead">分解不能制造原来不存在的伪元组；要求对所有满足 <code>F</code> 的合法关系都成立</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-6-2/assets/generated/dbpa-ch06-lossless-join.svg" data-full-src="resources/decks/dbpa-6-2/assets/generated/dbpa-ch06-lossless-join.svg" alt="比较无损连接与产生伪元组的有损连接" tabindex="0" role="button" aria-label="放大图片：比较无损连接与产生伪元组的有损连接" decoding="async"></figure>
+    <h2 class="slide-title">无损连接：子表连回后不增加组合</h2>
+    <div class="slide-content"><p class="slide-lead">学生与课程若拼出原表没有的记录，就是伪元组；所有满足 F 的关系都须无损</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-6-2/assets/generated/dbpa-ch06-lossless-join.svg" data-full-src="resources/decks/dbpa-6-2/assets/generated/dbpa-ch06-lossless-join.svg" alt="比较无损连接与产生伪元组的有损连接" tabindex="0" role="button" aria-label="放大图片：比较无损连接与产生伪元组的有损连接" decoding="async"></figure>
 <div class="component content-group group-align-start"><div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>r → πR1(r)、πR2(r) → πR1(r) ⋈ πR2(r)；二元例 R1(A,B)、R2(B,C) 共享 B。无损时 mρ(r)=πR1(r)⋈...⋈πRk(r)=r；r⊆mρ(r) 总成立，关键是不多出伪元组</p></div></div></div></div>
     <div class="numeric-progress">9/17</div>
     <div class="semantic-label">LOSSLESS JOIN</div>
@@ -156,9 +155,9 @@ AB+：
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">依赖保持与无损连接解决不同问题</h2>
-    <div class="slide-content"><p class="slide-lead">同时满足通常更理想，但实际设计仍可能需要权衡</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>准则</th><th>满足时意味着什么</th><th>判断视角</th></tr></thead><tbody><tr><td>依赖保持</td><td>原依赖可由局部依赖推出并检查</td><td>依赖闭包</td></tr><tr><td>无损连接</td><td>投影自然连接恢复原关系且无伪元组</td><td>投影与自然连接</td></tr><tr><td>两者同时</td><td>约束可局部检查，数据可无伪恢复</td><td>设计取舍</td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">分别检查写入规则与连接结果</h2>
+    <div class="slide-content"><p class="slide-lead">依赖保持避免写入时跨表检查；无损连接避免查询多出伪元组，两项分别证明</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>准则</th><th>满足时意味着什么</th><th>怎样判断</th></tr></thead><tbody><tr><td>依赖保持</td><td>原依赖可由局部依赖推出并检查</td><td>依赖闭包</td></tr><tr><td>无损连接</td><td>投影自然连接恢复原关系且无伪元组</td><td>投影与自然连接</td></tr><tr><td>两者同时</td><td>约束可局部检查，数据可无伪恢复</td><td>两种证明都通过</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">10/17</div>
     <div class="semantic-label">TWO CRITERIA</div>
     <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
@@ -168,7 +167,7 @@ AB+：
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
     <h2 class="slide-title">两项准则可以分别失效</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果两项不能同时满足，当前业务更不能承受哪一种失效？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果两项不能同时满足，当前业务更不能承受哪一种失效？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">无损不保证依赖保持，依赖保持也不保证无损</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37% 38%"><colgroup><col style="width:25%"><col style="width:37%"><col style="width:38%"></colgroup><thead><tr><th>反例</th><th>分解</th><th>失去哪一项</th></tr></thead><tbody><tr><td><code>R1(学号,姓名)</code>、<code>R2(课程号,课程名)</code></td><td>无公共属性，连接退化为笛卡儿积</td><td>保持依赖但有损</td></tr><tr><td><code>(Sno,School)</code>、<code>(Sno,Mname)</code></td><td><code>Sno→School</code> 可支持无损，但 <code>School→Mname</code> 不在局部</td><td>无损但不保持依赖</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">11/17</div>
@@ -209,7 +208,7 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
     <h2 class="slide-title">追赶表判断无损连接的四步</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>追赶表就是把符号相同的两行合并成一行吧？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>追赶表就是把符号相同的两行合并成一行吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">反复传播函数依赖，直到出现全 a 行或表格稳定</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">子关系已有属性填 <code>a</code> 符号，其余填 <code>b</code> 符号</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">若依赖左部符号相同，右部统一传播为同一个符号</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">重复扫描直到表不再变化</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">出现一行全 <code>a</code> 判无损；稳定后仍没有全 <code>a</code> 行判有损</span></li></ol></div></div></div>
     <div class="numeric-progress">13/17</div>
@@ -220,9 +219,9 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">分解算法优先保证的目标不同</h2>
-    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.8f78a688337c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>选择分解算法时，先说清必须保住的准则，再谈目标范式</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">不同算法优先保证的设计准则不同</p>
+    <h2 class="slide-title">不同分解算法保证什么、可能放弃什么</h2>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.5a2dce8e98ff.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>选算法前先说清：原依赖是否必须在子表直接检查、连接是否必须无损、是否必须处理多值依赖</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">先决定不能接受跨表检查、伪元组还是较低范式，再选择算法</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>算法</th><th>保证与适用</th><th>可能代价</th></tr></thead><tbody><tr><td>3NF 合成 6.2</td><td>3NF、保持函数依赖</td><td>不自动保证无损连接</td></tr><tr><td>补码关系 6.4</td><td>在 6.2 结果上同时获得无损与保持依赖</td><td>关系集合可能增加</td></tr><tr><td>BCNF 分解 6.5</td><td>无损连接、达到 BCNF</td><td>不一定保持函数依赖</td></tr><tr><td>4NF 分解 6.6</td><td>无损处理非平凡多值依赖</td><td>不承诺保持所有函数依赖</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">14/17</div>
     <div class="semantic-label">NORMAL FORM CHOICES</div>
@@ -232,10 +231,10 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">用闭包和分解准则验证模式设计</h2>
-    <div class="slide-content"><p class="slide-lead">依赖推理让模式分解可以根据闭包、依赖保持和无损连接准则验证</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>推理</h3><p>Armstrong 公理、属性闭包和最小覆盖用于推导依赖</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分解</h3><p>算法 6.2 和 6.4 通过局部依赖保持约束</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>无损与选择</h3><p>无损自然连接不增加伪元组，BCNF 和 4NF 还需要结合设计取舍</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>设计准则不同，分解结果和范式上限也可能不同</p></div></div>
+    <h2 class="slide-title">一个分解：回答三个问题并展示计算</h2>
+    <div class="slide-content"><p class="slide-lead">拆成多表不代表正确；需展示依赖推导、局部依赖闭包、无损判据或追赶表</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>依赖能推出吗</h3><p>逐步求 <code>AB+</code>，再检查 A、B 等真子集；最小覆盖要说明拆右部、删冗余和约简左部的依据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>子表能检查原规则吗</h3><p>列出各 <code>Fi</code> 的投影并比较 <code>(F1∪…∪Fk)+</code> 与 <code>F+</code>；只说“子表各有约束”不足以证明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>连接会多出假记录吗</h3><p>用二元判据或追赶表证明自然连接不产生伪元组；追赶表应展示依赖传播直到全 a 行或稳定</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>若不能同时满足，要明确当前系统更不能接受写入时跨表检查、查询多出伪元组，还是保留较低范式</p></div></div>
     <div class="numeric-progress">15/17</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
@@ -244,8 +243,8 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-6-2/mindmap-6-2.html" title="本节知识地图"></iframe></div></div>
+    <h2 class="slide-title">听到“这样分表没问题”时，按三问核查</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-6-2/mindmap-6-2.html" title="听到“这样分表没问题”时，按三问核查"></iframe></div></div>
     <div class="numeric-progress">16/17</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>

@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 15.3 时序数据库与时间窗口查询 | HUST</title>
-  <meta name="description" content="从连续观测推导时序写入、窗口查询和专用存储">
+  <meta name="description" content="用车辆速度和胎压说明时序写入、窗口查询与迟到修正">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="15-3">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 15.3</div>
       <h1>时序数据库与时间窗口查询</h1>
-      <p class="cover-description">时序数据库围绕时间写入和窗口查询组织数据</p>
+      <p class="cover-description">每条车辆数据都带时间，查询时再按分钟、小时或一天分组</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -45,8 +45,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断普通 timestamp 字段为何不自动构成时序模型</span></li><li><span class="list-marker">02</span><span class="list-text">用实体、指标、序列 ID、时间戳和值描述时序模型</span></li><li><span class="list-marker">03</span><span class="list-text">区分点、记录和时间段批量写入等抽象写入类型</span></li><li><span class="list-marker">04</span><span class="list-text">区分时间范围、整体聚合、窗口聚合和降采样</span></li><li><span class="list-marker">05</span><span class="list-text">说明多序列对齐、迟到数据和窗口结果的新鲜度边界</span></li><li><span class="list-marker">06</span><span class="list-text">解释 TsFile 的层次、索引和统计信息如何支持时间范围访问</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">为车辆速度、胎压设计写入与查询，并说明迟到数据怎样改动已显示结果</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断普通 timestamp 字段为何不自动构成时序模型</span></li><li><span class="list-marker">02</span><span class="list-text">用实体、指标、序列 ID、时间戳和值描述时序模型</span></li><li><span class="list-marker">03</span><span class="list-text">区分一次报一个点、同刻报多个指标和一段时间批量上传</span></li><li><span class="list-marker">04</span><span class="list-text">区分时间范围、整体聚合、窗口聚合和降采样</span></li><li><span class="list-marker">05</span><span class="list-text">说明速度和胎压时间点不一致时怎样对齐，以及迟到数据是否改动旧结果</span></li><li><span class="list-marker">06</span><span class="list-text">解释 TsFile 怎样先找到相关 Chunk 和 Page，少读无关数据</span></li></ol></div></div></div>
     <div class="numeric-progress">2/13</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.3846%"></div></div>
@@ -55,10 +55,10 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">时序数据按事件时间连续记录对象状态</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>表里加了 timestamp，就已经是时序模型了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">实体与指标形成序列，窗口查询再把连续点转成统计结果</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-3/assets/generated/dbpa-ch15-time-series-window.svg" data-full-src="resources/decks/dbpa-15-3/assets/generated/dbpa-ch15-time-series-window.svg" alt="车辆速度和胎压形成多条序列并按固定时间窗口计算统计结果" tabindex="0" role="button" aria-label="放大图片：车辆速度和胎压形成多条序列并按固定时间窗口计算统计结果" decoding="async"><figcaption>速度序列按固定窗口计算平均值；边界窗口只示意查询范围未覆盖完整窗口</figcaption></figure>
+    <h2 class="slide-title">车辆速度和胎压按发生时间排成两条序列</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>表里加了 timestamp，就已经是时序模型了吗？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">车牌和指标名确定是哪条序列；查询再把原始点按分钟或小时算成平均值</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-3/assets/generated/dbpa-ch15-time-series-window.svg" data-full-src="resources/decks/dbpa-15-3/assets/generated/dbpa-ch15-time-series-window.svg" alt="车辆速度和胎压形成多条序列并按固定时间窗口计算统计结果" tabindex="0" role="button" aria-label="放大图片：车辆速度和胎压形成多条序列并按固定时间窗口计算统计结果" decoding="async"><figcaption>速度序列按固定窗口计算平均值；边界窗口只示意查询范围未覆盖完整窗口</figcaption></figure>
 <div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="实体＋指标／标签　→　序列 ID　→　事件时间戳和值　→　时间窗口统计 时序模型要求实体和指标形成序列，普通记录的 timestamp 字段本身不够"><span class="relation-term">实体＋指标／标签</span><span class="relation-operator">→</span><span class="relation-term">序列 ID</span><span class="relation-operator">→</span><span class="relation-term">事件时间戳和值</span><span class="relation-operator">→</span><span class="relation-term">时间窗口统计 时序模型要求实体和指标形成序列，普通记录的 timestamp 字段本身不够</span></div></div></div></div>
     <div class="numeric-progress">3/13</div>
     <div class="semantic-label">TIME SERIES</div>
@@ -68,8 +68,8 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">序列 ID 把实体和指标绑定到一条观测流</h2>
-    <div class="slide-content"><p class="slide-lead">tsid 是序列身份，timestamp 是数据点的时间坐标</p>
+    <h2 class="slide-title">序列 ID 说明“哪辆车的哪项测量”</h2>
+    <div class="slide-content"><p class="slide-lead">tsid 区分 LFV5001 的速度和胎压，timestamp 说明每个测量值何时发生</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -90,8 +90,8 @@ LFV5001.pressure
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">抽象写入类型对应不同的设备上报形态</h2>
-    <div class="slide-content"><p class="slide-lead">Point、Record、Tablet 是三种抽象写入类型，具体产品的接口可能不同</p>
+    <h2 class="slide-title">上报方式：单点、同刻多值、整段数据</h2>
+    <div class="slide-content"><p class="slide-lead">教材用 Point、Record、Tablet 概括三种写法；具体产品的接口名称可能不同</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>点写入 Point</h3><p>表示单个速度点补报或实时上报</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>同刻记录 Record</h3><p>表示同一实体同一时刻写入速度与胎压</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>时间段批量 Tablet</h3><p>表示一条序列批量上传一段时间的数据</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>批量通常减少调用次数；实际存储收益取决于系统实现</p></div></div>
     <div class="numeric-progress">5/13</div>
@@ -104,7 +104,7 @@ LFV5001.pressure
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
     <h2 class="slide-title">时间范围、聚合与降采样</h2>
     <div class="slide-content"><p class="slide-lead">先问返回原始点、一个统计值，还是每个固定窗口的统计值</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 28% 28% 20%"><colgroup><col style="width:24%"><col style="width:28%"><col style="width:28%"><col style="width:20%"></colgroup><thead><tr><th>查询或操作</th><th>返回</th><th>例子</th><th>主要边界</th></tr></thead><tbody><tr><td>时间范围</td><td>指定区间的原始点</td><td>过去 24 小时的速度点</td><td>只限制时间区间</td></tr><tr><td>整体聚合</td><td>一个或少数统计值</td><td>过去 24 小时平均速度</td><td>聚合整个范围</td></tr><tr><td>窗口聚合</td><td>每个固定窗口的统计值</td><td>每 1 小时一个平均值</td><td>结果保留窗口边界</td></tr><tr><td>降采样</td><td>降低时间分辨率的窗口结果</td><td>每分钟平均速度用于长期趋势</td><td>通常保留窗口边界</td></tr><tr><td>多序列汇聚</td><td>按时间语义组合结果</td><td>速度与胎压对比</td><td>需要先处理对齐</td></tr></tbody></table></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 28% 28% 20%"><colgroup><col style="width:24%"><col style="width:28%"><col style="width:28%"><col style="width:20%"></colgroup><thead><tr><th>查询或操作</th><th>返回</th><th>例子</th><th>主要边界</th></tr></thead><tbody><tr><td>时间范围</td><td>指定区间的原始点</td><td>过去 24 小时的速度点</td><td>只限制时间区间</td></tr><tr><td>整体聚合</td><td>一个或少数统计值</td><td>过去 24 小时平均速度</td><td>聚合整个范围</td></tr><tr><td>窗口聚合</td><td>每个固定窗口的统计值</td><td>每 1 小时一个平均值</td><td>结果保留窗口边界</td></tr><tr><td>降采样</td><td>降低时间分辨率的窗口结果</td><td>每分钟平均速度用于长期趋势</td><td>通常保留窗口边界</td></tr><tr><td>多序列汇聚</td><td>按共同时间轴组合结果</td><td>速度与胎压对比</td><td>先决定空缺点怎样处理</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>过去 24 小时平均速度与过去 24 小时每分钟平均速度是两种不同结果</p></div></div>
     <div class="numeric-progress">6/13</div>
     <div class="semantic-label">TIME QUERIES</div>
@@ -114,9 +114,9 @@ LFV5001.pressure
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">多序列查询需要先约定时间语义</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.c6a49089517c.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>都有时间戳，按第 1 条、第 2 条直接拼起来不就行了？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">不同采样频率和缺失时间点会改变对齐结果与成本</p>
+    <h2 class="slide-title">速度与胎压时间点不齐：先定怎么补</h2>
+    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>都有时间戳，按第 1 条、第 2 条直接拼起来不就行了？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">若速度每分钟一次、胎压每五分钟一次，不能按“第几条”直接拼接</p>
 <div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="速度：t1、t2、t4　＋　胎压：t1、t3、t4　→　共同时间轴　→　缺失点处理／重采样／窗口对齐"><span class="relation-term">速度：t1、t2、t4　＋　胎压：t1、t3、t4</span><span class="relation-operator">→</span><span class="relation-term">共同时间轴</span><span class="relation-operator">→</span><span class="relation-term">缺失点处理／重采样／窗口对齐</span></div></div>
 <div class="component component-text text-inset substep reveal-self"><p>JOIN on timestamp 只用于类比关系操作；具体系统的多序列对齐不一定执行字面 SQL JOIN</p>
 <p>事件时间决定数据属于哪个位置；到达时间反映系统何时看到它</p></div></div>
@@ -134,7 +134,7 @@ LFV5001.pressure
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="序列　→　Chunk Group　→　Chunk　→　Page"><span class="relation-term">序列</span><span class="relation-operator">→</span><span class="relation-term">Chunk Group</span><span class="relation-operator">→</span><span class="relation-term">Chunk</span><span class="relation-operator">→</span><span class="relation-term">Page</span></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 38% 35%"><colgroup><col style="width:27%"><col style="width:38%"><col style="width:35%"></colgroup><thead><tr><th>结构</th><th>保存内容</th><th>访问作用</th></tr></thead><tbody><tr><td>Chunk Group</td><td>相关序列的 Chunk</td><td>按实体和时间组织协同读取</td></tr><tr><td>Chunk</td><td>一条序列的一段数据</td><td>连续时间访问</td></tr><tr><td>Page</td><td>一小段序列值与编码数据</td><td>最小读取单元</td></tr><tr><td>元数据索引</td><td>时间范围与数据位置</td><td>先定位相关 Chunk Group 或 Chunk</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>列式组织与时序编码压缩通常减少存储量和读取量；向量化可以批量处理值</p>
-<p>长期时序数据还会形成冷热管理压力，近期数据与历史数据需要不同存储策略</p></div></div>
+<p>长期保存后，系统常把频繁查询的近期数据与很少查询的历史数据分层存放；具体介质和迁移规则按产品核查</p></div></div>
     <div class="numeric-progress">8/13</div>
     <div class="semantic-label">TSFILE</div>
     <div class="progress-track"><div class="progress-fill" style="width:61.5385%"></div></div>
@@ -143,9 +143,9 @@ LFV5001.pressure
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">页头统计支持剪枝与聚合</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.c35e2d766676.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>有了页头统计，就永远不用读取原始点了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">时间范围和值范围帮助排除无关页面，但是否能直接汇总取决于覆盖条件</p>
+    <h2 class="slide-title">页头统计跳过无关页，满足条件直接汇总</h2>
+    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>有了页头统计，就永远不用读取原始点了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">查 10:00–11:00：跳过无交集页；整页在窗口内才可用 SUM 和点数</p>
 <div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="时间／值范围　→　排除无关页面；页面完整覆盖窗口　→　可用 SUM 与 count 汇总；部分覆盖　→　读取原始点"><span class="relation-term">时间／值范围</span><span class="relation-operator">→</span><span class="relation-term">排除无关页面；页面完整覆盖窗口</span><span class="relation-operator">→</span><span class="relation-term">可用 SUM 与 count 汇总；部分覆盖</span><span class="relation-operator">→</span><span class="relation-term">读取原始点</span></div></div>
 <div class="component component-text text-inset substep reveal-self"><p>时间范围和值范围主要用于定位和过滤；SUM 与点数只有在页面完整覆盖且聚合适用时才可能直接支持平均值</p></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>统计信息帮助剪枝，压缩帮助降低存储与读取成本，二者不是同一件事</p></div></div>
@@ -157,10 +157,10 @@ LFV5001.pressure
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3 <span>|</span> 15.3</div>
-    <h2 class="slide-title">顺序/乱序写入与迟到代价</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.63a93cf4c5a1.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>迟到数据改变的不只是写入顺序，还有窗口结果吗？</p></div></div></div></aside>
+    <h2 class="slide-title">10:03 数据迟到：已显示窗口可能重算</h2>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>迟到数据改变的不只是写入顺序，还有窗口结果吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">事件时间决定数据属于哪个窗口，到达时间决定系统何时看到它</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="事件时间递增到达　→　顺序空间；迟到事件　→　乱序空间　→　后台整理"><span class="relation-term">事件时间递增到达</span><span class="relation-operator">→</span><span class="relation-term">顺序空间；迟到事件</span><span class="relation-operator">→</span><span class="relation-term">乱序空间</span><span class="relation-operator">→</span><span class="relation-term">后台整理</span></div></div>
+<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="10:00、10:01、10:02 依次到达　→　顺序空间；10:03 在 10:10 才到　→　乱序空间　→　后台整理"><span class="relation-term">10:00、10:01、10:02 依次到达</span><span class="relation-operator">→</span><span class="relation-term">顺序空间；10:03 在 10:10 才到</span><span class="relation-operator">→</span><span class="relation-term">乱序空间</span><span class="relation-operator">→</span><span class="relation-term">后台整理</span></div></div>
 <div class="component component-text text-inset substep reveal-self"><p>以 IoTDB 为代表的实现可以采用这种组织方式；其他时序数据库的结构可能不同</p>
 <p>迟到数据可能修正已经显示的窗口结果</p></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>实时结果可能因迟到数据修正；分片、路由和副本会进一步影响跨节点查询</p></div></div>
@@ -172,10 +172,9 @@ LFV5001.pressure
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.3</div>
-    <h2 class="slide-title">写入、对齐与窗口判断链</h2>
-    <div class="slide-content"><p class="slide-lead">时序系统的专用优化来自持续观测和时间访问，不是因为表里出现 timestamp</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>序列模型</h3><p>实体、指标、tsid、事件时间和值组成持续观测流</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写入与查询</h3><p>Point、Record、Tablet 对应上报形态；范围、整体聚合与窗口降采样对应访问任务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>对齐与迟到</h3><p>不同采样频率需要时间语义；迟到数据可能改变已显示结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存储取舍</h3><p>TsFile、统计剪枝与顺序／乱序组织服务时间访问；冷热管理仍是背景压力</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>序列模型 → 写入与查询 → 对齐与迟到 → 文件层次与存储取舍</p></div></div>
+    <h2 class="slide-title">车辆监测查询单：结果到底怎么算</h2>
+    <div class="slide-content"><p class="slide-lead">让另一个同学只看这张单，也能算出同样的窗口结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 哪辆车、哪个指标、何时发生</h3><p>用车辆和指标构造 tsid，分别记录事件时间与到达时间，再选择单点、同刻多指标或批量上传</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 页面最终显示什么</h3><p>明确返回原始点、24 小时一个平均值，还是每分钟一个平均值；写出每个窗口从几点到几点</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 时间点对不上怎么办</h3><p>写明速度和胎压使用哪个共同时间轴、空缺怎样处理，以及迟到数据是否改动已经显示的平均值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 系统实际要读哪些数据</h3><p>沿元数据索引、Chunk、Page 追踪 10:00–11:00 的查询；只有整页落在窗口内且统计可用时，才可能不读原始点</p></article></div></div></div>
     <div class="numeric-progress">11/13</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:84.6154%"></div></div>

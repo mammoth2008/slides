@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 14.1 数据库发展动力与发展简史 | HUST</title>
-  <meta name="description" content="用需求、模型和技术三个维度阅读数据库历史">
+  <meta name="description" content="从重复维护零部件文件、沿路径查库存到用 SQL 直接表达目标，解释数据库为何从文件系统走向关系系统">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="14-1">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 14.1</div>
       <h1>数据库发展动力与发展简史</h1>
-      <p class="cover-description">应用需求、数据模型和计算机技术共同推动数据库演进</p>
+      <p class="cover-description">当重复文件、导航路径和分析负载越来越难处理，数据库怎样改变</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">数据库历史可以从问题、模型和系统技术的演进来理解</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明传统文件系统为何难以支撑大型共享数据管理</span></li><li><span class="list-marker">02</span><span class="list-text">用应用需求、数据模型和计算机技术三个维度描述数据库发展</span></li><li><span class="list-marker">03</span><span class="list-text">比较第一代层次／网状数据库与第二代关系数据库的核心差异</span></li><li><span class="list-marker">04</span><span class="list-text">解释关系模型与 SQL 如何降低应用对物理访问路径的依赖</span></li><li><span class="list-marker">05</span><span class="list-text">说明 OLTP、OLAP 和数据模型扩展如何推动后续系统演进</span></li><li><span class="list-marker">06</span><span class="list-text">用“问题—模型—系统技术”框架阅读技术历史</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">找出旧做法让谁多改文件、按路径查找；再写新模型和系统各解决哪一步</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明传统文件系统为何难以支撑大型共享数据管理</span></li><li><span class="list-marker">02</span><span class="list-text">用应用需求、数据模型和计算机技术三个维度描述数据库发展</span></li><li><span class="list-marker">03</span><span class="list-text">比较第一代层次／网状数据库与第二代关系数据库的核心差异</span></li><li><span class="list-marker">04</span><span class="list-text">解释关系模型与 SQL 如何降低应用对物理访问路径的依赖</span></li><li><span class="list-marker">05</span><span class="list-text">说明 OLTP、OLAP 和数据模型扩展如何推动后续系统演进</span></li><li><span class="list-marker">06</span><span class="list-text">对一项数据库变化依次写出旧做法的失败、新的数据表达或接口、所需系统实现和新增代价</span></li></ol></div></div></div>
     <div class="numeric-progress">2/11</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
@@ -55,10 +55,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 14.1</div>
     <h2 class="slide-title">传统应用文件分散维护同一项共享数据</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要约定两个文件每次一起改，重复维护也没问题吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">以零部件管理为例，采购文件和库存文件分别维护同一项信息</p>
-<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>分散</h3><p>采购文件和库存文件各自保存零部件信息</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>重复</h3><p>同一项共享事实需要在多个文件中维护</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>漂移</h3><p>一处更新而另一处未改，两个文件出现不一致</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>集中</h3><p>数据库统一组织共享事实并控制更新</p></div></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据库把共享事实统一管理，并用约束、事务和恢复机制降低人工同步失效的风险</p></div></div>
+<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>分散</h3><p>采购文件和库存文件各自保存零部件信息</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>重复</h3><p>同一项共享事实需要在多个文件中维护</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>漂移</h3><p>一处更新而另一处未改，两个文件出现不一致</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>集中</h3><p>数据库统一组织共享事实并控制更新</p></div></div></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要约定两个文件每次一起改，重复维护也没问题吧？</p></div></div></div></aside>
     <div class="numeric-progress">3/11</div>
     <div class="semantic-label">WHY DATABASES</div>
     <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
@@ -67,9 +66,9 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 14.1</div>
-    <h2 class="slide-title">数据库历史可以沿三个维度阅读</h2>
-    <div class="slide-content"><p class="slide-lead">同一项数据库技术通常同时回应应用负载、数据模型和计算机技术的变化</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-1/assets/generated/dbpa-ch14-history-newdb-image2.png" data-full-src="resources/decks/dbpa-14-1/assets/generated/dbpa-ch14-history-newdb-image2.png" alt="应用需求、数据模型和计算机技术共同推动数据库历史" tabindex="0" role="button" aria-label="放大图片：应用需求、数据模型和计算机技术共同推动数据库历史" decoding="async"><figcaption>三维关系示意，不是严格年表</figcaption></figure>
+    <h2 class="slide-title">数据库为何变：应用、数据模型、机器</h2>
+    <div class="slide-content"><p class="slide-lead">历史报表要扫多年数据；模型表达分析维度，存储和并行让扫描及时完成</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-1/assets/generated/dbpa-ch14-history-newdb-image2.webp" data-full-src="resources/decks/dbpa-14-1/assets/generated/dbpa-ch14-history-newdb-image2.webp" alt="应用需求、数据模型和计算机技术共同推动数据库历史" tabindex="0" role="button" aria-label="放大图片：应用需求、数据模型和计算机技术共同推动数据库历史" decoding="async"><figcaption>三维关系示意，不是严格年表</figcaption></figure>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>应用需求</h3><p>存取、事务与分析负载不断扩展到 OLTP、OLAP、HTAP 和海量并发</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据模型</h3><p>从层次／网状发展到关系，再扩展到复杂和多模型数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>计算机技术</h3><p>硬件、网络、并行、内存和云平台扩大数据库系统的可行边界</p></article></div></div></div>
     <div class="numeric-progress">4/11</div>
     <div class="semantic-label">THREE DIMENSIONS</div>
@@ -79,10 +78,9 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 14.1</div>
-    <h2 class="slide-title">第一代数据库集中管理，但仍依赖访问路径</h2>
+    <h2 class="slide-title">第一代数据库集中数据，但保留路径依赖</h2>
     <div class="slide-content"><p class="slide-lead">层次／网状模型集中组织数据与联系，却把物理存取路径带进用户的访问方式</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 40% 36%"><colgroup><col style="width:24%"><col style="width:40%"><col style="width:36%"></colgroup><thead><tr><th>方面</th><th>第一代系统提供什么</th><th>仍然存在的边界</th></tr></thead><tbody><tr><td>数据模型</td><td>层次／网状结构集中描述数据与联系</td><td>结构与联系紧密绑定访问路径</td></tr><tr><td>模式结构</td><td>DBTG 三级模式和映像</td><td>提供一定的数据与程序独立性</td></tr><tr><td>操作方式</td><td>定义语言与导航式操纵语言</td><td>检索仍要沿预设存取路径</td></tr><tr><td>系统意义</td><td>IMS、IDS 把数据管理从应用逻辑中分离</td><td>数据中心化不等于完全隐藏物理路径</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第一代系统解决了文件分散和共享管理问题，但路径依赖成为关系模型要解决的新痛点</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 40% 36%"><colgroup><col style="width:24%"><col style="width:40%"><col style="width:36%"></colgroup><thead><tr><th>方面</th><th>第一代系统提供什么</th><th>仍然存在的边界</th></tr></thead><tbody><tr><td>数据模型</td><td>层次／网状结构集中描述数据与联系</td><td>结构与联系紧密绑定访问路径</td></tr><tr><td>模式结构</td><td>DBTG 三级模式和映像</td><td>提供一定的数据与程序独立性</td></tr><tr><td>操作方式</td><td>定义语言与导航式操纵语言</td><td>检索仍要沿预设存取路径</td></tr><tr><td>系统意义</td><td>IMS、IDS 把数据管理从应用逻辑中分离</td><td>数据中心化不等于完全隐藏物理路径</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">5/11</div>
     <div class="semantic-label">FIRST GENERATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
@@ -92,7 +90,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 14.1</div>
     <h2 class="slide-title">关系模型让用户直接表达查询目标</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.73b24cf6c28e.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>发现没有合适路径时，优化器会自动创建索引吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>发现没有合适路径时，优化器会自动创建索引吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">同一项零部件查询不再要求用户沿文件路径检索，系统负责选择执行方案</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="查找某零部件当前库存　→　SQL 表达“要什么”　→　优化器在已有索引／扫描路径中选路　→　执行计划"><span class="relation-term">查找某零部件当前库存</span><span class="relation-operator">→</span><span class="relation-term">SQL 表达“要什么”</span><span class="relation-operator">→</span><span class="relation-term">优化器在已有索引／扫描路径中选路</span><span class="relation-operator">→</span><span class="relation-term">执行计划</span></div></div>
 <div class="component component-text text-inset substep reveal-self"><p>路径由设计者或管理员维护；优化器只在已有路径中比较和选路，不负责创建索引</p></div></div></div>
@@ -104,9 +102,9 @@
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1 <span>|</span> 14.1</div>
-    <h2 class="slide-title">关系数据库普及依赖四方面基础</h2>
-    <div class="slide-content"><p class="slide-lead">理论、语言、系统和产业共同支撑关系数据库普及</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:4"><article class="content-card emphasis-card substep" tabindex="0"><h3>理论</h3><p>关系模型与关系代数提供可推理、可组合的基础，使数据与查询获得统一解释</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>语言</h3><p>SQL 提供共同接口，使应用表达目标并获得系统间互操作基础</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>系统</h3><p>优化、事务、并发控制和恢复把抽象模型变成高效且可靠的执行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>产业</h3><p>标准、产品、工具和性能基准与测试降低开发、迁移和采用成本</p></article></div></div></div>
+    <h2 class="slide-title">关系数据库能普及，不只因为有“表”</h2>
+    <div class="slide-content"><p class="slide-lead">代数改写查询，SQL 统一写法，优化事务恢复保障运行，标准工具便于迁移</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>理论</h3><p>关系模型与关系代数提供可推理、可组合的基础，使数据与查询获得统一解释</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>语言</h3><p>SQL 提供共同接口，使应用表达目标并获得系统间互操作基础</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>系统</h3><p>优化、事务、并发控制和恢复把抽象模型变成高效且可靠的执行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>产业</h3><p>标准、产品、工具和性能基准与测试降低开发、迁移和采用成本</p></article></div></div></div>
     <div class="numeric-progress">7/11</div>
     <div class="semantic-label">RELATIONAL ECOSYSTEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
@@ -118,7 +116,7 @@
     <h2 class="slide-title">关系系统沿着多个方向扩展</h2>
     <div class="slide-content"><p class="slide-lead">这些扩展分别回应分析、复杂数据和多模型负载</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">数据仓库：把面向日常事务的 OLTP 与面向历史分析的 OLAP 分开</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">对象关系：在关系与 SQL 基础上吸收复杂对象和用户定义类型</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">XML：为半结构化数据交换提供树形表示</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">多模型与多系统：让键值、文档、图和时序模型在不同负载中与 SQL 系统并存组合</span></li></ul></div></div></div>
-    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-astonished" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-astonished.32ac26b4b510.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>新模型出现，不等于关系系统整套退出</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.5a2dce8e98ff.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>新模型出现，不等于关系系统整套退出</p></div></div></div></aside>
     <div class="numeric-progress">8/11</div>
     <div class="semantic-label">EXPANSION</div>
     <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
@@ -127,10 +125,10 @@
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.1</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">数据库演进通过模型和系统的扩展组合回应新需求</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>痛点与第一代</h3><p>应用各自维护文件，重复存储带来冗余和更新不一致；第一代集中管理数据但仍依赖导航路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>转折</h3><p>关系模型与 SQL 表达目标，优化和事务技术负责可执行与正确</p></article><article class="content-card emphasis-card" tabindex="0"><h3>延展</h3><p>分析、复杂数据和新模型推动系统继续扩展，而不是简单替代基础能力</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>零部件案例显示：文件冗余促成集中管理，路径依赖推动关系模型，分析与复杂数据又推动后续扩展</p></div></div>
+    <h2 class="slide-title">数据库为何变：旧做法的失败与新改法</h2>
+    <div class="slide-content"><p class="slide-lead">别只写“技术进步”：写谁多做什么、新表示或接口、系统新增实现和代价</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 指出旧方案的具体失败</h3><p>从重复维护、路径依赖、事务分析冲突或复杂数据中选一项，说明谁在什么操作中付出了什么代价</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 说明模型与接口怎样改变</h3><p>比较导航式访问与 SQL 目标表达，或比较关系模型与新的数据表达；不要把“新”本身当作原因</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 补上系统技术与继承关系</h3><p>说明优化、事务、恢复、分析或多模型能力如何让新表达可执行，并指出哪些旧能力仍被保留</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整答案要包含一个具体失败、一个表示或接口变化、一个实现条件和一个新增代价，不能只列年份或产品名</p></div></div>
     <div class="numeric-progress">9/11</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>

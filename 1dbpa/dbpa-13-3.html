@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 13.3 缓冲区管理与数据库物理组织 | HUST</title>
-  <meta name="description" content="从页面缓冲到文件和索引的物理组织">
+  <meta name="description" content="缓冲未命中时选择空闲帧或淘汰页，满足 WAL 后写回脏页，再由操作系统读入目标块">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="13-3">
-  <meta name="version" content="2608.3">
+  <meta name="version" content="2608">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -29,9 +29,9 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 13.3</div>
       <h1>缓冲区管理与数据库物理组织</h1>
-      <p class="cover-description">缓冲区把逻辑记录请求落实到页面、文件和索引路径</p>
+      <p class="cover-description">目标页不在内存时：淘汰哪一页、何时写回、怎样读入目标块</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608.3</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,7 +44,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">完成本节后，你应该能够</p>
+    <div class="slide-content"><p class="slide-lead"><code>READBUF</code> 未命中：选空闲帧或淘汰页，再画 WAL、写回和 OS <code>READ</code> 顺序</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释系统缓冲区如何提供设备独立性和访问效率</span></li><li><span class="list-marker">02</span><span class="list-text">描述 <code>READBUF</code> 的命中、装入和淘汰，以及修改页的写回边界</span></li><li><span class="list-marker">03</span><span class="list-text">比较 FIFO 与 LRU 的依据和访问局部性</span></li><li><span class="list-marker">04</span><span class="list-text">列举数据库物理组织的四类信息</span></li><li><span class="list-marker">05</span><span class="list-text">说明数据字典、数据文件和存取路径之间的关系</span></li><li><span class="list-marker">06</span><span class="list-text">解释关系数据库如何让存取路径对用户隐藏并动态维护</span></li></ol></div></div></div>
     <div class="numeric-progress">2/12</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
@@ -54,11 +54,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">系统缓冲区隔离上层访问与外存设备</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.73307fcb8203.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>页面进入缓冲区后，就不再需要外存版本了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">上层只面对定长页面接口，命中时通常无需访问外存</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" data-full-src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" alt="缓冲区的命中、未命中、装入、淘汰与写回路径" tabindex="0" role="button" aria-label="放大图片：缓冲区的命中、未命中、装入、淘汰与写回路径" decoding="async"></figure></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>缓冲区保存可替换的页面副本，通过定长接口提供设备独立性；命中时避免外存 I/O，未命中才需要装入页面</p></div></div>
+    <h2 class="slide-title">DBMS 先查内存页，未命中才让 OS 读盘</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>页面进入缓冲区后，就不再需要外存版本了吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead">存取层提交页号；命中就返回，否则申请缓冲帧并让 OS 读取块</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" data-full-src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" alt="缓冲区的命中、未命中、装入、淘汰与写回路径" tabindex="0" role="button" aria-label="放大图片：缓冲区的命中、未命中、装入、淘汰与写回路径" decoding="async"></figure></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>同一个页面号可以由不同设备和文件布局实现，上层调用不变；缓冲中的页只是副本，脏页最终仍要按 WAL 顺序写回外存</p></div></div>
     <div class="numeric-progress">3/12</div>
     <div class="semantic-label">BUFFER PURPOSE</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -82,7 +82,7 @@
     <div class="slide-content"><p class="slide-lead">脏页状态、可释放条件和写回时机分别影响淘汰决策</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>脏页</h3><p>缓冲区中的页面已被修改，与外存版本不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可释放标志</h3><p>可释放标志表示页面需要空间时可以作为淘汰候选，不等于立即写回或随时可以淘汰</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写回约束</h3><p>事务结束或缓冲区需要空间时，系统可按策略处理可释放页面；选中被修改页面时先满足先写日志约束，再写回数据页</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>延迟写回减少内外存交换，但数据页写回仍受事务状态和恢复约束控制</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a2c3ff6dbab9.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>延迟写回省下 I/O，也把恢复约束带进来</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a0ae48cf4b59.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>延迟写回省下 I/O，也把恢复约束带进来</p></div></div></div></aside>
     <div class="numeric-progress">5/12</div>
     <div class="semantic-label">WRITE BACK</div>
     <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
@@ -91,8 +91,8 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">页面淘汰策略决定哪些内容先离开缓冲区</h2>
-    <div class="slide-content"><p class="slide-lead">策略要结合访问局部性、内存压力和页面状态选择</p>
+    <h2 class="slide-title">缓冲满：FIFO 看进入，LRU 看最近使用</h2>
+    <div class="slide-content"><p class="slide-lead">候选若是脏页，先确认日志稳定，再写回并装入目标页</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>策略</th><th>依据</th><th>直观特点</th></tr></thead><tbody><tr><td>FIFO</td><td>进入缓冲区时间</td><td>简单但不看最近访问</td></tr><tr><td>LRU</td><td>最近一次访问时间</td><td>利用时间局部性</td></tr><tr><td>改进算法</td><td>访问、脏页和 I/O 成本</td><td>更贴近实际负载</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若 A、B、C 按顺序进入缓冲区，随后再次访问 A 并请求 D，FIFO 可能淘汰 A，LRU 可能淘汰 B；被修改的候选页要先完成日志稳定保存，再写回</p></div></div>
     <div class="numeric-progress">6/12</div>
@@ -127,7 +127,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
     <h2 class="slide-title">索引路径的建立、选择与维护</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-90px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.ca82afcc763a.png" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>建立索引、优化器选路和更新索引，不都是同一个动作吗？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>建立索引、优化器选路和更新索引，不都是同一个动作吗？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">用户只面对逻辑表，系统在已有路径中选路并保持索引一致</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>建立与删除路径</h3><p>用户或管理员通过 <code>CREATE INDEX</code>、<code>DROP INDEX</code> 改变可用的存取路径集合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询选路</h3><p>查询优化器只在已有索引路径、顺序扫描等候选方案中选择执行方案</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>同步维护路径</h3><p>更新索引键时同步修改相关索引项，更新非索引属性时通常不改变该索引项</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>逻辑表与独立索引路径分离，用户无需知道物理布局；建立、选择和维护由不同系统职责完成</p></div></div>
@@ -139,10 +139,9 @@
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
-    <h2 class="slide-title">本节回顾</h2>
-    <div class="slide-content"><p class="slide-lead">记录请求经页面访问，由文件组织与索引完成物理定位</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>一次读取</h3><p><code>READBUF</code> 命中直接返回，未命中准备页面并调用 <code>READ</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>一次淘汰</h3><p>选择可释放候选页，选中已修改页时先写回</p></article><article class="content-card emphasis-card" tabindex="0"><h3>一次物理定位</h3><p>数据文件保存数据，索引提供路径，逻辑表不暴露物理布局</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未缓存的 SC 成绩记录读取依次经过缓冲区、文件组织、索引路径和外存 I/O</p></div></div>
+    <h2 class="slide-title">SC 页未命中且候选为脏页：画六步 I/O</h2>
+    <div class="slide-content"><p class="slide-lead">SC 页未命中且候选为脏页：写出从逻辑请求到返回记录的动作链</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 定位目标页</h3><p>用字典和存取路径把元组请求定位到目标页；索引只提供路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 判断命中并选择候选</h3><p><code>READBUF</code> 未命中且无空闲帧，按访问记录、可释放状态与 I/O 代价选候选</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 满足 WAL 后写回</h3><p>脏页写回前先确认日志稳定；不能为腾空间跳过 WAL</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 装入并返回记录</h3><p>操作系统读目标块，页面入缓冲，DBMS 取元组并返回；标出实际 I/O</p></article></div></div></div>
     <div class="numeric-progress">10/12</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
