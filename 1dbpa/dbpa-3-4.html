@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.4</div>
       <h1>数据更新</h1>
-      <p class="cover-description">插入前核对列和值，修改或删除前用 SELECT 查清目标行</p>
+      <p class="cover-description">更新前核对列、值，并选择目标行</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">插入前核对列和值；更新或删除前预览目标行；执行后复查行数、新值和约束</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 INSERT、UPDATE、DELETE 改变关系实例的方式</span></li><li><span class="list-marker">02</span><span class="list-text">解释省略列时 DEFAULT、NULL 与 NOT NULL 的关系</span></li><li><span class="list-marker">03</span><span class="list-text">用 INSERT SELECT 批量写入并检查列数、类型和约束</span></li><li><span class="list-marker">04</span><span class="list-text">用 UPDATE 的 SET、WHERE 和子查询表达新值与目标集合</span></li><li><span class="list-marker">05</span><span class="list-text">区分 DELETE 与 DROP，并判断主码、外码和业务约束失败</span></li><li><span class="list-marker">06</span><span class="list-text">在更新前预览目标集合、核对影响行数，并在更新后复查完整性</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">插入前核对列和值；更新或删除前预览目标行；执行后检验</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 <code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code> 改变关系实例的方式</span></li><li><span class="list-marker">02</span><span class="list-text">解释省略列时 <code>DEFAULT</code>、<code>NULL</code> 与 <code>NOT NULL</code> 的关系</span></li><li><span class="list-marker">03</span><span class="list-text">用 <code>INSERT ... SELECT</code> 批量写入并检查列数、类型和约束</span></li><li><span class="list-marker">04</span><span class="list-text">用 <code>UPDATE</code> 的 <code>SET</code>、<code>WHERE</code> 和子查询表达新值与目标集合</span></li><li><span class="list-marker">05</span><span class="list-text">区分 <code>DELETE</code> 与 <code>DROP</code>，并判断主码、外码和业务约束失败</span></li><li><span class="list-marker">06</span><span class="list-text">在更新前预览目标集合、核对影响行数，并在更新后复查完整性</span></li></ol></div></div></div>
     <div class="numeric-progress">2/15</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
@@ -54,11 +54,11 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4</div>
-    <h2 class="slide-title">哪张表、哪些行、新值，约束能否通过</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>INSERT、UPDATE、DELETE 能执行成功，业务数据就一定正确吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">INSERT 给新行；UPDATE 选行并给值；DELETE 选待删行；三者都检查约束</p>
+    <h2 class="slide-title">更改哪张表、哪些行、哪些值</h2>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="77.526" data-character-exposure="73.906" data-character-scale="0.9" style="--character-along:77.526%;--character-exposure:73.906;--character-hidden:26.094%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code> 能执行成功，业务数据就一定正确吧？</p></div></div></div></aside>
+    <div class="slide-content"><p class="slide-lead"><code>INSERT</code> 添加新行；<code>UPDATE</code> 选行并更新值；<code>DELETE</code> 选出待删行</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-safety.svg" data-full-src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-safety.svg" alt="INSERT、UPDATE、DELETE 共同遵循目标表、目标元组、新值和约束四问" tabindex="0" role="button" aria-label="放大图片：INSERT、UPDATE、DELETE 共同遵循目标表、目标元组、新值和约束四问" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>四个判断点</h3><p>先确定目标表，再确定受影响元组；然后说明变化内容和取值来源，最后检查约束能否保持</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>INSERT</h3><p>新元组来自 VALUES 或 SELECT</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>UPDATE</h3><p>目标行由 WHERE 选出，值由 SET 给出</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DELETE</h3><p>目标行由 WHERE 选出，不产生新值</p></article></div></div></div></div>
+<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>判断点</h3><p>先确定目标表，再确定受影响元组；然后说明变化内容和取值来源，最后检查约束能否保持</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>INSERT</h3><p>新元组来自 <code>VALUES</code> 或 <code>SELECT</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>UPDATE</h3><p>目标行由 <code>WHERE</code> 选出，值由 <code>SET</code> 给出</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DELETE</h3><p>目标行由 <code>WHERE</code> 选出，不产生新值</p></article></div></div></div></div>
     <div class="numeric-progress">3/15</div>
     <div class="semantic-label">UPDATE MODEL</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
@@ -77,17 +77,17 @@ VALUES ('20180009', '陈冬', '男', '信息管理与信息系统', '2000-5-22')
 03</span><code class="language-sql">INSERT INTO SC(Sno, Cno, Semester, Teachingclass)
 VALUES ('20180009', '81004', '20202', '81004-01');
 -- Grade 未提供；当前 3.2 定义没有 DEFAULT，取 NULL</code></pre></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未列出的列有 DEFAULT 时取默认值；可空且无 DEFAULT 时取 NULL；NOT NULL 且无 DEFAULT 时会导致插入失败</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未列出的列有 <code>DEFAULT</code> 时取默认值；可空且无 <code>DEFAULT</code> 时取 <code>NULL</code></p></div></div>
     <div class="numeric-progress">4/15</div>
     <div class="semantic-label">INSERT ONE TUPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.1</div>
-    <h2 class="slide-title">查询结果可以一次写入多个元组</h2>
-    <div class="slide-content"><p class="slide-lead">INSERT ... SELECT 按目标列写入结果；先执行 SELECT，预览待插入的元组</p>
+    <h2 class="slide-title">一次写入多个元组</h2>
+    <div class="slide-content"><p class="slide-lead"><code>INSERT ... SELECT</code> 按目标列写入结果；先执行 <code>SELECT</code>，预览待插入的元组</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -104,7 +104,7 @@ WHERE Smajor IS NOT NULL
   AND Sbirthdate IS NOT NULL
 GROUP BY Smajor;</code></pre></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先预览查询结果，再批量写入；目标列、列数、类型与约束必须对应</p></div></div>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-thinking" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-thinking.427512a31cbf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>这条 INSERT 再执行一次，会不会重复写入？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-thinking" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-thinking.427512a31cbf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>这条 <code>INSERT</code> 再执行一次，会不会重复写入？</p></div></div></div></aside>
     <div class="numeric-progress">5/15</div>
     <div class="semantic-label">INSERT SELECT</div>
     <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
@@ -115,8 +115,7 @@ GROUP BY Smajor;</code></pre></div></div></div>
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.1</div>
     <h2 class="slide-title">插入后必须检查表约束</h2>
     <div class="slide-content"><p class="slide-lead">新元组必须符合表定义和完整性约束</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>情况</th><th>结果</th><th>需要检查</th></tr></thead><tbody><tr><td>列表中提供值</td><td>按列名对应写入</td><td>类型与业务含义</td></tr><tr><td>省略可空且无 DEFAULT 的列</td><td>取 NULL</td><td>是否允许空值</td></tr><tr><td>省略 NOT NULL 且有 DEFAULT 的列</td><td>取 DEFAULT</td><td>默认值定义</td></tr><tr><td>省略 NOT NULL 且无 DEFAULT 的列</td><td>插入失败</td><td>是否补齐必需值</td></tr><tr><td>主码重复或外码不存在</td><td>DBMS 拒绝该行</td><td>实体与参照完整性</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>当前 3.2 的 SC.Grade 没有 DEFAULT；单行插入中省略 Grade 会取 NULL，不是 0</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42.428% 26.623% 30.949%"><colgroup><col style="width:42.428%"><col style="width:26.623%"><col style="width:30.949%"></colgroup><thead><tr><th>情况</th><th>结果</th><th>需要检查</th></tr></thead><tbody><tr><td>列表中提供值</td><td>按列名对应写入</td><td>类型与业务含义</td></tr><tr><td>省略可空且无 <code>DEFAULT</code> 的列</td><td>取 <code>NULL</code></td><td>是否允许空值</td></tr><tr><td>省略 <code>NOT NULL</code> 且有 <code>DEFAULT</code> 的列</td><td>取 <code>DEFAULT</code></td><td>默认值定义</td></tr><tr><td>省略 <code>NOT NULL</code> 且无 <code>DEFAULT</code> 的列</td><td>插入失败</td><td>是否补齐必需值</td></tr><tr><td>主码重复或外码不存在</td><td>DBMS 拒绝该行</td><td>实体与参照完整性</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">6/15</div>
     <div class="semantic-label">INSERT CHECK</div>
     <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
@@ -125,8 +124,8 @@ GROUP BY Smajor;</code></pre></div></div></div>
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.2</div>
-    <h2 class="slide-title">UPDATE：SET 改值，WHERE 选行</h2>
-    <div class="slide-content"><p class="slide-lead">SET 表达新值，WHERE 确定受影响的元组</p>
+    <h2 class="slide-title">UPDATE 使用 SET 设置新值</h2>
+    <div class="slide-content"><p class="slide-lead"><code>SET</code> 表达新值，<code>WHERE</code> 筛选受影响的元组</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -136,9 +135,9 @@ SET Grade = Grade - 5
 WHERE Semester = '20201'
   AND Cno = '81002'
   AND Grade IS NOT NULL;</code></pre></div></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="SET 表达改成什么，WHERE 决定改哪些行"><span class="relation-term">SET 表达改成什么，WHERE 决定改哪些行</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例只调整已经录入的成绩；NULL 表示尚未录入，不参与数值减法，0—100 范围需由约束或业务条件保证</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只想改一门课的成绩，WHERE 少写一个条件也没关系吧？</p></div></div></div></aside>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="`SET` 表达改成什么，`WHERE` 决定改哪些行"><span class="relation-term"><code>SET</code> 表达改成什么，<code>WHERE</code> 决定改哪些行</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>只调整已经录入的成绩；<code>NULL</code> 表示尚未录入，不参与数值减法</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="71.919" data-character-exposure="62.623" data-character-scale="0.9" style="--character-along:71.919%;--character-exposure:62.623;--character-hidden:37.377%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只想改一门课的成绩，<code>WHERE</code> 少写一个条件也没关系吧？</p></div></div></div></aside>
     <div class="numeric-progress">7/15</div>
     <div class="semantic-label">UPDATE TARGET</div>
     <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
@@ -147,11 +146,11 @@ WHERE Semester = '20201'
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.2</div>
-    <h2 class="slide-title">UPDATE 没有 WHERE 会修改所有行</h2>
-    <div class="slide-content"><p class="slide-lead">执行前用同一 WHERE 做 SELECT，核对主码、当前值和预计行数</p>
+    <h2 class="slide-title">没有 WHERE，UPDATE 会修改所有行</h2>
+    <div class="slide-content"><p class="slide-lead">执行前用同一 <code>WHERE</code> 做 <code>SELECT</code>，核对主码、当前值和预计行数</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-scope.svg" data-full-src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-scope.svg" alt="带 WHERE 的精确更新与省略 WHERE 的全表更新结果对照" tabindex="0" role="button" aria-label="放大图片：带 WHERE 的精确更新与省略 WHERE 的全表更新结果对照" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>精确更新</h3><p>以主码或业务键定位一个元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>批量更新</h3><p>用学期、课程和状态组合出目标集合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>全表更新</h3><p>省略 WHERE 后表中所有元组都会受影响</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>执行 UPDATE 前，应使用相同的 <code>WHERE Semester = &#x27;20201&#x27; AND Cno = &#x27;81002&#x27;</code> 做 SELECT 预览</p></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>精确更新</h3><p>以主码或业务键定位一个元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>批量更新</h3><p>用学期、课程和状态组合出目标</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>全表更新</h3><p>省略 <code>WHERE</code> ，所有元组都会受影响</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>执行 <code>UPDATE</code> 前，应使用相同的 <code>WHERE</code> 做 <code>SELECT</code> 预览</p></div></div>
     <div class="numeric-progress">8/15</div>
     <div class="semantic-label">UPDATE SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
@@ -175,17 +174,17 @@ WHERE Grade IS NOT NULL
       (SELECT Sno
        FROM Student
        WHERE Smajor = '计算机科学与技术');</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先运行内层 SELECT，确认它返回的键确实是要修改的对象；不要把尚未录入的 NULL 无提示地改成零分</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先运行内层 <code>SELECT</code>，确认它返回的键确实是要修改的对象</p></div></div>
     <div class="numeric-progress">9/15</div>
     <div class="semantic-label">UPDATE SUBQUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-focus"
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-code-table"
       data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.3</div>
-    <h2 class="slide-title">DELETE 删除元组，不改变表的定义</h2>
-    <div class="slide-content"><p class="slide-lead">DELETE 改变表实例，不改变表对象、列和索引的定义</p>
+    <h2 class="slide-title">DELETE 删除元组，不影响关系模式</h2>
+    <div class="slide-content"><p class="slide-lead"><code>DELETE</code> 改变表实例，不改变表对象、列和索引的定义</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -201,18 +200,18 @@ WHERE Sno = '20180007';
 -- 确认按业务规则处理引用后，再判断是否删除 Student
 DELETE FROM Student
 WHERE Sno = '20180007';</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>操作</th><th>删除元组</th><th>删除表定义</th></tr></thead><tbody><tr><td><code>DELETE ... WHERE</code></td><td>指定元组</td><td>否</td></tr><tr><td><code>DELETE FROM 表</code></td><td>全部元组</td><td>否</td></tr><tr><td><code>DROP TABLE</code></td><td>连同对象一起移除</td><td>是</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若 SC 仍引用该 Student，外码可能拒绝 DELETE；只有约束明确声明 ON DELETE CASCADE，才讨论级联处理</p></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37.325% 30.47% 32.205%"><colgroup><col style="width:37.325%"><col style="width:30.47%"><col style="width:32.205%"></colgroup><thead><tr><th>操作</th><th>删除元组</th><th>删除表定义</th></tr></thead><tbody><tr><td><code>DELETE ... WHERE</code></td><td>指定元组</td><td>否</td></tr><tr><td><code>DELETE FROM 表</code></td><td>全部元组</td><td>否</td></tr><tr><td><code>DROP TABLE</code></td><td>元组和关系模式</td><td>是</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若 <code>SC</code> 引用 <code>Student</code>，外码可能拒绝 <code>DELETE</code>；除非明确声明 <code>ON DELETE CASCADE</code></p></div></div>
     <div class="numeric-progress">10/15</div>
     <div class="semantic-label">DELETE DATA</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+<section id="d2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4 <span>|</span> 3.4.3</div>
     <h2 class="slide-title">删除条件也可以来自另一个关系</h2>
-    <div class="slide-content"><p class="slide-lead">删除条件确定目标元组；外码引用和业务后果还需要单独检查</p>
+    <div class="slide-content"><p class="slide-lead">删除条件确定目标元组；需要检查外码引用</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -222,7 +221,7 @@ WHERE Sno IN
       (SELECT Sno
        FROM Student
        WHERE Smajor = '计算机科学与技术');</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例删除的是 SC 子行，不删除 Student；若删除被引用的 Student，是否同步删除 SC 由外码上的 ON DELETE 规则决定</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>若删除被引用的 <code>Student</code>，是否同步删除 <code>SC</code> 由外码上的 <code>ON DELETE</code> 规则决定</p></div></div>
     <div class="numeric-progress">11/15</div>
     <div class="semantic-label">DELETE SUBQUERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
@@ -232,11 +231,11 @@ WHERE Sno IN
       data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4</div>
     <h2 class="slide-title">更新前查目标行，更新后查新值和主外码</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>影响行数是 3，怎么证明就是预期的那 3 行？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="88.143" data-character-exposure="69.215" data-character-scale="0.9" style="--character-along:88.143%;--character-exposure:69.215;--character-hidden:30.785%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>影响行数是 3，怎么证明就是预期的那 3 行？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">预览结果应对应实际行数，新值还要满足实体、参照和用户定义完整性</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-verify.svg" data-full-src="resources/decks/dbpa-3-4/assets/generated/dbpa-ch03-update-verify.svg" alt="更新前预览、估计影响行数、执行变更和更新后复查的闭环" tabindex="0" role="button" aria-label="放大图片：更新前预览、估计影响行数、执行变更和更新后复查的闭环" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>操作闭环</h3><p>先用 SELECT 预览目标集合，再估计影响行数；执行变更后复查关键列</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>实体完整性</h3><p>主码唯一且不为空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>参照完整性</h3><p>外码引用有效的被参照值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户定义完整性</h3><p>业务范围和状态规则仍然成立</p></article></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>客户端显示的影响行数是辅助证据，不能替代变更后的 SELECT 复查</p></div></div>
+<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>操作闭环</h3><p>先用 <code>SELECT</code> 预览目标集合，再估计影响行数；执行变更后复查关键列</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>实体完整性</h3><p>主码唯一且不为空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>参照完整性</h3><p>外码引用有效的被参照值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>用户定义完整性</h3><p>业务范围和状态规则仍然成立</p></article></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>客户端显示的影响行数是辅助证据，不能替代变更后的 <code>SELECT</code> 复查</p></div></div>
     <div class="numeric-progress">12/15</div>
     <div class="semantic-label">VERIFY AND CONSTRAIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
@@ -245,10 +244,10 @@ WHERE Sno IN
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4</div>
-    <h2 class="slide-title">练习：成绩减 5 前预览，执行后逐行复查</h2>
-    <div class="slide-content"><p class="slide-lead">任务：把 20201 学期 81002 课程中已录入的成绩统一减 5 分；不直接执行语句</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>预览目标</h3><p>写出只查询目标行的 <code>SELECT</code>，说明为什么必须排除 <code>Grade IS NULL</code>，并预测命中行数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查新状态</h3><p>判断减 5 后是否可能越过成绩范围，说明由哪个约束或业务条件阻止非法结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>复查证据</h3><p>执行后用相同键和条件复查新值，将实际影响行数与预览集合逐行对应</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>影响行数只能说明数量，预览与复查才能证明被改变的是预期对象且更新后仍满足规则</p></div></div>
+    <h2 class="slide-title">练习：将一门课程的成绩减 5</h2>
+    <div class="slide-content"><p class="slide-lead">把 20201 学期 81002 课程中已录入的成绩统一减 5 分</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>预览目标</h3><p>写出只查询目标行的 <code>SELECT</code>，说明为什么必须排除 <code>Grade IS NULL</code>，并预测命中行数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查新状态</h3><p>判断减 5 后是否可能越过成绩范围，说明由哪个约束或业务条件阻止非法结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>复查证据</h3><p>执行后用相同条件复查新值，将实际影响行数与预览集合逐行对应</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>预览与复查能够证明被改变的是预期对象，而且更新后仍满足规则</p></div></div>
     <div class="numeric-progress">13/15</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
@@ -268,7 +267,7 @@ WHERE Sno IN
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.4</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">向 <code>SC</code> 插入一条尚未考试的选课记录时，怎样用属性列列表表达“成绩未知”而不是“成绩为零”？</span></li><li><span class="question-no">02</span><span class="question-text">把专业平均年龄批量写入汇总表前，怎样验证查询结果的列数、类型、主码与重复执行风险？</span></li><li><span class="question-no">03</span><span class="question-text">同一条 <code>UPDATE</code> 少写课程号条件后，目标集合会怎样变化，执行前用什么证据能发现这个错误？</span></li><li><span class="question-no">04</span><span class="question-text">删除一名仍有选课记录的学生为什么可能失败，若业务只想取消选课应该改变哪张表的哪些元组？</span></li><li><span class="question-no">05</span><span class="question-text">更新界面显示“影响 3 行”后，还需要怎样的查询与约束证据才能证明操作正确？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">向 <code>SC</code> 插入一条新选课记录时，如何表达“成绩未知”？</span></li><li><span class="question-no">02</span><span class="question-text">把专业平均年龄写入汇总表前，如何验证查询结果的列数、类型、主码？</span></li><li><span class="question-no">03</span><span class="question-text">同一条 <code>UPDATE</code> 少写课程号条件后，目标集合会怎样变化？</span></li><li><span class="question-no">04</span><span class="question-text">删除一名仍有选课记录的学生为什么可能失败？</span></li><li><span class="question-no">05</span><span class="question-text">更新界面显示影响行数后，还需要怎样的查询与约束证据才能真正证明？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-3.html" title="上一节：3.3 数据查询" aria-label="上一节：3.3 数据查询">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
