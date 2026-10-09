@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITA 3.1 工作流的对象、节点与依赖 | HUST</title>
-  <meta name="description" content="把一次任务外化为包含对象、节点、中间产物和依赖的可观察过程">
+  <title>ITA 单元 3 工作流设计与材料处理 | HUST</title>
+  <meta name="description" content="围绕一条阅读问题，处理并抽查所需材料，用输入、节点、依赖和产物形成可回查的笔记初稿">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="智能技术及应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="3-1">
-  <meta name="version" content="2608">
+  <meta name="version" content="2610">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -27,266 +27,369 @@
       data-rotate="0" data-scale="1" style="">
     <img class="cover-image" src="resources/decks/ita-3-1/assets/cover-workflow-objects.webp" alt="">
     <div class="cover-copy">
-      <div class="cover-section">ITA · 3.1</div>
-      <h1>工作流的对象、节点与依赖</h1>
-      <p class="cover-description">把第二周的一次调用展开成可检查的节点</p>
+      <div class="cover-section">ITA · 单元 3</div>
+      <h1>工作流设计与材料处理</h1>
+      <p class="cover-description">处理阅读材料，留下可回查的解释与流程</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
   </section>
-<section id="a1" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">本节结束时，写清从什么材料开始、每步留下什么、何时继续、谁判断结束</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分任务、节点、中间产物、依赖、责任人和输出</span></li><li><span class="list-marker">02</span><span class="list-text">把含糊任务改写为一串可观察节点</span></li><li><span class="list-marker">03</span><span class="list-text">说明节点之间为什么存在先后、并行或条件依赖</span></li><li><span class="list-marker">04</span><span class="list-text">为关键节点指定下一步可以接手的中间产物</span></li><li><span class="list-marker">05</span><span class="list-text">写出流程从哪些输入开始、以什么结果结束，以及哪一步必须由人判断</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/21</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:9.5238%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 任务与工作流对象</div>
+    <h2 class="slide-title">把上一节的问题变成本轮任务</h2>
+    <div class="slide-content"><p class="slide-lead">选定一个阅读问题，用输入、处理范围和完成条件限定本轮工作</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>项目</th><th>本次约定</th></tr></thead><tbody><tr><td>目标</td><td>从三个问题中选一个，写出附原文位置的初步解释</td></tr><tr><td>输入</td><td>固定版本 PDF、notes/questions.md 中的所选问题</td></tr><tr><td>范围与限制</td><td>只处理本轮所需段落；保留原件，不补写缺失内容</td></tr><tr><td>完成条件</td><td>已查范围明确，解释能回到依据，疑问继续保留</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>教师示范“作业完成时间怎样测量”；学生可选自己的问题。本轮先形成初稿，研究设计、重要数字和机制的核验在下一单元展开。</p></div></div></div>
+    <div class="numeric-progress">2/25</div>
+    <div class="semantic-label">TASK SPECIFICATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-case layout-focus teaching-semantic"
+<section id="t1" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">只看到“证据不足”，能检查哪里出错吗？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="cards-grid cards-comparison reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>看得见结果</h3><p>状态为 <code>unknown</code>；理由只写“私有网络访问不等于客户环境部署”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>看不见过程</h3><p>不知道查过哪些来源、怎样提取和比较</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>无法交接</h3><p>下一位处理者不知道应补哪一类证据</p></article></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>工作流的第一步不是画箭头，而是留下来源清单、证据摘录和待核实项，让下一位知道从哪里接手</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="right-question" data-character-edge="right" data-character-along="62" data-character-exposure="58" data-character-scale="0.9" style="--character-along:62%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-320px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/right-question.a7b04cd953f2.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>如果要继续核查，应该从哪一步接手？</p></div></div></div></aside>
-    <div class="numeric-progress">3/21</div>
-    <div class="semantic-label">OPENING CASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 任务与工作流对象</div>
+    <h2 class="slide-title">本单元涉及的主题</h2>
+    <div class="slide-content"><p class="slide-lead">围绕一条阅读问题，限定任务、处理材料，并连接可检查的步骤</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>课程主题</th><th>本单元需要解释与应用</th></tr></thead><tbody><tr><td>05 任务目标与完成标准</td><td>写清输入、处理范围与完成条件，限定本轮阅读任务</td></tr><tr><td>08 文件读取、格式转换与结构化笔记</td><td>选择处理方式、抽查保真，保留来源与个人解释</td></tr><tr><td>13 工作流与异常处理</td><td>连接节点、产物与依赖，安排并行、汇合和失败去向</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>工具选择（12）先用于同一材料的转换比较；重要数字、研究设计和机制解释的核验在单元 4 展开。</p></div></div></div>
+    <div class="numeric-progress">3/25</div>
+    <div class="semantic-label">CORE TOPICS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-stack"
+<section id="a4" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">先把这次核查写成一个完整任务</h2>
-    <div class="slide-content"><p class="slide-lead">交给 AI 或同伴前，写清任务、材料、禁做项、完成标准和采用者</p>
-<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">目标</h3><div class="key-value-value"><p>判断现有证据能否支持“客户环境部署”，供周会讨论</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">输入</h3><div class="key-value-value"><p>待核实主张、两条模拟来源和 2026-06-01 之后的核查范围</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">限制</h3><div class="key-value-value"><p>只使用可定位材料；“私有访问”不能自动改写成“私有部署”</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">完成标准</h3><div class="key-value-value"><p>每个判断能回到来源；证据不足时保留 <code>unknown</code></p></div></div><div class="key-value-item substep"><h3 class="key-value-key">责任</h3><div class="key-value-value"><p>核查者整理证据，周会负责人决定是否采用</p></div></div></div></div></div>
-    <div class="numeric-progress">4/21</div>
-    <div class="semantic-label">TASK OBJECT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
-  </section>
-<section id="a4" class="step slide-surface role-content layout-split axis-vertical order-group-media"
-      data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">工作流把输入、动作和留下的结果写出来</h2>
-    <div class="slide-content"><p class="slide-lead">工作流写明输入、每步动作和产物，也写明缺少什么就不能继续</p>
-<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="目标 + 输入 + 节点 + 依赖 + 中间产物 → 输出"><span class="relation-term">目标</span><span class="relation-operator">+</span><span class="relation-term">输入</span><span class="relation-operator">+</span><span class="relation-term">节点</span><span class="relation-operator">+</span><span class="relation-term">依赖</span><span class="relation-operator">+</span><span class="relation-term">中间产物</span><span class="relation-operator">→</span><span class="relation-term">输出</span></div></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>可观察</h3><p>别人能检查每一步读取了什么、做了什么、留下什么</p></article><article class="content-card emphasis-card" tabindex="0"><h3>可复用</h3><p>下次核查其他产品时，可以替换来源后重复这些步骤</p></article></div></div>
-<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/ita-3-1/assets/previews/p0-workflow-skeleton.webp" data-full-src="resources/decks/ita-3-1/assets/p0-workflow-skeleton.webp" data-full-width="1448" data-full-height="1086" alt="目标、输入、节点、中间产物、依赖、检查与输出组成的工作流骨架" tabindex="0" role="button" aria-label="放大图片：目标、输入、节点、中间产物、依赖、检查与输出组成的工作流骨架" decoding="async"><figcaption>示意图；课堂先标出目标、输入、节点、中间产物、依赖和输出，再讨论它们的关系。图标和箭头不代表固定对象或唯一关系</figcaption></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>只要输入、动作、产物和交接条件都写出来，别人就能检查并重复这项任务</p></div></div>
-    <div class="numeric-progress">5/21</div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 任务与工作流对象</div>
+    <h2 class="slide-title">工作流怎样连接这一条阅读问题？</h2>
+    <div class="slide-content"><p class="slide-lead">工作流说明每一步接收什么、留下什么，以及下一步何时可以继续</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>动作</th><th>接收的材料</th><th>留下的结果</th></tr></thead><tbody><tr><td>处理所需段落</td><td>PDF 与问题</td><td>可读正文及原件位置</td></tr><tr><td>对照原件抽查</td><td>原 PDF 与处理结果</td><td>已核对项与缺失记录</td></tr><tr><td>摘录定义与限制</td><td>可用正文及抽查记录</td><td>定义、限制与来源位置</td></tr><tr><td>写出初步解释</td><td>摘录与阅读问题</td><td>自己的解释及尚存疑问</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>下一步使用前一步的结果。定义或限制未取得时，先回查原件，暂不形成肯定解释。</p></div></div></div>
+    <div class="numeric-progress">4/25</div>
     <div class="semantic-label">WORKFLOW DEFINITION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:23.8095%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.0000%"></div></div>
+<!-- speaker-notes
+本表是教学流程示例，不是本次实际操作记录。处理可用原 PDF 直接读取，也可按需要提取或转换；下一段解释选择条件。原概念骨架图保留为资产，此页改用具体输入与产物说明关系。
+-->
   </section>
-<section id="a5" class="step slide-surface role-content layout-grid"
+<section id="a5" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 任务与工作流对象</div>
+    <h2 class="slide-title">这条流程包含哪些对象？</h2>
+    <div class="slide-content"><p class="slide-lead">动作、材料、前置条件和责任人分别说明流程如何运行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>对象</th><th>在刚才流程中的含义</th></tr></thead><tbody><tr><td>输入</td><td>进入本轮的 PDF 与阅读问题</td></tr><tr><td>节点</td><td>处理、抽查、摘录、解释等可检查的动作</td></tr><tr><td>中间产物</td><td>供下一步使用的正文、抽查记录与摘录</td></tr><tr><td>依赖</td><td>摘录前须有可读材料，解释前须取得定义与限制</td></tr><tr><td>输出</td><td>本轮初步解释与未解决的问题</td></tr><tr><td>责任人</td><td>学生核对材料，确认记录与自己的解释</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/25</div>
+    <div class="semantic-label">WORKFLOW OBJECTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+<!-- speaker-notes
+目标已由前页任务说明限定。本页不把“六种”当作背诵分类；同一文件对上一步是输出，对下一步可以是输入。完整人机职责分工留单元 7。
+-->
+  </section>
+<section id="a6" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">一条工作流至少包含六种对象</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="ita-coordinator" data-character-pose="top-question" data-character-edge="top" data-character-along="78" data-character-exposure="56" data-character-scale="0.9" style="--character-along:78%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:520px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/top-question.b970fe34070c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>六种对象里，哪一个最容易被只画步骤漏掉？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">来源清单、证据摘录和最终判断不是同一种东西，检查时不能互相替代</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="列出开始输入 → 执行节点并留下产物 → 检查依赖、责任人与最终输出"><span class="relation-term">列出开始输入</span><span class="relation-operator">→</span><span class="relation-term">执行节点并留下产物</span><span class="relation-operator">→</span><span class="relation-term">检查依赖、责任人与最终输出</span></div></div>
-<div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">输入</h3><div class="key-value-value"><p>任务开始时能够被节点读取的材料、数据或状态</p></div></div><div class="key-value-item"><h3 class="key-value-key">节点</h3><div class="key-value-value"><p>一次能够描述、执行并检查的局部动作</p></div></div><div class="key-value-item"><h3 class="key-value-key">中间产物</h3><div class="key-value-value"><p>节点完成后留下的可被下一步使用的对象</p></div></div><div class="key-value-item"><h3 class="key-value-key">依赖</h3><div class="key-value-value"><p>下一节点需要的材料、判断、权限或状态条件</p></div></div><div class="key-value-item"><h3 class="key-value-key">责任人</h3><div class="key-value-value"><p>对节点的执行、判断或批准负责的角色</p></div></div><div class="key-value-item"><h3 class="key-value-key">输出</h3><div class="key-value-value"><p>满足完成标准、能够交给使用者的结果</p></div></div></div></div></div>
-    <div class="numeric-progress">6/21</div>
-    <div class="semantic-label">WORKFLOW OBJECTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
-  </section>
-<section id="a6" class="step slide-surface role-content layout-split axis-horizontal order-list-text"
-      data-x="1500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">节点要小到可以被检查</h2>
-    <div class="slide-content"><p class="slide-lead">“整理资料”太大，“把三份来源按字段提取”才有机会被复核</p>
-<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>结果清楚</h3><p>节点完成后新增哪份文件、记录或判断</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>输入明确</h3><p>节点读取哪些对象</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>动作单一</h3><p>主要动作不混入另一项判断</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>产物可见</h3><p>完成后留下什么对象</p></div></div><div class="process-item"><span class="process-marker">05</span><div class="process-content"><h3>责任明确</h3><p>谁可以确认它完成</p></div></div></div>
-<div class="component component-text text-inset"><p>如果一个节点同时搜索、摘录、比较并下结论，出错时不知道错在哪；如果每次点击都算一个节点，又没人愿意维护</p></div></div></div>
-    <div class="numeric-progress">7/21</div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 任务与工作流对象</div>
+    <h2 class="slide-title">节点划到哪里，才便于定位错误？</h2>
+    <div class="slide-content"><p class="slide-lead">需要独立检查或独立处理失败的动作，才值得单独划成节点</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>太大</h3><p>处理材料、解释结果、写完笔记合成一步，难定位错误</p></article><article class="content-card emphasis-card" tabindex="0"><h3>本轮可检查</h3><p>摘录一个指标的定义、限制与位置，能独立回查</p></article><article class="content-card emphasis-card" tabindex="0"><h3>过细</h3><p>打开、滚动、复制各算一步，却没有独立检查价值</p></article></div>
+<div class="component component-text text-inset"><p>用输入、主要动作、新增结果与确认者判断粒度；节点大小随当前任务和失败处理需要而变。</p></div></div></div>
+    <div class="numeric-progress">6/25</div>
     <div class="semantic-label">NODE GRANULARITY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:24.0000%"></div></div>
   </section>
-<section id="a7" class="step slide-surface role-content layout-grid"
+<section id="c1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">提取、OCR、转换与摘要的区别</h2>
+    <div class="slide-content"><p class="slide-lead">文字读取、结构处理与内容压缩可以在同一流程中组合使用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>处理</th><th>解决什么</th><th>仍需检查</th></tr></thead><tbody><tr><td>文本提取</td><td>读取 PDF 已有文字层</td><td>段落顺序、缺字与关联</td></tr><tr><td>OCR</td><td>从图像识别文字</td><td>数字、符号与识别遗漏</td></tr><tr><td>格式转换</td><td>改变表示并保留所需结构</td><td>标题、表格、图像及引用关系</td></tr><tr><td>摘要</td><td>按问题选择并压缩内容</td><td>是否遗漏必要条件</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">7/25</div>
+    <div class="semantic-label">DATA TRANSFORMATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.0000%"></div></div>
+  </section>
+<section id="c1a" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 从答案到过程</div>
-    <h2 class="slide-title">三种中间产物让核查可以接手</h2>
-    <div class="slide-content"><p class="slide-lead">中间产物让下一步知道已经完成什么，还缺什么</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>来源清单</h3><p>记录官方说明与媒体转述的主体、日期、位置和访问状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>证据摘录</h3><p>保留“供应商云＋私有网络端点”和“企业级私有访问”原文</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>待核实项</h3><p>缺少“服务运行在客户环境”的直接证据</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>没有中间产物，错误就只能从最终答案倒推</p></div></div>
-    <div class="numeric-progress">8/21</div>
-    <div class="semantic-label">INTERMEDIATE ARTIFACT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:38.0952%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">什么情况下需要转换材料？</h2>
+    <div class="slide-content"><p class="slide-lead">根据当前读取困难和后续用途选择处理方式，PDF 并非都要先转换</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>当前情况</th><th>本轮选择</th></tr></thead><tbody><tr><td>PDF 可直接读到所需段落</td><td>直接读取，保留原文位置</td></tr><tr><td>扫描图像中的文字无法读取</td><td>做 OCR，再对照原页</td></tr><tr><td>需要搜索、编辑或反复处理结构</td><td>提取或转换为文本，并抽查所需结构</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本节用一份局部转换练习学习保真检查；结果只覆盖实际处理的范围。能生成摘要，不代表已经取得完整、准确的材料。</p></div></div></div>
+    <div class="numeric-progress">8/25</div>
+    <div class="semantic-label">CHOOSE A TRANSFORMATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:32.0000%"></div></div>
   </section>
-<section id="a8" class="step slide-surface role-content layout-split axis-horizontal order-cards-media"
+<section id="c3" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 依赖与停止条件</div>
-    <h2 class="slide-title">依赖不只是顺序箭头</h2>
-    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="left-explain" data-character-edge="left" data-character-along="58" data-character-exposure="57" data-character-scale="0.9" style="--character-along:58%;--character-exposure:57;--character-hidden:43%;--character-scale:0.9;--character-bubble-x:440px;--character-bubble-y:70px;--character-tail-at:72%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/left-explain.41ea9ca0e806.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>箭头不只表示先后，还要写清下一步缺少什么就不能继续</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">依赖说明下一步缺什么、等谁和何时可以继续</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>数据依赖</h3><p>下一节点需要上一节点产生的对象</p>
-<p>例如没有来源清单，就无法抽取证据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>判断依赖</h3><p>下一节点要等人确认规则或取舍</p>
-<p>例如没有确认字段含义，就不能批量清洗</p></article><article class="content-card emphasis-card" tabindex="0"><h3>权限依赖</h3><p>下一节点要等授权、登录或人工批准</p>
-<p>例如没有确认收件人，就不能发送消息</p></article></div>
-<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/ita-3-1/assets/previews/p0-dependency-order-recovery-portrait.webp" data-full-src="resources/decks/ita-3-1/assets/p0-dependency-order-recovery-portrait.webp" data-full-width="1086" data-full-height="1448" alt="工作流中的主路径、分支与回退示意，不直接对应三类依赖" tabindex="0" role="button" aria-label="放大图片：工作流中的主路径、分支与回退示意，不直接对应三类依赖" decoding="async"><figcaption>卡片定义数据、判断和权限依赖；图片只示意路径、分支和回退</figcaption></figure></div></div>
-    <div class="numeric-progress">9/21</div>
-    <div class="semantic-label">DEPENDENCY TYPES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">原件、派生稿与笔记各自承担什么？</h2>
+    <div class="slide-content"><p class="slide-lead">原件用于回查，派生稿便于处理，笔记保存自己的解释与疑问</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-text">reading-project/
+  originals/paper.pdf
+  derived/paper.md
+  derived/images/
+  notes/questions.md
+  notes/reading-note.md</code></pre></div></div>
+<div class="component component-text text-open"><p>派生稿标明本轮处理范围，修复时对照原件；笔记里的个人解释不覆盖作者表述。图片与来源链接按所在文件的位置关联。</p></div></div></div>
+    <div class="numeric-progress">9/25</div>
+    <div class="semantic-label">SOURCE AND DERIVATIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.0000%"></div></div>
   </section>
-<section id="a9" class="step slide-surface role-content layout-stack"
+<section id="c2" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 依赖与停止条件</div>
-    <h2 class="slide-title">先后、并行与条件分支</h2>
-    <div class="slide-content"><p class="slide-lead">下一步需要某份材料或批准时，节点才有先后；不是因为卡片画在左边</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">先后：后一步必须读取前一步的结果</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">并行：多个节点读取同一输入，彼此不等待</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">汇合：多个节点完成后才进入共同判断</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">分支：根据结果选择不同路径，例如证据充分则形成结论，证据不足则继续查找</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">回退：失败后回到能够修正问题的节点</span></li></ul></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>画出关系之前，先说清楚下一步到底依赖什么</p></div></div>
-    <div class="numeric-progress">10/21</div>
-    <div class="semantic-label">NODE ORDER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">Markdown 怎样保留层级与材料关系？</h2>
+    <div class="slide-content"><p class="slide-lead">标题帮助定位内容，链接和图片引用连接原件与配套文件</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08</span><code class="language-markdown"># 2.2 Exam and Homework Data
+范围：本轮选取的段落；其余未处理
+[原 PDF](../originals/paper.pdf)：物理页 6
+## 作业时间定义（中文概述）
+平台领取作业至提交答案的间隔。
+## 图像引用的写法
+![示例图像说明][figure]
+[figure]: images/figure-1.png</code></pre></div></div>
+<div class="component component-text text-inset"><p>这是 derived/paper.md 的示例：[figure] 指向图片路径。文件名为教学示例；须检查实际路径，复制 .md 时也带上图片。</p></div></div></div>
+    <div class="numeric-progress">10/25</div>
+    <div class="semantic-label">MARKDOWN STRUCTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+<!-- speaker-notes
+此页不是运行产物。共同论文第 2.2 节作业时间段落位于 PDF 物理页 6，已用本地文字提取回查。中文概述不是原文引语；figure-1.png 只示范语法，不声称已提取论文 Figure 1。
+-->
   </section>
-<section id="a10" class="step slide-surface role-case layout-stack teaching-semantic"
+<section id="c4" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 依赖与停止条件</div>
-    <h2 class="slide-title">案例：把 Nova 主张展开成四个节点</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>节点</th><th>产物</th><th>下一步依赖</th></tr></thead><tbody><tr><td>获取来源</td><td>官方说明、媒体转述及访问状态</td><td>抽取节点需要可定位原文</td></tr><tr><td>抽取主张</td><td>“供应商云”“私有网络访问”等原文片段</td><td>比较节点需要统一“运行位置”字段</td></tr><tr><td>比较来源</td><td>两条材料都未说明客户环境运行</td><td>人工判断需要看见证据缺口</td></tr><tr><td>形成判断</td><td><code>unknown</code> 与待补证据</td><td>周会负责人确认是否继续核查</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每个箭头都应该能够回答“下一步缺少它会怎样”</p></div></div>
-    <div class="numeric-progress">11/21</div>
-    <div class="semantic-label">DEPENDENCY CASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:52.3810%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">比较转换工具，要使用同一份材料</h2>
+    <div class="slide-content"><p class="slide-lead">教师示范同输入比较，学生依据输出质量与实际成本说明自己的选择</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>比较维度</th><th>在相同材料上观察</th></tr></thead><tbody><tr><td>内容</td><td>是否漏段、错序，数字与符号是否变化</td></tr><tr><td>结构</td><td>表头、数据、图像与引用的关系是否保留</td></tr><tr><td>使用成本</td><td>配置、处理与手工修复需要多少时间</td></tr><tr><td>适用条件</td><td>是否允许上传，设备、服务和费用是否适用</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>比较多个工具时控制输入相同；已有可用工具也应先试一份代表材料。本节不要求每人额外安装两个工具。</p></div></div></div>
+    <div class="numeric-progress">11/25</div>
+    <div class="semantic-label">TOOL SELECTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.0000%"></div></div>
+<!-- speaker-notes
+教师使用本机已有 MinerU 结果展示质量与选择理由，并注明其实际来源和已查范围；本次改稿未新运行转换。不要求学生安装同一环境，品牌不作为评分依据。
+-->
   </section>
-<section id="b1" class="step slide-surface role-content layout-grid"
+<section id="c5" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">工作流不是待办清单</h2>
-    <div class="slide-content"><p class="slide-lead">待办清单只说要做什么，工作流还要说输入、产物、依赖和责任</p>
-<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>待办清单</h3><p>搜索资料、整理资料、写总结、提交结果</p>
-<p>完成状态往往只有“做了”或“没做”</p></article><article class="content-card emphasis-card" tabindex="0"><h3>工作流</h3><p>来源清单、证据摘录、比较表、人工判断与最终记录</p>
-<p>每一步都有对象和可以检查的完成条件</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>写下“搜索资料”还不够，还要留下包含标题、日期、链接和访问结果的来源清单</p></div></div>
-    <div class="numeric-progress">12/21</div>
-    <div class="semantic-label">WORKFLOW AND CHECKLIST</div>
-    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">先试一份代表材料，再决定处理范围</h2>
+    <div class="slide-content"><p class="slide-lead">抽查证明的是已检查部分的质量，扩大范围后仍需检查新增材料</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>选样</h3><p>本轮选第 2.2 节作业时间段落及“平均 58 分钟”，记录 PDF 物理页 6</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>试处理</h3><p>保留局部输出，记录工具、版本或服务日期及必要选项</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>对照</h3><p>检查段落顺序、时间定义、测量限制，以及 58 的指标与单位</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>决定</h3><p>修正缺失或保留原件；需要扩大时说明新增范围和检查对象</p></div></div></div></div></div>
+    <div class="numeric-progress">12/25</div>
+    <div class="semantic-label">PILOT CONVERSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.0000%"></div></div>
+<!-- speaker-notes
+共同样例取固定版本 PDF 物理页 6；数字 58 是原段落的平均完成时间，不是 AI 使用效果。学生的问题需要图表时另选相关图表，并保留表头、行列及说明；不能用正文样例通过宣称图表或整篇均保真。
+-->
   </section>
-<section id="b2" class="step slide-surface role-content layout-stack"
+<section id="c6" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 依赖与停止条件</div>
-    <h2 class="slide-title">先确定流程从哪里开始，到哪里结束</h2>
-    <div class="slide-content"><p class="slide-lead">不写用什么开始、何时交付，流程可能继续包办通知、决策和维护</p>
-<div class="slide-main-content"><div class="component component-list list-key-value"><div class="key-value-item"><h3 class="key-value-key">开始</h3><div class="key-value-value"><p>触发条件、输入对象和目标已经明确</p></div></div><div class="key-value-item"><h3 class="key-value-key">范围</h3><div class="key-value-value"><p>只核查 Nova 是否支持客户环境部署，不自动发送结论，也不持续追踪产品更新</p></div></div><div class="key-value-item"><h3 class="key-value-key">结束</h3><div class="key-value-value"><p>输出满足标准，并由责任人决定是否采用</p></div></div><div class="key-value-item"><h3 class="key-value-key">人工接管</h3><div class="key-value-value"><p>用户临时改变目标、两条标准互相冲突或结论将被对外发布时，停下来由负责人判断</p></div></div></div></div></div>
-    <div class="numeric-progress">13/21</div>
-    <div class="semantic-label">START AND END BOUNDARIES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">练习：模型能直接解释这个“20”吗？</h2>
+    <div class="slide-content"><p class="slide-lead">缺失表头、单位与条件时，孤立数字不足以说明结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>转换后的残片</h3><p>某行只剩 20，没有指标、单位、时期与可回查位置</p></article><article class="content-card emphasis-card" tabindex="0"><h3>AI 的解释</h3><p>“学生正确率提高了 20 个百分点。”</p></article></div>
+<div class="component component-text text-inset substep reveal-self"><p>应回查指标、单位、对象、比较条件与原文位置。现有材料不能确定提高或下降，更不能解释成百分点；能修复则再用，不能确认则保留缺失。</p></div></div></div>
+    <div class="numeric-progress">13/25</div>
+    <div class="semantic-label">LOSS OF MEANING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.0000%"></div></div>
+<!-- speaker-notes
+这是教学构造，不是共同论文原表。先请学生指出解释中哪些内容没有依据，再揭示建议。完整数字核验在单元 4 展开。
+-->
   </section>
-<section id="b3" class="step slide-surface role-content layout-stack"
+<section id="c7" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">每个节点都可以写成一张小卡片</h2>
-    <div class="slide-content"><p class="slide-lead">节点卡片让不同角色能够在不依赖口头记忆的情况下接手</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 76%"><colgroup><col style="width:24%"><col style="width:76%"></colgroup><thead><tr><th>字段</th><th>节点卡片内容</th></tr></thead><tbody><tr><td>目标</td><td>节点完成后新增哪份文件、记录或判断</td></tr><tr><td>输入</td><td>读取哪些对象，格式和范围是什么</td></tr><tr><td>动作</td><td>由谁用什么工具完成什么操作</td></tr><tr><td>产物</td><td>输出什么对象，供谁继续使用</td></tr><tr><td>完成</td><td>看到什么证据才认为节点完成</td></tr><tr><td>失败</td><td>失败后停下、重试、回退或请求谁判断</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">14/21</div>
-    <div class="semantic-label">NODE CONTRACT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">给转换稿留下修复痕迹</h2>
+    <div class="slide-content"><p class="slide-lead">修复要说明依据、改动和仍未解决的部分，不能把推测补成正文</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>发现的问题</th><th>处理与记录</th></tr></thead><tbody><tr><td>双栏文字交错</td><td>按原页恢复顺序，标明对应位置</td></tr><tr><td>表头识别失败</td><td>回查原表，保留图像或位置及解析缺口</td></tr><tr><td>数字有疑点</td><td>对照原件，记录原输出、更正值与理由</td></tr><tr><td>内容无法辨认</td><td>标明缺失，此处结论暂不采用</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/25</div>
+    <div class="semantic-label">REPAIR RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-case layout-stack teaching-semantic"
+<section id="c7a" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">案例：课堂录音整理</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>保留原始录音</h3><p>输入是课堂声音，产物是原始文件</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>转写</h3><p>工具把声音转换为带时间位置的文本</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>结构化整理</h3><p>模型形成标题、概念和待核实项</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>人工复核</h3><p>教师对照原始材料修正术语和遗漏</p></div></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“整理笔记”被拆成节点后，错误可以定位到采集、转写、整理或复核阶段</p></div></div>
-    <div class="numeric-progress">15/21</div>
-    <div class="semantic-label">NOTE WORKFLOW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 把 PDF 变成可处理材料</div>
+    <h2 class="slide-title">一条修复记录怎样写？</h2>
+    <div class="slide-content"><p class="slide-lead">找回指标与单位之后，还要保留未找回的对象和时期</p>
+<div class="slide-main-content"><div class="component-with-source"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>记录项</th><th>示例</th></tr></thead><tbody><tr><td>原输出</td><td>只有 20，表头丢失</td></tr><tr><td>回查依据</td><td>示例原表的列标题“平均作业完成间隔（分钟）”</td></tr><tr><td>本次改动</td><td>恢复指标与单位，保留原数值 20</td></tr><tr><td>仍有缺口</td><td>对象与记录时期未找回，暂不解释差异或效果</td></tr></tbody></table></div><p class="component-source">来源：教学构造的修复示例，不是共同论文原表或实际运行记录</p></div>
+<div class="component component-text text-inset"><p>正式记录补上实际文件、页码或表号；下一步同时读取修复内容与缺口，不能只带走恢复后的数字。</p></div></div></div>
+    <div class="numeric-progress">15/25</div>
+    <div class="semantic-label">A REPAIR EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="b5" class="step slide-surface role-content layout-grid"
+<section id="a7" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">节点的责任不一定由同一个角色承担</h2>
-    <div class="slide-content"><p class="slide-lead">一个流程可以把探索、执行、判断和批准交给不同角色</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="执行者可以不同；责任人负责判断节点是否通过，并承担采用后果"><span class="relation-term">执行者可以不同；责任人负责判断节点是否通过，并承担采用后果</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>生成与提取：AI 或模型</h3><p>适合生成候选标题、从材料提取字段、改写文本和解释含义不明确的句子</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>重复执行：普通工具或脚本</h3><p>适合按照已确认规则重复处理并留下执行记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>判断与批准：人</h3><p>确定任务目标和完成标准，处理例外，并决定结果是否使用、发送或发布</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>责任角色：责任人</h3><p>不一定亲自执行，但必须能解释节点是否通过</p></article></div></div></div>
-    <aside class="character-intervention character-edge-bottom character-intent-conclusion substep reveal-self" data-character-id="ita-coordinator" data-character-pose="bottom-confirm" data-character-edge="bottom" data-character-along="82" data-character-exposure="45" data-character-scale="0.9" style="--character-along:82%;--character-exposure:45;--character-hidden:55%;--character-scale:0.9;--character-bubble-x:30px;--character-bubble-y:-100px;--character-tail-at:78%" aria-label="开发/现场部署工程师与回路伴机发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/ita-coordinator/bottom-confirm.c8db2c9a4727.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>执行者可以更换，但必须有人检查证据、批准结果，并能说明为什么批准</p></div></div></div></aside>
-    <div class="numeric-progress">16/21</div>
-    <div class="semantic-label">RESPONSIBILITY IN NODES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:76.1905%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">中间产物怎样支持下一步？</h2>
+    <div class="slide-content"><p class="slide-lead">需要交接的中间产物，应说明下一步怎样使用它</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>留下什么</th><th>下一步怎样使用</th></tr></thead><tbody><tr><td>局部派生稿及原件位置</td><td>摘录所需内容，并回查来源</td></tr><tr><td>抽查与修复记录</td><td>判断哪些部分可用，哪些仍缺失</td></tr><tr><td>定义、限制及来源位置</td><td>形成初步解释，保留证据边界</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">16/25</div>
+    <div class="semantic-label">INTERMEDIATE ARTIFACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.0000%"></div></div>
   </section>
-<section id="b6" class="step slide-surface role-content layout-stack"
+<section id="a8" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">用五个问题填写第一张工作流画布</h2>
-    <div class="slide-content"><p class="slide-lead">先用共同案例填写五个问题，再把答案画成流程</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 76%"><colgroup><col style="width:24%"><col style="width:76%"></colgroup><thead><tr><th>问题</th><th>共同案例：跟踪 AI 企业应用</th></tr></thead><tbody><tr><td>目标</td><td>判断 Nova 是否支持客户环境部署</td></tr><tr><td>输入</td><td>待核实主张、两条模拟来源、日期范围和术语规则</td></tr><tr><td>节点</td><td>获取来源、抽取主张、比较证据、形成判断</td></tr><tr><td>依赖</td><td>没有可访问原文不能抽取；没有统一字段不能比较</td></tr><tr><td>交接</td><td>责任人看见来源位置、冲突和缺口后决定是否采用</td></tr></tbody></table></div>
-<div class="component component-text text-panel"><div class="reading-panel"><p>一张节点卡示范：抽取主张。输入是两条来源；动作是提取运行位置、访问方式和限制；产物是带原文位置的证据摘录；完成条件是每个字段都能回到材料；材料未写运行位置时保留 <code>unknown</code></p></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>如果某一步还不能检查或交接，就继续补上它读取的材料、留下的产物和等待的批准</p></div></div>
-    <div class="numeric-progress">17/21</div>
-    <div class="semantic-label">TEACHER DEMONSTRATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.9524%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">依赖不只是先后箭头</h2>
+    <div class="slide-content"><p class="slide-lead">下一节点可能在等可读材料、指标确认或操作授权</p>
+<div class="slide-main-content"><div class="component component-list list-key-value reveal-items"><div class="key-value-item substep"><h3 class="key-value-key">数据依赖</h3><div class="key-value-value"><p>摘录需要可读且可回查的正文，可来自原 PDF 或派生稿</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">判断依赖</h3><div class="key-value-value"><p>解释时间或数值前，要确认定义、单位与必要条件</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">权限依赖</h3><div class="key-value-value"><p>使用上传服务前，要确认材料范围与本次授权</p></div></div></div></div></div>
+    <div class="numeric-progress">17/25</div>
+    <div class="semantic-label">DEPENDENCIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.0000%"></div></div>
   </section>
-<section id="b7" class="step slide-surface role-case layout-grid teaching-semantic"
+<section id="a9" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1 <span>|</span> 把任务拆成节点</div>
-    <h2 class="slide-title">课堂练习：先画四到六个节点</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>核对产品能力</h3><p>使用 Nova 模拟材料：从两条来源到 <code>unknown</code> 与待补证据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>整理课程通知</h3><p>使用 2.1 的两条通知：从原文到日历草稿和确认状态</p></article><article class="content-card emphasis-card" tabindex="0"><h3>批量整理文件</h3><p>使用 20 个课程文件：从原目录、命名规则到预览和结果报告</p></article></div></div>
-<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">给每个节点写出输入和产物</span></li><li><span class="list-marker">■</span><span class="list-text">给至少三个节点指定责任人</span></li><li><span class="list-marker">■</span><span class="list-text">用一句话解释一个先后或条件依赖</span></li></ul></div></div></div>
-    <div class="numeric-progress">18/21</div>
-    <div class="semantic-label">CLASSROOM EXERCISE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">哪些抽查可以并行，何时才能汇合？</h2>
+    <div class="slide-content"><p class="slide-lead">原件与转换结果齐备后可分别抽查，汇总时必须保留各自的结果</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="原 PDF ＋ 转换结果 → 正文抽查 ＋ 图表抽查 → 汇总记录 → 决定可用范围"><span class="relation-term">原 PDF ＋ 转换结果</span><span class="relation-operator">→</span><span class="relation-term">正文抽查 ＋ 图表抽查</span><span class="relation-operator">→</span><span class="relation-term">汇总记录</span><span class="relation-operator">→</span><span class="relation-term">决定可用范围</span></div></div>
+<div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>关系</th><th>图表型阅读任务中的条件</th></tr></thead><tbody><tr><td>并行</td><td>正文与图表各有对应材料，可分别核对</td></tr><tr><td>汇合</td><td>两项结果齐备，分别说明已查与未查部分</td></tr><tr><td>分支</td><td>正文通过、表格失败，先采用可用正文</td></tr><tr><td>回退</td><td>表格回查原件或重新处理，确认后再解释</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">18/25</div>
+    <div class="semantic-label">FLOW RELATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.0000%"></div></div>
+<!-- speaker-notes
+这是包含图表的任务示例，不将图表抽查强加给每条阅读问题。当前只处理正文时如实标明图表未查。
+-->
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="b6" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1</div>
-    <h2 class="slide-title">练习：遮住案例，重建 Nova 核查流程</h2>
-    <div class="slide-content"><p class="slide-lead">只凭“当前判断 unknown，由负责人决定是否继续”还原可接手过程</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>从哪里开始、由谁结束</h3><p>写出目标、两条模拟来源、日期与术语限制、完成标准和最终采用者</p></article><article class="content-card emphasis-card" tabindex="0"><h3>节点与产物</h3><p>画出获取、抽取、比较、判断四个节点，并为每步留下来源清单、证据摘录或待核实项</p></article><article class="content-card emphasis-card" tabindex="0"><h3>依赖与异常</h3><p>说明哪些箭头传递数据、等待判断或权限；缺少客户环境证据时标出停止、回退或接管</p></article><article class="content-card emphasis-card" tabindex="0"><h3>换人接手</h3><p>随机选一个节点说明下一位如何接手，再把这套对象语言带入 3.2 的真实任务画布</p></article></div></div></div>
-    <div class="numeric-progress">19/21</div>
-    <div class="semantic-label">SECTION REVIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">用输入与产物连接完整阅读流程</h2>
+    <div class="slide-content"><p class="slide-lead">每步接收前序结果，并在交接条件满足后继续</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>节点</th><th>输入</th><th>输出</th><th>交接条件</th></tr></thead><tbody><tr><td>取得原文</td><td>检索线索</td><td>PDF 与身份记录</td><td>版本已核对</td></tr><tr><td>处理与抽查</td><td>PDF 与问题</td><td>派生稿及抽查记录</td><td>可用范围明确</td></tr><tr><td>按问题摘录</td><td>可用正文及位置</td><td>定义、限制与依据</td><td>关键内容齐全</td></tr><tr><td>解释并写笔记</td><td>摘录与问题</td><td>初步解释及疑问</td><td>能回查依据</td></tr><tr><td>核验并修订</td><td>初稿与原件</td><td>修订后的笔记</td><td>缺口与理由明确</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">19/25</div>
+    <div class="semantic-label">WORKFLOW CANVAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.0000%"></div></div>
+<!-- speaker-notes
+第一节点已在单元 2 完成；本轮推进中间三步，最后一步在单元 4 展开。不要求另交每个节点的表格。
+-->
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b7" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1</div>
-    <h2 class="slide-title">本讲知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-3-1/mindmap-3-1.html" title="本讲知识地图"></iframe></div></div>
-    <div class="numeric-progress">20/21</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">用一个节点检查交接是否明确</h2>
+    <div class="slide-content"><p class="slide-lead">对照原件确认定义与限制，才把摘录交给解释步骤</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>节点：核对作业完成时间的定义与限制。</p><p>输入：原 PDF 物理页 6、第 2.2 节派生稿与抽查记录。 动作：对照领取至提交的定义及作者说明的测量限制。 输出：定义、限制、来源位置和剩余缺口。 完成条件：学生能回查，确认派生稿保留必要说明。 失败处理：派生稿缺失则回原件；仍不清楚则标待核。</p></div></div></div></div>
+    <div class="numeric-progress">20/25</div>
+    <div class="semantic-label">NODE CONTRACT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="b8" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 3.1</div>
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 依赖与流程画布</div>
+    <h2 class="slide-title">把核对后的摘录写成一条初步解释</h2>
+    <div class="slide-content"><p class="slide-lead">笔记同时保留依据、自己的理解和当前仍不能确认的内容</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08</span><code class="language-markdown">## 问题：这个间隔等于专注学习时间吗？
+依据：原 PDF 物理页 6，第 2.2 节作业段落。
+中文概述：领取至提交的间隔；作者承认
+它不完美反映每次作业的实际用时。
+我的理解：记录有起止时间，但不足以确认
+其间一直在学习，不能直接称作专注时长。
+
+疑问：还需要什么记录，才能区分暂停与学习？</code></pre></div></div>
+<div class="component component-text text-inset"><p>这是教学笔记示例。处理与抽查记录说明材料是否保留原意；下一单元再核验重要主张和推广条件。</p></div></div></div>
+    <div class="numeric-progress">21/25</div>
+    <div class="semantic-label">FROM EXTRACTION TO UNDERSTANDING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.0000%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 完成并检验自己的流程</div>
+    <h2 class="slide-title">实践：处理局部材料，写初步解释</h2>
+    <div class="slide-content"><p class="slide-lead">本轮完成有限范围的处理与核对，原文和问题继续保存在同一项目</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">选定问题；处理所需段落，记录实际页范围与工具</span></li><li><span class="list-marker">■</span><span class="list-text">核对一段正文及平均 58 分钟这一数值；另选问题时说明对应检查对象</span></li><li><span class="list-marker">■</span><span class="list-text">在 notes/reading-note.md 写依据、自己的解释与疑问，附抽查记录</span></li><li><span class="list-marker">■</span><span class="list-text">画出本轮简要流程，标明输入、产物和一个失败处理分支</span></li></ul></div></div></div>
+    <div class="numeric-progress">22/25</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.0000%"></div></div>
+<!-- speaker-notes
+当前学期本节 90 分钟：概念 40、示范 15、实践 25、反馈 10。大文件和环境准备可课前完成；本轮不要求全文转换或另交节点卡。学生真实处理范围与教师备用材料分开记录，不把读取备用稿写成亲自转换成功。
+-->
+  </section>
+<section id="review" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3 <span>|</span> 完成并检验自己的流程</div>
+    <h2 class="slide-title">让同伴只凭文件继续这条阅读问题</h2>
+    <div class="slide-content"><p class="slide-lead">交接时检查材料位置、已查范围和待补内容，再修订对应文件</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">找到原件与派生稿，辨认哪些内容是作者表述、哪些是个人解释</span></li><li><span class="list-marker">■</span><span class="list-text">回查一条定义或数值，确认抽查记录的范围和缺口</span></li><li><span class="list-marker">■</span><span class="list-text">指出下一步要补什么，以及缺材料时怎样处理</span></li><li><span class="list-marker">■</span><span class="list-text">找不到的信息写回笔记或流程；不另交一套同义表格</span></li></ul></div></div></div>
+    <div class="numeric-progress">23/25</div>
+    <div class="semantic-label">HANDOFF AND REVISION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.0000%"></div></div>
+<!-- speaker-notes
+同伴检验留下的一条解释和处理记录是否能接手。下一单元沿原 PDF 与笔记核验数字、设计与机制；本轮不预设重要结论均已验证。
+-->
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3</div>
+    <h2 class="slide-title">本单元知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-3-1/mindmap-3-1.html" title="本单元知识地图"></iframe></div></div>
+    <div class="numeric-progress">24/25</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH03 <span>|</span> 单元 3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么最终答案不能代替工作流过程？</span></li><li><span class="question-no">02</span><span class="question-text">一个节点至少应该说明哪些内容？</span></li><li><span class="question-no">03</span><span class="question-text">中间产物怎样帮助定位错误和完成交接？</span></li><li><span class="question-no">04</span><span class="question-text">数据依赖、判断依赖和权限依赖有什么区别？</span></li><li><span class="question-no">05</span><span class="question-text">为什么流程需要写明从哪些材料开始，以及最后由谁决定采用？</span></li><li><span class="question-no">06</span><span class="question-text">你选择的真实任务中，哪个节点最需要人工判断？</span></li></ol><nav class="nav-row" aria-label="课程导航">
-      <a class="side-nav nav-previous" href="ita-2-1.html" title="上一节：2.1 模型、工具、工具调用与上下文" aria-label="上一节：2.1 模型、工具、工具调用与上下文">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">用本轮输入、产物和依赖，说明工作流比待办清单多出什么。</span></li><li><span class="question-no">02</span><span class="question-text">何时直接读取 PDF，何时提取、OCR 或转换？摘要能替代什么？</span></li><li><span class="question-no">03</span><span class="question-text">用这次阅读举例说明数据、判断与权限依赖。</span></li><li><span class="question-no">04</span><span class="question-text">Markdown 怎样连接原 PDF 与图片？只复制正文会发生什么？</span></li><li><span class="question-no">05</span><span class="question-text">局部抽查通过能说明什么，不能说明什么？</span></li><li><span class="question-no">06</span><span class="question-text">同伴接手一条解释，需要哪些依据与缺口记录？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="ita-2-1.html" title="上一节：单元 2 模型、工具与上下文" aria-label="上一节：单元 2 模型、工具与上下文">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
-        <span class="nav-number">2.1</span>
-        <span class="nav-title">工具与上下文</span>
+        <span class="nav-number">单元 2</span>
+        <span class="nav-title">模型、工具与上下文</span>
       </a>
       <a class="exercise-link" href="ita-3-1-exec.html">本节练习</a>
-      <a class="side-nav nav-next" href="ita-3-2.html" title="下一节：3.2 从真实任务到工作流画布" aria-label="下一节：3.2 从真实任务到工作流画布">
-        <span class="nav-title">工作流画布</span>
-        <span class="nav-number">3.2</span>
+      <a class="side-nav nav-next" href="ita-4-1.html" title="下一节：单元 4 检查、证据与异常处理" aria-label="下一节：单元 4 检查、证据与异常处理">
+        <span class="nav-title">检查、证据与异常处理</span>
+        <span class="nav-number">单元 4</span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">21/21</div>
-    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="numeric-progress">25/25</div>
+    <div class="semantic-label">UNIT QUESTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

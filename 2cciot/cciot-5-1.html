@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">CCIoT · 5.1</div>
       <h1>体验容器云</h1>
-      <p class="cover-description">提交镜像和副本要求，让平台选择节点、启动容器并提供访问入口</p>
+      <p class="cover-description">提供镜像，让平台运行容器</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -44,22 +44,22 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">镜像到节点、Pod 启动、Service 转发；删工作负载后还剩什么</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较虚拟机的独立客户操作系统与容器共享宿主内核的运行方式</span></li><li><span class="list-marker">02</span><span class="list-text">说明镜像、运行时和镜像仓库的角色</span></li><li><span class="list-marker">03</span><span class="list-text">说明控制平面、工作节点、Pod 和工作负载分别接收、调度、运行或声明什么</span></li><li><span class="list-marker">04</span><span class="list-text">解释 Service 如何为短暂的 Pod 提供稳定入口</span></li><li><span class="list-marker">05</span><span class="list-text">从镜像入库开始，创建工作负载和 Service，记录响应并回收本次资源</span></li><li><span class="list-marker">06</span><span class="list-text">按镜像拉取、Pod 就绪、Service 后端、端口和应用响应定位访问失败的位置</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">镜像到节点、Pod 启动、Service 转发</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较虚拟机的独立客户操作系统与容器共享宿主内核的运行方式</span></li><li><span class="list-marker">02</span><span class="list-text">说明镜像、运行时和镜像仓库的角色</span></li><li><span class="list-marker">03</span><span class="list-text">说明控制平面、节点、Pod 和工作负载分别接收、调度、运行或声明什么</span></li><li><span class="list-marker">04</span><span class="list-text">解释 Service 如何为短暂的 Pod 提供稳定入口</span></li><li><span class="list-marker">05</span><span class="list-text">从镜像入库开始，创建工作负载和 Service，记录响应并回收本次资源</span></li><li><span class="list-marker">06</span><span class="list-text">按镜像拉取、Pod 就绪、Service 后端、端口和应用响应定位访问失败的位置</span></li></ol></div></div></div>
     <div class="numeric-progress">2/23</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-cards-cards"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 容器运行边界</div>
     <h2 class="slide-title">容器云：从云主机到应用运行环境</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-question" data-character-edge="right" data-character-along="48" data-character-exposure="68" data-character-scale="0.9" style="--character-along:48%;--character-exposure:68;--character-hidden:32%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-question.f2be0b4a3d2d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>容器云交付的是一台机器，还是一套运行环境？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="right-question" data-character-edge="right" data-character-along="67.128" data-character-exposure="83.658" data-character-scale="0.9" style="--character-along:67.128%;--character-exposure:83.658;--character-hidden:16.342%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-question.f2be0b4a3d2d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>容器云交付的是一台机器，还是一套运行环境？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">应用不必每次都携带一套完整的客户操作系统</p>
-<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>云主机</h3><p>提供虚拟处理器 CPU、内存、磁盘和网卡</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>云主机</h3><p>提供虚拟 CPU、内存、磁盘和网卡</p>
 <p>应用依赖一套完整的客户操作系统</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>容器云</h3><p>提供可调度的应用运行环境</p>
-<p>应用及依赖通常共享宿主操作系统内核</p></article></div></div></div>
+<p>应用及依赖共享宿主操作系统内核</p></article></div></div></div>
     <div class="numeric-progress">3/23</div>
     <div class="semantic-label">CONTAINER CLOUD</div>
     <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
@@ -70,9 +70,9 @@
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 容器运行边界</div>
     <h2 class="slide-title">容器与虚拟机：隔离层次不同</h2>
     <div class="slide-content"><p class="slide-lead">容器共享宿主内核，性能差异取决于工作负载和平台条件</p>
-<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-list list-key-value has-column-widths" data-column-widths="20% 80%" style="--key-value-columns:minmax(0,20fr) minmax(0,80fr)"><div class="key-value-item"><h3 class="key-value-key">虚拟机</h3><div class="key-value-value"><p>以虚拟硬件承载完整客户操作系统，每台虚拟机有自己的客户操作系统内核</p></div></div><div class="key-value-item"><h3 class="key-value-key">容器</h3><div class="key-value-value"><p>通常与宿主共享内核，并用进程隔离和 CPU、内存等资源限制封装应用</p></div></div><div class="key-value-item"><h3 class="key-value-key">共同点</h3><div class="key-value-value"><p>都需要资源限制、网络、存储和权限配置才能稳定运行</p></div></div><div class="key-value-item"><h3 class="key-value-key">判断条件</h3><div class="key-value-value"><p>启动速度和资源占用取决于工作负载、镜像、节点和平台实现</p></div></div></div></div>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-list list-key-value has-column-widths" data-column-widths="22.367% 77.633%" style="--key-value-columns:minmax(0,22.367fr) minmax(0,77.633fr)"><div class="key-value-item"><h3 class="key-value-key">虚拟机</h3><div class="key-value-value"><p>以虚拟硬件承载完整客户操作系统，每台虚拟机有自己的客户操作系统内核</p></div></div><div class="key-value-item"><h3 class="key-value-key">容器</h3><div class="key-value-value"><p>通常与宿主共享内核，并用进程隔离和 CPU、内存等资源限制封装应用</p></div></div><div class="key-value-item"><h3 class="key-value-key">共同点</h3><div class="key-value-value"><p>都需要资源限制、网络、存储和权限配置才能稳定运行</p></div></div><div class="key-value-item"><h3 class="key-value-key">判断条件</h3><div class="key-value-value"><p>启动速度和资源占用取决于工作负载、镜像、节点和平台实现</p></div></div></div></div>
 <figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-5-1/assets/previews/vm-container-stack-image2.webp" data-full-src="resources/decks/cciot-5-1/assets/vm-container-stack-image2.webp" data-full-width="1448" data-full-height="1086" alt="虚拟机与容器在宿主资源上形成不同隔离层级的对比" tabindex="0" role="button" aria-label="放大图片：虚拟机与容器在宿主资源上形成不同隔离层级的对比" decoding="async"></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“更快、更省资源”是条件性比较，不是容器的绝对承诺</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“更快、更省资源”是条件性比较</p></div></div>
     <div class="numeric-progress">4/23</div>
     <div class="semantic-label">RUNTIME BOUNDARY</div>
     <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
@@ -82,8 +82,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 容器运行边界</div>
     <h2 class="slide-title">练习：哪些证据指向容器运行环境？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 25% 41%"><colgroup><col style="width:34%"><col style="width:25%"><col style="width:41%"></colgroup><thead><tr><th>场景</th><th>请先判断</th><th>需要找到的证据</th></tr></thead><tbody><tr><td>一台完整 Linux 操作系统虚拟机</td><td>虚拟机／容器／证据不足</td><td>虚拟硬件、客户操作系统、运行时或资源边界</td></tr><tr><td>共享宿主内核的 Web 服务进程组</td><td>虚拟机／容器／证据不足</td><td>应用封装、宿主内核和资源限制</td></tr><tr><td>远程桌面连接另一台主机</td><td>虚拟机／容器／证据不足</td><td>远程访问之外，是否有运行环境封装证据？</td></tr><tr><td>同一系统中普通应用</td><td>虚拟机／容器／证据不足</td><td>是否存在容器运行时和独立资源边界？</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断容器要寻找应用封装、运行时、共享内核和资源限制的证据</p></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 25.045% 40.955%"><colgroup><col style="width:34%"><col style="width:25.045%"><col style="width:40.955%"></colgroup><thead><tr><th>场景</th><th>请先判断</th><th>需要找到的证据</th></tr></thead><tbody><tr><td>一台完整 Linux 操作系统虚拟机</td><td>虚拟机／容器／证据不足</td><td>虚拟硬件、客户操作系统、运行时或资源边界</td></tr><tr><td>共享宿主内核的 Web 服务进程组</td><td>虚拟机／容器／证据不足</td><td>应用封装、宿主内核和资源限制</td></tr><tr><td>远程桌面连接另一台主机</td><td>虚拟机／容器／证据不足</td><td>远程访问之外，是否有运行环境封装证据？</td></tr><tr><td>同一系统中普通应用</td><td>虚拟机／容器／证据不足</td><td>是否存在容器运行时和独立资源边界？</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">5/23</div>
     <div class="semantic-label">BOUNDARY JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:21.7391%"></div></div>
@@ -96,11 +95,11 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 镜像与运行时</div>
     <h2 class="slide-title">镜像提供内容，运行时启动容器</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="82" data-character-exposure="64" data-character-scale="0.9" style="--character-along:82%;--character-exposure:64;--character-hidden:36%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.d3cbf09864d1.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>镜像、运行时和容器，谁负责哪一步？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="cciot-cat" data-character-pose="left-thinking" data-character-edge="left" data-character-along="81.18" data-character-exposure="72.238" data-character-scale="0.9" style="--character-along:81.18%;--character-exposure:72.238;--character-hidden:27.762%;--character-scale:0.9;--character-bubble-x:350px;--character-bubble-y:118px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/left-thinking.d3cbf09864d1.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>镜像、运行时和容器，谁负责哪一步？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">镜像、容器和节点不是同一个对象</p>
 <div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>分发：镜像上传仓库 → 节点拉取</p><p>运行：运行时启动容器 → 应用响应</p></div></div>
 <div class="component component-list list-key-value reveal-items has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item substep"><h3 class="key-value-key">镜像</h3><div class="key-value-value"><p>封装应用、依赖、文件系统层和启动信息，可被重复分发</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">容器</h3><div class="key-value-value"><p>镜像在某个节点上启动后的运行实例</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">运行时</h3><div class="key-value-value"><p>创建、启动、停止和删除容器，并与内核的隔离机制协作</p></div></div><div class="key-value-item substep"><h3 class="key-value-key">镜像仓库</h3><div class="key-value-value"><p>存储、标记、分发镜像，并控制谁可以读取或推送</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>上传镜像成功只证明仓库对象存在，不等于节点已经拉取或应用已经可访问</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>上传镜像成功只证明仓库对象存在</p></div></div>
     <div class="numeric-progress">6/23</div>
     <div class="semantic-label">IMAGE AND RUNTIME</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.0870%"></div></div>
@@ -113,7 +112,7 @@
     <div class="slide-content"><p class="slide-lead">同一镜像可把代码和依赖带到其他节点，但仍要匹配版本、架构、权限</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>应用内容</h3><p>代码、静态文件和启动命令</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行依赖</h3><p>库、配置和基础文件系统层</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行条件</h3><p>架构、端口、权限和资源限制</p></article></div>
 <div class="component component-text text-panel"><div class="reading-panel"><p>构建或取得镜像 → 标记 → 推送 → 拉取 → 启动</p></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可移植性意味着运行环境更容易复制，不意味着可以忽略目标节点的内核、架构和安全条件</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可移植性意味着运行环境更容易复制</p></div></div>
     <div class="numeric-progress">7/23</div>
     <div class="semantic-label">REPEATABLE ENVIRONMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
@@ -123,7 +122,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 镜像与运行时</div>
     <h2 class="slide-title">练习：哪一步失败，先检查哪个对象？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 27% 43%"><colgroup><col style="width:30%"><col style="width:27%"><col style="width:43%"></colgroup><thead><tr><th>现象</th><th>请先判断检查对象</th><th>请写出判断依据</th></tr></thead><tbody><tr><td>镜像推送被拒绝</td><td>仓库／身份／其他</td><td>填写账号、组织、标签或访问证据</td></tr><tr><td>节点拉取镜像失败</td><td>仓库／网络／架构／其他</td><td>填写镜像地址、连通性或节点条件证据</td></tr><tr><td>容器立即退出</td><td>启动命令／应用／其他</td><td>填写进程状态、启动命令或日志证据</td></tr><tr><td>容器运行但端口无响应</td><td>应用／端口／网络／其他</td><td>填写监听、映射或访问路径证据</td></tr></tbody></table></div></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30.602% 39.554% 29.844%"><colgroup><col style="width:30.602%"><col style="width:39.554%"><col style="width:29.844%"></colgroup><thead><tr><th>现象</th><th>检查对象</th><th>判断依据</th></tr></thead><tbody><tr><td>镜像推送被拒绝</td><td>仓库／身份／其他</td><td>账号、组织、标签</td></tr><tr><td>节点拉取镜像失败</td><td>仓库／网络／架构／其他</td><td>镜像地址、连通性</td></tr><tr><td>容器立即退出</td><td>启动命令／应用／其他</td><td>进程状态、启动命令</td></tr><tr><td>容器运行但端口无响应</td><td>应用／端口／网络／其他</td><td>监听、映射</td></tr></tbody></table></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>沿着仓库、节点运行时、容器进程和应用端口依次排查</p></div></div>
     <div class="numeric-progress">8/23</div>
     <div class="semantic-label">IMAGE CHAIN</div>
@@ -140,23 +139,21 @@
     <div class="slide-content"><p class="slide-lead">控制平面维护期望状态，工作节点承载实际运行</p>
 <div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>声明：提交工作负载 → 控制平面协调</p><p>运行：控制平面调度 → 工作节点承载 Pod → 容器运行</p></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>控制平面</h3><p>接收声明、维护集群状态、协调调度与变化</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>工作节点</h3><p>提供处理器 CPU、内存、网络和存储，实际承载 Pod</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>容器组 Pod</h3><p>Kubernetes 最小的调度与运行单元，包含一个或多个协同容器</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>提交镜像和三个副本后，控制平面选择节点、创建 Pod，并在 Pod 失败时补回副本</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>提交镜像后，控制平面选择节点、创建 Pod，并在 Pod 失败时补回副本</p></div></div>
     <div class="numeric-progress">9/23</div>
     <div class="semantic-label">KUBERNETES</div>
     <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> Kubernetes 集群</div>
     <h2 class="slide-title">工作负载声明状态，控制平面调度 Pod</h2>
     <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="cciot-cat" data-character-pose="right-confirm" data-character-edge="right" data-character-along="48" data-character-exposure="70" data-character-scale="0.9" style="--character-along:48%;--character-exposure:70;--character-hidden:30%;--character-scale:0.9;--character-bubble-x:-200px;--character-bubble-y:128px;--character-tail-at:72%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/right-confirm.160795f5f17c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>如果少了一个 Pod，控制平面会再创建一个以恢复声明的副本数</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">Pod 是运行单元，不是长期稳定的用户入口</p>
-<div class="slide-main-content"><div class="component content-group group-align-start"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>工作负载对象，例如 Deployment</h3><p>声明镜像、副本数量和更新方式</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:1"><article class="content-card emphasis-card" tabindex="0"><h3>工作负载对象，例如 Deployment</h3><p>声明镜像、副本数量和更新方式</p>
 <p>平台按期望状态创建或替换 Pod</p></article><article class="content-card emphasis-card" tabindex="0"><h3>工作节点与 Pod</h3><p>节点提供运行资源</p>
 <p>Pod 在节点上共享网络等运行上下文并承载容器</p></article></div></div>
-<div class="component-semantic semantic-case"><div class="semantic-cue">Case</div><div class="component component-text text-inset"><p>图例：控制平面组织；工作负载描述期望状态；工作节点提供资源；Pod 运行容器；服务对象 Service 提供稳定访问抽象</p></div></div>
-<figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/cciot-5-1/assets/previews/kubernetes-service-path-image2.webp" data-full-src="resources/decks/cciot-5-1/assets/kubernetes-service-path-image2.webp" data-full-width="1448" data-full-height="1086" alt="工作负载由控制平面组织、工作节点承载 Pod，并通过 Service 提供稳定访问的示意" tabindex="0" role="button" aria-label="放大图片：工作负载由控制平面组织、工作节点承载 Pod，并通过 Service 提供稳定访问的示意" decoding="async"></figure></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>工作负载描述期望状态，Pod 是该状态在节点上的一次运行结果</p></div></div>
     <div class="numeric-progress">10/23</div>
     <div class="semantic-label">OBJECT ROLES</div>
@@ -167,7 +164,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> Kubernetes 集群</div>
     <h2 class="slide-title">练习：这项工作属于哪个对象？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="44% 24% 32%"><colgroup><col style="width:44%"><col style="width:24%"><col style="width:32%"></colgroup><thead><tr><th>工作</th><th>选择对象（控制平面／节点／Pod／工作负载）</th><th>职责证据</th></tr></thead><tbody><tr><td>决定应用放在哪个节点</td><td>填写</td><td>调度与状态证据</td></tr><tr><td>提供 CPU 和内存运行容器</td><td>填写</td><td>实际资源证据</td></tr><tr><td>封装一个或多个协同容器</td><td>填写</td><td>运行单元与协同证据</td></tr><tr><td>声明运行三个副本</td><td>填写</td><td>期望状态／副本证据</td></tr></tbody></table></div></div></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34.683% 33.447% 31.87%"><colgroup><col style="width:34.683%"><col style="width:33.447%"><col style="width:31.87%"></colgroup><thead><tr><th>工作</th><th>控制平面／节点／Pod／工作负载）</th><th>职责证据</th></tr></thead><tbody><tr><td>决定应用放在哪个节点</td><td>填写</td><td>调度与状态证据</td></tr><tr><td>提供 CPU 和内存运行容器</td><td>填写</td><td>实际资源证据</td></tr><tr><td>封装一个或多个协同容器</td><td>填写</td><td>运行单元与协同证据</td></tr><tr><td>声明运行三个副本</td><td>填写</td><td>期望状态／副本证据</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">11/23</div>
     <div class="semantic-label">CLUSTER ROLES</div>
     <div class="progress-track"><div class="progress-fill" style="width:47.8261%"></div></div>
@@ -180,9 +177,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> Service 与访问</div>
     <h2 class="slide-title">Service 为变化中的 Pod 提供稳定入口</h2>
-    <div class="slide-content"><p class="slide-lead">用户访问 Service 的固定名称或地址，不必记录每个可能被替换的 Pod 地址</p>
+    <div class="slide-content"><p class="slide-lead">用户访问 Service 的固定名称或地址</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="浏览器或客户端 → Service → 就绪 Pod → 容器端口"><span class="relation-term">浏览器或客户端</span><span class="relation-operator">→</span><span class="relation-term">Service</span><span class="relation-operator">→</span><span class="relation-term">就绪 Pod</span><span class="relation-operator">→</span><span class="relation-term">容器端口</span></div></div>
-<div class="component component-list list-key-value has-column-widths" data-column-widths="25% 75%" style="--key-value-columns:minmax(0,25fr) minmax(0,75fr)"><div class="key-value-item"><h3 class="key-value-key">工作负载</h3><div class="key-value-value"><p>声明应用副本和 Pod 的期望状态；平台据此维护 Pod</p></div></div><div class="key-value-item"><h3 class="key-value-key">Pod</h3><div class="key-value-value"><p>是当前运行单元，可能因为失败或更新而被替换</p></div></div><div class="key-value-item"><h3 class="key-value-key">Service</h3><div class="key-value-value"><p>本节示例中，Service 用标签选择器找到后端 Pod，保留一个访问入口并把请求转发过去</p></div></div><div class="key-value-item"><h3 class="key-value-key">入口类型</h3><div class="key-value-value"><p>入口可以只供集群内使用，也可以通过节点端口或外部负载均衡让集群外访问</p></div></div></div></div>
+<div class="component component-list list-key-value has-column-widths" data-column-widths="23.161% 76.839%" style="--key-value-columns:minmax(0,23.161fr) minmax(0,76.839fr)"><div class="key-value-item"><h3 class="key-value-key">工作负载</h3><div class="key-value-value"><p>声明应用副本和 Pod 的期望状态；平台据此维护 Pod</p></div></div><div class="key-value-item"><h3 class="key-value-key">Pod</h3><div class="key-value-value"><p>是当前运行单元，可能因为失败或更新而被替换</p></div></div><div class="key-value-item"><h3 class="key-value-key">Service</h3><div class="key-value-value"><p>本节示例中，Service 用标签选择器找到后端 Pod，保留一个访问入口并把请求转发过去</p></div></div><div class="key-value-item"><h3 class="key-value-key">入口类型</h3><div class="key-value-value"><p>入口可以只供集群内使用，也可以通过节点端口或外部负载均衡让集群外访问</p></div></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Pod 可以变化，Service 让访问者不必跟着 Pod 地址变化</p></div></div>
     <div class="numeric-progress">12/23</div>
     <div class="semantic-label">SERVICE PATH</div>
@@ -193,9 +190,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> Service 与访问</div>
     <h2 class="slide-title">应用可访问需要四类证据</h2>
-    <div class="slide-content"><p class="slide-lead">一个平台绿灯不能替代整条访问链</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1. 控制平面</h3><p>工作负载创建成功，期望对象已经提交</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2. 运行面</h3><p>Pod 已调度、容器运行并处于就绪状态</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3. 网络面</h3><p>Service 有后端，端口和访问边界配置正确</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4. 应用面</h3><p>访问入口返回目标服务的实际响应</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同时看到工作负载已提交、Pod 就绪、Service 有后端且入口返回目标页面，才能说这条访问链可用</p></div></div>
+    <div class="slide-content"><p class="slide-lead">理解整条访问链</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1. 控制平面</h3><p>工作负载创建成功，对象已经提交</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2. 运行面</h3><p>Pod 已调度、容器运行，就绪</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3. 网络面</h3><p>Service 后端，端口和访问配置正确</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4. 应用面</h3><p>访问入口返回目标服务的实际响应</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>访问链可用需要四类证据齐全</p></div></div>
     <div class="numeric-progress">13/23</div>
     <div class="semantic-label">ACCESS EVIDENCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
@@ -205,8 +202,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> Service 与访问</div>
     <h2 class="slide-title">练习：Service 为何仍不可访问？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 29% 36%"><colgroup><col style="width:35%"><col style="width:29%"><col style="width:36%"></colgroup><thead><tr><th>现象</th><th>请先判断检查对象</th><th>请写出判断依据</th></tr></thead><tbody><tr><td>工作负载运行但 Service 无后端</td><td>选择器／Pod 就绪／其他</td><td>填写后端对象和状态证据</td></tr><tr><td>Service 有后端但连接被拒绝</td><td>服务端口／容器端口／其他</td><td>填写转发目标和应用监听证据</td></tr><tr><td>Pod 已就绪且 Service 有后端但外部访问失败</td><td>外部网络路径／其他</td><td>填写访问类型、路由或防火墙证据</td></tr><tr><td>浏览器有响应但页面错误</td><td>应用内部状态／依赖服务／其他</td><td>填写日志、配置或业务响应证据</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按选择器、端口、网络和应用响应逐段定位访问故障</p></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33.153% 37.754% 29.093%"><colgroup><col style="width:33.153%"><col style="width:37.754%"><col style="width:29.093%"></colgroup><thead><tr><th>现象</th><th>检查对象</th><th>判断依据</th></tr></thead><tbody><tr><td>工作负载运行但 Service 无后端</td><td>选择器／Pod 就绪／其他</td><td>后端对象和状态证据</td></tr><tr><td>Service 有后端但连接被拒绝</td><td>服务端口／容器端口／其他</td><td>转发目标和应用监听证据</td></tr><tr><td>Pod 已就绪且 Service 有后端但外部访问失败</td><td>外部网络路径／其他</td><td>访问类型、路由或防火墙证据</td></tr><tr><td>浏览器有响应但页面错误</td><td>应用内部状态／依赖服务／其他</td><td>日志、配置或业务响应证据</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">14/23</div>
     <div class="semantic-label">ACCESS DIAGNOSIS</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
@@ -254,7 +250,7 @@
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 体验部署链</div>
     <h2 class="slide-title">练习：每项证据分别证明什么？</h2>
     <div class="slide-content"><div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>仓库存在 → 节点可拉取 → Pod 就绪 Ready → Service 有后端 → 入口响应</p></div></div>
-<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>观察结果</th><th>请先判断它能证明什么</th><th>还需要继续核对什么</th></tr></thead><tbody><tr><td>镜像出现在仓库</td><td>仓库中存在镜像对象／其他</td><td>节点是否能拉取、工作负载是否运行</td></tr><tr><td>Pod 已就绪</td><td>运行单元满足就绪条件／其他</td><td>Service、端口和外部网络</td></tr><tr><td>Service 有后端</td><td>选择器找到了运行单元／其他</td><td>端口映射、应用监听和入口</td></tr><tr><td>浏览器得到应用响应</td><td>这条入口链暂时可用／其他</td><td>数据、权限和集群全局健康</td></tr></tbody></table></div></div></div></div>
+<div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23.482% 39.925% 36.593%"><colgroup><col style="width:23.482%"><col style="width:39.925%"><col style="width:36.593%"></colgroup><thead><tr><th>观察结果</th><th>请先判断它能证明什么</th><th>还需要继续核对什么</th></tr></thead><tbody><tr><td>镜像出现在仓库</td><td>仓库中存在镜像对象／其他</td><td>节点是否能拉取、工作负载是否运行</td></tr><tr><td>Pod 已就绪</td><td>运行单元满足就绪条件／其他</td><td>Service、端口和外部网络</td></tr><tr><td>Service 有后端</td><td>选择器找到了运行单元／其他</td><td>端口映射、应用监听和入口</td></tr><tr><td>浏览器得到响应</td><td>这条入口链暂时可用／其他</td><td>数据、权限和集群全局健康</td></tr></tbody></table></div></div></div></div>
     <div class="numeric-progress">17/23</div>
     <div class="semantic-label">DEPLOYMENT EVIDENCE</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.9130%"></div></div>
@@ -280,9 +276,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 生命周期与责任</div>
     <h2 class="slide-title">容器轻量，也要维护镜像、平台、数据</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="80" data-character-exposure="66" data-character-scale="0.9" style="--character-along:80%;--character-exposure:66;--character-hidden:34%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-frustrated.d03471fa521a.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>容器删了，镜像、数据和权限怎么还在？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="cciot-cat" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="74.656" data-character-exposure="100" data-character-scale="0.9" style="--character-along:74.656%;--character-exposure:100;--character-hidden:0%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:0px;--character-tail-at:78%" aria-label="云边观察猫发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/cciot-cat/bottom-frustrated.d03471fa521a.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>容器删了，镜像、数据和权限怎么还在？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">镜像要修补漏洞，平台要维护权限和网络，有状态应用还要备份和恢复数据</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>镜像维护</h3><p>检查来源、版本、漏洞、权限和架构</p></article><article class="content-card emphasis-card" tabindex="0"><h3>平台维护</h3><p>管理身份与权限、配额、网络策略、日志和监控</p></article><article class="content-card emphasis-card" tabindex="0"><h3>数据维护</h3><p>为有状态应用设计卷、备份、恢复和回收</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>镜像维护</h3><p>检查来源、版本、漏洞、权限和架构</p></article><article class="content-card emphasis-card" tabindex="0"><h3>平台维护</h3><p>管理身份与权限、配额、网络策略、日志和监控</p></article><article class="content-card emphasis-card" tabindex="0"><h3>数据维护</h3><p>为有状态应用设计备份、恢复和回收</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>团队要写清谁更新镜像、谁维护集群权限和网络、谁备份并恢复数据</p></div></div>
     <div class="numeric-progress">19/23</div>
     <div class="semantic-label">GOVERNANCE</div>
@@ -293,8 +289,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 生命周期与责任</div>
     <h2 class="slide-title">练习：哪个对象还需要单独处理？</h2>
-    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 30% 37%"><colgroup><col style="width:33%"><col style="width:30%"><col style="width:37%"></colgroup><thead><tr><th>状态</th><th>不能直接推出什么</th><th>仍需处理的对象</th></tr></thead><tbody><tr><td>镜像可以拉取</td><td>安全／合规／其他</td><td>来源、漏洞、权限和版本</td></tr><tr><td>Pod 正在运行</td><td>数据保留／业务可用／其他</td><td>卷、备份和恢复策略</td></tr><tr><td>Service 可以访问</td><td>应用功能／数据正确／其他</td><td>依赖服务、日志和业务验证</td></tr><tr><td>工作负载已删除</td><td>资源已全部回收／其他</td><td>Service、卷、网络和临时集群资源</td></tr></tbody></table></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>验收不能只看 Pod 是否 Running；还要记录应用响应，处理镜像、权限、卷和临时资源</p></div></div>
+    <div class="slide-content"><div class="slide-main-content"><div class="component-semantic semantic-exercise"><div class="semantic-cue">Exercise</div><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25.633% 37.366% 37.001%"><colgroup><col style="width:25.633%"><col style="width:37.366%"><col style="width:37.001%"></colgroup><thead><tr><th>状态</th><th>不能直接推出什么</th><th>仍需处理的对象</th></tr></thead><tbody><tr><td>镜像可以拉取</td><td>安全／合规／其他</td><td>来源、漏洞、权限和版本</td></tr><tr><td>Pod 正在运行</td><td>数据保留／业务可用／其他</td><td>卷、备份和恢复策略</td></tr><tr><td>Service 可以访问</td><td>应用功能／数据正确／其他</td><td>依赖服务、日志和业务验证</td></tr><tr><td>工作负载已删除</td><td>资源已全部回收／其他</td><td>Service、卷、网络和临时集群资源</td></tr></tbody></table></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>验收要记录应用响应，处理镜像、权限、卷和临时资源</p></div></div>
     <div class="numeric-progress">20/23</div>
     <div class="semantic-label">RESPONSIBILITY JUDGMENT</div>
     <div class="progress-track"><div class="progress-fill" style="width:86.9565%"></div></div>
@@ -307,8 +303,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1</div>
     <h2 class="slide-title">练习：验收一次容器应用交付</h2>
-    <div class="slide-content"><p class="slide-lead">不看前页结论，从一份镜像开始写出可访问、可诊断、可回收的交付记录</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用客户操作系统、共享内核和资源边界解释为什么选择容器而不是完整虚拟机</span></li><li><span class="list-marker">02</span><span class="list-text">画出镜像、仓库、节点运行时与容器之间的分发和启动路径</span></li><li><span class="list-marker">03</span><span class="list-text">用工作负载、控制平面、工作节点和 Pod 写出期望状态怎样变成实际运行</span></li><li><span class="list-marker">04</span><span class="list-text">画出客户端、Service、就绪 Pod 与容器端口，并诊断一处不可访问故障</span></li><li><span class="list-marker">05</span><span class="list-text">分别写出镜像存在、Pod 就绪、Service 有后端和入口响应能够证明什么</span></li><li><span class="list-marker">06</span><span class="list-text">列出工作负载、Service、镜像、卷、权限和临时资源的回收责任，并标出要交给云存储继续保存的数据</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">从一份镜像开始写出可访问、可诊断、可回收的交付记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用客户操作系统、共享内核和资源边界解释为什么选择容器</span></li><li><span class="list-marker">02</span><span class="list-text">画出镜像、仓库、节点运行时与容器之间的分发和启动路径</span></li><li><span class="list-marker">03</span><span class="list-text">用工作负载、控制平面、工作节点和 Pod 写出期望状态怎样变成实际运行</span></li><li><span class="list-marker">04</span><span class="list-text">画出客户端、Service、就绪 Pod 与容器端口，并诊断一处不可访问故障</span></li><li><span class="list-marker">05</span><span class="list-text">分别写出镜像存在、Pod 就绪、Service 有后端和入口响应能够证明什么</span></li><li><span class="list-marker">06</span><span class="list-text">列出工作负载、Service、镜像、卷、权限和临时资源的回收责任</span></li></ol></div></div></div>
     <div class="numeric-progress">21/23</div>
     <div class="semantic-label">SECTION REVIEW</div>
     <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
@@ -328,7 +324,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">CCIoT <span>|</span> CH05 <span>|</span> 5.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">虚拟机为什么有自己的客户操作系统内核，而容器通常共享宿主内核？</span></li><li><span class="question-no">02</span><span class="question-text">镜像、容器、运行时和镜像仓库如何分工？</span></li><li><span class="question-no">03</span><span class="question-text">收到“运行三个副本”的声明后，控制平面、工作节点、Pod 和工作负载各做什么？</span></li><li><span class="question-no">04</span><span class="question-text">为什么 Service 可以比 Pod 地址更适合作为应用入口？</span></li><li><span class="question-no">05</span><span class="question-text">如何沿着镜像、部署、暴露、验证和回收完成一次容器云演示？</span></li><li><span class="question-no">06</span><span class="question-text">Pod 已经运行后，团队为什么还要分别维护镜像、权限、网络和数据卷？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">虚拟机为什么有自己的客户操作系统内核，而容器通常共享宿主内核？</span></li><li><span class="question-no">02</span><span class="question-text">镜像、容器、运行时和镜像仓库如何分工？</span></li><li><span class="question-no">03</span><span class="question-text">收到“运行三个副本”的声明后，控制平面、工作节点、Pod 要做什么？</span></li><li><span class="question-no">04</span><span class="question-text">为什么 Service 可以比 Pod 地址更适合作为应用入口？</span></li><li><span class="question-no">05</span><span class="question-text">如何沿着镜像、部署、暴露、验证和回收完成一次容器云演示？</span></li><li><span class="question-no">06</span><span class="question-text">Pod 已经运行后，团队为什么还要分别维护镜像、权限、网络和数据卷？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="cciot-4-1.html" title="上一节：4.1 体验私有云" aria-label="上一节：4.1 体验私有云">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
