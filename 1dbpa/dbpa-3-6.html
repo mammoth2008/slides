@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 3.6</div>
       <h1>视图</h1>
-      <p class="cover-description">保存一条常用查询，让不同角色按需查看同一组表</p>
+      <p class="cover-description">允许不同角色按需查看</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -44,44 +44,43 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">你将定义并消解视图，再判断一次写入能否明确落到基本表的某一行、某一列</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分基本表、视图和派生表的生命周期</span></li><li><span class="list-marker">02</span><span class="list-text">把常用 SELECT 保存为视图，查询它并在删除前检查谁在引用它</span></li><li><span class="list-marker">03</span><span class="list-text">解释显式列名与 WITH CHECK OPTION</span></li><li><span class="list-marker">04</span><span class="list-text">用视图定义替换查询中的视图名，说明查询怎样改写到基本表，并区分物化结果</span></li><li><span class="list-marker">05</span><span class="list-text">判断哪些视图更新通常可以有意义地回写</span></li><li><span class="list-marker">06</span><span class="list-text">说明视图怎样减少重复 SQL、隐藏部分行列，并为不同角色提供所需内容</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/20</div>
+    <div class="slide-content"><p class="slide-lead">定义并消解视图</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分基本表、视图和派生表的生命周期</span></li><li><span class="list-marker">02</span><span class="list-text">把常用 <code>SELECT</code> 保存为视图，查询它并在删除前检查谁在引用它</span></li><li><span class="list-marker">03</span><span class="list-text">解释显式列名与 <code>WITH CHECK OPTION</code></span></li><li><span class="list-marker">04</span><span class="list-text">用视图定义替换查询中的视图名，说明查询怎样改写到基本表</span></li><li><span class="list-marker">05</span><span class="list-text">判断哪些视图更新通常可以有意义地回写</span></li><li><span class="list-marker">06</span><span class="list-text">说明视图怎样减少重复 SQL、隐藏部分行列，并为不同角色提供所需内容</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/22</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.0909%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
-    <h2 class="slide-title">视图可像表一样使用，但不保存数据副本</h2>
+    <h2 class="slide-title">视图不保存数据副本</h2>
     <div class="slide-content"><p class="slide-lead">数据库主要保存视图定义，查询时再从来源关系得到当前结果</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="基本表／已有视图 → 保存查询定义 → 用户查询时生成当前结果"><span class="relation-term">基本表／已有视图</span><span class="relation-operator">→</span><span class="relation-term">保存查询定义</span><span class="relation-operator">→</span><span class="relation-term">用户查询时生成当前结果</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>来源</h3><p>视图可以引用一个或多个基本表或已有视图</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>存储</h3><p>数据字典保存视图定义，而不是独立结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>使用</h3><p>用户可以像查询基本表一样查询视图</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>给每个角色建一个视图，就是复制几份数据吧？</p></div></div></div></aside>
-    <div class="numeric-progress">3/20</div>
+    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="59.992" data-character-exposure="59.252" data-character-scale="0.9" style="--character-along:59.992%;--character-exposure:59.252;--character-hidden:40.748%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>给每个角色建一个视图，就是复制几份数据吧？</p></div></div></div></aside>
+    <div class="numeric-progress">3/22</div>
     <div class="semantic-label">VIRTUAL TABLE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.6364%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6</div>
-    <h2 class="slide-title">视图与派生表的关键差异是生命周期</h2>
-    <div class="slide-content"><p class="slide-lead">两者都由查询产生，但只有视图定义可以跨语句复用</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>对象</th><th>定义保存</th><th>生命周期</th></tr></thead><tbody><tr><td>基本表</td><td>表对象与数据字典</td><td>持久存在</td></tr><tr><td>视图</td><td>数据字典中的定义（不保存结果副本）</td><td>持久存在</td></tr><tr><td>派生表</td><td>当前 SQL 语句</td><td>语句结束即消失</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">4/20</div>
+    <h2 class="slide-title">视图与派生表的差异</h2>
+    <div class="slide-content"><p class="slide-lead">视图定义可以跨语句复用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15.123% 56.338% 28.539%"><colgroup><col style="width:15.123%"><col style="width:56.338%"><col style="width:28.539%"></colgroup><thead><tr><th>对象</th><th>定义保存</th><th>生命周期</th></tr></thead><tbody><tr><td>基本表</td><td>表对象与数据字典</td><td>持久存在</td></tr><tr><td>视图</td><td>数据字典中的定义（不保存结果副本）</td><td>持久存在</td></tr><tr><td>派生表</td><td>当前 SQL 语句</td><td>语句结束即消失</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/22</div>
     <div class="semantic-label">VIEW LIFECYCLE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
-    <h2 class="slide-title">CREATE VIEW：把 SELECT 定义为视图</h2>
+    <h2 class="slide-title">CREATE VIEW</h2>
     <div class="slide-content"><p class="slide-lead">视图列名要能清楚表达结果关系</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-3-6/assets/generated/dbpa-ch03-view-window.svg" data-full-src="resources/decks/dbpa-3-6/assets/generated/dbpa-ch03-view-window.svg" alt="基本表中的数据由视图定义形成一个按角色和任务使用的数据窗口" tabindex="0" role="button" aria-label="放大图片：基本表中的数据由视图定义形成一个按角色和任务使用的数据窗口" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
@@ -91,15 +90,15 @@ AS
 SELECT Sno, Sname, Ssex, Sbirthdate, Smajor
 FROM Student
 WHERE Smajor = '信息管理与信息系统';
--- 目标列简单且名称唯一，因此可以省略列名列表</code></pre></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>目标列名称唯一时可省略列名；表达式、聚集列或同名连接列需通过别名或显式列名列表命名；视图列名列表须全省略或全指定</p></div></div></div></div>
-    <div class="numeric-progress">5/20</div>
+-- 目标列简单且名称唯一，因此可以省略列名列表</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>视图列名列表须全省略或全指定</p></div></div>
+    <div class="numeric-progress">5/22</div>
     <div class="semantic-label">CREATE VIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.7273%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
     <h2 class="slide-title">写入后仍须满足视图 WHERE</h2>
     <div class="slide-content"><p class="slide-lead">通过视图写入的新行或新值仍必须满足视图定义中的条件</p>
@@ -116,29 +115,29 @@ WITH CHECK OPTION;
 
 UPDATE IS_Student
 SET Smajor = '计算机科学与技术' WHERE Sno = '20180005';</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>WITH CHECK OPTION</code> 只检查写入后的新值；删除和账号写入权限要另行判断</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>CHECK OPTION 是检查新值，还是决定哪个账号能写？</p></div></div></div></aside>
-    <div class="numeric-progress">6/20</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>WITH CHECK OPTION</code> 只检查写入后的新值</p></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confused" data-character-edge="right" data-character-along="78.018" data-character-exposure="49.451" data-character-scale="0.9" style="--character-along:78.018%;--character-exposure:49.451;--character-hidden:50.549%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confused.92d3f5c87d7d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p><code>CHECK OPTION</code> 是检查新值，还是决定哪个账号能写？</p></div></div></div></aside>
+    <div class="numeric-progress">6/22</div>
     <div class="semantic-label">CHECK OPTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-grid"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
-    <h2 class="slide-title">不同视图适合回答不同问题</h2>
+    <h2 class="slide-title">不同视图回答不同问题</h2>
     <div class="slide-content"><p class="slide-lead">连接、表达式和分组结果通常更难唯一回写</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>行列子集</h3><p>单表筛选并保留主码；通常较易更新</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>连接视图</h3><p>把学生与选课等多张表连起来；能否写回要看键、操作类型与 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>表达式视图</h3><p>用出生日期算出年龄等新列；改“年龄”并不能唯一决定出生日期改成什么</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分组视图</h3><p>显示平均成绩等统计结果；改平均分不能唯一决定各科分数怎样变</p></article></div></div></div>
-    <div class="numeric-progress">7/20</div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>行列子集</h3><p>单表筛选并保留主码；通常较易更新</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>连接视图</h3><p>把学生与选课等多张表连起来；能否写回要看键、操作类型与 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>表达式视图</h3><p>用出生日期算出年龄等新列；改“年龄”并不能确定出生日期改成什么</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分组视图</h3><p>显示平均成绩等统计结果；改平均分不能确定各科分数怎样变</p></article></div></div></div>
+    <div class="numeric-progress">7/22</div>
     <div class="semantic-label">VIEW TYPES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.8182%"></div></div>
   </section>
 <section id="b4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
-    <h2 class="slide-title">视图 SELECT 可封装连接与表达式</h2>
-    <div class="slide-content"><p class="slide-lead">列名列表按 SELECT 输出位置对应，用户仍按视图列名查询</p>
+    <h2 class="slide-title">视图 SELECT 封装连接与表达式</h2>
+    <div class="slide-content"><p class="slide-lead">列名列表按 <code>SELECT</code> 输出位置对应，用户仍按视图列名查询</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -160,9 +159,9 @@ CREATE VIEW S_AGE(Sno, Sname, Sage) AS
 SELECT Sno, Sname,
        EXTRACT(YEAR FROM CURRENT_DATE) - EXTRACT(YEAR FROM Sbirthdate)
 FROM Student;</code></pre></div></div></div></div>
-    <div class="numeric-progress">8/20</div>
+    <div class="numeric-progress">8/22</div>
     <div class="semantic-label">VIEW DEFINITIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
   </section>
 <section id="b4a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
@@ -183,14 +182,14 @@ SELECT Sno, AVG(Grade) FROM SC GROUP BY Sno;
 -- 嵌套视图
 CREATE VIEW IS_C2(Sno, Sname, Grade) AS
 SELECT Sno, Sname, Grade FROM IS_C1 WHERE Grade &gt;= 90;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>视图列名按 SELECT 输出位置对应；能否更新，要看来源行能否唯一回写</p></div></div>
-    <div class="numeric-progress">9/20</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>视图列名按 <code>SELECT</code> 输出位置对应；能否更新，要看来源行能否唯一回写</p></div></div>
+    <div class="numeric-progress">9/22</div>
     <div class="semantic-label">VIEW DEFINITIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.9091%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
     <h2 class="slide-title">删除视图前要先检查依赖关系</h2>
     <div class="slide-content"><p class="slide-lead">视图对象可以被其他视图继续引用</p>
@@ -206,18 +205,28 @@ DROP VIEW IF EXISTS IS_C2;
 DROP VIEW IF EXISTS IS_C1;
 
 -- 目标 DBMS 是否支持 RESTRICT／CASCADE 及其精确行为，需要查产品手册
--- 不用未核查的 CASCADE 代替依赖盘点</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>情况</th><th>处理思路</th><th>需要向所用 DBMS 确认</th></tr></thead><tbody><tr><td>没有下游依赖</td><td>直接删除定义</td><td>可用 <code>IF EXISTS</code></td></tr><tr><td>存在下游视图</td><td>先显式处理依赖再删除</td><td>不把 <code>CASCADE</code> 当自动清理</td></tr><tr><td>产品支持 <code>CASCADE</code></td><td>先确认会连带删除哪些对象</td><td>不要只看教材就假定所用 DBMS 会自动清理</td></tr><tr><td>基本表被删除</td><td>视图可能失效</td><td>定义清理需显式检查</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">10/20</div>
+-- 不用未核查的 CASCADE 代替依赖盘点</code></pre></div></div></div></div>
+    <div class="numeric-progress">10/22</div>
     <div class="semantic-label">DROP VIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
+  </section>
+<section id="c1a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.1</div>
+    <h2 class="slide-title">删除视图：按依赖情况决定处理方式</h2>
+    <div class="slide-content"><p class="slide-lead">先盘点下游依赖，再确认所用 DBMS 的删除行为</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24.003% 37.493% 38.504%"><colgroup><col style="width:24.003%"><col style="width:37.493%"><col style="width:38.504%"></colgroup><thead><tr><th>情况</th><th>处理思路</th><th>需要向所用 DBMS 确认</th></tr></thead><tbody><tr><td>没有下游依赖</td><td>直接删除定义</td><td>可用 <code>IF EXISTS</code></td></tr><tr><td>存在下游视图</td><td>先显式处理依赖再删除</td><td>不把 <code>CASCADE</code> 当自动清理</td></tr><tr><td>产品支持 <code>CASCADE</code></td><td>先确认会连带删除哪些对象</td><td>不要假定 DBMS 会自动清理</td></tr><tr><td>基本表被删除</td><td>视图可能失效</td><td>定义清理需显式检查</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/22</div>
+    <div class="semantic-label">DROP VIEW DEPENDENCIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
 <section id="d1" class="step slide-surface role-content layout-focus"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.2</div>
     <h2 class="slide-title">查询视图沿用基本表的 SELECT 结构</h2>
-    <div class="slide-content"><p class="slide-lead">用户只需写这次还要筛选什么，不必重写视图中已有的专业条件</p>
+    <div class="slide-content"><p class="slide-lead">用户只需要写这次还要筛选什么</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -228,26 +237,26 @@ FROM IS_Student
 WHERE EXTRACT(YEAR FROM CURRENT_DATE)
     - EXTRACT(YEAR FROM Sbirthdate) &lt;= 20;</code></pre></div></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>视图省去了重复的连接和筛选写法；结果仍由基本表中的当前记录计算出来</p></div></div>
-    <div class="numeric-progress">11/20</div>
+    <div class="numeric-progress">12/22</div>
     <div class="semantic-label">QUERY VIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
   </section>
 <section id="d2" class="step slide-surface role-content layout-focus"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.2</div>
     <h2 class="slide-title">视图消解：用保存的 SELECT 替换视图名</h2>
     <div class="slide-content"><p class="slide-lead">替换后得到基本表查询；它不另存结果，也不固定 DBMS 执行计划</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="用户查询中的视图名　＋　保存的 SELECT　→　替换并合并列、表与条件　→　基本表查询　→　结果"><span class="relation-term">用户查询中的视图名　＋　保存的 SELECT</span><span class="relation-operator">→</span><span class="relation-term">替换并合并列、表与条件</span><span class="relation-operator">→</span><span class="relation-term">基本表查询</span><span class="relation-operator">→</span><span class="relation-term">结果</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>检查</h3><p>确认视图和来源对象存在</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>重写</h3><p>用视图的 SELECT 替换视图名，再合并要查询的列、来源表和两边的筛选条件</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>执行</h3><p>交给 DBMS 选择执行计划；这不是固定执行顺序</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>查询被重写了，是否就固定了 DBMS 的执行计划？</p></div></div></div></aside>
-    <div class="numeric-progress">12/20</div>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="用户查询中的视图名　＋　保存的 `SELECT`　→　替换并合并列、表与条件　→　基本表查询　→　结果"><span class="relation-term">用户查询中的视图名　＋　保存的 <code>SELECT</code></span><span class="relation-operator">→</span><span class="relation-term">替换并合并列、表与条件</span><span class="relation-operator">→</span><span class="relation-term">基本表查询</span><span class="relation-operator">→</span><span class="relation-term">结果</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>检查</h3><p>检查确认视图和来源对象的确存在</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>重写</h3><p>用视图的 <code>SELECT</code> 替换视图名，再合并要查询的列、来源表和两边的筛选条件</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>执行</h3><p>交给 DBMS 选择执行计划；这是流程描述，不是固定执行顺序</p></article></div></div></div>
+    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="59.159" data-character-exposure="60.194" data-character-scale="0.9" style="--character-along:59.159%;--character-exposure:60.194;--character-hidden:39.806%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>查询被重写，是否 DBMS 的执行计划就固定了？</p></div></div></div></aside>
+    <div class="numeric-progress">13/22</div>
     <div class="semantic-label">VIEW RESOLUTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.0909%"></div></div>
   </section>
-<section id="d3" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
-      data-x="4500" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+<section id="d3" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.2</div>
     <h2 class="slide-title">行列子集视图的简单消解</h2>
     <div class="slide-content"><p class="slide-lead">行列子集视图合并两层条件；连接仍保留，平均值条件放到 <code>HAVING</code></p>
@@ -263,13 +272,13 @@ SELECT Sno, Sbirthdate FROM Student
 WHERE Smajor = '信息管理与信息系统'
   AND Sbirthdate &gt;= DATE '2003-01-01';</code></pre></div></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>行列子集视图可直接合并条件；连接、聚集或嵌套视图需要不同的改写</p></div></div>
-    <div class="numeric-progress">13/20</div>
+    <div class="numeric-progress">14/22</div>
     <div class="semantic-label">VIEW EXPANSION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
   </section>
-<section id="d4" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
-      data-x="3000" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+<section id="d4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.2</div>
     <h2 class="slide-title">平均值条件放到 HAVING</h2>
     <div class="slide-content"><p class="slide-lead"><code>Gavg</code> 在分组后才得到，因此条件不能放进分组前的 <code>WHERE</code></p>
@@ -290,17 +299,17 @@ WHERE Gavg &gt;= 90;
 SELECT Sno, AVG(Grade) AS Gavg
 FROM SC GROUP BY Sno
 HAVING AVG(Grade) &gt;= 90;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Gavg</code> 在分组后产生，条件要放进 <code>HAVING</code>；这里改写查询，不保存物化结果</p></div></div>
-    <div class="numeric-progress">14/20</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Gavg</code> 在分组后产生，条件要放进 <code>HAVING</code></p></div></div>
+    <div class="numeric-progress">15/22</div>
     <div class="semantic-label">AGGREGATE VIEW REWRITE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.1818%"></div></div>
   </section>
 <section id="e1" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.3</div>
     <h2 class="slide-title">行列子集视图：写操作回写基本表</h2>
-    <div class="slide-content"><p class="slide-lead">普通源列可定位底层元组；INSERT 还要满足缺失列、约束与 CHECK OPTION</p>
+    <div class="slide-content"><p class="slide-lead">普通源列可定位底层元组；<code>INSERT</code> 还要满足缺失列、约束与 <code>CHECK OPTION</code></p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -314,17 +323,17 @@ WHERE Sno = '20180005';
 -- DELETE：删除视图中可见的底层元组
 DELETE FROM IS_Student
 WHERE Sno = '20180005';</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>这两个语句最终修改的是 <code>Student</code> 中学号为 <code>20180005</code> 的记录；INSERT 还必须满足缺失列、表约束和 CHECK OPTION</p></div></div>
-    <div class="numeric-progress">15/20</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>最终修改 <code>Student</code> 中学号为 <code>20180005</code> 的记录</p></div></div>
+    <div class="numeric-progress">16/22</div>
     <div class="semantic-label">UPDATE VIEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
   </section>
 <section id="e2" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="3360" data-z="0"
+      data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.3</div>
     <h2 class="slide-title">不是所有视图都能被唯一地更新</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>只把平均分改成 90，数据库竟然不知道该改哪几门？</p></div></div></div></aside>
+    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="81.125" data-character-exposure="68.068" data-character-scale="0.9" style="--character-along:81.125%;--character-exposure:68.068;--character-hidden:31.932%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>把平均分改成 90，数据库竟然不知道该改什么？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">先看修改能否落到基本表的具体行列，再查目标 DBMS 是否支持</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -333,51 +342,61 @@ WHERE Sno = '20180005';</code></pre></div></div></div>
 UPDATE S_GradeAVG
 SET Gavg = 90
 WHERE Sno = '20180001';</code></pre></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="把平均成绩改为 90 时，无法唯一确定各科成绩应该怎样变化"><span class="relation-term">把平均成绩改为 90 时，无法唯一确定各科成绩应该怎样变化</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>视图形态</th><th>回写判断</th></tr></thead><tbody><tr><td>行列子集</td><td>通常可以唯一定位基本表元组</td></tr><tr><td>表达式／计算列</td><td>改计算结果通常不能唯一决定源列怎样改</td></tr><tr><td>多表连接</td><td>部分简单情形可能支持；须结合键、操作和 DBMS 判断</td></tr><tr><td>聚集与分组</td><td>通常没有唯一的底层改法</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“无法唯一决定底表怎样改”和“改法明确但这个 DBMS 不支持”是两种情况；上机前仍需查产品手册</p></div></div>
-    <div class="numeric-progress">16/20</div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="把平均成绩改为 90 时，无法唯一确定各科成绩应该怎样变化"><span class="relation-term">把平均成绩改为 90 时，无法唯一确定各科成绩应该怎样变化</span></div></div></div></div>
+    <div class="numeric-progress">17/22</div>
     <div class="semantic-label">UPDATE BOUNDARY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.2727%"></div></div>
+  </section>
+<section id="e2a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.3</div>
+    <h2 class="slide-title">不同视图形态的回写边界</h2>
+    <div class="slide-content"><p class="slide-lead">能否唯一定位源行列，与目标 DBMS 是否支持，是两个问题</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25.634% 74.366%"><colgroup><col style="width:25.634%"><col style="width:74.366%"></colgroup><thead><tr><th>视图形态</th><th>回写判断</th></tr></thead><tbody><tr><td>行列子集</td><td>通常可以唯一定位基本表元组</td></tr><tr><td>表达式／计算列</td><td>改计算结果通常不能唯一决定源列怎样改</td></tr><tr><td>多表连接</td><td>部分简单情形可能支持；须结合键、操作和 DBMS 判断</td></tr><tr><td>聚集与分组</td><td>通常没有唯一的底层改法</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>实际使用前需要查看产品手册</p></div></div>
+    <div class="numeric-progress">18/22</div>
+    <div class="semantic-label">VIEW UPDATE TYPES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
   </section>
 <section id="f1" class="step slide-surface role-content layout-grid"
-      data-x="0" data-y="4480" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6 <span>|</span> 3.6.4</div>
-    <h2 class="slide-title">学生、教师和教务员各看所需内容</h2>
-    <div class="slide-content"><p class="slide-lead">视图给常用 SELECT 起名；查询仍读取基本表，不为每个角色复制数据</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>安全保护</h3><p>学生视图可不显示家庭地址等字段，但还要配置账号权限，不能只建视图</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>有限逻辑独立</h3><p>基本表拆分后，可暂用兼容视图保留旧程序所需的列名；写入是否仍可用要重新检查</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>简化操作</h3><p>把专业、课程和连接条件保存在 <code>IS_C1</code>，教师不必每次重写同一段 SQL</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多角度访问</h3><p>学生查本人课程，教师查所授课程成绩，教务员查看全校记录</p></article></div></div></div>
-    <div class="numeric-progress">17/20</div>
+    <h2 class="slide-title">学生、教师和教务管理员看到不同内容</h2>
+    <div class="slide-content"><p class="slide-lead">视图给常用 <code>SELECT</code> 起名；查询仍读取基本表，不为每个角色复制数据</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>安全保护</h3><p>学生视图可不显示家庭地址等字段，但还要配置账号权限，不能只建视图</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>有限逻辑独立</h3><p>基本表拆分后，可暂用兼容视图保留旧程序所需的列名；写入是否仍可用要重新检查</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>简化操作</h3><p>把专业、课程和连接条件保存在 <code>IS_C1</code>，教师不必每次重写同一段 SQL</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多角度访问</h3><p>学生查本人课程，教师查所授课程成绩，教务管理员查看全校记录</p></article></div></div></div>
+    <div class="numeric-progress">19/22</div>
     <div class="semantic-label">VIEW BENEFITS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.3636%"></div></div>
   </section>
 <section id="review" class="step slide-surface role-review layout-focus"
-      data-x="1500" data-y="4480" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6</div>
     <h2 class="slide-title">练习：审查一个“教师成绩视图”</h2>
     <div class="slide-content"><p class="slide-lead">教师只能查所授课程并改成绩；定义视图，指出查询和更新碰到哪些底表记录</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>定义视图</h3><p>写出来源表、连接条件、可见列和筛选条件，说明是否需要显式列名与 <code>WITH CHECK OPTION</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>追踪查询</h3><p>把“查询不及格学生”与视图定义合并，指出条件落到哪些基本表列，并说明结果为何会随底表变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>判断回写</h3><p>说明成绩更正能否唯一定位 <code>SC</code> 元组；若窗口改为平均成绩，解释为什么无法唯一决定各科新值</p></article><article class="content-card emphasis-card" tabindex="0"><h3>划清责任</h3><p>列出视图隐藏了哪些行列，并说明账号权限、表约束和目标 DBMS 分别还要解决什么</p></article></div></div></div>
-    <div class="numeric-progress">18/20</div>
+    <div class="numeric-progress">20/22</div>
     <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="4480" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6</div>
     <h2 class="slide-title">本节思维导图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-3-6/mindmap-3-6.html" title="本节思维导图"></iframe></div></div>
-    <div class="numeric-progress">19/20</div>
+    <div class="numeric-progress">21/22</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.4545%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="4480" data-z="0"
+      data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH03 <span>|</span> 3.6</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">一个视图的目标列包含表达式和两个同名列时，为什么必须完整指定视图列名而不能只补一个？</span></li><li><span class="question-no">02</span><span class="question-text"><code>IS_C2</code> 依赖 <code>IS_C1</code> 时，删除前应怎样盘点依赖，哪些 <code>CASCADE</code> 行为必须向目标 DBMS 核查？</span></li><li><span class="question-no">03</span><span class="question-text">把 <code>IS_Student</code> 中某人的专业改为“计算机科学与技术”时，<code>WITH CHECK OPTION</code> 为什么会拒绝？它能否决定哪个账号有权执行 UPDATE？</span></li><li><span class="question-no">04</span><span class="question-text">查询 <code>S_GradeAVG</code> 的高分学生时，为什么视图条件要重写到 <code>HAVING</code>，这一步为什么没有保存物化结果？</span></li><li><span class="question-no">05</span><span class="question-text">同一底层数据既提供明细视图又提供平均成绩视图时，怎样判断查询、更正成绩和修改平均值各能否唯一回写？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">某视图的目标列包含表达式和两个同名列。为什么必须完整指定视图列名？</span></li><li><span class="question-no">02</span><span class="question-text"><code>IS_C2</code> 依赖 <code>IS_C1</code> 时，删除前应怎样盘点依赖？</span></li><li><span class="question-no">03</span><span class="question-text">把 <code>IS_Student</code> 中某人的专业改为“计算机科学与技术”时，<code>WITH CHECK OPTION</code> 为什么会拒绝？它能否决定哪个账号有权执行 <code>UPDATE</code>？</span></li><li><span class="question-no">04</span><span class="question-text">查询 <code>S_GradeAVG</code> 的高分学生时，为什么视图条件要重写到 <code>HAVING</code>？</span></li><li><span class="question-no">05</span><span class="question-text">同一底层数据既提供明细视图又提供平均成绩视图时，怎样判断查询、更正成绩和修改平均值各能否唯一回写？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-5.html" title="上一节：3.5 空值的处理" aria-label="上一节：3.5 空值的处理">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -392,7 +411,7 @@ WHERE Sno = '20180001';</code></pre></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">20/20</div>
+    <div class="numeric-progress">22/22</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
