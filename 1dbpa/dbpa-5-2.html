@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="5-2">
-  <meta name="version" content="2608">
+  <meta name="version" content="2610">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -31,7 +31,7 @@
       <h1>触发器</h1>
       <p class="cover-description">让数据库服务器按规则自动响应数据变化</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -44,37 +44,35 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">把“成绩提高 10% 就记日志”拆成 ECA，并判断它是否易发现、测试和维护</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用事件—条件—动作拆解一个触发器规则</span></li><li><span class="list-marker">02</span><span class="list-text">区分 BEFORE 与 AFTER，并说明事务提交边界</span></li><li><span class="list-marker">03</span><span class="list-text">用“影响 100 行”的 UPDATE 比较 ROW 与 STATEMENT</span></li><li><span class="list-marker">04</span><span class="list-text">按 INSERT、UPDATE、DELETE 判断 OLD／NEW 是否可用</span></li><li><span class="list-marker">05</span><span class="list-text">说明日志写入失败、同类触发器顺序和连锁激活会怎样影响原 UPDATE</span></li><li><span class="list-marker">06</span><span class="list-text">在声明式约束、触发器和应用流程之间选择</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/14</div>
+    <div class="slide-content"><p class="slide-lead">从一次成绩更新追踪条件判断、日志写入与失败后的数据状态</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用事件—条件—动作拆解一个触发器规则</span></li><li><span class="list-marker">02</span><span class="list-text">区分 BEFORE 与 AFTER，并说明执行触发器与提交事务有什么区别</span></li><li><span class="list-marker">03</span><span class="list-text">用“影响 100 行”的 UPDATE 比较 ROW 与 STATEMENT</span></li><li><span class="list-marker">04</span><span class="list-text">按 INSERT、UPDATE、DELETE 判断 OLD／NEW 是否可用</span></li><li><span class="list-marker">05</span><span class="list-text">说明日志写入失败、同类触发器顺序和连锁激活会怎样影响原 UPDATE</span></li><li><span class="list-marker">06</span><span class="list-text">在声明式约束、触发器和应用流程之间选择</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/17</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.7647%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
-    <h2 class="slide-title">触发器是事件—条件—动作规则</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要 UPDATE 发生，动作就一定执行吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">事件发生时先判断条件，再决定是否执行动作</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-5-2/assets/generated/dbpa-ch05-trigger-eca.svg" data-full-src="resources/decks/dbpa-5-2/assets/generated/dbpa-ch05-trigger-eca.svg" alt="触发器把事件、条件和动作连接成自动执行流程" tabindex="0" role="button" aria-label="放大图片：触发器把事件、条件和动作连接成自动执行流程" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>事件　→　条件　→　动作</p></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>事件</h3><p>事件可以是 INSERT、DELETE 或 UPDATE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p>标准示意可用 WHEN；部分产品在动作体中使用 IF 或条件表达式，实验前需核查</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>动作</h3><p>动作可以修正 NEW、拒绝操作、写入日志或联动其他对象</p></article></div></div></div></div>
-    <div class="numeric-progress">3/14</div>
+    <h2 class="slide-title">把“60 分改为 70 分”拆成三件事</h2>
+    <div class="slide-content"><p class="slide-lead">本例仅在旧成绩大于 0 且相对增幅至少 10% 时记日志；零基数变化另行处理</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>事件</h3><p>SC 被更新就触发，包括只改备注</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p>旧成绩 60，新成绩 70；70 ≥ 1.1 × 60，条件为真</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>动作</h3><p>向 SC_U 写入学号、课号、旧成绩与新成绩；条件不成立则不插入日志</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>0→0 不算提高；0→10 不套用本例的相对增幅规则</p></div></div>
+    <div class="numeric-progress">3/17</div>
     <div class="semantic-label">ECA RULE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
-    <h2 class="slide-title">定义触发器要明确七个要素</h2>
-    <div class="slide-content"><p class="slide-lead">七项写全，维护者才知道监听哪张表、何时触发、执行几次、会改哪些对象</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>要素</th><th>需要说明</th><th>例子</th></tr></thead><tbody><tr><td>1 名称</td><td>如何识别和维护</td><td><code>SC_T</code></td></tr><tr><td>2 目标表</td><td>哪张基本表被监听</td><td><code>ON SC</code></td></tr><tr><td>3 事件</td><td>哪类变化激活</td><td><code>INSERT</code>、<code>DELETE</code>、<code>UPDATE</code></td></tr><tr><td>4 时机</td><td>变化前还是后</td><td><code>BEFORE</code>、<code>AFTER</code></td></tr><tr><td>5 粒度</td><td>一行还是一条语句</td><td><code>FOR EACH ROW</code>、<code>FOR EACH STATEMENT</code></td></tr><tr><td>6 引用与条件</td><td>读哪些值，何时执行</td><td><code>OLD</code>、<code>NEW</code>、<code>WHEN</code>、<code>IF</code></td></tr><tr><td>7 动作体</td><td>记录、修正或联动什么</td><td>日志插入或过程块</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节只处理基本表触发器；视图能否成为目标及其语法属于产品扩展，不能把标准或其他 DBMS 示例直接复制到实验环境</p></div></div>
-    <div class="numeric-progress">4/14</div>
+    <h2 class="slide-title">从定义中找到监听对象和自动动作</h2>
+    <div class="slide-content"><p class="slide-lead">将七项要素按职责归在一起；右栏对应本节 SC_T</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 34% 38%"><colgroup><col style="width:28%"><col style="width:34%"><col style="width:38%"></colgroup><thead><tr><th>要素</th><th>需要回答</th><th>本例</th></tr></thead><tbody><tr><td>名称、目标表</td><td>如何找到规则，监听谁</td><td>SC_T，ON SC</td></tr><tr><td>事件、时机</td><td>哪种变化，何时执行</td><td>AFTER UPDATE</td></tr><tr><td>粒度</td><td>逐行还是整条语句</td><td>FOR EACH ROW</td></tr><tr><td>引用与条件</td><td>读哪些值，何时记日志</td><td>比较 OLD 与 NEW</td></tr><tr><td>动作体</td><td>自动改变哪些对象</td><td>向 SC_U 插入记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节运行行级触发器；语句级与 WHEN 只作概念比较</p></div></div>
+    <div class="numeric-progress">4/17</div>
     <div class="semantic-label">TRIGGER DEFINITION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
@@ -83,37 +81,54 @@
     <h2 class="slide-title">BEFORE／AFTER 决定触发时机</h2>
     <div class="slide-content"><p class="slide-lead">同一事件可分别定义 BEFORE 和 AFTER，一次操作可能经过两个阶段</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEFORE（若定义）　→　目标行操作　→　AFTER（若定义）"><span class="relation-term">BEFORE（若定义）</span><span class="relation-operator">→</span><span class="relation-term">目标行操作</span><span class="relation-operator">→</span><span class="relation-term">AFTER（若定义）</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>BEFORE</h3><p>BEFORE 在 INSERT／UPDATE 写入前检查或调整 NEW，也可以拒绝操作；例如把工资下限修正为 4000</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>AFTER</h3><p>AFTER 在目标行操作成功后记录 OLD／NEW 或联动其他对象，但不等于事务已经提交</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>引用</h3><p>INSERT 通常只有 NEW，UPDATE 有 OLD／NEW，DELETE 通常只有 OLD</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>AFTER 表示目标行操作成功后执行；后续语句失败时，事务型表中的相关变化仍可能回滚</p></div></div>
-    <div class="numeric-progress">5/14</div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>BEFORE</h3><p>BEFORE 在 INSERT／UPDATE 写入前检查或调整 NEW，也可以拒绝操作；例如把工资下限修正为 4000</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>AFTER</h3><p>目标行成功后记录 OLD／NEW；这时事务仍未必提交</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>引用</h3><p>INSERT 通常只有 NEW，UPDATE 有 OLD／NEW，DELETE 通常只有 OLD</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>进入 AFTER 不等于提交；事务型表上的相关变化仍可能回滚</p></div></div>
+    <div class="numeric-progress">5/17</div>
     <div class="semantic-label">BEFORE AND AFTER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.4118%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
-    <h2 class="slide-title">行级与语句级决定触发次数</h2>
-    <div class="slide-content"><p class="slide-lead">一次批量更新不等于一次行级动作</p>
+    <h2 class="slide-title">触发 100 次，不代表插入 100 条日志</h2>
+    <div class="slide-content"><p class="slide-lead">假定语句成功完成，恰好处理 100 行，且只统计指定的这一个触发器</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-sql">UPDATE SC SET Grade = Grade + 1
+WHERE Cno = 'C01';</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 24% 46%"><colgroup><col style="width:30%"><col style="width:24%"><col style="width:46%"></colgroup><thead><tr><th>粒度或动作</th><th>次数</th><th>为什么</th></tr></thead><tbody><tr><td>行级触发器</td><td>100</td><td>每个受影响行调用一次</td></tr><tr><td>语句级触发器</td><td>1</td><td>支持该粒度的系统按语句调用</td></tr><tr><td>条件成立后的日志插入</td><td>0—100</td><td>还取决于每行的 OLD、NEW</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>失败中止的语句另作分析；不能把未完成操作也直接计为 100 次</p></div></div>
+    <div class="numeric-progress">6/17</div>
+    <div class="semantic-label">ROW AND STATEMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">先准备成绩表和空日志表</h2>
+    <div class="slide-content"><p class="slide-lead"><a href="resources/decks/dbpa-5-2/assets/practice/trigger-practice.zip" download>下载触发器练习包</a>：使用独立空库；起始 SC 只有 S01/C01 的 60 分记录</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
-03</span><code class="language-sql">UPDATE SC
-SET Grade = Grade + 1
-WHERE Cno = 'C01';</code></pre></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="假设影响 100 行　→　FOR EACH ROW 约 100 次；FOR EACH STATEMENT 1 次"><span class="relation-term">假设影响 100 行</span><span class="relation-operator">→</span><span class="relation-term">FOR EACH ROW 约 100 次；FOR EACH STATEMENT 1 次</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>粒度</th><th>触发次数</th><th>适合场景</th></tr></thead><tbody><tr><td>行级</td><td>每影响一行一次</td><td>记录 OLD 与 NEW</td></tr><tr><td>语句级（标准／其他 DBMS）</td><td>每条 SQL 一次</td><td>统计整批变化</td></tr><tr><td>选择依据</td><td>单行事实或集合事实</td><td>与动作体需求一致</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>语句级触发器可使用 OLD TABLE／NEW TABLE 等变化集合，具体语法与支持范围依 DBMS；实验前先确认目标产品支持哪种粒度</p></div></div>
-    <div class="numeric-progress">6/14</div>
-    <div class="semantic-label">ROW AND STATEMENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
+03
+04
+05</span><code class="language-sql">CREATE TABLE SC_U (
+  Sno CHAR(8) NOT NULL, Cno CHAR(5) NOT NULL,
+  OldGrade SMALLINT NOT NULL,
+  NewGrade SMALLINT NOT NULL
+);</code></pre></div></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">先用 00 建表；SC 含 Grade 与 Note，SC_U 初始为空</span></li><li><span class="list-marker">02</span><span class="list-text">再用 10 安装触发器，用 20 逐例测试；每例查询后回滚</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两表使用事务型引擎；包内含客户端分隔符与结果记录表</p></div></div>
+    <div class="numeric-progress">7/17</div>
+    <div class="semantic-label">TRIGGER SETUP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.1765%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="1120" data-z="0"
+      data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.1</div>
     <h2 class="slide-title">OLD 与 NEW 把变化前后连接起来</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果这次不是 UPDATE，OLD 和 NEW 还能同时出现吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">行级更新可以比较旧值和新值</p>
+    <div class="slide-content"><p class="slide-lead">本例只记录旧值大于 0 的相对增长；NULL 与零基数不会进入日志</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -123,104 +138,128 @@ WHERE Cno = 'C01';</code></pre></div></div>
 07
 08</span><code class="language-sql">CREATE TRIGGER SC_T AFTER UPDATE ON SC FOR EACH ROW
 BEGIN
-  IF OLD.Grade IS NOT NULL AND NEW.Grade IS NOT NULL
+  IF OLD.Grade &gt; 0
      AND NEW.Grade &gt;= 1.1 * OLD.Grade THEN
     INSERT INTO SC_U(Sno, Cno, OldGrade, NewGrade)
     VALUES (OLD.Sno, OLD.Cno, OLD.Grade, NEW.Grade);
   END IF;
 END;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>OLD／NEW 取决于事件；标准 SQL 与目标 DBMS 的写法要分别核查</p></div></div>
-    <div class="numeric-progress">7/14</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先预测 60→65、60→66 与 0→0；完整客户端脚本见练习包</p></div></div>
+    <div class="numeric-progress">8/17</div>
     <div class="semantic-label">OLD AND NEW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.0588%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
-    <h2 class="slide-title">多个触发器的顺序会改变最终结果</h2>
-    <div class="slide-content"><p class="slide-lead">用测试数据观察每一步，不能假定同类触发器按未声明顺序执行</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="BEFORE（若定义）　→　原始 SQL／目标行变化　→　AFTER（若定义）"><span class="relation-term">BEFORE（若定义）</span><span class="relation-operator">→</span><span class="relation-term">原始 SQL／目标行变化</span><span class="relation-operator">→</span><span class="relation-term">AFTER（若定义）</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>原始事件</h3><p>INSERT、UPDATE 或 DELETE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>触发动作</h3><p>可能修改目标表之外的对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>后续事件</h3><p>动作可能再次激活其他触发器；该流程按每个受影响行表示简化顺序</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不要依赖未声明的同类触发器顺序：查询目标产品目录或显式排序能力，并用可观察结果验证</p></div></div>
-    <div class="numeric-progress">8/14</div>
-    <div class="semantic-label">EXECUTION ORDER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
-  </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b3a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
-    <h2 class="slide-title">写日志失败，原来的 UPDATE 也可能失败</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.b641f751ca49.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>日志表写入失败，为什么原来的 UPDATE 也可能一起停下？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">一次 <code>UPDATE SC</code> 还会写 <code>SC_U</code> 和 <code>AuditLog</code>；后一步失败可能使前面一起失败</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="UPDATE SC　→　SC_T 写入 SC_U　→　SC_U 上的触发器写入 AuditLog"><span class="relation-term">UPDATE SC</span><span class="relation-operator">→</span><span class="relation-term">SC_T 写入 SC_U</span><span class="relation-operator">→</span><span class="relation-term">SC_U 上的触发器写入 AuditLog</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>动作体失败</h3><p>当前语句可能失败；事务型表在事务边界内通常一起回滚，需检查存储引擎和事务边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多个触发器</h3><p>两个 BEFORE UPDATE 都改 NEW 时，先后顺序可能改变最终值；需确认产品排序规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>触发链</h3><p>写入 SC_U 又激活 AuditLog 触发器时，要检查是否循环、失败是否回滚、总共写了哪些表</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>是否整体回滚取决于事务、存储引擎和外部副作用；外码级联是否激活触发器、能否回写当前目标表也必须按目标 DBMS 核查</p></div></div>
-    <div class="numeric-progress">9/14</div>
-    <div class="semantic-label">FAILURE AND CHAIN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">先判断条件，再判断是否写日志</h2>
+    <div class="slide-content"><p class="slide-lead">每行单独测试；NULL 使比较不是 TRUE，也不会执行本例的 INSERT</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 34% 32%"><colgroup><col style="width:34%"><col style="width:34%"><col style="width:32%"></colgroup><thead><tr><th>变化</th><th>条件判断</th><th>SC_U 新增行</th></tr></thead><tbody><tr><td>60 → 65</td><td>增幅不足 10%</td><td>0</td></tr><tr><td>60 → 66</td><td>恰好提高 10%</td><td>1</td></tr><tr><td>60 → 70</td><td>增幅超过 10%</td><td>1</td></tr><tr><td>0 → 0 或 0 → 10</td><td>OLD &gt; 0 不成立</td><td>0</td></tr><tr><td>NULL → 70</td><td>条件不是 TRUE</td><td>0</td></tr><tr><td>只改 Note，仍为 60 分</td><td>60 &lt; 1.1 × 60</td><td>0</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">9/17</div>
+    <div class="semantic-label">TRIGGER BOUNDARIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.9412%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
+<section id="b3b" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.3</div>
-    <h2 class="slide-title">触发器也是需要维护的数据库对象</h2>
-    <div class="slide-content"><p class="slide-lead">删除触发器前要确认依赖它的业务和测试</p>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
+    <h2 class="slide-title">更新之后，同时查询成绩和日志</h2>
+    <div class="slide-content"><p class="slide-lead">从 60 分、空日志开始；下面显示提交前在本会话中的预期结果</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
-04
-05</span><code class="language-sql">-- MySQL 系产品常见形式；执行前核查授课版本
-DROP TRIGGER IF EXISTS SC_T;
-
--- 标准／其他 DBMS 示意，不要与上式混用
-DROP TRIGGER SC_T ON SC;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>删除前先确认产品语法、所需权限、依赖业务与残留日志表；删掉触发器不等于删掉它曾写入的数据</p></div></div>
-    <div class="numeric-progress">10/14</div>
-    <div class="semantic-label">DROP TRIGGER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+04</span><code class="language-sql">START TRANSACTION;
+UPDATE SC SET Grade=70 WHERE Sno='S01' AND Cno='C01';
+SELECT * FROM SC;
+SELECT * FROM SC_U;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>对象</th><th>更新前</th><th>更新后</th></tr></thead><tbody><tr><td>SC 的 S01/C01</td><td>Grade = 60</td><td>Grade = 70</td></tr><tr><td>SC_U</td><td>空表</td><td>(S01,C01,60,70)</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>观察后 ROLLBACK 恢复初值；AFTER 不等于 COMMIT</p></div></div>
+    <div class="numeric-progress">10/17</div>
+    <div class="semantic-label">TRIGGER RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
+    <h2 class="slide-title">两个 BEFORE 换顺序，工资也不同</h2>
+    <div class="slide-content"><p class="slide-lead">拟写入 3000；A 补足至 4000，B 增加 10%，两者都修改 NEW</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>执行顺序</th><th>第一步</th><th>第二步与最终值</th></tr></thead><tbody><tr><td>A → B</td><td>3000 → 4000</td><td>4000 × 1.1 = 4400</td></tr><tr><td>B → A</td><td>3000 × 1.1 = 3300</td><td>3300 → 4000</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两个动作都修改 NEW，结果分别为 4400 与 4000；先算清业务顺序，再核查产品如何指定顺序</p></div></div>
+    <div class="numeric-progress">11/17</div>
+    <div class="semantic-label">EXECUTION ORDER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.7059%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.2</div>
+    <h2 class="slide-title">故意让日志失败，再检查原成绩</h2>
+    <div class="slide-content"><p class="slide-lead">两表均为事务型表，初始成绩 60、日志为空；日志新值临时限制为不超过 65</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-sql">ALTER TABLE SC_U ADD CONSTRAINT CK_Log_Test
+  CHECK (NewGrade &lt;= 65);
+UPDATE SC SET Grade = 70
+WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37% 38%"><colgroup><col style="width:25%"><col style="width:37%"><col style="width:38%"></colgroup><thead><tr><th>检查位置</th><th>发生什么</th><th>本模型预期</th></tr></thead><tbody><tr><td>SC_T</td><td>满足增长条件，尝试写日志</td><td>新日志值为 70</td></tr><tr><td>SC_U</td><td>违反测试约束，插入失败</td><td>日志仍为空</td></tr><tr><td>原 UPDATE</td><td>本语句一起失败</td><td>SC.Grade 仍为 60</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/17</div>
+    <div class="semantic-label">FAILURE AND CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.5882%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2 <span>|</span> 5.7.3</div>
+    <h2 class="slide-title">删除触发器前后，各检查一次</h2>
+    <div class="slide-content"><p class="slide-lead">本例删除 SC_T；保留 SC 与 SC_U 中已提交的数据</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-sql">DROP TRIGGER IF EXISTS SC_T;</code></pre></div></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">删除前保存定义，确认谁依赖成绩日志，并保留已写入的历史记录</span></li><li><span class="list-marker">02</span><span class="list-text">删除后再次把测试成绩从 60 改为 70，核对 SC 更新而 SC_U 不再自动增加</span></li><li><span class="list-marker">03</span><span class="list-text">恢复触发器定义，重跑边界与失败测试；删除语法按实际产品核对</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若日志表上还有触发器，应另外列出依赖；删 SC_T 不会自动删除整个触发链</p></div></div>
+    <div class="numeric-progress">13/17</div>
+    <div class="semantic-label">DROP TRIGGER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.4706%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
-    <h2 class="slide-title">声明式约束优先表达直接完整性规则</h2>
-    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a0ae48cf4b59.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>不要只问“能不能写”：还要问下一位维护者能否发现它、复现失败并安全删除</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">记录历史、自动修正或跨表联动才考虑触发器；成绩范围仍用 CHECK</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>需求</th><th>优先机制</th><th>触发器价值</th></tr></thead><tbody><tr><td>非空、范围、唯一</td><td><code>NOT NULL</code>、<code>CHECK</code>、<code>UNIQUE</code></td><td>不必增加隐式过程</td></tr><tr><td>主码、外码</td><td><code>PRIMARY KEY</code>、<code>FOREIGN KEY</code></td><td>DBMS 原生检查</td></tr><tr><td>记录变化历史</td><td>约束无法完成</td><td><code>AFTER</code> 动作写日志</td></tr><tr><td>写入前自动修正</td><td>约束难以表达</td><td><code>BEFORE</code> 动作调整值</td></tr><tr><td>批量统计变化</td><td>语句级触发器、显式 SQL 或应用流程</td><td>先核查目标 DBMS 粒度支持</td></tr><tr><td>复杂跨表联动</td><td>触发器或应用流程</td><td>评估事务边界、触发链、性能和可观察性</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>能用声明式约束表达的规则优先使用约束；触发器主要补足历史记录、自动修正和复杂联动</p></div></div>
-    <div class="numeric-progress">11/14</div>
+    <h2 class="slide-title">能直接声明的规则，优先写成约束</h2>
+    <div class="slide-content"><p class="slide-lead">先说明数据应该满足什么；确需自动动作时，再决定时机、事务和测试方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 34% 38%"><colgroup><col style="width:28%"><col style="width:34%"><col style="width:38%"></colgroup><thead><tr><th>需求</th><th>优先机制</th><th>判断要点</th></tr></thead><tbody><tr><td>范围、非空、唯一</td><td>CHECK、NOT NULL、UNIQUE</td><td>直接声明合法状态</td></tr><tr><td>主码与引用</td><td>PRIMARY KEY、FOREIGN KEY</td><td>交给 DBMS 原生检查</td></tr><tr><td>记录变化历史</td><td>AFTER 触发器</td><td>比较并记录 OLD／NEW</td></tr><tr><td>写入前修正值</td><td>BEFORE 触发器</td><td>明确 NEW 最终应取什么值</td></tr><tr><td>复杂跨表联动</td><td>触发器或显式流程</td><td>核对依赖、回滚与耗时</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/17</div>
     <div class="semantic-label">CHOOSE THE MECHANISM</div>
-    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.3529%"></div></div>
   </section>
 <section id="review" class="step slide-surface role-review layout-focus"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
     <h2 class="slide-title">四个需求：触发时机、次数和失败结果</h2>
-    <div class="slide-content"><p class="slide-lead">逐项写 ECA、时机、粒度和 OLD/NEW；能用 CHECK 时不用隐藏动作</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>成绩从 60 提高到 70</h3><p><code>AFTER UPDATE</code> 行级读取 OLD／NEW；条件为提高至少 10%，动作为写入 SC_U，日志失败可能使原更新失败</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一条语句更新 100 行</h3><p>行级动作约执行 100 次；若只需整批计数，先核查语句级支持，否则改用显式 SQL 或应用流程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>成绩必须在 0—100</h3><p>优先使用 <code>CHECK</code>，因为只需声明合法状态；不要用隐藏动作替代直接约束</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>SC_U 还会写 AuditLog</h3><p>画出触发链并测试第二步失败；确认顺序、事务回滚、循环与外部副作用后再决定是否保留联动</p></article></div></div></div>
-    <div class="numeric-progress">12/14</div>
+    <div class="slide-content"><p class="slide-lead">给出条件、执行次数和最终行值；仅限制成绩范围时，优先用 CHECK</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>成绩从 60 提高到 70</h3><p><code>AFTER UPDATE</code> 行级读取 OLD／NEW；条件为旧值大于 0 且提高至少 10%，动作为写入 SC_U，日志失败可能使原更新失败</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一条语句更新 100 行</h3><p>若语句成功且恰好处理 100 行，行级触发器调用 100 次；日志条数还取决于条件成立的行数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>成绩必须在 0—100</h3><p>优先使用 <code>CHECK</code>，直接写出成绩的合法范围，无需另写触发器来检查</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>日志拒绝 70 分</h3><p>测试约束导致 SC_U 写入失败；在本例事务型表前提下，SC 仍为 60，日志为空。更长触发链还须检查每一步的事务范围</p></article></div></div></div>
+    <div class="numeric-progress">15/17</div>
     <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="4500" data-y="3360" data-z="0"
+      data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
     <h2 class="slide-title">从一次 UPDATE 追踪所有自动动作</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-2/mindmap-5-2.html" title="从一次 UPDATE 追踪所有自动动作"></iframe></div></div>
-    <div class="numeric-progress">13/14</div>
+    <div class="numeric-progress">16/17</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="3000" data-y="3360" data-z="0"
+      data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text"><code>SC.Grade</code> 从 60 变 70；若提高至少 10% 就写 SC_U，事件、条件、动作和时机各是什么？</span></li><li><span class="question-no">02</span><span class="question-text">UPDATE 影响 100 行时，ROW／STATEMENT 各触发几次？目标 DBMS 的粒度支持要怎样核查？三类 DML 中 OLD／NEW 各何时可用？</span></li><li><span class="question-no">03</span><span class="question-text">工资下限修正与成绩日志各选 BEFORE 还是 AFTER？AFTER 是否等于 COMMIT？</span></li><li><span class="question-no">04</span><span class="question-text">SC_T 写 SC_U，SC_U 的触发器失败时，原 UPDATE 可能怎样？</span></li><li><span class="question-no">05</span><span class="question-text">哪些规则应优先用 CHECK、PRIMARY KEY、FOREIGN KEY？标准 SQL 与目标 DBMS 语法有何差异？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">60→70 与 0→10 是否都写日志？本例的事件、条件、动作各是什么？</span></li><li><span class="question-no">02</span><span class="question-text">成功更新 100 行，触发次数和日志条数一定相同吗？三类 DML 如何引用 OLD／NEW？</span></li><li><span class="question-no">03</span><span class="question-text">工资下限修正与成绩日志各选 BEFORE 还是 AFTER？AFTER 是否等于 COMMIT？</span></li><li><span class="question-no">04</span><span class="question-text">工资为何得到 4400 或 4000？日志拒绝 70 时，成绩与日志分别留下什么？</span></li><li><span class="question-no">05</span><span class="question-text">哪些规则应优先用 CHECK、PRIMARY KEY、FOREIGN KEY？标准 SQL 与目标 DBMS 语法有何差异？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-5-1.html" title="上一节：5.1 数据库完整性与约束" aria-label="上一节：5.1 数据库完整性与约束">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -235,7 +274,7 @@ DROP TRIGGER SC_T ON SC;</code></pre></div></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">14/14</div>
+    <div class="numeric-progress">17/17</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

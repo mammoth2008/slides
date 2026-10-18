@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="7-3">
-  <meta name="version" content="2608">
+  <meta name="version" content="2610">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -28,229 +28,331 @@
     <img class="cover-image" src="resources/decks/dbpa-7-3/assets/dbpa-7-3.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 7.3</div>
-      <h1>逻辑、物理设计与实施维护</h1>
-      <p class="cover-description">从 E-R 图到表和索引，再用真实查询、写入与恢复演练检查设计</p>
+      <h1>从模型到运行</h1>
+      <p class="cover-description">转换关系、比较索引，并用试运行证据修正设计</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元依次把 E-R 图转换成关系、按实际 SQL 选择存取方法，再用装载、功能、性能和恢复测试判断该回哪一步修改。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">把 E-R 图转成关系，按读写选择索引，再从测试失败处决定回哪一步修改</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">按联系类型把 E-R 图转换为关系模式</span></li><li><span class="list-marker">02</span><span class="list-text">标出转换结果中的主码、复合码、外码和联系属性</span></li><li><span class="list-marker">03</span><span class="list-text">用依赖和范式检查关系，再根据事务决定是否分表、合表或保留派生值</span></li><li><span class="list-marker">04</span><span class="list-text">根据等值查询、范围查询、连接和写入频率选择 B+ 树、哈希或聚簇，并说明代价</span></li><li><span class="list-marker">05</span><span class="list-text">实测响应时间、每秒事务数、占用空间和写入变慢程度，比较物理方案</span></li><li><span class="list-marker">06</span><span class="list-text">说明装载错误、功能错误、性能不达标和恢复失败分别回到哪里修改</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/19</div>
+    <div class="slide-content"><p class="slide-lead">把 7.2 的 E-R 图变成可检查的表、约束与试运行方案</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">保留教学班的组合身份，写清主码、外码和联系属性</span></li><li><span class="list-marker">02</span><span class="list-text">用唯一约束保留 1:1，用具体记录检查转换结果</span></li><li><span class="list-marker">03</span><span class="list-text">区分按行分表的并集恢复与按列分表的连接恢复</span></li><li><span class="list-marker">04</span><span class="list-text">从三项选课负载提出索引候选，比较查询、写入和空间代价</span></li><li><span class="list-marker">05</span><span class="list-text">根据装载、功能、性能和恢复证据决定修改位置</span></li><li><span class="list-marker">06</span><span class="list-text">按是否改变原逻辑、物理设计区分重组与重构</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/25</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-text"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
-    <h2 class="slide-title">逻辑设计：基本 E-R 图转为目标模型</h2>
-    <div class="slide-content"><p class="slide-lead">先用一个 m:n 示例说明属性、码、外码和联系属性如何落位</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-er-to-relational.svg" data-full-src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-er-to-relational.svg" alt="学生、教学班和选课联系转换为关系模式并落实码与联系属性" tabindex="0" role="button" aria-label="放大图片：学生、教学班和选课联系转换为关系模式并落实码与联系属性" decoding="async"></figure></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>学生(学号 PK, 姓名, 所在学院) 教学班(教学班号 PK, 课程号 FK, 开课学期) 选课(学号 PK/FK, 教学班号 PK/FK, 成绩)</p>
-<p>选课主码为（学号，教学班号）；两列分别作为外码，指向学生和教学班</p></div></div>
-    <div class="numeric-progress">3/19</div>
+    <h2 class="slide-title">先把四类实体转换为四个关系</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 7.2 的身份规则；PK 是主码，FK 是引用另一关系的外码</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 37% 36%"><colgroup><col style="width:27%"><col style="width:37%"><col style="width:36%"></colgroup><thead><tr><th>关系</th><th>主码 PK</th><th>其他属性与外码</th></tr></thead><tbody><tr><td>Student</td><td>Sno</td><td>Sname</td></tr><tr><td>Course</td><td>Cno</td><td>Cname、Credit</td></tr><tr><td>Teacher</td><td>Tno</td><td>Tname</td></tr><tr><td>TeachingClass</td><td>Cno＋Term＋ClassNo</td><td>Tno、Capacity；Cno 和 Tno 分别作 FK</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>开课、讲授均为 1:n，可并入教学班这一 n 端；每班必须有课程和教师，所以对应外码非空</p></div></div>
+    <div class="numeric-progress">3/25</div>
     <div class="semantic-label">LOGICAL DESIGN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-focus"
+<section id="a2b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
-    <h2 class="slide-title">联系类型决定关系转换方式</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>m:n 联系也可以只把一端的码放进另一端关系吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">联系属性和参照关系不能在转换中丢失</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 29% 33% 20%"><colgroup><col style="width:18%"><col style="width:29%"><col style="width:33%"><col style="width:20%"></colgroup><thead><tr><th>E-R 元素</th><th>关系落点</th><th>码／外码动作</th><th>选择判据</th></tr></thead><tbody><tr><td>实体型</td><td>一个关系模式</td><td>实体码成为主码</td><td>实体属性直接成为关系属性</td></tr><tr><td>1:1 联系</td><td>独立关系，或并入一端</td><td>独立关系时两端码为候选码；合并时加入另一端外码</td><td>参与约束、联系属性、空值与访问方式</td></tr><tr><td>1:n 联系</td><td>独立关系，或并入 n 端</td><td>n 端加入 1 端主码作外码；独立关系通常以 n 端码作码</td><td>联系属性与访问方式</td></tr><tr><td>m:n 联系</td><td>独立关系</td><td>两端码是外码，通常共同组成复合主码</td><td>联系本身承载事实</td></tr><tr><td>多元联系</td><td>独立关系</td><td>各参与码和联系属性进入；候选码由业务语义判断</td><td>事实是否由多端共同确定</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>候选码不一定都选作主码；联系属性不能丢失，外码是否可空要由参与约束决定</p></div></div>
-    <div class="numeric-progress">4/19</div>
-    <div class="semantic-label">TRANSFORMATION RULES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">选课关系必须引用教学班的完整身份</h2>
+    <div class="slide-content"><p class="slide-lead">SC 保存学生与教学班的 m:n 联系；以下为完整建表脚本中的约束片段</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">-- SC 的列：Sno, Cno, Term, ClassNo, AppliedAt, Grade
+PRIMARY KEY (Sno, Cno, Term, ClassNo),
+FOREIGN KEY (Sno) REFERENCES Student(Sno),
+FOREIGN KEY (Cno, Term, ClassNo)
+  REFERENCES TeachingClass(Cno, Term, ClassNo)</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Grade 和 AppliedAt 留在 SC；只保存 ClassNo＝01，无法知道学生选的是哪门课、哪个学期</p></div></div>
+    <div class="numeric-progress">4/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.0000%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a2c" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
-    <h2 class="slide-title">转成关系后，查重复、伪元组和常用事务</h2>
-    <div class="slide-content"><p class="slide-lead">用依赖和范式找重复，查分表是否产生伪元组，再看常用查询要连接几张表</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>找出重复来源</h3><p>写出数据依赖，检查同一事实是否因部分、传递或多值依赖被重复保存</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>决定分表还是合表</h3><p>按常用查询和更新选择水平或垂直分解；若合表或保留派生值，要列出同步更新入口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查分表结果</h3><p>检查分解是否无损连接并保持依赖</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>跑常用事务</h3><p>统计一次业务操作要连接几张表、更新哪些行、多久执行一次，以及失败后怎样修复</p></article></div></div></div>
-    <div class="numeric-progress">5/19</div>
-    <div class="semantic-label">LOGICAL OPTIMIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">用三次写入检验组合码和组合外码</h2>
+    <div class="slide-content"><p class="slide-lead">从空 SC 开始，学生和教学班已存在；按下表顺序操作</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>写入内容</th><th>应有结果</th></tr></thead><tbody><tr><td>20260001 选 C001／2026-1／01</td><td>接受：该班存在且此前未选</td></tr><tr><td>同一学生再选同一个班</td><td>主码拒绝重复</td></tr><tr><td>同一学生选 C001／2026-1／99</td><td>组合外码拒绝不存在的班</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第一次接受，后两次拒绝；SC 最终仍只有第一条选课记录</p></div></div>
+    <div class="numeric-progress">5/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
-<section id="a4b" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
-    <h2 class="slide-title">分解要兼顾还原与约束维护</h2>
-    <div class="slide-content"><p class="slide-lead">拆分关系前先明确按什么拆，拆分后再检查结果是否可靠</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 28% 50%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:50%"></colgroup><thead><tr><th>分解方式</th><th>关系代数记法</th><th>适合的问题与风险</th></tr></thead><tbody><tr><td>水平分解</td><td><code>Ri = σpi(R)</code></td><td>按元组条件分开；要防止遗漏或不必要重叠，重构通常靠并集</td></tr><tr><td>垂直分解</td><td><code>Ri = πK∪Ai(R)</code></td><td>按属性集合分开；公共码必须保留，重构依赖连接</td></tr></tbody></table></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>无损连接</h3><p>无损连接要求重新连接子关系后只能得到原关系，不能产生伪元组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>依赖保持</h3><p>依赖保持要求重要函数依赖尽量能在子关系中局部检查，不必每次都回到全局连接</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Student(Sno, Name, Dept, BirthDate, Address)</code> 可按事务拆成 <code>StudentCore(Sno, Name, Dept)</code> 与 <code>StudentProfile(Sno, BirthDate, Address)</code>，但要保留公共码并检查连接代价</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.0b7e8cc008e7.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>分解后的表更小，不等于设计更可靠；还要过无损连接和依赖保持两道检查</p></div></div></div></aside>
-    <div class="numeric-progress">6/19</div>
-    <div class="semantic-label">DECOMPOSITION CHECKS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
+    <h2 class="slide-title">转换联系时，不能丢掉原来的约束</h2>
+    <div class="slide-content"><p class="slide-lead">主码负责区分记录，外码负责参照存在，唯一约束负责限制重复引用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 37% 45%"><colgroup><col style="width:18%"><col style="width:37%"><col style="width:45%"></colgroup><thead><tr><th>联系</th><th>常用转换</th><th>必须保留的约束</th></tr></thead><tbody><tr><td>1:1</td><td>并入一端，加入另一端的码</td><td>外码＋UNIQUE；非空与否取决于参与下限</td></tr><tr><td>1:n</td><td>并入 n 端</td><td>加入 1 端外码及联系属性</td></tr><tr><td>m:n</td><td>建立独立联系关系</td><td>引用两端完整码，确定组合码</td></tr><tr><td>多元联系</td><td>建立独立联系关系</td><td>保存参与者和属性，再求候选码</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>独立保存联系时：1:1 两端码都是候选码，1:n 以 n 端码为码</p></div></div>
+    <div class="numeric-progress">6/25</div>
+    <div class="semantic-label">TRANSFORMATION RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:24.0000%"></div></div>
   </section>
-<section id="a5" class="step slide-surface role-content layout-focus"
+<section id="a3a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
-    <h2 class="slide-title">用视图分别给教师和学生显示所需数据</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>为用户建好视图，也就同时完成权限控制了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">教师看所教班级，学生只看本人记录；视图还能固定常用多表查询的列</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>需要</th><th>视图做法</th><th>结果</th></tr></thead><tbody><tr><td>用户习惯不同</td><td>提供别名或重排列</td><td>不改全局列名</td></tr><tr><td>权限范围不同</td><td>教师视图隐藏学生身份；学生视图只展示本人记录</td><td>收紧可见范围</td></tr><tr><td>查询过于复杂</td><td>封装选课与课程查询</td><td>简化常用操作</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>视图表达用户外模式；实际谁可以使用视图，仍由目标 DBMS 的权限或安全策略控制</p></div></div>
-    <div class="numeric-progress">7/19</div>
-    <div class="semantic-label">USER SCHEMAS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">一对一需要外码，也需要唯一约束</h2>
+    <div class="slide-content"><p class="slide-lead">独立扩展示例约定：每学院至多一位院长，同一教师至多担任一个学院的院长</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">CREATE TABLE College (
+  CollNo CHAR(2) PRIMARY KEY,
+  DeanTno CHAR(3) UNIQUE,
+  FOREIGN KEY (DeanTno) REFERENCES Teacher(Tno)
+);</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DeanTno 可空；若规定每院必须有院长，再加 NOT NULL</p></div></div>
+    <div class="numeric-progress">7/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a3b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
-    <h2 class="slide-title">物理设计：按实际 SQL 选索引和存储</h2>
-    <div class="slide-content"><p class="slide-lead">记录 SQL 的查询列、返回行数、频率和写入情况，再查目标 DBMS 支持什么</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="工作负载 + DBMS 能力 → 候选物理方案 → 时间、空间、吞吐与维护评价 → 保留、调整，或回退到逻辑设计"><span class="relation-term">工作负载</span><span class="relation-operator">+</span><span class="relation-term">DBMS 能力</span><span class="relation-operator">→</span><span class="relation-term">候选物理方案</span><span class="relation-operator">→</span><span class="relation-term">时间、空间、吞吐与维护评价</span><span class="relation-operator">→</span><span class="relation-term">保留、调整，或回退到逻辑设计</span></div></div></div></div>
-    <div class="numeric-progress">8/19</div>
-    <div class="semantic-label">PHYSICAL DESIGN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">两个学院引用同一位教师，应该拒绝</h2>
+    <div class="slide-content"><p class="slide-lead">逐行独立测试：已有 (D1,T01)，T01、T02 存在，T99 不存在</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>再写入一行</th><th>只有 FK</th><th>FK＋UNIQUE</th></tr></thead><tbody><tr><td>(D2,T01)</td><td>接受：T01 存在</td><td>拒绝：T01 已被 D1 引用</td></tr><tr><td>(D2,T99)</td><td>拒绝：教师不存在</td><td>拒绝：教师不存在</td></tr><tr><td>(D2,T02)</td><td>接受</td><td>接受：两院引用不同教师</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>FK 检查被引用教师是否存在，UNIQUE 阻止两院重复引用同一教师</p></div></div>
+    <div class="numeric-progress">8/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:32.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
-    <h2 class="slide-title">先分析事务，再决定索引和存储</h2>
-    <div class="slide-content"><p class="slide-lead">别因学号重要就建索引；看 SQL 是否用它筛选或连接、命中行数和读写频率</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>事务信息</th><th>需要记录</th><th>影响选择</th></tr></thead><tbody><tr><td>查询关系</td><td>访问哪些表和视图</td><td>存取路径</td></tr><tr><td>选择与连接</td><td>条件属性、等值或范围、选择性</td><td>B+ 树、哈希和组合索引候选</td></tr><tr><td>投影与更新</td><td>读取列、修改列和更新频率</td><td>物理维护代价；垂直分解另作逻辑判断</td></tr><tr><td>频率与时限</td><td>关系规模、增长、调用频率和响应目标</td><td>响应、吞吐和存储目标</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>按学号查询选课并在开学高峰写入选课表时，索引选择不能只看“学号是不是主码”，还要看选择性、频率和更新代价</p></div></div>
-    <div class="numeric-progress">9/19</div>
-    <div class="semantic-label">TRANSACTION PROFILE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">优化逻辑模型，先写出重复的事实</h2>
+    <div class="slide-content"><p class="slide-lead">如果把教师姓名和课程学分复制进每条选课记录，改一次就要同步许多行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 25% 39%"><colgroup><col style="width:36%"><col style="width:25%"><col style="width:39%"></colgroup><thead><tr><th>数据依赖</th><th>本案例怎样处理</th><th>为什么这样放</th></tr></thead><tbody><tr><td>Cno → Cname、Credit</td><td>放在 Course</td><td>改一门课学分只改一个事实</td></tr><tr><td>Tno → Tname</td><td>放在 Teacher</td><td>避免在每班重复教师姓名</td></tr><tr><td>SC 的组合码 → Grade</td><td>放在 SC</td><td>成绩属于学生的这次选课</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先检查依赖；若为性能合表或保存派生值，还要规定同步更新的规则</p></div></div>
+    <div class="numeric-progress">9/25</div>
+    <div class="semantic-label">LOGICAL OPTIMIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
+<section id="a4b" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
-    <h2 class="slide-title">范围、等值和批量读取选不同存取方法</h2>
-    <div class="slide-content"><p class="slide-lead">日期范围查选 B+ 树候选，学号等值查选哈希候选；实测查询收益和写入代价</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-physical-choice.svg" data-full-src="resources/decks/dbpa-7-3/assets/generated/dbpa-ch07-physical-choice.svg" alt="范围、等值和批量访问模式分别对应 B+ 树、哈希和聚簇的候选选择" tabindex="0" role="button" aria-label="放大图片：范围、等值和批量访问模式分别对应 B+ 树、哈希和聚簇的候选选择" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>B+ 树</h3><p>B+ 树适合作为范围、排序、聚集函数或连接条件的候选路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>哈希</h3><p>哈希适合等值查找或等值连接，不适合范围查找</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>聚簇</h3><p>聚簇把相同键的元组集中存放，适合主要访问路径</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>在当前聚簇模型中，一个关系只能参加一个聚簇；B+ 树、哈希和聚簇的具体实现与参数要核对目标 DBMS</p></div></div></div></div>
-    <div class="numeric-progress">10/19</div>
-    <div class="semantic-label">ACCESS METHODS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">水平分解用并集，垂直分解用连接</h2>
+    <div class="slide-content"><p class="slide-lead">先说清拆的是行还是列，再选择还原方法</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 40% 43%"><colgroup><col style="width:17%"><col style="width:40%"><col style="width:43%"></colgroup><thead><tr><th>拆分方式</th><th>具体例子</th><th>验收方法</th></tr></thead><tbody><tr><td>按行拆</td><td>SC 分为当前学期与其他学期</td><td>条件覆盖全部行、互不重叠；UNION ALL 恢复原记录</td></tr><tr><td>按列拆</td><td>扩展 Student 为姓名、联系电话两组</td><td>两组都保留 Sno，按 Sno 连接还原；检查无损与依赖保持</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>当前与其他学期</h3><p>Term 非空；按等于和不等于 2026-1 分成两片，再检查各片和跨片规则</p></article><article class="content-card emphasis-card" tabindex="0"><h3>姓名与联系电话</h3><p>两表都以 Sno 为主码，且每个学生在两表各有一行；缺少一侧记录，内连接就会丢学生</p></article></div></div></div>
+    <div class="numeric-progress">10/25</div>
+    <div class="semantic-label">DECOMPOSITION CHECKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="a5" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
-    <h2 class="slide-title">索引不是越多越好</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>外码既然是约束，就一定要另外建索引吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">每条索引都可能增加写入和维护成本</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>观察</th><th>可能收益</th><th>可能代价</th></tr></thead><tbody><tr><td>高频且有选择性的条件</td><td>可能更快定位元组</td><td>更新时维护索引</td></tr><tr><td>连接条件</td><td>可能减少连接代价</td><td>占用存储空间</td></tr><tr><td>多列组合条件</td><td>组合索引可能匹配常用路径</td><td>列顺序与选择性需按事务评价</td></tr><tr><td>高频更新关系</td><td>少量关键索引</td><td>过多索引拖慢写入</td></tr><tr><td>聚簇码集中访问</td><td>减少物理块读取</td><td>元组移动和索引重建</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>主码和外码是逻辑约束；是否为外码另建索引，是另一项物理设计选择</p></div></div>
-    <div class="numeric-progress">11/19</div>
-    <div class="semantic-label">INDEX TRADEOFF</div>
-    <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.4</div>
+    <h2 class="slide-title">匿名评价隐藏身份，成绩登记需要身份</h2>
+    <div class="slide-content"><p class="slide-lead">教材的匿名情境是教学评价；它是本案例 v1 之外的扩展</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37% 38%"><colgroup><col style="width:25%"><col style="width:37%"><col style="width:38%"></colgroup><thead><tr><th>使用目的</th><th>允许看到的行</th><th>显示或隐藏的列</th></tr></thead><tbody><tr><td>教师登记成绩</td><td>本人所教教学班的选课记录</td><td>显示 Sno、姓名、Grade，才能定位学生</td></tr><tr><td>教师阅读教学评价</td><td>对本人所教班的评价记录</td><td>显示评价与反馈，隐藏 Sno 和学生姓名</td></tr><tr><td>学生查本人评价</td><td>本人提交的评价记录</td><td>显示班级、评价与教师反馈</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>视图规定行与列，授权规定谁能查；还必须限制基本表访问，不能把“建好视图”当作权限已经完成</p></div></div>
+    <div class="numeric-progress">11/25</div>
+    <div class="semantic-label">USER SCHEMAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.0000%"></div></div>
   </section>
-<section id="b5" class="step slide-surface role-content layout-focus"
+<section id="a5a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
-    <h2 class="slide-title">表、索引、日志和备份按负载安排</h2>
-    <div class="slide-content"><p class="slide-lead">选课峰值、表增长速度和恢复时限共同决定索引、存储、日志与备份</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">工作负载：记录事务、频率、响应目标和更新特征</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">物理方案：选择索引、哈希、聚簇、存储位置和系统参数</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">实测结果：比较响应时间、每秒事务数、占用空间和写入维护时间</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">修改位置：达标后实施；索引不合适就改物理设计，若每次查询都被迫连接过多表，再返回逻辑设计</span></li></ol></div>
-<div class="component component-text text-inset substep reveal-self"><p>不同 DBMS 能设置的存储布局、缓冲区和块大小不同；先查目标产品实际支持什么，再承诺响应时间和恢复时间</p></div></div></div>
-    <div class="numeric-progress">12/19</div>
-    <div class="semantic-label">STORAGE PLAN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">用两名教师、两名学生检查可见范围</h2>
+    <div class="slide-content"><p class="slide-lead">课堂评价扩展：T01 教 C001，T02 教 C002；两班均为 2026-1／01</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 22% 22% 37%"><colgroup><col style="width:19%"><col style="width:22%"><col style="width:22%"><col style="width:37%"></colgroup><thead><tr><th>评价</th><th>提交学生</th><th>课程／教师</th><th>评价内容</th></tr></thead><tbody><tr><td>E01</td><td>20260001</td><td>C001／T01</td><td>讲解清楚</td></tr><tr><td>E02</td><td>20260002</td><td>C001／T01</td><td>希望增加演示</td></tr><tr><td>E03</td><td>20260001</td><td>C002／T02</td><td>实验充分</td></tr></tbody></table></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">T01 看 E01、E02，T02 看 E03；教师只见评价和反馈，不见提交者身份</span></li><li><span class="list-marker">02</span><span class="list-text">学生 20260001 看到自己的 E01、E03；20260002 只看到自己的 E02</span></li><li><span class="list-marker">03</span><span class="list-text">这是按行、按列限制的例子；真实匿名性还需考虑评价内容本身能否暴露身份</span></li></ol></div></div></div>
+    <div class="numeric-progress">12/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.0000%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
-    <h2 class="slide-title">实施：把设计变成可运行的 DBMS 对象</h2>
-    <div class="slide-content"><p class="slide-lead">数据转换和应用程序开发要与模式实现同步</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="目标模式实现 ├─ 数据抽取、清洗、映射、装载与校验 └─ 应用编码与调试 ↓ 联合试运行"><span class="relation-term">目标模式实现 ├─ 数据抽取、清洗、映射、装载与校验 └─ 应用编码与调试 ↓ 联合试运行</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>装载与应用开发同步推进，在联合调试处汇合；目标模式是目标 DBMS 可接受的结构描述</p></div></div></div>
-    <div class="numeric-progress">13/19</div>
-    <div class="semantic-label">IMPLEMENTATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">物理设计从三项具体负载出发</h2>
+    <div class="slide-content"><p class="slide-lead">课堂假设：3 万学生，每学期 20 万条 SC，三学期共 60 万条</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 40% 34%"><colgroup><col style="width:26%"><col style="width:40%"><col style="width:34%"></colgroup><thead><tr><th>操作</th><th>条件与读写内容</th><th>课堂负载</th></tr></thead><tbody><tr><td>学生查成绩</td><td>按学生和学期，读课程、班号与成绩</td><td>40 次／秒</td></tr><tr><td>教师查名单</td><td>按教学班，读学生名单与成绩</td><td>10 次／秒</td></tr><tr><td>新增选课</td><td>写一条 SC，维护约束和索引</td><td>平均 5、峰值 100 次／秒</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>响应目标：95% 的请求在 2 秒内完成，即 p95≤2 秒</p></div></div>
+    <div class="numeric-progress">13/25</div>
+    <div class="semantic-label">PHYSICAL DESIGN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.0000%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
-    <h2 class="slide-title">试运行：验证功能、性能与恢复</h2>
-    <div class="slide-content"><p class="slide-lead">近真实数据测试选课、退课、成绩和恢复；正确、快速且可恢复后再扩大装载</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>阶段</th><th>观察证据</th><th>不达标时回到哪里</th></tr></thead><tbody><tr><td>小批量装载</td><td>清洗映射、主外码和完整性通过率</td><td>数据转换与映射</td></tr><tr><td>应用联合调试</td><td>业务场景、事务结果和错误处理</td><td>应用程序，必要时逻辑设计</td></tr><tr><td>性能评价</td><td>响应时间、吞吐量和空间使用</td><td>物理设计，必要时逻辑设计</td></tr><tr><td>恢复演练</td><td>能否回到一致状态、恢复时间是否可接受</td><td>转储与恢复方案</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>试运行流程：小批量装载 → 联合调试 → 实测 → 修正 → 复测 → 合格后扩大装载并进入正式运行</p></div></div>
-    <div class="numeric-progress">14/19</div>
-    <div class="semantic-label">PILOT RUN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">把查询条件、返回列写进实际 SQL</h2>
+    <div class="slide-content"><p class="slide-lead">下面两条查询分别对应学生成绩和教师名单；登录身份检查由应用与授权保证</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07</span><code class="language-sql">SELECT Cno, ClassNo, Grade FROM SC
+WHERE Sno = '20260001' AND Term = '2026-1';
+
+SELECT s.Sno, s.Sname, sc.Grade
+FROM SC AS sc JOIN Student AS s ON s.Sno = sc.Sno
+WHERE sc.Cno = 'C001' AND sc.Term = '2026-1'
+  AND sc.ClassNo = '01';</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先用 EXPLAIN 记录所走索引与估计扫描行数，再测实际延迟；执行计划中的估计值不能代替实测</p></div></div>
+    <div class="numeric-progress">14/25</div>
+    <div class="semantic-label">TRANSACTION PROFILE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.0000%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
-    <h2 class="slide-title">正式上线后，仍要监测、恢复和调整</h2>
-    <div class="slide-content"><p class="slide-lead">数据增长拖慢查询，角色改权限，退课规则改约束；DBA 用日志和监控发现</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>恢复</h3><p>制定转储和恢复计划</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>控制</h3><p>根据用户和业务变化更新安全和完整性规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>监督</h3><p>采集性能数据并分析瓶颈</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>调整</h3><p>按需重组或重构数据库</p></article></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="监测 → 分析 → 调整配置、索引或存储 → 重组／重构 → 再评价"><span class="relation-term">监测</span><span class="relation-operator">→</span><span class="relation-term">分析</span><span class="relation-operator">→</span><span class="relation-term">调整配置、索引或存储</span><span class="relation-operator">→</span><span class="relation-term">重组／重构</span><span class="relation-operator">→</span><span class="relation-term">再评价</span></div></div></div></div>
-    <div class="numeric-progress">15/19</div>
-    <div class="semantic-label">MAINTENANCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">教材的三种方法，各有前提</h2>
+    <div class="slide-content"><p class="slide-lead">先核对所用引擎支持什么，不能把三种方法当成随时互换的按钮</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 41% 40%"><colgroup><col style="width:19%"><col style="width:41%"><col style="width:40%"></colgroup><thead><tr><th>方法</th><th>优先考虑的访问</th><th>前提与代价</th></tr></thead><tbody><tr><td>B+ 树</td><td>有选择性的等值、范围与排序</td><td>按实际列序验证收益；写入要维护索引</td></tr><tr><td>哈希</td><td>主要按等值查找或连接</td><td>关系规模稳定，或引擎支持动态哈希；不适合范围</td></tr><tr><td>教材聚簇</td><td>经常一起读取相同键值的记录</td><td>可能移动记录并重建索引；按教材模型一关系参加一个聚簇</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节脚本以 MySQL 8.4／InnoDB 为固定语法参考，演示普通索引候选；哈希和教材聚簇保留为概念比较</p></div></div>
+    <div class="numeric-progress">15/25</div>
+    <div class="semantic-label">ACCESS METHODS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="c4" class="step slide-surface role-content layout-focus"
+<section id="b4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
-    <h2 class="slide-title">重组和重构解决不同层次的变化</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-question" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-question.00f383af2d57.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>性能下降，就应该直接重构模式吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">表和字段没问题、碎片多或空间利用差时重组；需增删字段、表或索引时重构</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>维护动作</th><th>改变什么</th><th>典型场景</th></tr></thead><tbody><tr><td>重组</td><td>按原物理设计重新整理实际存储，不改逻辑结构和物理设计</td><td>回收空间、减少指针链</td></tr><tr><td>重构</td><td>部分修改模式或内模式</td><td>增删属性、表或索引，改变数据类型</td></tr><tr><td>新系统评估</td><td>现有模式和程序需要大范围重做</td><td>原系统已无法支持新的业务流程和数据规模</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>文件碎片多、空间利用差时先重组；需要增删字段、表或索引时重构；若业务流程和数据规模都已改变，再评估新系统</p></div></div>
-    <div class="numeric-progress">16/19</div>
-    <div class="semantic-label">REORGANIZE OR RESTRUCTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">先列出现有索引，再提出两个候选</h2>
+    <div class="slide-content"><p class="slide-lead">A 保留主码及外码所需索引；B 增加名单索引；C 在 B 上再加成绩索引</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07</span><code class="language-sql">SHOW INDEX FROM SC;
+-- B 比 A 多一个名单查询候选
+CREATE INDEX ix_roster ON SC
+  (Cno, Term, ClassNo, Grade, Sno);
+-- C 比 B 再多一个学生成绩查询候选
+CREATE INDEX ix_student_term ON SC
+  (Sno, Term, Cno, ClassNo, Grade);</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>外码有支持索引，不等于还要手工再建一份；先检查已有列序、覆盖范围和引擎要求，再评价新增收益</p></div></div>
+    <div class="numeric-progress">16/25</div>
+    <div class="semantic-label">INDEX TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b4a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
-    <h2 class="slide-title">遇到问题时，按四问找到该改哪一步</h2>
-    <div class="slide-content"><p class="slide-lead">查关系、读写和试运行，分清上线后是存储还是规则变化，据此决定修改位置</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>关系是否转换正确</h3><p>列出实体和 m:n 联系生成的关系，标出主码、外码和联系属性；分解后再检查无损与依赖保持</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询和写入是否达标</h3><p>给出查询条件、选择性、更新频率和响应目标，再选择 B+ 树、哈希、聚簇或不加索引，并写出维护代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>试运行在哪一步失败</h3><p>映射错误回数据转换，业务结果错误回应用或逻辑设计，性能不达标回物理设计，恢复失败回恢复方案</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>重组、重构还是换系统</h3><p>文件碎片和空间利用变差先重组，需要增删字段、表或规则才重构；现有模式与程序需大范围重做时再评估新系统</p></article></div></div></div>
-    <div class="numeric-progress">17/19</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
+    <h2 class="slide-title">查询最快的方案，可能过不了写入要求</h2>
+    <div class="slide-content"><p class="slide-lead">固定读请求，逐步增加写入，比较稳定处理上限；以下均为教学假设</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 24% 24% 24%"><colgroup><col style="width:28%"><col style="width:24%"><col style="width:24%"><col style="width:24%"></colgroup><thead><tr><th>同一测试方案</th><th>A 原有索引</th><th>B 加名单索引</th><th>C 再加成绩索引</th></tr></thead><tbody><tr><td>成绩查询 p95／ms</td><td>55</td><td>55</td><td>24</td></tr><tr><td>名单查询 p95／ms</td><td>80</td><td>18</td><td>18</td></tr><tr><td>合法插入能力／秒</td><td>135</td><td>118</td><td>85</td></tr><tr><td>SC 索引空间／MiB</td><td>32</td><td>46</td><td>60</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>C 低于每秒 100 次合法插入的测试门槛，淘汰；A、B 都达标，是否为名单提速多花 14 MiB，要结合业务决定</p></div></div>
+    <div class="numeric-progress">17/25</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.0000%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b5" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
-    <h2 class="slide-title">看见哪种现象，就回到对应步骤</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-3/mindmap-7-3.html" title="看见哪种现象，就回到对应步骤"></iframe></div></div>
-    <div class="numeric-progress">18/19</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.5</div>
+    <h2 class="slide-title">真正比较方案时，固定测试条件</h2>
+    <div class="slide-content"><p class="slide-lead">一次最快查询不够；同一数据、硬件和请求组合才能比较 A、B、C</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">记录引擎版本、硬件、缓存条件；三方案都从同一份数据快照开始</span></li><li><span class="list-marker">02</span><span class="list-text">先预热，再按固定负载测试；记录时长、并发数、实际完成量和错误数</span></li><li><span class="list-marker">03</span><span class="list-text">记录两类查询的 p95、合法插入吞吐、索引空间与执行计划</span></li><li><span class="list-marker">04</span><span class="list-text">每次测试前恢复相同状态，避免新增记录和已满教学班影响下一轮</span></li><li><span class="list-marker">05</span><span class="list-text">分别安排数据、日志和备份，记录容量增长及恢复所需时间</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>配套记录表把“教学假设”与“实际测量”分开；实测栏保持待填，不用示例数字冒充测量</p></div></div>
+    <div class="numeric-progress">18/25</div>
+    <div class="semantic-label">STORAGE PLAN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.0000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">从小样本开始检查身份和约束</h2>
+    <div class="slide-content"><p class="slide-lead">应用开发与装载准备同时推进；先确认小样本能正确进库，再扩大数据量</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 44% 32%"><colgroup><col style="width:24%"><col style="width:44%"><col style="width:32%"></colgroup><thead><tr><th>对象</th><th>小样本输入</th><th>预期核对</th></tr></thead><tbody><tr><td>教学班</td><td>不同课程、学期的三个 01 班</td><td>三班同时存在</td></tr><tr><td>选课 SC</td><td>20260001 选 C001、C002；20260002 选 C001</td><td>三条均引用 2026-1／01</td></tr><tr><td>错误选课</td><td>引用 99 班，或重复已有组合主码</td><td>拒绝且不新增记录</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p><a href="resources/decks/dbpa-7-3/assets/practice/design-practice.zip" download>下载建表、样本、查询与测量记录包</a> · <a href="resources/decks/dbpa-7-3/assets/practice/README.md" download>阅读使用顺序与验收要求</a></p></div></div></div>
+    <div class="numeric-progress">19/25</div>
+    <div class="semantic-label">IMPLEMENTATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.0000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">试运行失败，要带着证据回到对应步骤</h2>
+    <div class="slide-content"><p class="slide-lead">按 7.1 的 v1 范围检查选课、查询与成绩登记；退课另列后续需求</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 39% 33%"><colgroup><col style="width:28%"><col style="width:39%"><col style="width:33%"></colgroup><thead><tr><th>观察到的现象</th><th>先查什么</th><th>返回修改的位置</th></tr></thead><tbody><tr><td>01 班被导成 1 班</td><td>源字段、映射和字符长度</td><td>数据清洗与导入</td></tr><tr><td>一个名额却收了两人</td><td>事务边界、并发与容量检查</td><td>应用，必要时逻辑设计</td></tr><tr><td>C 仅完成 85 次／秒</td><td>索引维护、锁等待与资源</td><td>物理设计，再测完整负载</td></tr><tr><td>备份还原后少了已提交记录</td><td>恢复点、日志与校验清单</td><td>备份恢复方案</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>修正后重测同一用例，全部达标后再分批扩大装载</p></div></div>
+    <div class="numeric-progress">20/25</div>
+    <div class="semantic-label">PILOT RUN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">上线后的监测仍须落到具体记录</h2>
+    <div class="slide-content"><p class="slide-lead">DBA 定期检查运行证据，并把改动与复测结果留在维护记录中</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 41% 39%"><colgroup><col style="width:20%"><col style="width:41%"><col style="width:39%"></colgroup><thead><tr><th>任务</th><th>保存的证据</th><th>触发的处理</th></tr></thead><tbody><tr><td>恢复</td><td>备份时间、恢复点、行数及耗时</td><td>隔离库还原并核对数据</td></tr><tr><td>权限</td><td>教师调班、岗位变化的授权记录</td><td>撤销旧权限，授权后复测</td></tr><tr><td>性能</td><td>p95、吞吐、错误、锁等待</td><td>定位瓶颈，比较改动前后</td></tr><tr><td>完整性</td><td>重复选课、超容量等异常清单</td><td>修正原因和数据，重验规则</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">21/25</div>
+    <div class="semantic-label">MAINTENANCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.0000%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3 <span>|</span> 7.6</div>
+    <h2 class="slide-title">是否改变原设计，决定重组还是重构</h2>
+    <div class="slide-content"><p class="slide-lead">只说“没有改表结构”还不够；物理设计中的索引也可能发生改变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 41% 39%"><colgroup><col style="width:20%"><col style="width:41%"><col style="width:39%"></colgroup><thead><tr><th>分类</th><th>明确场景</th><th>判断依据</th></tr></thead><tbody><tr><td>重组</td><td>按原设计整理存储、回收空间</td><td>原逻辑和物理设计均不改变</td></tr><tr><td>重构</td><td>新增 ix_roster，或增加一列</td><td>部分修改内模式或模式</td></tr><tr><td>新系统评估</td><td>业务与数据模型需大范围重做</td><td>局部修改已无法满足新需求</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>整理存储但不变更设计是重组；新增索引改变内模式，属于重构</p></div></div>
+    <div class="numeric-progress">22/25</div>
+    <div class="semantic-label">REORGANIZE OR RESTRUCTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">交付方案时，把设计决定与证据放在一起</h2>
+    <div class="slide-content"><p class="slide-lead">从需求样本、完整 E-R 图，走到关系、约束和可执行的验收步骤</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">五张主案例表保留组合身份；1:1 扩展示例用 FK＋UNIQUE 保留基数</span></li><li><span class="list-marker">02</span><span class="list-text">按行拆分检查并集恢复，按列拆分检查连接恢复；不能混用判据</span></li><li><span class="list-marker">03</span><span class="list-text">普通成绩视图与匿名评价视图分开定义，并检查授权范围</span></li><li><span class="list-marker">04</span><span class="list-text">给出实际 SQL、现有索引和候选方案；同时比较读取、写入和空间</span></li><li><span class="list-marker">05</span><span class="list-text">实测记录与教学假设分开；根据失败证据修改，再验证同一场景</span></li></ol></div></div></div>
+    <div class="numeric-progress">23/25</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
+    <h2 class="slide-title">看见什么证据，就回到对应设计步骤</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-3/mindmap-7-3.html" title="看见什么证据，就回到对应设计步骤"></iframe></div></div>
+    <div class="numeric-progress">24/25</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-focus"
+      data-x="0" data-y="6720" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定含 1:1、1:n、m:n 和多元联系的 E-R 子图，如何写出关系模式并标注主码、外码和联系关系的复合码？</span></li><li><span class="question-no">02</span><span class="question-text">规范化、水平分解、垂直分解和用户外模式分别解决什么问题？无损连接与依赖保持分别有什么作用？</span></li><li><span class="question-no">03</span><span class="question-text">给定查询条件、选择性、更新频率和响应目标，如何选择 B+ 树、哈希、聚簇或不增加索引，并写出一个维护代价？</span></li><li><span class="question-no">04</span><span class="question-text">根据装载、功能、性能或恢复失败的试运行证据，应回到数据转换、应用、逻辑设计、物理设计还是恢复方案？如何区分重组、重构和新系统评估？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么 SC 引用教学班时必须同时保存 Cno、Term 和 ClassNo？</span></li><li><span class="question-no">02</span><span class="question-text">两学院不能引用同一院长，FK、UNIQUE、NOT NULL 分别负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">按学期拆行与按姓名、电话拆列，各用什么方法还原？</span></li><li><span class="question-no">04</span><span class="question-text">为什么教师成绩视图显示学生身份，而匿名评价视图隐藏身份？</span></li><li><span class="question-no">05</span><span class="question-text">方案 C 查询最快，为什么仍未通过本次性能门槛？</span></li><li><span class="question-no">06</span><span class="question-text">按原设计整理存储与新增 ix_roster，分别属于重组还是重构？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-7-2.html" title="上一节：7.2 概念结构设计与 E-R 模型" aria-label="上一节：7.2 概念结构设计与 E-R 模型">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -265,7 +367,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">19/19</div>
+    <div class="numeric-progress">25/25</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

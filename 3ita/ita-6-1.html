@@ -4,13 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ITA 单元 6 可复用 Skill 与测试改进 | HUST</title>
-  <meta name="description" content="合并 6.1 与 6.2，写入、加载、测试并改进论文主张核验 Skill">
+  <meta name="description" content="把重复使用的检查步骤写成方法文件，用独立预期测试，修改后回归并尝试会议记录迁移">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="智能技术及应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="6-1">
-  <meta name="version" content="2610">
+  <meta name="version" content="2610.6">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -28,10 +28,10 @@
     <img class="cover-image" src="resources/decks/ita-6-1/assets/cover-skill-reuse.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">ITA · 单元 6</div>
-      <h1>可复用 Skill 与测试改进</h1>
-      <p class="cover-description">封装已实践的方法，用样例检验、修订并复用</p>
+      <h1>可复用 Skill<br>与测试改进</h1>
+      <p class="cover-description">把做过的方法写清楚，再用样例检查和改进</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610.6</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -40,56 +40,94 @@
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
-    <h2 class="slide-title">下一次核验，哪些要求还要重新说明？</h2>
-    <div class="slide-content"><p class="slide-lead">从第五单元的笔记与运行记录中提取稳定方法，本次输入仍需明确给出</p>
-<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>稳定方法</h3><p>实际读来源、比较条件、保存位置、缺证据时停止肯定</p></article><article class="content-card emphasis-card" tabindex="0"><h3>变化输入</h3><p>本次主张、来源、输出路径、可读范围与用途</p></article></div>
-<div class="component component-text text-inset"><p>若每次都要口头补充同一条核验规则，应把规则写入方法；新任务的具体材料与授权仍由本次请求提供。</p></div></div></div>
-    <div class="numeric-progress">2/24</div>
+    <h2 class="slide-title">哪些要求不必每次重新告诉 AI？</h2>
+    <div class="slide-content"><p class="slide-lead">把稳定方法保存，把每次不同的材料、问题与输出留在请求里</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>可反复使用的方法</th><th>每次重新指定的内容</th></tr></thead><tbody><tr><td>读取来源，逐项比较，不猜缺口</td><td>这次核对哪条主张、哪个文件</td></tr><tr><td>保存位置、理由与未查范围</td><td>结果写到哪个新文件</td></tr><tr><td>读不到则停止肯定判断</td><td>本次允许读取的来源范围</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本节用小型合成记录测试方法；目标是写、运行和改进 Skill，不需要重新学习一篇论文</p></div></div></div>
+    <div class="numeric-progress">2/28</div>
     <div class="semantic-label">REUSE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:7.1429%"></div></div>
   </section>
-<section id="t1" class="step slide-surface role-content layout-stack"
+<section id="a2a" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
-    <h2 class="slide-title">本单元涉及的主题</h2>
-    <div class="slide-content"><p class="slide-lead">主题 15：模板、Skill 与测试；通过加载、测试和修订检验方法复用</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>本主题的三个方面</th><th>本单元需要解释与应用</th></tr></thead><tbody><tr><td>方法封装</td><td>区分提示、模板、工作流与 Skill，写清适用条件、步骤与资源</td></tr><tr><td>加载运行</td><td>让桌面端发现 Skill，用明确请求运行并核对实际结果</td></tr><tr><td>测试与改进</td><td>先写预期，用样例定位失败，修改后重跑失败例和旧例</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>沿用已有笔记核验方法；先在共同任务中验证，再用研讨课记录检验哪些结构可以迁移。</p></div></div></div>
-    <div class="numeric-progress">3/24</div>
-    <div class="semantic-label">CORE TOPICS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+    <h2 class="slide-title">先用容易人工核对的小输入测试</h2>
+    <div class="slide-content"><p class="slide-lead">小材料让测试者能独立给出预期，再检查 AI 是否遵守方法</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08</span><code class="language-markdown"># inputs/source-fixture.md（节选）
+## 观察范围
+一个班的 30 名学生，同一周；没有随机分配，未记录考试。
+## 结果
+工具组平均领取至提交间隔 40 分钟，对照组 50 分钟。
+间隔包括休息，不能当作专注时长。
+## 限制
+只用于练习条件核验，不能推断因果效应或推广至其他班级。</code></pre></div></div>
+<div class="component component-text text-inset"><p><a href="resources/decks/ita-6-1/assets/practice/reading-project/inputs/source-fixture.md" download>打开完整来源</a>。本次核对来源是否支持主张；原始逐条记录不在包内，不能声称已经复算均值</p></div></div></div>
+    <div class="numeric-progress">3/28</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.7143%"></div></div>
+  </section>
+<section id="a2b" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
+    <h2 class="slide-title">完成后，应能在文件中找到这些内容</h2>
+    <div class="slide-content"><p class="slide-lead">参考产物说明要检查什么；实际是否做到，要看本次运行文件</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07</span><code class="language-markdown"># check-supported.md（参考节选，非实测）
+状态：支持该记录内的描述；不作因果判断。
+位置：source-fixture.md，§观察范围、§结果、§限制。
+依据：工具组平均间隔明确为 40 分钟。
+修订：在这个班、30 人、同一周的记录中，工具组平均间隔为 40 分钟。
+限制原句：不能推断因果效应或推广至其他班级。
+未查：其他班级、考试结果；未复算均值。</code></pre></div></div>
+<div class="component component-text text-inset"><p><a href="resources/decks/ita-6-1/assets/practice/teacher-reference/check-supported-reference.md" download>完整参考答案</a>由教师编写，不是软件运行结果。原主张、条件差异与完整限制原句都保存在文件中</p></div></div></div>
+    <div class="numeric-progress">4/28</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-stack"
-      data-x="4500" data-y="0" data-z="0"
+      data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
     <h2 class="slide-title">四种方式分别复用什么？</h2>
     <div class="slide-content"><p class="slide-lead">提示、模板、工作流和 Skill 可以配合使用，选择取决于要复用的内容</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>方式</th><th>复用对象</th><th>本任务的例子</th></tr></thead><tbody><tr><td>提示</td><td>本次要求的表达</td><td>核对这条主张，不猜缺失内容</td></tr><tr><td>模板</td><td>输出栏目</td><td>主张、状态、位置、理由与修订</td></tr><tr><td>工作流</td><td>步骤与交接</td><td>读取→比较→保存→回查，缺材料转待核</td></tr><tr><td>Skill</td><td>适用条件、方法与资源</td><td>把上述核验方法写成可发现、可加载的说明</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>一次明确请求可能已经足够；重复使用且条件稳定时再封装 Skill，不把四种方式当成必须逐级升级的阶梯。</p></div></div></div>
-    <div class="numeric-progress">4/24</div>
+<div class="component component-text text-inset"><p>一次明确请求可能已经足够；重复使用且条件稳定时再封装 Skill，不把四种方式当成必须逐级升级的阶梯</p></div></div></div>
+    <div class="numeric-progress">5/28</div>
     <div class="semantic-label">REUSE LEVELS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.8571%"></div></div>
   </section>
 <section id="a4" class="step slide-surface role-content layout-stack"
-      data-x="4500" data-y="1120" data-z="0"
+      data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
-    <h2 class="slide-title">本轮封装一条已经实践过的方法</h2>
-    <div class="slide-content"><p class="slide-lead">给定主张与可读来源，输出可回查判断；不承担全文认证</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>本轮范围</th><th>完成条件</th></tr></thead><tbody><tr><td>核对一条或少量主张</td><td>对象、指标、单位、时间与范围逐项比较</td></tr><tr><td>输出判断与依据</td><td>状态、来源位置、理由、建议修订可回查</td></tr><tr><td>缺来源或关键条件</td><td>标证据不足或受限，不猜位置和数值</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>从第五单元实际记录中选一条稳定规则写入。先用小样例检验，再换自己的真实短段落；适用范围随证据扩大。</p></div></div></div>
-    <div class="numeric-progress">5/24</div>
+    <h2 class="slide-title">把“读来源再判断”保存成一个方法文件</h2>
+    <div class="slide-content"><p class="slide-lead">上一单元的一次核验留下笔记；本单元再留下能被重复调用的说明</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>文件</th><th>谁来填写</th><th>下次怎样用</th></tr></thead><tbody><tr><td>SKILL.md</td><td>维护者写稳定规则</td><td>读取、比较、保存、回查</td></tr><tr><td>source-fixture.md</td><td>本次任务提供来源</td><td>换来源时重新指定</td></tr><tr><td>本次请求</td><td>使用者给主张与新输出</td><td>不让方法猜文件和用途</td></tr><tr><td>check-supported.md</td><td>本次运行生成</td><td>人回查依据，决定是否采用</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本次只核验一条或少量主张，不能由此认定整篇论文都正确</p></div></div></div>
+    <div class="numeric-progress">6/28</div>
     <div class="semantic-label">SCOPE OF A SKILL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.4286%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-stack"
-      data-x="3000" data-y="1120" data-z="0"
+      data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
     <h2 class="slide-title">Skill 入口说明用途与适用条件</h2>
-    <div class="slide-content"><p class="slide-lead">名称和描述帮助发现，正文连接本次输入、步骤与输出</p>
+    <div class="slide-content"><p class="slide-lead">名称和描述用于选择方法，正文说明拿到材料后怎样做</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -105,37 +143,25 @@ description: 核对给定主张与可读来源片段；
 # 论文主张核验
 输入：主张、来源路径、新输出路径。
 缺来源时保留证据不足，不凭记忆补全。</code></pre></div></div>
-<div class="component component-text text-inset"><p>这是入口节选。<a href="assets/practice/skill-practice.zip">完整练习包</a>含可复制方法与小输入；文件存在不代表桌面端已经加载。</p></div></div></div>
-    <div class="numeric-progress">6/24</div>
+<div class="component component-text text-inset"><p>入口节选。<a href="resources/decks/ita-6-1/assets/practice/skill-practice.zip" download>练习包</a>提供完整方法与样例；保存后，还要核对是否加载</p></div></div></div>
+    <div class="numeric-progress">7/28</div>
     <div class="semantic-label">SKILL ENTRY</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-stack"
-      data-x="1500" data-y="1120" data-z="0"
+<section id="b1a" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
-    <h2 class="slide-title">把隐含判断写成可执行说明</h2>
-    <div class="slide-content"><p class="slide-lead">读取、比较、保存和回查各有产物，缺条件时保留缺口</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">MARKDOWN</span><pre tabindex="0" aria-label="MARKDOWN code"><span class="code-line-numbers" aria-hidden="true">01
-02
-03
-04
-05
-06
-07</span><code class="language-markdown">1. 确认输入，实际读取指定来源。
-2. 拆对象、指标、单位、时间与范围，逐项比较。
-   明确相反：矛盾；未测或未提供：证据不足。
-   关键条件都得到支持，才把整体判为支持。
-3. 保存状态、位置、理由与有条件的修订。
-4. 回读新输出，核对位置与未查范围。
-缺来源停止肯定；不覆盖输入，不扩大授权。</code></pre></div></div>
-<div class="component component-text text-inset"><p>这里写判断规则；权限和停止约定继续按第五单元实际配置与观察。其他格式的 Skill 不能直接假定原样适配。</p></div></div></div>
-    <div class="numeric-progress">7/24</div>
-    <div class="semantic-label">SKILL PROCEDURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6</div>
+    <h2 class="slide-title">方法文件规定怎样作判断？</h2>
+    <div class="slide-content"><p class="slide-lead">“步骤”决定怎样比较来源，“输出”决定怎样呈现判断</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>SKILL.md 第 3 步的规则</th><th>遇到本节来源时</th></tr></thead><tbody><tr><td>明确相反 → 矛盾</td><td>来源写未随机，主张却写随机</td></tr><tr><td>没有测量 → 证据不足</td><td>没有考试数据，无法判断考试提高</td></tr><tr><td>关键条件均获支持 → 支持</td><td>范围、指标、单位均对应 40 分钟</td></tr><tr><td>复合主张 → 逐项报告</td><td>间隔得到支持，考试提升仍不足</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>输出栏让别人看清这项判断。增加“限制原句”栏能帮助回查，但不能替代上述比较方法</p></div></div></div>
+    <div class="numeric-progress">8/28</div>
+    <div class="semantic-label">METHOD AND FORMAT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-stack"
-      data-x="0" data-y="1120" data-z="0"
+      data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
     <h2 class="slide-title">放入目录后，还要确认发现与加载</h2>
@@ -151,64 +177,50 @@ description: 核对给定主张与可读来源片段；
   inputs/discussion-fixture.md
   tests/tests.json
   notes/</code></pre></div></div>
-<div class="component component-text text-inset"><p>解压练习包，选择 reading-project 为工作区。按课程已有文档采用 .dsh/skills；当次目录规则须确认。名称被提到、文件被读到、规则被遵循和结果正确分别留证。</p></div></div></div>
-    <div class="numeric-progress">8/24</div>
+<div class="component component-text text-inset"><p>把练习包解压到普通文件夹，选择 reading-project 为工作区；无需 Git 或维护脚本。名称被提到、方法被加载、规则被遵守、结果正确，要分别检查</p></div></div></div>
+    <div class="numeric-progress">9/28</div>
     <div class="semantic-label">DISCOVERY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:32.1429%"></div></div>
 <!-- speaker-notes
-目录依据课程 2026-10-01 官方 skills.md 记录，本轮未联网更新或运行桌面端。普通练习文件夹不要求 Git。不能自动发现时，可明确读取 SKILL.md 手动按文档执行，但标为手动执行，不记为发现机制已验证。
+目录依据 2026-10-13 审阅中核对的官方 skills.md：项目根取最近含 .git 的上级目录，没有 Git 时取工作目录，不任意递归发现。普通练习文件夹不要求 Git。尚未运行桌面端。不能自动发现时，可明确读取 SKILL.md 手动按文档执行，但标为手动执行，不记为发现机制已验证。
 -->
   </section>
 <section id="b5" class="step slide-surface role-content layout-stack"
-      data-x="0" data-y="2240" data-z="0"
+      data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
     <h2 class="slide-title">方法、任务来源与测试预期分开保存</h2>
     <div class="slide-content"><p class="slide-lead">核验时模型使用方法和来源，测试者运行后再比较预期</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>文件</th><th>本轮用途</th></tr></thead><tbody><tr><td>.dsh/skills/.../SKILL.md</td><td>适用条件、步骤、输出与停止规则</td></tr><tr><td>inputs/source-fixture.md</td><td>当前可用的合成事实来源</td></tr><tr><td>tests/tests.json</td><td>测试者的预期与通过条件，不交给核验任务</td></tr><tr><td>notes/check-*.md</td><td>每例实际输出，运行后与预期比较</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>分目录减少混用，不等于权限隔离。点名本轮允许文件，检查实际读取记录；预期不得当成支持主张的事实证据。</p></div></div></div>
-    <div class="numeric-progress">9/24</div>
+<div class="component component-text text-inset"><p>分目录减少混用，不等于权限隔离。点名本轮允许文件，检查实际读取记录；预期不得当成支持主张的事实证据</p></div></div></div>
+    <div class="numeric-progress">10/28</div>
     <div class="semantic-label">RESOURCE BOUNDARIES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.7143%"></div></div>
   </section>
 <section id="b5a" class="step slide-surface role-content layout-stack"
-      data-x="1500" data-y="2240" data-z="0"
+      data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
     <h2 class="slide-title">练习：没有考试数据，算相反证据吗？</h2>
     <div class="slide-content"><p class="slide-lead">来源明确否定与来源没有测量，支持不同的判断</p>
-<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>合成来源写“没有随机分配，也没有记录闭卷考试成绩”。分别判断：</p>
-<p>A：“研究随机分配学生。” B：“工具提高了闭卷考试成绩。”</p></div>
-<div class="component component-text text-panel substep reveal-self"><div class="reading-panel"><p>A 与“没有随机分配”直接矛盾。B 缺少考试测量，应判证据不足；不能据“没有数据”反推考试一定没有提高。复合主张要逐项报告。</p></div></div></div></div>
-    <div class="numeric-progress">10/24</div>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>合成来源写“没有随机分配，也没有记录闭卷考试成绩”。分别判断</p>
+<p>A：“研究随机分配学生。” B：“工具提高了闭卷考试成绩”</p></div>
+<div class="component component-text text-panel substep reveal-self"><div class="reading-panel"><p>A 与“没有随机分配”直接矛盾。B 缺少考试测量，应判证据不足；不能据“没有数据”反推考试一定没有提高。复合主张要逐项报告</p></div></div></div></div>
+    <div class="numeric-progress">11/28</div>
     <div class="semantic-label">CONTRADICTION OR UNKNOWN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
-  </section>
-<section id="b4" class="step slide-surface role-content layout-stack"
-      data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
-    <h2 class="slide-title">一次请求同时给出主张、来源与新输出</h2>
-    <div class="slide-content"><p class="slide-lead">本次参数由请求提供，方法无需猜测文件和用途</p>
-<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>请使用 paper-claim-check。</p><p>主张：该合成记录中，使用工具组平均领取至提交间隔为 40 分钟。 来源：inputs/source-fixture.md。 新输出：notes/check-supported.md。</p><p>只读方法与指定来源，核对后保存并回读新输出；不读 tests/tests.json，不覆盖已有文件。</p></div></div></div></div>
-    <div class="numeric-progress">11/24</div>
-    <div class="semantic-label">INVOKE AND OBSERVE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
-<!-- speaker-notes
-这是支持例请求，方法文件可点名完整项目路径。若输出已存在另用新名。同一包的 tests.json 为测试者材料，不在模型输入中；实际是否遵守需要读取记录，不只靠提示。
--->
+    <div class="progress-track"><div class="progress-fill" style="width:39.2857%"></div></div>
   </section>
 <section id="c1" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
-    <h2 class="slide-title">测试先确定预期，再记录实际</h2>
-    <div class="slide-content"><p class="slide-lead">用例要能指出哪里判错，而不只评价回答是否流畅</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>字段</th><th>一条最小用例</th></tr></thead><tbody><tr><td>输入</td><td>合成来源；主张“这份记录随机分配学生”</td></tr><tr><td>预期与依据</td><td>来源明确“没有随机分配”，应判矛盾</td></tr><tr><td>实际</td><td>本次运行后填写判断、位置、输出文件与记录</td></tr><tr><td>通过条件</td><td>判断符合来源、位置可查、输出存在，未补写考试结果</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>预期是测试者的先验标准，不是已经成功的证据。一个句子含多项断言时分别判断。</p></div></div></div>
-    <div class="numeric-progress">12/24</div>
+    <h2 class="slide-title">测试者先写预期，运行后再填“实际”</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 source-fixture.md；实际还没有运行，不能填写“通过”</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>测试记录字段</th><th>contradiction 用例</th></tr></thead><tbody><tr><td>输入主张</td><td>该合成记录随机分配学生</td></tr><tr><td>预期 / 依据</td><td>矛盾 / §观察范围明确“没有随机分配”</td></tr><tr><td>实际输出</td><td>未运行；完成后填文件路径和原始判断</td></tr><tr><td>核验点</td><td>判断、位置、文件与读取范围；v2 另查限制栏</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>tests/tests.json 与参考答案由测试者保管，不作为核验依据</p></div></div></div>
+    <div class="numeric-progress">12/28</div>
     <div class="semantic-label">TEST CASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
   </section>
 <section id="c2" class="step slide-surface role-content layout-stack"
       data-x="4500" data-y="3360" data-z="0"
@@ -217,133 +229,204 @@ description: 核对给定主张与可读来源片段；
     <h2 class="slide-title">三类主张检验不同判断边界</h2>
     <div class="slide-content"><p class="slide-lead">明确相反与没有测量对应不同状态，不能混作一种失败</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>用例</th><th>给定主张</th><th>预期</th></tr></thead><tbody><tr><td>支持</td><td>合成记录中工具组平均间隔 40 分钟</td><td>支持，保留范围与单位</td></tr><tr><td>矛盾</td><td>该记录随机分配学生</td><td>矛盾，来源明确非随机</td></tr><tr><td>证据不足</td><td>该记录证明工具提高闭卷考试成绩</td><td>未测考试，不能作肯定判断</td></tr><tr><td>可选缺文件</td><td>指定 inputs/not-provided.md</td><td>报告不可读取，不虚构位置</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>前三例为最小组合，缺文件例可追加。合成来源不是共同论文数据。</p></div></div></div>
-    <div class="numeric-progress">13/24</div>
+<div class="component component-text text-inset"><p>前三例为必做。可追加复合主张：“平均间隔为 40 分钟，且提高了考试成绩”，分别判断两部分；缺文件例也可选做。合成来源不是共同论文数据</p></div></div></div>
+    <div class="numeric-progress">13/28</div>
     <div class="semantic-label">TEST COVERAGE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.4286%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-stack"
+<section id="b4" class="step slide-surface role-content layout-stack"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
-    <h2 class="slide-title">课堂实践：加载方法，跑三条小用例</h2>
-    <div class="slide-content"><p class="slide-lead">先留下真实调用与判断，再用一处新输入检查能否复用</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">复制练习包，调整一处真实输入或适用条件，确认方法实际读取</span></li><li><span class="list-marker">■</span><span class="list-text">逐条只给主张、来源与新输出，分别运行支持、矛盾和证据不足例</span></li><li><span class="list-marker">■</span><span class="list-text">回查实际判断、位置与文件；运行后再看预期，保留原始结果</span></li><li><span class="list-marker">■</span><span class="list-text">换自己的一个真实短片段，或追加缺文件例；记录已测与未测范围</span></li></ul></div></div></div>
-    <div class="numeric-progress">14/24</div>
-    <div class="semantic-label">RUN THE TESTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
-<!-- speaker-notes
-当前单元 90 分钟：概念 35、示范 15、练习 30、反馈 10。练习可分段穿插，优先写入/加载和三例小测试；新真实片段可在同伴检查或课后补做。不要求每人跑所有扩展，也不要求结果必须失败。
--->
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
+    <h2 class="slide-title">第一轮：使用未修改的方法运行 v1</h2>
+    <div class="slide-content"><p class="slide-lead">先备份原始 SKILL.md；按三类用例逐例开新会话，取得初版实际结果</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-text">请使用 paper-claim-check。
+主张：该合成记录中，工具组平均领取至提交间隔为 40 分钟。
+来源：inputs/source-fixture.md
+新输出：notes/v1-supported.md
+只读方法与指定来源；核对后保存并回读新输出。
+不读 tests/ 或教师参考答案，不覆盖已有文件。</code></pre></div></div>
+<div class="component component-text text-inset"><p>先跑完 supported、contradiction、insufficient 三例，再改规则。不能自动发现时可点名方法路径，但须记录“手动执行”，不算自动发现通过</p></div></div></div>
+    <div class="numeric-progress">14/28</div>
+    <div class="semantic-label">INVOKE AND OBSERVE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-stack"
+<section id="b2" class="step slide-surface role-content layout-stack"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
-    <h2 class="slide-title">定位最早一处可观察的偏离</h2>
-    <div class="slide-content"><p class="slide-lead">先检查文件与返回，再决定修改发现、材料、规则还是写入</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>实际现象</th><th>先核对的证据</th></tr></thead><tbody><tr><td>只提到 Skill 名称</td><td>方法是否实际读取或加载</td></tr><tr><td>找不到正确段落</td><td>路径是否存在，返回是否覆盖所需条件</td></tr><tr><td>未测考试却判“提高”</td><td>判断是否越过来源，规则是否处理缺测量</td></tr><tr><td>结论合理但文件不存在</td><td>是否发生写入，返回与权限状态是什么</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>一个失败可能涉及多个环节；先处理有证据的最早偏离，再复测。不要直接假定都是提示写得不好。</p></div></div></div>
-    <div class="numeric-progress">15/24</div>
-    <div class="semantic-label">FAILURE LOCALIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 写作与加载 Skill</div>
+    <h2 class="slide-title">保存 v1 结果后，再增加一条输出规则</h2>
+    <div class="slide-content"><p class="slide-lead">先保存三例 v1 的实际结果，再编辑输出段；主张、来源、模型设置保持不变</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">原有：列出原主张、状态、来源位置、简短依据、
+      条件差异、建议修订、未查范围。
+
+新增：来源明确写出限制时，单列限制原句与位置；
+      未提供时写“本次来源未提供”，不要补写。</code></pre></div></div>
+<div class="component component-text text-inset"><p>新增要求让限制更容易被回查；它不改变“支持 / 矛盾 / 证据不足”的判断规则。<a href="resources/decks/ita-6-1/assets/practice/skill-teacher-reference.zip" download>完整 v1 / v2 与差异文件</a>可供课后核对</p></div></div></div>
+    <div class="numeric-progress">15/28</div>
+    <div class="semantic-label">SKILL PROCEDURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.5714%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-stack"
+<section id="c2a" class="step slide-surface role-content layout-stack"
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6</div>
+    <h2 class="slide-title">新增规则的两种情况都检查了吗？</h2>
+    <div class="slide-content"><p class="slide-lead">“有明确限制句”与“没有明确限制句”需要不同的输入</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="52% 48%"><colgroup><col style="width:52%"><col style="width:48%"></colgroup><thead><tr><th>v2 的来源</th><th>要检查的输出</th></tr></thead><tbody><tr><td>source-fixture.md 有 §限制</td><td>摘录限制原句并标出位置，同时核对原来的判断是否仍正确</td></tr><tr><td>no-limit-fixture.md 未写限制句</td><td>限制栏写“本次来源未提供”；该记录内的 40 分钟仍获支持</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>新增 no-explicit-limit 用例有可核验事实，不是空来源。tests.json 的 criteria_v2 由测试者核对，不能送进模型；未跑的条件标未测</p></div></div></div>
+    <div class="numeric-progress">16/28</div>
+    <div class="semantic-label">TEST BOTH CONDITIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
-    <h2 class="slide-title">改一条规则，再看同样输入的结果</h2>
-    <div class="slide-content"><p class="slide-lead">保留旧版本与条件，一项修改只能提供有限的定位证据</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>教学构造的改进例</th><th>内容</th></tr></thead><tbody><tr><td>v1 与现象</td><td>只写“比较后给状态”；把未测考试的主张判支持</td></tr><tr><td>v2 只改一处</td><td>明确“关键结果未测量→证据不足，不由完成间隔推断考试”</td></tr><tr><td>保持不变</td><td>主张、来源、模型设置、输出标准</td></tr><tr><td>观察什么</td><td>原失败例是否改善，原支持例是否被过度拒绝</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>这不是已发生的测试结果。自己的三例全通过时如实记录，再按新场景需要调整；不要伪造旧失败。模型输出可能波动，必要时在同样条件下复跑。</p></div></div></div>
-    <div class="numeric-progress">16/24</div>
+    <h2 class="slide-title">课堂实践：先跑初版，再修改与复测</h2>
+    <div class="slide-content"><p class="slide-lead">完整版本对照需 6 次运行，新增条件再测 1 次；未完成的用例如实留待测</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>运行 v1 三例</h3><p>三例各开新会话，保存初版输出与版本，作为后续比较的基线</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>只改一条，运行 v2 三例</h3><p>增加限制栏规则；同样主张、来源和模型设置，新会话、新输出</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>再查“没有明确限制句”</h3><p>用 v2 运行 no-explicit-limit；只给该例来源，不补其他例的答案</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>对照实际结果</h3><p>逐项查状态、位置、限制栏及读取范围；未跑 v1 就不能声称前后改善</p></div></div></div></div></div>
+    <div class="numeric-progress">17/28</div>
+    <div class="semantic-label">RUN THE TESTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.7143%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
+    <h2 class="slide-title">先找出从哪一步开始出错</h2>
+    <div class="slide-content"><p class="slide-lead">对照文件与实际返回，先找出最早偏离要求的环节</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>实际现象</th><th>先核对的证据</th></tr></thead><tbody><tr><td>只提到 Skill 名称</td><td>方法是否实际读取或加载</td></tr><tr><td>找不到正确段落</td><td>路径是否存在，返回是否覆盖所需条件</td></tr><tr><td>未测考试却判“提高”</td><td>判断是否越过来源，规则是否处理缺测量</td></tr><tr><td>结论合理但文件不存在</td><td>是否发生写入，返回与权限状态是什么</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>一个失败可能涉及多个环节；先处理有证据的最早偏离，再复测。不要直接假定都是提示写得不好</p></div></div></div>
+    <div class="numeric-progress">18/28</div>
+    <div class="semantic-label">FAILURE LOCALIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.2857%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
+    <h2 class="slide-title">改动前后：增加一栏，没有改写结论</h2>
+    <div class="slide-content"><p class="slide-lead">下面是教学构造的输出对照，用来说明要检查的差异；不是模型实测</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>v1 参考节选</h3><p>状态：支持。位置：§结果。修订保留一个班、同一周；未查考试</p></article><article class="content-card emphasis-card" tabindex="0"><h3>v2 应增加的内容</h3><p>限制原句：“只用于练习条件核验，不能推断因果效应或推广至其他班级。”位置：§限制</p></article></div>
+<div class="component component-text text-inset"><p>真实运行可能在 v1 就自发写出限制，也可能在 v2 仍漏写。以实际文件判断；只改这条规则，保持主张、来源和模型设置一致</p></div></div></div>
+    <div class="numeric-progress">19/28</div>
     <div class="semantic-label">CONTROLLED CHANGE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:67.8571%"></div></div>
   </section>
 <section id="d3" class="step slide-surface role-content layout-stack"
-      data-x="0" data-y="4480" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
     <h2 class="slide-title">复测目标问题，也检查旧能力</h2>
     <div class="slide-content"><p class="slide-lead">回归检查已有用例，迁移检查新材料条件，两者回答不同问题</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>复测对象</th><th>想发现的问题</th></tr></thead><tbody><tr><td>原目标用例</td><td>本次改动是否改善了具体问题</td></tr><tr><td>原支持例</td><td>是否变成一律证据不足</td></tr><tr><td>原矛盾与缺证例</td><td>明确相反与缺测量是否仍区分</td></tr><tr><td>新真实短片段</td><td>方法能否用于尚未见过的来源与主张</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>修改后重跑旧例是回归测试 Regression Testing。换新场景还要检查定位、输入条件与输出要求，不能把旧例通过当成迁移通过。</p></div></div></div>
-    <div class="numeric-progress">17/24</div>
+<div class="component component-text text-inset"><p>修改后重跑旧例是回归测试 Regression Testing。换新场景还要检查定位、输入条件与输出要求，不能把旧例通过当成迁移通过</p></div></div></div>
+    <div class="numeric-progress">20/28</div>
     <div class="semantic-label">REGRESSION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
   </section>
 <section id="d4" class="step slide-surface role-content layout-stack"
-      data-x="1500" data-y="4480" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 测试与定位失败</div>
-    <h2 class="slide-title">通过一组用例，能支持多大的采用范围？</h2>
-    <div class="slide-content"><p class="slide-lead">判断、定位、停止和投入共同构成评估，少量样例不代表全面可靠</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>观察项</th><th>从真实记录判断</th></tr></thead><tbody><tr><td>质量</td><td>状态是否符合来源，位置与输出是否可查</td></tr><tr><td>边界</td><td>缺测量或缺文件时是否保留不足，不补写依据</td></tr><tr><td>稳定性</td><td>同条件复跑是否改变判断；未复跑则标未测</td></tr><tr><td>投入</td><td>运行、核验和修订需要多少时间或调用</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>三例通过只支持这些输入与条件下的表现。稳定性和新场景分别保留未测项，不用一个“通过率”掩盖不同检查。</p></div></div></div>
-    <div class="numeric-progress">18/24</div>
+    <h2 class="slide-title">这些测试通过后，方法适用于哪些任务？</h2>
+    <div class="slide-content"><p class="slide-lead">检查判断、出处、停止行为和用时，再说明方法能用于哪些输入</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>观察项</th><th>从真实记录判断</th></tr></thead><tbody><tr><td>质量</td><td>状态是否符合来源，位置与输出是否可查</td></tr><tr><td>边界</td><td>未测相关指标或缺文件时，是否说明证据不足、不编依据</td></tr><tr><td>稳定性</td><td>同条件复跑是否改变判断；未复跑则标未测</td></tr><tr><td>投入</td><td>运行、核验和修订需要多少时间或调用</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>三例通过只支持这些输入与条件下的表现。稳定性和新场景分别保留未测项，不用一个“通过率”掩盖不同检查</p></div></div></div>
+    <div class="numeric-progress">21/28</div>
     <div class="semantic-label">EVALUATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
   </section>
 <section id="e1" class="step slide-surface role-content layout-stack"
-      data-x="3000" data-y="4480" data-z="0"
+      data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 修订与迁移</div>
-    <h2 class="slide-title">记录真实改动，保留未测项</h2>
-    <div class="slide-content"><p class="slide-lead">维护者需要知道版本改了什么、为什么改，以及哪些结果已经复测</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>同一运行记录中的栏目</th><th>填写内容</th></tr></thead><tbody><tr><td>起点与版本</td><td>输入、预期、Skill 与模型版本</td></tr><tr><td>问题或新增需求</td><td>实际偏离的位置，或新任务增加的条件</td></tr><tr><td>修改</td><td>本次只改哪条规则、输入或资源</td></tr><tr><td>复测</td><td>目标例与旧例的实际结果，尚未测试什么</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>初版通过可以作为基线，无需制造一次失败。修改必须有任务依据；新旧文件或改动说明都可保留在同一记录中。</p></div></div></div>
-    <div class="numeric-progress">19/24</div>
+    <h2 class="slide-title">留下可以继续填写的运行记录</h2>
+    <div class="slide-content"><p class="slide-lead">按实际顺序填写 v1、v2；新增条件只测 v2，所有判断都要有运行证据</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>用例</th><th>v1 实际</th><th>v2 实际</th><th>核验与结论</th></tr></thead><tbody><tr><td>supported</td><td>未运行</td><td>未运行</td><td>未测</td></tr><tr><td>contradiction</td><td>未运行</td><td>未运行</td><td>未测</td></tr><tr><td>insufficient</td><td>未运行</td><td>未运行</td><td>未测</td></tr><tr><td>no-explicit-limit</td><td>不安排</td><td>未运行</td><td>未测</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p><a href="resources/decks/ita-6-1/assets/practice/teacher-reference/run-record-template.md" download>记录表</a>保存版本、加载、输出与读取范围。初版可能已满足新增要求；依据实际结果判断，不预设必须改善</p></div></div></div>
+    <div class="numeric-progress">22/28</div>
     <div class="semantic-label">CHANGE RECORD</div>
-    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
-  </section>
-<section id="e2" class="step slide-surface role-content layout-stack"
-      data-x="4500" data-y="4480" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 修订与迁移</div>
-    <h2 class="slide-title">迁移到讨论记录，要改哪些条件？</h2>
-    <div class="slide-content"><p class="slide-lead">保留主张与证据的比较，重新处理时间位置、说话人和决定状态</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>保留的结构</th><th>新材料中的调整</th></tr></thead><tbody><tr><td>主张—来源—位置—判断</td><td>章节或页码改为记录时间位置</td></tr><tr><td>区分支持、矛盾与不足</td><td>提议、反对、决定不能混合；缺会后信息保留不足</td></tr><tr><td>不猜缺失内容</td><td>说话人未知或听不清时不补成一致意见</td></tr><tr><td>输入与回归检查</td><td>新增观点差异例，再检查原论文用例</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>基础方法面向论文；讨论材料是一次明确扩展。先调整适用说明再测试，不能声称原文件未改就适用于所有录音。</p></div></div></div>
-    <div class="numeric-progress">20/24</div>
-    <div class="semantic-label">TRANSFER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.5714%"></div></div>
   </section>
 <section id="e2a" class="step slide-surface role-content layout-stack"
-      data-x="4500" data-y="5600" data-z="0"
+      data-x="1500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 修订与迁移</div>
     <h2 class="slide-title">练习：两段发言能写成一致决定吗？</h2>
     <div class="slide-content"><p class="slide-lead">新场景要求保留谁说了什么，以及提议是否已经成为决定</p>
-<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>教学合成记录： 00:20 甲：“我建议下周先试用。” 00:45 乙：“资料未齐，今天不作实施决定。”</p>
-<p>待核：“所有人一致决定下周正式实施。”先判断并指出依据。</p></div>
-<div class="component component-text text-panel substep reveal-self"><div class="reading-panel"><p>与乙明确保留决定的表述冲突；甲也只提出试用建议。若问会后是否批准，则记录没有覆盖，应保留不足。包内提供此输入供扩展测试，不是真实课堂录音。</p></div></div></div></div>
-    <div class="numeric-progress">21/24</div>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>教学合成记录： 00:20 甲：“我建议下周先试用。” 00:45 乙：“资料未齐，今天不作实施决定”</p>
+<p>待核：“所有人一致决定下周正式实施。”先判断并指出依据</p></div>
+<div class="component component-text text-panel substep reveal-self"><div class="reading-panel"><p>乙说今天不作决定，甲只建议试用，不能写成一致决定。会后是否批准未被记录，应判证据不足。包内输入为合成材料，可用于扩展测试</p></div></div></div></div>
+    <div class="numeric-progress">23/28</div>
     <div class="semantic-label">TRANSFER INPUT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.1429%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-content layout-stack"
-      data-x="3000" data-y="5600" data-z="0"
+<section id="e2" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 修订与迁移</div>
-    <h2 class="slide-title">同伴能否只凭文件完成一项新核验？</h2>
-    <div class="slide-content"><p class="slide-lead">同伴观察的是方法是否可用，作者仍要独立解释判断依据</p>
+    <h2 class="slide-title">怎样把方法改成能处理会议记录？</h2>
+    <div class="slide-content"><p class="slide-lead">保留核验步骤，补上会议材料的定位与状态规则，再用新例检查</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">在方法副本中修改：
+适用条件：可读论文片段或带说话人与时间的会议记录。
+定位：论文保留章节；会议保留时间与说话人。
+比较：逐项区分提议、决定、批准和完成；
+      未记录的会后状态标证据不足，不补成一致意见。</code></pre></div></div>
+<div class="component component-text text-inset"><p>先预测新例结果，再测试；最后重跑旧例。按<a href="resources/decks/ita-6-1/assets/practice/reading-project/meeting-transfer.md" download>迁移步骤</a>保留原方法，未运行记待测，不新增必交作业</p></div></div></div>
+    <div class="numeric-progress">24/28</div>
+    <div class="semantic-label">TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 修订与迁移</div>
+    <h2 class="slide-title">同伴能否只凭方法处理另一条输入？</h2>
+    <div class="slide-content"><p class="slide-lead">同伴检查方法能否被接着使用，作者要解释哪些规则稳定、哪些必须改</p>
 <div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">提供 Skill、指定来源、本次主张与新输出路径，让同伴运行</span></li><li><span class="list-marker">■</span><span class="list-text">检查一条判断与位置；需要口头补充的稳定规则写回说明</span></li><li><span class="list-marker">■</span><span class="list-text">作者不用 AI 解释为何判支持、矛盾或不足，说明未测范围</span></li><li><span class="list-marker">■</span><span class="list-text">保留实际测试及必要修改，下一单元再组织和比较这些产物</span></li></ul></div></div></div>
-    <div class="numeric-progress">22/24</div>
+    <div class="numeric-progress">25/28</div>
     <div class="semantic-label">HANDOFF</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.2857%"></div></div>
+  </section>
+<section id="t1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6 <span>|</span> 从一次成功到可复用方法</div>
+    <h2 class="slide-title">本单元涉及的主题</h2>
+    <div class="slide-content"><p class="slide-lead">用主题 15 的模板、Skill 与测试方法，检查一套做法能否再次使用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 78%"><colgroup><col style="width:22%"><col style="width:78%"></colgroup><thead><tr><th>学习内容</th><th>本单元需要解释与应用</th></tr></thead><tbody><tr><td>方法封装</td><td>区分四种复用方式，写清 Skill 的条件、步骤和资源</td></tr><tr><td>加载运行</td><td>让桌面端发现 Skill，用明确请求运行并核对实际结果</td></tr><tr><td>测试与改进</td><td>先写预期，用样例定位失败，修改后重跑失败例和旧例</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>先用小样例验证方法，再讨论会议记录需要改哪些规则；真实迁移通过仍需新输入的运行记录</p></div></div></div>
+    <div class="numeric-progress">26/28</div>
+    <div class="semantic-label">CORE TOPICS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.8571%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="1500" data-y="5600" data-z="0"
+      data-x="3000" data-y="6720" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6</div>
     <h2 class="slide-title">本单元知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/ita-6-1/mindmap-6-1.html" title="本单元知识地图"></iframe></div></div>
-    <div class="numeric-progress">23/24</div>
+    <div class="numeric-progress">27/28</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.4286%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="0" data-y="5600" data-z="0"
+      data-x="4500" data-y="6720" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">ITA <span>|</span> CH06 <span>|</span> 单元 6</div>
     <h2 class="slide-title">本节问题</h2>
@@ -362,7 +445,7 @@ description: 核对给定主张与可读来源片段；
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">24/24</div>
+    <div class="numeric-progress">28/28</div>
     <div class="semantic-label">UNIT QUESTIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

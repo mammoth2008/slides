@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="7-2">
-  <meta name="version" content="2608">
+  <meta name="version" content="2610">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -28,186 +28,229 @@
     <img class="cover-image" src="resources/decks/dbpa-7-2/assets/dbpa-7-2.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 7.2</div>
-      <h1>概念结构设计与 E-R 模型</h1>
-      <p class="cover-description">把“谁和谁发生了什么”画成用户看得懂、设计员能继续转表的 E-R 图</p>
+      <h1>概念结构设计</h1>
+      <p class="cover-description">把选课需求画成能解释、能检查、能转表的 E-R 图</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元从实体与属性边界开始，逐步加入联系、约束和多视图集成，最后形成可转换的基本 E-R 图。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">把选课需求画成 E-R 子图，并用业务规则解释实体、联系和约束</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分“先画业务中的对象与联系”和“再把它们转换成关系、属性与码”</span></li><li><span class="list-marker">02</span><span class="list-text">判断一个对象能否独立存在、变化或参加其他联系，再决定建成实体还是属性</span></li><li><span class="list-marker">03</span><span class="list-text">判断二元、递归或多元联系的类型、基数和参与约束</span></li><li><span class="list-marker">04</span><span class="list-text">为联系放置联系属性</span></li><li><span class="list-marker">05</span><span class="list-text">根据图例解释 ISA、弱实体、Part-of，并说清它们与 UML 记法怎样对应</span></li><li><span class="list-marker">06</span><span class="list-text">合并局部 E-R 图中的同名、异名和结构差异；识别能从其他事实推出的重复联系，并列出保留后的更新规则</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
+    <div class="slide-content"><p class="slide-lead">把 7.1 的选课需求画成可检查、可转表的 E-R 图</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用业务身份区分实体与属性，并给出实体的码</span></li><li><span class="list-marker">02</span><span class="list-text">为联系标出两端的最少、最多参与次数</span></li><li><span class="list-marker">03</span><span class="list-text">把成绩放在选课联系上，用记录证明三元联系不能随意拆开</span></li><li><span class="list-marker">04</span><span class="list-text">读懂弱实体、ISA 和 Part-of 的图示及适用条件</span></li><li><span class="list-marker">05</span><span class="list-text">合并局部图，消解冲突，并说明派生数据如何保持一致</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">概念模型先画业务，再转换成数据库结构</h2>
-    <div class="slide-content"><p class="slide-lead">先不定表和索引；图中的学生、教学班、选课和规则要让教务人员看懂</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="数据字典 → 概念模型（对象、联系、约束）→ 逻辑模型（关系、属性、码）→ 物理结构"><span class="relation-term">数据字典</span><span class="relation-operator">→</span><span class="relation-term">概念模型（对象、联系、约束）</span><span class="relation-operator">→</span><span class="relation-term">逻辑模型（关系、属性、码）</span><span class="relation-operator">→</span><span class="relation-term">物理结构</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>真实且充分</h3><p>图中不能漏掉“学生选教学班、成绩属于这次选课、班级有容量”等已确认规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>易懂</h3><p>教务人员能指出图中哪个对象或规则画错了</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>易改</h3><p>新增辅修专业或多教师授课时，能定位并修改相应对象和联系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可转换</h3><p>实体、码、联系和约束标注明确，下一步能据此转换成关系模式</p></article></div></div></div>
-    <div class="numeric-progress">3/15</div>
+    <h2 class="slide-title">概念模型要让教务人员看懂</h2>
+    <div class="slide-content"><p class="slide-lead">图中先说清学生选哪个班、班有多大、由谁授课，再决定怎样建表</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="需求字典 → 概念模型 → 关系模式 → 物理设计"><span class="relation-term">需求字典</span><span class="relation-operator">→</span><span class="relation-term">概念模型</span><span class="relation-operator">→</span><span class="relation-term">关系模式</span><span class="relation-operator">→</span><span class="relation-term">物理设计</span></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>真实充分</h3><p>保留学生、教学班、课程和教师，以及选课、开课和讲授联系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>容易检查</h3><p>教务人员能指出“每班一位教师”是否符合本次业务约定</p></article><article class="content-card emphasis-card" tabindex="0"><h3>容易修改</h3><p>若允许多人授课，应能定位讲授联系及其基数</p></article><article class="content-card emphasis-card" tabindex="0"><h3>能够转表</h3><p>码、联系属性和参与约束足够明确，下一节能据此写出关系模式</p></article></div></div></div>
+    <div class="numeric-progress">3/20</div>
     <div class="semantic-label">CONCEPTUAL MODEL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">一个业务对象何时应该建为实体型</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>主修专业现在只有一个值，所以专业永远只能是属性吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">问它能否独立编号、单独变化、被其他对象引用，或同时出现多个值</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>业务对象</th><th>可作为属性的情形</th><th>应作为实体的情形</th></tr></thead><tbody><tr><td>专业</td><td>学生只有一个专业标签</td><td>支持主修、辅修和专业属性；专业有自己的码</td></tr><tr><td>职称</td><td>只显示教师的文字标签</td><td>需要描述工资和福利规则</td></tr><tr><td>教学班</td><td>课程只有一个班时可作选课联系属性</td><td>多班、排课和独立容量形成实体</td></tr><tr><td>先修课</td><td>每门课至多一门直接先修课</td><td>多门直接先修课形成课程—课程递归 m:n</td></tr></tbody></table></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="`学生（学号，姓名）`：学号稳定区分学生，姓名只是描述；若“专业”有专业号和名称、会被课程引用，且一名学生可有多个专业，就应单独建实体型"><span class="relation-term"><code>学生（学号，姓名）</code>：学号稳定区分学生，姓名只是描述；若“专业”有专业号和名称、会被课程引用，且一名学生可有多个专业，就应单独建实体型</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>若把“专业”只画成学生的属性，就不能再单独保存专业负责人，也不能让课程直接引用同一个专业对象</p></div></div>
-    <div class="numeric-progress">4/15</div>
+    <h2 class="slide-title">实体还是属性，要看本次需求</h2>
+    <div class="slide-content"><p class="slide-lead">有独立身份、自己的属性或其他联系时，应考虑单独建实体型</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 36% 48%"><colgroup><col style="width:16%"><col style="width:36%"><col style="width:48%"></colgroup><thead><tr><th>对象</th><th>只作属性的情形</th><th>本次需要独立实体的理由</th></tr></thead><tbody><tr><td>专业</td><td>只显示一个专业名称</td><td>若记录专业号、负责人和培养方案，就需要专业实体</td></tr><tr><td>职称</td><td>只显示教师职称文字</td><td>若管理对应待遇规则，可单独建模</td></tr><tr><td>教学班</td><td>极简系统只记课程的一段班次说明</td><td>本案例每班有容量、教师和选课记录，必须单独建模</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“一个值”不能证明它只能是属性；还要看是否需要独立管理这个对象</p></div></div>
+    <div class="numeric-progress">4/20</div>
     <div class="semantic-label">ENTITY OR ATTRIBUTE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
 <section id="a4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">分别问联系两端“最少几个、最多几个”</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>已经写了 1:n，为什么还要再标 <code>min..max</code>？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">分别问学院有多少个系、系属于几个学院；两端都问才得到完整基数</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 38% 37%"><colgroup><col style="width:25%"><col style="width:38%"><col style="width:37%"></colgroup><thead><tr><th>联系</th><th>语义判定</th><th>教务例子</th></tr></thead><tbody><tr><td>1:1</td><td>每一端的一个实体至多对应另一端一个实体</td><td>学院与教师的“担任院长”</td></tr><tr><td>1:n</td><td>一端的一个实体可对应多个，另一端每个实体至多对应一个</td><td>学院与系</td></tr><tr><td>m:n</td><td>两端的每个实体都可以对应多个</td><td>学生与课程</td></tr><tr><td>联系结构</td><td>二元、递归或多元，描述参与实体的结构</td><td>课程与先修课程是递归联系</td></tr></tbody></table></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="最大基数：`1:1 / 1:n / m:n`；参与次数：`min..max`。例：学院 `0..N` — 设置 — 系 `1..1`；递归联系仍可有自己的 1:n 或 m:n 基数"><span class="relation-term">最大基数：<code>1:1 / 1:n / m:n</code>；参与次数：<code>min..max</code>。例：学院 <code>0..N</code> — 设置 — 系 <code>1..1</code>；递归联系仍可有自己的 1:n 或 m:n 基数</span></div></div></div></div>
-    <div class="numeric-progress">5/15</div>
+    <h2 class="slide-title">从两端分别问“一个最多对应几个”</h2>
+    <div class="slide-content"><p class="slide-lead">本页各例均有明确业务约定；先修联系的两端都是课程</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>联系</th><th>从左端询问</th><th>从右端询问</th></tr></thead><tbody><tr><td>学院—院长 1:1</td><td>一个学院至多有一名院长</td><td>一位院长只负责一个学院</td></tr><tr><td>课程—教学班 1:n</td><td>一门课程可开多个教学班</td><td>一个教学班属于一门课程</td></tr><tr><td>学生—教学班 m:n</td><td>一个学生可选多个班</td><td>一个教学班可有多个学生</td></tr><tr><td>先修（递归 m:n）</td><td>一门课可有多门先修课</td><td>多门课可共用一门先修课</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/20</div>
     <div class="semantic-label">CARDINALITY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="a5" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+<section id="a5" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">矩形、椭圆、菱形画对象、描述和事实</h2>
-    <div class="slide-content"><p class="slide-lead">还要标出对象怎样区分、成绩属于哪次选课，以及两端各参加几次</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/generated/dbpa-ch07-er-notation.svg" data-full-src="resources/decks/dbpa-7-2/assets/generated/dbpa-ch07-er-notation.svg" alt="学生、课程、选课和联系属性组成的 E-R 语义示例" tabindex="0" role="button" aria-label="放大图片：学生、课程、选课和联系属性组成的 E-R 语义示例" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>实体型 Entity type</h3><p>矩形表示一类可区分的对象</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>属性 Attribute</h3><p>椭圆表示对象的描述项</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>联系 Relationship</h3><p>菱形表示实体之间的业务事实</p></article></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="实体型　—　联系　—　实体型　　联系属性附着在联系上"><span class="relation-term">实体型　—　联系　—　实体型　　联系属性附着在联系上</span></div></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本图只展示学生—课程的二元 m:n 简化示例；矩形内属性是紧凑记法，学生码为学号、课程码为课程号，完整的 <code>min..max</code> 参与约束还需另行标注</p></div></div>
-    <div class="numeric-progress">6/15</div>
+    <h2 class="slide-title">成绩属于“这个学生选这个班”的事实</h2>
+    <div class="slide-content"><p class="slide-lead">学生换一个班，成绩就可能不同；因此 Grade 连接到选课菱形</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/selection-er.svg" data-full-src="resources/decks/dbpa-7-2/assets/selection-er.svg" alt="学生与教学班通过选课建立多对多联系，成绩和选课时间属于选课联系" tabindex="0" role="button" aria-label="放大图片：学生与教学班通过选课建立多对多联系，成绩和选课时间属于选课联系" decoding="async"></figure></div></div>
+    <div class="numeric-progress">6/20</div>
     <div class="semantic-label">E-R NOTATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">联系属性只在一组对象发生联系时才有值</h2>
-    <div class="slide-content"><p class="slide-lead">成绩属于学生选教学班这次选课，不属于单方；三方共同事实也不能随意拆开</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>联系</th><th>联系属性</th><th>为什么放在联系上</th></tr></thead><tbody><tr><td>选课</td><td>成绩、选课时间</td><td>学生与课程组合的结果</td></tr><tr><td>讲授</td><td>是否主讲</td><td>教师在教学班中的角色</td></tr><tr><td>排课</td><td>上课时间、教室</td><td>三方共同确定的排课事实</td></tr><tr><td>供应</td><td>供应量</td><td>项目零件的供应数量</td></tr><tr><td>评价</td><td>评价内容、教师反馈</td><td>三方共同确定的评价事实</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">7/15</div>
+    <h2 class="slide-title">用两条选课记录判断属性放在哪里</h2>
+    <div class="slide-content"><p class="slide-lead">姓名由学生决定，容量由教学班决定，成绩和选课时间由这次选课决定</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 33% 18% 30%"><colgroup><col style="width:19%"><col style="width:33%"><col style="width:18%"><col style="width:30%"></colgroup><thead><tr><th>学生 Sno</th><th>教学班身份</th><th>Grade</th><th>AppliedAt</th></tr></thead><tbody><tr><td>20260001</td><td>C001／2026-1／01</td><td>80</td><td>2026-09-01 09:00:00</td></tr><tr><td>20260001</td><td>C002／2026-1／01</td><td>95</td><td>2026-09-01 09:02:00</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若把 Grade 放进学生实体，同一个学生的 80 和 95 就无处区分；放进教学班也无法区分班内学生</p></div></div>
+    <div class="numeric-progress">7/20</div>
     <div class="semantic-label">RELATION ATTRIBUTES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">基数与参与约束区分“可以”和“必须”</h2>
-    <div class="slide-content"><p class="slide-lead">最少值到最多值同时说明参与次数的下限和上限</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 36% 37%"><colgroup><col style="width:27%"><col style="width:36%"><col style="width:37%"></colgroup><thead><tr><th>记法</th><th>含义</th><th>教务例子</th></tr></thead><tbody><tr><td>1..1</td><td>必须且只能参与一次</td><td>系必须归属一个学院</td></tr><tr><td><code>0..N</code></td><td>可以不参与，也可参与多次</td><td>新学院暂时没有系</td></tr><tr><td>20..30</td><td>参与数量被业务范围限制</td><td>学生选修课程数</td></tr><tr><td>读法</td><td><code>min=0</code> 可不参与；<code>min=1</code> 必须参与，<code>max</code> 表示最多次数</td><td>每个教学班 <code>1..1</code> 必须有课程</td></tr></tbody></table></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="完整双端例：学院 `0..N` — 设置 — 系 `1..1`；`1:n` 主要说最大基数，`min..max` 同时说参与下限和上限"><span class="relation-term">完整双端例：学院 <code>0..N</code> — 设置 — 系 <code>1..1</code>；<code>1:n</code> 主要说最大基数，<code>min..max</code> 同时说参与下限和上限</span></div></div></div></div>
-    <div class="numeric-progress">8/15</div>
+    <h2 class="slide-title">按教材，把次数标在所指实体的一端</h2>
+    <div class="slide-content"><p class="slide-lead">从学院出发读系这一端，从系出发读学院这一端</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/minmax.svg" data-full-src="resources/decks/dbpa-7-2/assets/minmax.svg" alt="学院一端标1..1，系一端标0..*，表示每系属于一个学院而每学院可有零到多个系" tabindex="0" role="button" aria-label="放大图片：学院一端标1..1，系一端标0..*，表示每系属于一个学院而每学院可有零到多个系" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>星号表示多个，0 表示允许没有；不要把“学院自身参加几次”写在学院旁边</p></div></div>
+    <div class="numeric-progress">8/20</div>
     <div class="semantic-label">CONSTRAINTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-grid"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">普通实体与联系不够时再用扩展记法</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>扩展语义画得越多，概念模型就越完整吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">本科生属于学生、教学班依赖课程、车轮属于汽车，用 ISA、弱实体、Part-of</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>父类—子类 ISA</h3><p>本科生 ISA 学生；子类继承父类属性，也可以增加自己的属性。ISA 还要说明不相交/可重叠、完全/部分特化</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>弱实体型 Weak entity</h3><p>教学班号只有在课程范围内才有意义；教学班依赖课程存在，课程号是所有者码，教学班号只是部分码</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>部分—整体 Part-of</h3><p>汽车与车轮构成部分—整体关系；独占部分不能脱离整体，非独占部分可以独立存在</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分类属性、不相交约束和完全特化进一步限制 ISA 的含义</p>
-<p>UML 类图可以表达相近语义：类≈实体型、类属性≈属性、关联≈联系、<code>PK</code>≈码、multiplicity≈<code>min..max</code>、继承≈ISA；这些对应关系只用于语义转换，不决定 UML 的完整建模方法</p></div></div>
-    <div class="numeric-progress">9/15</div>
+    <h2 class="slide-title">班号 01 不能单独识别教学班</h2>
+    <div class="slide-content"><p class="slide-lead">7.1 约定班号只在某门课、某个学期内唯一，因此教学班依赖课程标识</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 24% 20% 34%"><colgroup><col style="width:22%"><col style="width:24%"><col style="width:20%"><col style="width:34%"></colgroup><thead><tr><th>课程 Cno</th><th>学期 Term</th><th>班号 ClassNo</th><th>是否同一个教学班</th></tr></thead><tbody><tr><td>C001</td><td>2026-1</td><td>01</td><td>第一个班</td></tr><tr><td>C002</td><td>2026-1</td><td>01</td><td>课程不同，是另一个班</td></tr><tr><td>C001</td><td>2026-2</td><td>01</td><td>学期不同，也是另一个班</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>所有者与部分码</h3><p>课程是所有者；Term＋ClassNo 是教学班在课程范围内的部分码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完整身份</h3><p>Cno＋Term＋ClassNo；图中用双框画教学班、双菱形画识别联系</p></article></div></div></div>
+    <div class="numeric-progress">9/20</div>
     <div class="semantic-label">EXTENDED E-R</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b3a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">把教务、教师和学生各自的图合成一张</h2>
-    <div class="slide-content"><p class="slide-lead">教务画开课、教师画授课、学生画选课；合并时确认“教学班”是否同一对象</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="需求与数据字典 → 各子系统分 E-R 图 → 初步全局图 → 基本 E-R 图"><span class="relation-term">需求与数据字典</span><span class="relation-operator">→</span><span class="relation-term">各子系统分 E-R 图</span><span class="relation-operator">→</span><span class="relation-term">初步全局图</span><span class="relation-operator">→</span><span class="relation-term">基本 E-R 图</span></div></div>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">各小组先标出自己使用的实体、联系、属性和业务规则</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">逐项比较同名对象、异名对象、字段类型和联系结构，请用户确认差异</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">合并确认相同的对象，保留真正不同的对象，再删除能由其他事实推出的重复数据与联系</span></li></ol></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>两张局部图名称相同、结构相似，就能证明它们表达同一业务对象吗？</p></div></div></div></aside>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">LOCAL VIEWS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">ISA：先说明分类是否穷尽、能否重叠</h2>
+    <div class="slide-content"><p class="slide-lead">扩展示例只讨论本科生与研究生，并约定每人恰属其中一类</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/isa.svg" data-full-src="resources/decks/dbpa-7-2/assets/isa.svg" alt="学生通过双线连接带叉号的ISA三角形，下接本科生与研究生，表示完全且不相交特化" tabindex="0" role="button" aria-label="放大图片：学生通过双线连接带叉号的ISA三角形，下接本科生与研究生，表示完全且不相交特化" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>子类继承 Sno 和姓名；若还有其他学生类型，这两个子类就不再是完全特化</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="b3b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">两张局部图不能只按名称粘在一起</h2>
-    <div class="slide-content"><p class="slide-lead">班级可能指行政班或教学班；名称、字段类型或联系不同，要请用户说明含义</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/generated/dbpa-ch07-er-integration.svg" data-full-src="resources/decks/dbpa-7-2/assets/generated/dbpa-ch07-er-integration.svg" alt="选课管理与教师教学局部 E-R 图经过冲突消解形成简化全局选课子图示意" tabindex="0" role="button" aria-label="放大图片：选课管理与教师教学局部 E-R 图经过冲突消解形成简化全局选课子图示意" decoding="async"></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37.5% 37.5%"><colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup><thead><tr><th>冲突</th><th>典型表现</th><th>处理方向</th></tr></thead><tbody><tr><td>属性冲突</td><td>教学班号类型不同、出生日期精度不同</td><td>统一类型、编码和单位</td></tr><tr><td>命名冲突</td><td>同名异义或“项目／课题”异名同义</td><td>约定全局名称</td></tr><tr><td>结构冲突</td><td>职称是属性还是实体、属性集合不同、二元或三元联系</td><td>核对对象能否独立存在、哪些参与者共同决定事实</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>该图只展开全局模型中的选课子图；教师—讲授等其他非冗余联系未在图中展开，不表示它们被删除</p></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">INTEGRATION CONFLICTS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">Part-of：组成关系还要说明能否独立存在</h2>
+    <div class="slide-content"><p class="slide-lead">扩展示例约定每辆汽车装四个车轮，每个车轮至多装在一辆车上</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/partof.svg" data-full-src="resources/decks/dbpa-7-2/assets/partof.svg" alt="汽车与车轮组成关系，靠近汽车为0..1，靠近车轮为4..4，车轮可以独立存在" tabindex="0" role="button" aria-label="放大图片：汽车与车轮组成关系，靠近汽车为0..1，靠近车轮为4..4，车轮可以独立存在" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非独占部分可以脱离整体；独占部分依赖整体存在。不能仅凭“是组成部分”就断定可以级联删除</p></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b3c" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">基本 E-R 图保留事实，不重复推导事实</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.b641f751ca49.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>派生学分查得更快，为什么不能只把它当作一个普通存储值？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">确认事实能否由其他事实算出；依赖和最小覆盖只辅助，不能代替用户定规则</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="局部 E-R 图　→　冲突消解　→　初步全局图　→　冗余分析　→　基本 E-R 图 `已修(Student,Course)` = 存在选课(Student,Class) 且开课(Class,Course)，且成绩达到合格阈值"><span class="relation-term">局部 E-R 图</span><span class="relation-operator">→</span><span class="relation-term">冲突消解</span><span class="relation-operator">→</span><span class="relation-term">初步全局图</span><span class="relation-operator">→</span><span class="relation-term">冗余分析</span><span class="relation-operator">→</span><span class="relation-term">基本 E-R 图 <code>已修(Student,Course)</code></span><span class="relation-operator">=</span><span class="relation-term">存在选课(Student,Class) 且开课(Class,Course)，且成绩达到合格阈值</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 45% 30%"><colgroup><col style="width:25%"><col style="width:45%"><col style="width:30%"></colgroup><thead><tr><th>设计判断</th><th>教务例子</th><th>处理</th></tr></thead><tbody><tr><td>可消除</td><td>已修可由合格选课和开课对应课程推出</td><td>删除冗余联系</td></tr><tr><td>可保留</td><td>已修课程学分支持高频统计</td><td>保留派生属性并维护同步规则</td></tr></tbody></table></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="保留派生学分时，成绩跨过合格阈值、课程学分变化、选课记录修改或删除，都要同步更新并检查一致性"><span class="relation-term">保留派生学分时，成绩跨过合格阈值、课程学分变化、选课记录修改或删除，都要同步更新并检查一致性</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>若保留“已修学分”，就要在成绩、课程学分或选课记录变化时同步重算；漏掉任一入口，统计结果就会与原始记录不一致</p></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">REDUNDANCY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">排课要同时确定班、时间和教室</h2>
+    <div class="slide-content"><p class="slide-lead">这是新增排课需求的扩展示例，超出 7.1 的选课 v1 范围</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/schedule.svg" data-full-src="resources/decks/dbpa-7-2/assets/schedule.svg" alt="教学班、时间片、教室通过排课三元联系相连，并列出两个函数依赖约束" tabindex="0" role="button" aria-label="放大图片：教学班、时间片、教室通过排课三元联系相连，并列出两个函数依赖约束" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一班同一时段只能在一间教室；同一教室同一时段也只能安排一个班</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b3d" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
-    <h2 class="slide-title">评审“学生—教学班—课程”概念子图</h2>
-    <div class="slide-content"><p class="slide-lead">不能因 Excel 有专业列就画成属性；查专业是否有编号、负责人和课程联系</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>实体还是属性</h3><p>说明学生、课程、教学班为何能独立编号、变化和被引用；哪些内容只描述它们，并为每个实体给出稳定码</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>联系约束</h3><p>为选课、开课和讲授写最大基数与 <code>min..max</code>；把成绩、是否主讲放到对应联系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>集成冲突</h3><p>比较两个局部图中的教学班号类型、对象名称和联系参与者；记录用户确认哪些对象相同、字段采用什么类型、联系保留几方</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>重复事实怎样更新</h3><p>判断“已修”能否从选课、成绩和开课推出；若仍保存已修学分，列出成绩、学分和选课变化时必须执行的更新</p></article></div></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <h2 class="slide-title">拆成三对关系，会拼出未安排的课</h2>
+    <div class="slide-content"><p class="slide-lead">A、B 代表两个不同教学班；以下三条原始排课记录都符合约束</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 22% 34% 30%"><colgroup><col style="width:14%"><col style="width:22%"><col style="width:34%"><col style="width:30%"></colgroup><thead><tr><th>行号</th><th>教学班</th><th>时间片</th><th>教室</th></tr></thead><tbody><tr><td>①</td><td>A</td><td>周一 1–2 节</td><td>R101</td></tr><tr><td>②</td><td>A</td><td>周三 1–2 节</td><td>R102</td></tr><tr><td>③</td><td>B</td><td>周一 1–2 节</td><td>R102</td></tr></tbody></table></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">只保留三对关系后：A—周一来自①，A—R102 来自②，周一—R102 来自③</span></li><li><span class="list-marker">02</span><span class="list-text">三者重新连接，会多出（A，周一 1–2 节，R102），原表没有这条安排</span></li><li><span class="list-marker">03</span><span class="list-text">这条假记录还会与③争用教室；必须保存三方共同参与的排课事实</span></li></ol></div></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
-    <h2 class="slide-title">每画一个框或一条线，都按问题检查</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-2/mindmap-7-2.html" title="每画一个框或一条线，都按问题检查"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
+    <h2 class="slide-title">先比较局部需求，再决定哪些对象能合并</h2>
+    <div class="slide-content"><p class="slide-lead">三个部门都提到“班”，但必须查清它们使用的身份和业务范围</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 39% 43%"><colgroup><col style="width:18%"><col style="width:39%"><col style="width:43%"></colgroup><thead><tr><th>局部视角</th><th>需要的对象与联系</th><th>合并前要确认</th></tr></thead><tbody><tr><td>教务开课</td><td>课程、教学班、开课</td><td>班的完整身份是否一致</td></tr><tr><td>教师授课</td><td>教师、教学班、讲授</td><td>每班一位教师，还是多人授课</td></tr><tr><td>学生选课</td><td>学生、教学班、选课</td><td>成绩、时间是否属于同次选课</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>核实三处“教学班”采用同一身份后，合并这个实体，同时保留开课、讲授和选课三种联系</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">LOCAL VIEWS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
+    <h2 class="slide-title">把冲突写成可作决定的问题</h2>
+    <div class="slide-content"><p class="slide-lead">课堂 v1 的统一决定以 7.1 需求样本为准，不能默认已经得到真实学校确认</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 39% 45%"><colgroup><col style="width:16%"><col style="width:39%"><col style="width:45%"></colgroup><thead><tr><th>冲突</th><th>两份局部材料的差异</th><th>本案例的统一决定</th></tr></thead><tbody><tr><td>属性</td><td>班号用整数 1，或文本 01</td><td>用两位文本 01–99，保留前导零</td></tr><tr><td>命名</td><td>行政班、教学班都叫“班级”</td><td>分开命名；选课只引用教学班</td></tr><tr><td>结构</td><td>一位教师授课，或多人授课</td><td>v1 每班一位教师；多人授课为扩展</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若采纳多人授课，讲授改为 m:n，并可增加“是否主讲”联系属性；不能只改图中一个数字就结束</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">INTEGRATION CONFLICTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="c1a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">交给下一节的完整 v1 概念模型</h2>
+    <div class="slide-content"><p class="slide-lead">四类实体、三种联系全部保留；数字均按教材的对端读法标注</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/complete-er.svg" data-full-src="resources/decks/dbpa-7-2/assets/complete-er.svg" alt="完整选课v1模型包含学生、课程、弱实体教学班、教师，保留选课、识别性开课和讲授，标注各端参与约束及选课属性" tabindex="0" role="button" aria-label="放大图片：完整选课v1模型包含学生、课程、弱实体教学班、教师，保留选课、识别性开课和讲授，标注各端参与约束及选课属性" decoding="async"></figure></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">WORKED EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
+    <h2 class="slide-title">派生学分必须跟着原始记录一起更新</h2>
+    <div class="slide-content"><p class="slide-lead">扩展统计约定：同一课程及格一次就计学分，重复修读不重复计入</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 36% 38%"><colgroup><col style="width:26%"><col style="width:36%"><col style="width:38%"></colgroup><thead><tr><th>原始事实变化</th><th>应有的统计结果</th><th>只改原记录的后果</th></tr></thead><tbody><tr><td>C001 为 3 学分，成绩 59→60</td><td>首次通过，已修学分加 3</td><td>缓存仍少 3 学分</td></tr><tr><td>再次通过 C001</td><td>这门课仍只计 3 学分</td><td>按通过次数累加会重复计分</td></tr><tr><td>C001 学分 3→4</td><td>按本例现行学分口径重算</td><td>缓存仍保留旧学分</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>先约定及格线、重修和学分口径；若保留统计值，成绩、学分或选课记录变化时都要重算并核对</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">REDUNDANCY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">用五项检查确认模型可以交接</h2>
+    <div class="slide-content"><p class="slide-lead">最终产物是完整 E-R 图，加上图中无法写全的业务约束</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">实体有稳定身份，教学班使用 Cno＋Term＋ClassNo</span></li><li><span class="list-marker">02</span><span class="list-text">学生与班为 m:n，课程与班、教师与班均为 1:n</span></li><li><span class="list-marker">03</span><span class="list-text">Grade 和 AppliedAt 放在选课联系上，两端次数按同一记法标注</span></li><li><span class="list-marker">04</span><span class="list-text">多教师、排课和学分统计明确列为扩展，不悄悄改变 v1 的范围</span></li><li><span class="list-marker">05</span><span class="list-text">合并后仍保留教师；容量和并发名额等规则留给后续实现检查</span></li></ol></div></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
+    <h2 class="slide-title">从需求记录走到可转表的模型</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-7-2/mindmap-7-2.html" title="从需求记录走到可转表的模型"></iframe></div></div>
+    <div class="numeric-progress">19/20</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">一个主修与多个辅修各应建属性还是实体？“专业”的码是什么？</span></li><li><span class="question-no">02</span><span class="question-text">学院—系、学生—教学班、课程—先修的基数与参与约束是什么？</span></li><li><span class="question-no">03</span><span class="question-text">成绩、主讲、排课时间属于哪个联系？三元联系为何不能任意拆分？</span></li><li><span class="question-no">04</span><span class="question-text">本科生／研究生、教学班／课程、汽车／车轮各用 ISA、弱实体还是 Part-of？</span></li><li><span class="question-no">05</span><span class="question-text">局部 E-R 图有哪些属性、命名和结构冲突？按什么步骤合并？</span></li><li><span class="question-no">06</span><span class="question-text">“已修”是否冗余？若保留“已修课程学分”，怎样维护一致性？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么同为 01 的三个教学班不能合并成一个？</span></li><li><span class="question-no">02</span><span class="question-text">图上靠近“系”的 0..* 应怎样读？</span></li><li><span class="question-no">03</span><span class="question-text">为什么 80 和 95 不能作为同一学生的单一成绩属性？</span></li><li><span class="question-no">04</span><span class="question-text">怎样用三条排课记录证明拆成三对关系会丢失信息？</span></li><li><span class="question-no">05</span><span class="question-text">ISA 的双线和叉号分别表达什么约束？</span></li><li><span class="question-no">06</span><span class="question-text">如果把每班一位教师改成多人授课，需要改动模型的哪些部分？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-7-1.html" title="上一节：7.1 数据库设计总览与需求分析" aria-label="上一节：7.1 数据库设计总览与需求分析">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -222,7 +265,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
+    <div class="numeric-progress">20/20</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

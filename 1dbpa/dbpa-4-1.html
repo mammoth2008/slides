@@ -10,7 +10,7 @@
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
   <meta name="generator" content="impress.js">
   <meta name="deck" content="4-1">
-  <meta name="version" content="2608">
+  <meta name="version" content="2610">
   <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
   <link rel="stylesheet" href="resources/theme/fonts.css">
   <link rel="stylesheet" href="../resources/impress/theme/common.css">
@@ -28,10 +28,10 @@
     <img class="cover-image" src="resources/decks/dbpa-4-1/assets/dbpa-4-1.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 4.1</div>
-      <h1>数据库安全性与存取控制</h1>
-      <p class="cover-description">检查谁在访问哪张表、要做什么，以及这项权限从哪里来</p>
+      <h1>安全性与存取控制</h1>
+      <p class="cover-description">检查访问对象、操作和授权来源</p>
       <div class="cover-meta">
-        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
@@ -45,91 +45,82 @@
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
     <h2 class="slide-title">学习目标</h2>
     <div class="slide-content"><p class="slide-lead">说明 DBMS 为何允许或拒绝访问，以及权限回收会影响谁</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分安全性、完整性与运行环境安全</span></li><li><span class="list-marker">02</span><span class="list-text">沿一次请求说明身份鉴别、授权检查、DAC/MAC 和审计分别在检查什么</span></li><li><span class="list-marker">03</span><span class="list-text">读懂标准 SQL 示意中的 GRANT、REVOKE 与权限传播，并指出哪些语法和行为需要查阅所用 DBMS 的手册</span></li><li><span class="list-marker">04</span><span class="list-text">为共同岗位设计角色权限，并判断成员变化与权限回收的影响</span></li><li><span class="list-marker">05</span><span class="list-text">区分自主与强制存取控制</span></li><li><span class="list-marker">06</span><span class="list-text">用主体、客体和密级解释 MAC 读写规则</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/17</div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分安全性、完整性与运行环境安全</span></li><li><span class="list-marker">02</span><span class="list-text">沿一次请求说明身份鉴别、授权检查、DAC/MAC 和审计分别在检查什么</span></li><li><span class="list-marker">03</span><span class="list-text">读懂教材 SQL 中的 GRANT、REVOKE，预测回收前后谁还能操作</span></li><li><span class="list-marker">04</span><span class="list-text">为岗位配置角色，区分撤销成员与撤销角色权限</span></li><li><span class="list-marker">05</span><span class="list-text">区分自主与强制存取控制</span></li><li><span class="list-marker">06</span><span class="list-text">用主体、客体和密级解释 MAC 读写规则</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/19</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:11.7647%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
     <h2 class="slide-title">哪一步没拦住？别只说“不安全”</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>密码验证通过，数据库里的表就都能看了吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">数据出错可能因账号越权、分数不合法、备份盘被偷，或输入改写了 SQL</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>看到的情况</th><th>首先要问</th><th>主要由哪一层处理</th></tr></thead><tbody><tr><td>未授权账户读到了成绩</td><td>谁能对哪个对象做什么</td><td>数据库安全性</td></tr><tr><td>合法教师写入了 130 分</td><td>写入的分数是否符合业务规则</td><td>数据库完整性</td></tr><tr><td>备份盘或主机被未授权读取</td><td>谁能接触主机或备份，是否有权读取</td><td>运行环境安全</td></tr><tr><td>输入改变了 SQL 结构</td><td>输入如何进入 SQL</td><td>应用层风险</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">3/17</div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 38% 26%"><colgroup><col style="width:36%"><col style="width:38%"><col style="width:26%"></colgroup><thead><tr><th>看到的情况</th><th>首先要问</th><th>主要由哪一层处理</th></tr></thead><tbody><tr><td>未授权账户读到了成绩</td><td>谁能对哪个对象做什么</td><td>数据库安全性</td></tr><tr><td>合法教师写入了 130 分</td><td>分数是否符合业务规则</td><td>数据库完整性</td></tr><tr><td>未授权者读取主机或备份</td><td>谁能接触、读取备份或主机</td><td>运行环境安全</td></tr><tr><td>输入改变了 SQL 结构</td><td>输入如何进入 SQL</td><td>应用层风险</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">3/19</div>
     <div class="semantic-label">SECURITY SCOPE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
-    <h2 class="slide-title">安全等级写的是要求，不是现状</h2>
-    <div class="slide-content"><p class="slide-lead">TCSEC/TDI 规定安全保护要求，CC EAL 表示评估严格程度；等级不能直接对应</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 38% 34%"><colgroup><col style="width:28%"><col style="width:38%"><col style="width:34%"></colgroup><thead><tr><th>标准或等级</th><th>重点</th><th>课堂理解</th></tr></thead><tbody><tr><td>TCSEC/TDI D</td><td>最小保护</td><td>低于更高等级要求</td></tr><tr><td>C1</td><td>自主保护、DAC</td><td>按对象和用户配置权限</td></tr><tr><td>C2</td><td>受控存取、审计</td><td>记录到个人，便于查明谁做了什么</td></tr><tr><td>B1、B2、B3</td><td>标记、结构化、安全域</td><td>引入强制策略</td></tr><tr><td>A1</td><td>验证设计</td><td>形式化验证设计与实现</td></tr><tr><td>CC EAL1—EAL7</td><td>评估保证</td><td>说明评估和保证程度</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">4/17</div>
-    <div class="semantic-label">SECURITY STANDARDS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
+    <h2 class="slide-title">一次成绩修改要经过哪些检查</h2>
+    <div class="slide-content"><p class="slide-lead">账号、权限和数据规则各检查一件事；任何必要检查失败，都不能完成修改</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="身份鉴别 → 权限检查 → 数据检查 → 执行与留痕"><span class="relation-term">身份鉴别</span><span class="relation-operator">→</span><span class="relation-term">权限检查</span><span class="relation-operator">→</span><span class="relation-term">数据检查</span><span class="relation-operator">→</span><span class="relation-term">执行与留痕</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>确认账号</h3><p>口令、证书等用于鉴别身份；连续登录失败等异常还需检测</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查操作</h3><p>查 T17 的有效授权；若启用 MAC，还要满足密级规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查数据</h3><p>拒绝越界成绩，例如 130 分</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>检查职责不限定内部顺序；数据库文件、备份和传输仍需保护</p></div></div>
+    <div class="numeric-progress">4/19</div>
+    <div class="semantic-label">CONTROL CHAIN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
-    <h2 class="slide-title">登录后，还要检查账号要对哪张表做什么</h2>
-    <div class="slide-content"><p class="slide-lead">登录通过不等于可以读取任意对象</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="验证账号／发现异常请求　→　拆成 T17＋UPDATE＋SC.Grade　→　查授权来源　→　DAC／MAC 检查　→　放行或拒绝　→　记入审计 这条链表示需要完成哪些判断，不规定 DBMS 的唯一执行顺序；数据库文件和网络传输还要另做加密与访问保护"><span class="relation-term">验证账号／发现异常请求</span><span class="relation-operator">→</span><span class="relation-term">拆成 T17＋UPDATE＋SC.Grade</span><span class="relation-operator">→</span><span class="relation-term">查授权来源</span><span class="relation-operator">→</span><span class="relation-term">DAC／MAC 检查</span><span class="relation-operator">→</span><span class="relation-term">放行或拒绝</span><span class="relation-operator">→</span><span class="relation-term">记入审计 这条链表示需要完成哪些判断，不规定 DBMS 的唯一执行顺序；数据库文件和网络传输还要另做加密与访问保护</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>请求刚到</h3><p>验证账号，并识别连续失败或异常来源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>决定是否放行</h3><p>检查哪个账号要对哪个对象执行什么，以及权限从哪里来</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>得到结果后</h3><p>审计记录谁在何时被放行或拒绝，但不替代前面的判断</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据层</h3><p>对存储和传输中的数据加密，并限制谁能读取</p></article></div></div></div>
-    <div class="numeric-progress">5/17</div>
-    <div class="semantic-label">CONTROL CHAIN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:29.4118%"></div></div>
-  </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
-      data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">访问要查两件事：你是谁，能做什么</h2>
-    <div class="slide-content"><p class="slide-lead">账户 <code>T17</code> 请求 <code>UPDATE SC.Grade</code>：先验证身份，再检查授权路径</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-4-1/assets/generated/dbpa-ch04-security-chain.svg" data-full-src="resources/decks/dbpa-4-1/assets/generated/dbpa-ch04-security-chain.svg" alt="从身份鉴别到授权检查、审计和存储传输保护的数据库安全控制链" tabindex="0" role="button" aria-label="放大图片：从身份鉴别到授权检查、审计和存储传输保护的数据库安全控制链" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>证明你是谁</h3><p>口令、动态因子、证书或硬件载体证明请求者身份</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>异常信号</h3><p>入侵检测查连续登录失败、异常来源与访问频率；未发现异常也须检查对象权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查你能做什么</h3><p>身份确认后，仍查谁授权 <code>T17</code> 修改 <code>SC.Grade</code>、授权是否有效</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录访问结果</h3><p>放行与拒绝都可记入审计；审计不能替代访问前的授权判断</p></article></div></div></div></div>
-    <div class="numeric-progress">6/17</div>
+    <h2 class="slide-title">同一条 UPDATE，教师获准，学生被拒绝</h2>
+    <div class="slide-content"><p class="slide-lead">课堂假设：T17 有成绩列修改权限，S01 只有个人成绩查询权限；两人都已登录</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-sql">UPDATE SC SET Grade = 90
+WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 28% 26%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:28%"><col style="width:26%"></colgroup><thead><tr><th>执行账号</th><th>身份鉴别</th><th>对本次操作的权限</th><th>预期结果</th></tr></thead><tbody><tr><td>教师 T17</td><td>已通过</td><td>有 UPDATE(Grade)</td><td>继续检查数据规则</td></tr><tr><td>学生 S01</td><td>已通过</td><td>没有 UPDATE 权限</td><td>拒绝修改</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用两个独立登录会话执行同一语句，再查询成绩；登录成功只能回答“是谁”</p></div></div>
+    <div class="numeric-progress">5/19</div>
     <div class="semantic-label">AUTHENTICATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="1120" data-z="0"
+      data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">权限由对象和操作共同组成</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>有 Student 的 SELECT 权限，就只会看到自己的那一行吧？</p></div></div></div></aside>
     <div class="slide-content"><p class="slide-lead">DBMS 查数据字典判断对象操作权限；表或列授权不能直接限制可见行</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>对象</th><th>操作示例</th><th>业务含义</th></tr></thead><tbody><tr><td>数据库／模式</td><td><code>CREATE</code></td><td>创建对象（依产品）</td></tr><tr><td>表或视图</td><td><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>、<code>ALL PRIVILEGES</code></td><td>访问或修改数据</td></tr><tr><td>属性列</td><td><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>REFERENCES</code></td><td>指定哪些列可以被读取、修改或引用</td></tr><tr><td>模式对象</td><td><code>CREATE TABLE</code>／<code>VIEW</code>／<code>INDEX</code>、<code>ALTER TABLE</code></td><td>创建或调整对象</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">7/17</div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>对象</th><th>操作示例</th><th>业务含义</th></tr></thead><tbody><tr><td>数据库／模式</td><td><code>CREATE</code></td><td>创建对象（依产品）</td></tr><tr><td>表或视图</td><td><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code></td><td>访问或修改数据</td></tr><tr><td>属性列</td><td><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>REFERENCES</code></td><td>指定哪些列可以被读取、修改或引用</td></tr><tr><td>模式对象</td><td><code>CREATE TABLE</code>／<code>VIEW</code>／<code>INDEX</code>、<code>ALTER TABLE</code></td><td>创建或调整对象</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">6/19</div>
     <div class="semantic-label">ACCESS CONTROL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.1765%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="1120" data-z="0"
+      data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">GRANT 把指定权限授予指定用户或角色</h2>
     <div class="slide-content"><p class="slide-lead">一条 GRANT 同时确定权限、对象和接收者</p>
-<div class="slide-main-content"><p><code>U1</code>、<code>U4</code> 是课堂账号；实际账户写法按目标 DBMS 手册确定</p>
+<div class="slide-main-content"><p>以下为教材 SQL；U1、U4 已存在，授权者有相应授权资格</p>
 <div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02</span><code class="language-sql">GRANT SELECT ON TABLE Student TO U1;
 GRANT UPDATE(Smajor), SELECT ON TABLE Student TO U4;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>这里的 <code>SELECT</code> 允许查询整张表，<code>UPDATE(Smajor)</code> 只允许修改专业列；若只准访问某些行，还要用视图或按用户身份筛选。写入的数据仍须满足完整性约束</p></div></div>
-    <div class="numeric-progress">8/17</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>U4 可查整表，只能改专业；限制可见行还需受限视图等机制</p></div></div>
+    <div class="numeric-progress">7/19</div>
     <div class="semantic-label">GRANT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:47.0588%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-split axis-horizontal order-code-text"
-      data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">授权链决定一次回收会影响谁</h2>
-    <div class="slide-content"><p class="slide-lead">沿 U5→U6→U7 查授权来源，再判断回收 U5 的影响和其他独立授权</p>
+    <h2 class="slide-title">先建立三段授权，再由 DBA 回收</h2>
+    <div class="slide-content"><p class="slide-lead">教材模型：U5、U6、U7 起初都没有 INSERT 权限，也没有其他授权路径</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -137,114 +128,149 @@ GRANT UPDATE(Smajor), SELECT ON TABLE Student TO U4;</code></pre></div></div></d
 05
 06
 07
-08</span><code class="language-sql">-- DBA → U5
+08</span><code class="language-sql">-- DBA 执行：允许 U5 插入并转授
 GRANT INSERT ON TABLE SC TO U5 WITH GRANT OPTION;
--- U5 → U6
+-- 切换为 U5：允许 U6 插入并转授
 GRANT INSERT ON TABLE SC TO U6 WITH GRANT OPTION;
--- U6 → U7
+-- 切换为 U6：U7 只能插入，不能继续转授
 GRANT INSERT ON TABLE SC TO U7;
--- 收回 U5 传播出的权限
+-- 切回 DBA：级联回收依赖于 U5 的授权
 REVOKE INSERT ON TABLE SC FROM U5 CASCADE;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>用户获得对象权限时，只有附带 <code>WITH GRANT OPTION</code> 才能再授给别人；收回权限的语法要查所用 DBMS。若用户还从别处获得同一权限，就可能继续保有它</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>U5 被收回权限后，U7 一定也会失去权限吗？</p></div></div></div></aside>
-    <div class="numeric-progress">9/17</div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>授权路径：DBA → U5 → U6 → U7；U7 没有转授权资格</p></div></div>
+    <div class="numeric-progress">8/19</div>
     <div class="semantic-label">PROPAGATION AND REVOKE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:52.9412%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
+  </section>
+<section id="b4a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
+    <h2 class="slide-title">回收同一条授权，独立路径会改变结果</h2>
+    <div class="slide-content"><p class="slide-lead">每行从三段授权已建立的状态重新开始；表中判断的是 INSERT 权限是否仍存在</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 20% 20% 20%"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>DBA 的回收操作</th><th>U5</th><th>U6</th><th>U7</th></tr></thead><tbody><tr><td>回收前</td><td>有</td><td>有</td><td>有</td></tr><tr><td>CASCADE；没有其他授权</td><td>无</td><td>无</td><td>无</td></tr><tr><td>CASCADE；此前 DBA 另授 U7</td><td>无</td><td>无</td><td>有</td></tr><tr><td>RESTRICT；拒绝本次回收</td><td>有</td><td>有</td><td>有</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>以上是教材模型的预期结果；上机须按产品语法回收，并逐个登录验证，不能直接套用 CASCADE</p></div></div>
+    <div class="numeric-progress">9/19</div>
+    <div class="semantic-label">REVOKE RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
   </section>
 <section id="b5" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">把同一岗位的权限放进角色，再分给多人</h2>
-    <div class="slide-content"><p class="slide-lead">先授岗位权限给角色，再授角色给任职者；账号与角色激活规则须查 DBMS</p>
+    <h2 class="slide-title">角色使用者与管理者承担不同职责</h2>
+    <div class="slide-content"><p class="slide-lead">R1 是学生资料维护角色；王平、张明使用岗位权限，赵玲负责管理成员</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
-04</span><code class="language-sql">CREATE ROLE R1;
-GRANT SELECT, UPDATE, INSERT ON TABLE Student TO R1;
-GRANT R1 TO 王平, 张明, 赵玲 WITH ADMIN OPTION;
-REVOKE R1 FROM 王平;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>WITH GRANT OPTION</code> 允许把对象权限再授给别人，<code>WITH ADMIN OPTION</code> 允许管理角色的授予和回收；角色如何激活要查所用 DBMS</p></div></div>
-    <div class="numeric-progress">10/17</div>
+04
+05</span><code class="language-sql">-- 以下为教材 SQL，均由有相应资格的 DBA 执行
+CREATE ROLE R1;
+GRANT SELECT, UPDATE ON TABLE Student TO R1;
+GRANT R1 TO 王平, 张明;
+GRANT R1 TO 赵玲 WITH ADMIN OPTION;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>授权选项</th><th>授予什么能力</th><th>本例是否需要</th></tr></thead><tbody><tr><td>WITH GRANT OPTION</td><td>转授对象权限</td><td>普通成员不需要</td></tr><tr><td>WITH ADMIN OPTION</td><td>管理角色成员</td><td>赵玲需要</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/19</div>
     <div class="semantic-label">ROLES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b5a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
+    <h2 class="slide-title">撤销一个成员，与修改角色权限影响不同</h2>
+    <div class="slide-content"><p class="slide-lead">假设 R1 已生效，三人没有其他权限；下列两种操作分别从上一页的状态开始</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 32% 32%"><colgroup><col style="width:36%"><col style="width:32%"><col style="width:32%"></colgroup><thead><tr><th>DBA 执行教材 SQL</th><th>王平</th><th>张明、赵玲</th></tr></thead><tbody><tr><td>REVOKE R1 FROM 王平</td><td>失去 R1 提供的权限</td><td>仍可查、改 Student</td></tr><tr><td>REVOKE SELECT ON TABLE Student FROM R1</td><td>不能查，仍能改</td><td>不能查，仍能改</td></tr></tbody></table></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">分别登录三个账号，先确认当前角色是否生效</span></li><li><span class="list-marker">02</span><span class="list-text">执行 SELECT，再执行一条满足约束的 UPDATE</span></li><li><span class="list-marker">03</span><span class="list-text">把结果与表中预测比较；若不同，检查其他授权与角色状态</span></li></ol></div></div></div>
+    <div class="numeric-progress">11/19</div>
+    <div class="semantic-label">ROLE CHANGES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">DAC：有授权资格的人决定谁能做什么</h2>
+    <h2 class="slide-title">自主存取控制 DAC：授权者决定访问权限</h2>
     <div class="slide-content"><p class="slide-lead">对象所有者或持有转授权资格的人，可以允许别人对指定对象执行某种操作</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>谁决定</h3><p>DBA、对象属主，或拥有该权限及 <code>WITH GRANT OPTION</code> 的用户可以作出授权决定</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>决定什么</h3><p>决定用户对对象可以执行哪些具体操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可能出错</h3><p>权限可能沿转授权继续传播，也可能授给了不该获得的人</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DAC 检查用户是否有权执行操作，完整性检查判断数据是否符合规则；若系统同时采用 MAC，通过 DAC 后还必须满足密级规则</p></div></div>
-    <div class="numeric-progress">11/17</div>
+    <div class="numeric-progress">12/19</div>
     <div class="semantic-label">DAC</div>
-    <div class="progress-track"><div class="progress-fill" style="width:64.7059%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
-      data-x="4500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:2fr;">
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">MAC：系统再比较主体许可证与客体密级</h2>
-    <div class="slide-content"><p class="slide-lead">即使某人拿到了普通授权，只要读写不满足密级规则，系统仍会拒绝</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-4-1/assets/generated/dbpa-ch04-dac-mac-check.svg" data-full-src="resources/decks/dbpa-4-1/assets/generated/dbpa-ch04-dac-mac-check.svg" alt="数据库请求先通过自主存取控制，再通过强制密级检查" tabindex="0" role="button" aria-label="放大图片：数据库请求先通过自主存取控制，再通过强制密级检查" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>概念</th><th>含义</th><th>例子</th></tr></thead><tbody><tr><td>主体</td><td>发起访问</td><td>用户或进程</td></tr><tr><td>客体</td><td>被访问</td><td>表、视图或文件</td></tr><tr><td>密级标记</td><td>主体许可证／客体密级</td><td>主体 S 级／客体 C 级</td></tr></tbody></table></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统按密级强制执行 MAC，用户不能用普通 <code>GRANT</code> 绕过它；系统比较主体许可证级别与客体密级，判断能否读写</p></div></div></div></div>
-    <div class="numeric-progress">12/17</div>
+    <h2 class="slide-title">强制存取控制 MAC：按密级限制读写</h2>
+    <div class="slide-content"><p class="slide-lead">普通授权通过后，还要满足系统规定的密级规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 38% 42%"><colgroup><col style="width:20%"><col style="width:38%"><col style="width:42%"></colgroup><thead><tr><th>概念</th><th>含义</th><th>本例</th></tr></thead><tbody><tr><td>主体</td><td>发起访问的用户或进程</td><td>持有 S 级许可证的用户</td></tr><tr><td>客体</td><td>被访问的表、视图或文件</td><td>标为 C 级的成绩表</td></tr><tr><td>密级标记</td><td>主体许可证与客体密级</td><td>系统比较 S 与 C，再判断读写</td></tr></tbody></table></div>
+<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="普通授权通过 → 密级规则通过 → 允许访问"><span class="relation-term">普通授权通过</span><span class="relation-operator">→</span><span class="relation-term">密级规则通过</span><span class="relation-operator">→</span><span class="relation-term">允许访问</span></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两项检查缺一不可；用户不能用普通 GRANT 绕过系统的密级规则</p></div></div>
+    <div class="numeric-progress">13/19</div>
     <div class="semantic-label">MAC LABELS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:70.5882%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
   </section>
 <section id="c3" class="step slide-surface role-content layout-focus"
-      data-x="4500" data-y="3360" data-z="0"
+      data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">MAC 防止高密级信息写入低密级对象</h2>
     <div class="slide-content"><p class="slide-lead">设密级顺序为 <code>TS &gt;= S &gt;= C &gt;= P</code></p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>规则</th><th>条件</th><th>结果</th></tr></thead><tbody><tr><td>读取</td><td>主体许可证级别 ≥ 客体密级</td><td>才允许读取</td></tr><tr><td>写入</td><td>主体许可证级别 ≤ 客体密级</td><td>才允许写入</td></tr><tr><td>双重检查</td><td>DAC 与 MAC 都通过</td><td>才允许访问</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">13/17</div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 50% 28%"><colgroup><col style="width:22%"><col style="width:50%"><col style="width:28%"></colgroup><thead><tr><th>规则</th><th>条件</th><th>结果</th></tr></thead><tbody><tr><td>读取</td><td>主体许可证级别 ≥ 客体密级</td><td>才允许读取</td></tr><tr><td>写入</td><td>主体许可证级别 ≤ 客体密级</td><td>才允许写入</td></tr><tr><td>双重检查</td><td>DAC 与 MAC 都通过</td><td>才允许访问</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/19</div>
     <div class="semantic-label">MAC RULES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:76.4706%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
   </section>
 <section id="c3a" class="step slide-surface role-content layout-focus"
-      data-x="3000" data-y="3360" data-z="0"
+      data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">S 级主体为何能读 C，却不能写回 C？</h2>
     <div class="slide-content"><p class="slide-lead">沿用 MAC 读写规则，下表均以 DAC 检查通过为前提</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 25% 25% 25%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><thead><tr><th>主体许可证</th><th>客体密级</th><th>读取</th><th>写入</th></tr></thead><tbody><tr><td>S</td><td>C</td><td>允许</td><td>拒绝</td></tr><tr><td>C</td><td>S</td><td>拒绝</td><td>允许</td></tr><tr><td>S</td><td>S</td><td>允许</td><td>允许</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>S 级主体读取 C 级对象后，可能带着 S 级信息；禁止它再写入 C 级对象，是为了避免高密级内容向下流动。上表仍以 DAC 通过为前提；不能用普通 MySQL <code>GRANT</code> 来演示这里的 MAC 密级规则</p></div></div>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="bottom-astonished" data-character-edge="bottom" data-character-along="78" data-character-exposure="58" data-character-scale="0.88" style="--character-along:78%;--character-exposure:58;--character-hidden:42%;--character-scale:0.88;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-astonished.4547b8a999cc.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>许可证是 S，读取 C 没问题，为什么写回 C 反而被拒绝？</p></div></div></div></aside>
-    <div class="numeric-progress">14/17</div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>S 级主体可能已掌握 S 级信息，向 C 级对象写入会造成向下泄露；普通 GRANT 不能单独实现这套密级规则</p></div></div>
+    <div class="numeric-progress">15/19</div>
     <div class="semantic-label">MAC EXAMPLES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:82.3529%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
+    <h2 class="slide-title">安全等级写的是要求，不是现状</h2>
+    <div class="slide-content"><p class="slide-lead">TCSEC/TDI 规定安全保护要求，CC EAL 表示评估严格程度；等级不能直接对应</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 38% 34%"><colgroup><col style="width:28%"><col style="width:38%"><col style="width:34%"></colgroup><thead><tr><th>标准或等级</th><th>重点</th><th>课堂理解</th></tr></thead><tbody><tr><td>TCSEC/TDI D</td><td>最小保护</td><td>低于更高等级要求</td></tr><tr><td>C1</td><td>自主保护、DAC</td><td>按对象和用户配置权限</td></tr><tr><td>C2</td><td>受控存取、审计</td><td>记录到个人，便于查明谁做了什么</td></tr><tr><td>B1、B2、B3</td><td>标记、结构化、安全域</td><td>引入强制策略</td></tr><tr><td>A1</td><td>验证设计</td><td>形式化验证设计与实现</td></tr><tr><td>CC EAL1—EAL7</td><td>评估保证</td><td>说明评估和保证程度</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">16/19</div>
+    <div class="semantic-label">SECURITY STANDARDS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
   </section>
 <section id="review" class="step slide-surface role-review layout-focus"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
-    <h2 class="slide-title">四个请求：查什么、结果怎样、还缺什么</h2>
-    <div class="slide-content"><p class="slide-lead">先写主体、操作、对象和授权来源，再判结果；审计另记时间、账号和结果</p>
+    <h2 class="slide-title">练习：先预测四个请求，再解释依据</h2>
+    <div class="slide-content"><p class="slide-lead">先判断登录、对象授权和密级分别是否足够，再展开卡片核对</p>
 <div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>请求一：学生查 Student</h3><p>学生已登录但请求整表 <code>SELECT</code>：检查该学生是否有查询权限，以及是否需要限制为只看自己的记录；登录成功本身不足以放行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求二：教师改成绩</h3><p><code>T17</code> 请求 <code>UPDATE SC.Grade</code>：检查有效角色、列级权限和数据完整性；三者回答不同问题</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求三：U7 继续插入</h3><p>U5 的授权被回收后 U7 仍请求 <code>INSERT SC</code>：查清权限经谁转授、收回时会影响谁，以及 U7 是否还从别处获得同一权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求四：S 写入 C</h3><p>即使 DAC 已允许，主体 S 写入客体 C 仍被 MAC 拒绝，以阻止高密级信息向下流动</p></article></div></div></div>
-    <div class="numeric-progress">15/17</div>
+    <div class="numeric-progress">17/19</div>
     <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="0" data-y="3360" data-z="0"
+      data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
     <h2 class="slide-title">按访问请求回顾各项检查</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-4-1/mindmap-4-1.html" title="按访问请求回顾各项检查"></iframe></div></div>
-    <div class="numeric-progress">16/17</div>
+    <div class="numeric-progress">18/19</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="0" data-y="4480" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">安全性、完整性、运行环境安全各关注什么？SQL 注入属于哪层风险？</span></li><li><span class="question-no">02</span><span class="question-text">为何登录成功不等于可 <code>SELECT Student</code>？审计能否替代授权检查？</span></li><li><span class="question-no">03</span><span class="question-text">解释 <code>GRANT UPDATE(Smajor), SELECT ON Student TO U4</code>：能限制行吗？</span></li><li><span class="question-no">04</span><span class="question-text">沿 U5→U6→U7 回收 U5，会影响谁？怎样核查独立授权及 DBMS 的 <code>CASCADE</code>／<code>RESTRICT</code> 支持？</span></li><li><span class="question-no">05</span><span class="question-text">比较 <code>WITH GRANT OPTION</code>、<code>WITH ADMIN OPTION</code> 的用途与回收</span></li><li><span class="question-no">06</span><span class="question-text">主体 S 访问客体 C 时能否读写？DAC 不通过而 MAC 通过是否足够？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">安全性、完整性、运行环境安全各关注什么？SQL 注入属于哪层风险？</span></li><li><span class="question-no">02</span><span class="question-text">为何登录成功不等于可 <code>SELECT Student</code>？审计能否替代授权检查？</span></li><li><span class="question-no">03</span><span class="question-text">解释 <code>GRANT UPDATE(Smajor), SELECT ON Student TO U4</code>：能限制行吗？</span></li><li><span class="question-no">04</span><span class="question-text">级联回收 U5 时，U7 另有 DBA 直接授权会怎样？RESTRICT 呢？</span></li><li><span class="question-no">05</span><span class="question-text">撤销王平的 R1，与从 R1 回收 SELECT，各会影响谁？</span></li><li><span class="question-no">06</span><span class="question-text">主体 S 访问客体 C 时能否读写？DAC 不通过而 MAC 通过是否足够？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-3-6.html" title="上一节：3.6 视图" aria-label="上一节：3.6 视图">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -259,7 +285,7 @@ REVOKE R1 FROM 王平;</code></pre></div></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">17/17</div>
+    <div class="numeric-progress">19/19</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
