@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 8.1</div>
       <h1>SQL 扩展与过程化 SQL 基础</h1>
-      <p class="cover-description">普通查询不够时：逐层找先修课、处理日期、按课程累加 GPA</p>
+      <p class="cover-description">SQL 支持先修课查询、生日提醒与 GPA 计算</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -42,48 +42,57 @@
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
-    <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">各任务选最简单做法，说明递归或循环何时停、错误怎样返回、哪些交给应用</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断全部先修课、生日提醒、GPA 和评价反馈分别需要递归、函数、过程块还是应用代码</span></li><li><span class="list-marker">02</span><span class="list-text">写出普通 WITH 的命名结果和主查询，并说明单语句作用域</span></li><li><span class="list-marker">03</span><span class="list-text">标出递归 CTE 的种子项、递归项、终止条件和去重策略</span></li><li><span class="list-marker">04</span><span class="list-text">用内置函数组合生日窗口，并说明跨年、NULL 和 DBMS 边界</span></li><li><span class="list-marker">05</span><span class="list-text">画出过程块的声明、执行、控制流和异常分支，指出循环终止</span></li><li><span class="list-marker">06</span><span class="list-text">用 GPA 和异常案例说明哪些计算留在当前 SQL 块，哪些需要存储程序，哪些由应用界面处理</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
-  </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
-      data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">先看任务卡在哪里，再决定是否扩展 SQL</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要 SQL 能写出来，业务逻辑就都应该留在数据库端吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">一层查询；多层、日期窗口、累计或用户输入，选递归、函数、过程块或应用</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-sql-boundary.svg" alt="集合查询、递归、内置函数和高级语言接口的任务边界" tabindex="0" role="button" aria-label="放大图片：集合查询、递归、内置函数和高级语言接口的任务边界" decoding="async"></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 27% 25%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:27%"><col style="width:25%"></colgroup><thead><tr><th>任务</th><th>输入 → 输出</th><th>主要困难</th><th>最小路径</th></tr></thead><tbody><tr><td>全部先修课</td><td><code>Course</code> → 多层课程</td><td>层次递归</td><td><code>WITH RECURSIVE</code></td></tr><tr><td>一周生日提醒</td><td>出生日期 → 日期窗口</td><td>日期、字符串和边界</td><td>内置函数</td></tr><tr><td>GPA 计算</td><td>成绩与学分 → GPA</td><td>分支、循环和状态</td><td>过程化 SQL 基础；持久化封装需要存储程序</td></tr><tr><td>评价反馈</td><td>输入评价 → 交互反馈</td><td>界面、应用编排和跨系统状态</td><td>高级语言接口；交互逻辑由应用层实现</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>同一个功能可以让数据库计算 GPA、让 Java 接收结果并在页面显示；先给每一层分配清楚的输入和输出</p></div></div>
-    <div class="numeric-progress">3/15</div>
-    <div class="semantic-label">SQL BOUNDARY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <h2 class="slide-title">学习目标</h2>
+    <div class="slide-content"><p class="slide-lead">根据输入、逐步结果和停止条件，解释 SQL 工具的选择</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用两班成绩写出 WITH 查询，计算平均分差并解释名称作用域</span></li><li><span class="list-marker">02</span><span class="list-text">根据课程表逐层求出先修课，说明空值、重复和环怎样影响递归</span></li><li><span class="list-marker">03</span><span class="list-text">用跨年样例判断七天生日窗口，明确端点和缺失日期的处理</span></li><li><span class="list-marker">04</span><span class="list-text">逐步累计 GPA，解释初值、分支、循环终止和零分母处理</span></li><li><span class="list-marker">05</span><span class="list-text">区分异常提示与事务回滚，说明哪些任务交给应用界面</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/19</div>
+    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">四类任务与数据库能力</h2>
+    <div class="slide-content"><p class="slide-lead">递归查询与日期计算在数据库执行；界面接收输入并显示结果</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 38% 40%"><colgroup><col style="width:22%"><col style="width:38%"><col style="width:40%"></colgroup><thead><tr><th>任务</th><th>输入与结果</th><th>使用的能力</th></tr></thead><tbody><tr><td>查全部先修课</td><td>81003 → 81002、81001</td><td>递归 CTE 逐层查找</td></tr><tr><td>七天生日提醒</td><td>出生日期 → 窗口内的学生</td><td>日期构造与比较函数</td></tr><tr><td>计算 GPA</td><td>成绩、学分 → 加权平均绩点</td><td>CASE＋SUM，或用循环演示</td></tr><tr><td>提交教学评价</td><td>评价文字 → 保存记录与提示</td><td>应用收取输入，数据库保存</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数据库计算 GPA，Java 接收结果并显示到页面</p></div></div>
+    <div class="numeric-progress">3/19</div>
+    <div class="semantic-label">SQL EXTENSIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">临时过程块、存储程序和应用代码不同</h2>
-    <div class="slide-content"><p class="slide-lead"><code>WITH</code> 管查询，过程块管流程，存储程序留在 DBMS，应用管界面与跨系统调用</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="新 SQL 子句　＋　内置函数　＋　过程化 SQL 块"><span class="relation-term">新 SQL 子句　＋　内置函数　＋　过程化 SQL 块</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>子句</h3><p><code>WITH</code> 和 <code>WITH RECURSIVE</code> 组织中间结果和递归层次</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>函数</h3><p>内置函数复用日期、字符串和聚合计算，具体语法要核对 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>过程</h3><p>过程化 SQL 增加变量、状态、分支、循环和异常处理</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>过程化 SQL 块提供过程控制；存储过程和存储函数提供持久化封装，高级语言接口负责应用层交互</p></div></div>
-    <div class="numeric-progress">4/15</div>
+    <h2 class="slide-title">SQL 有三种常用扩展方式</h2>
+    <div class="slide-content"><p class="slide-lead">子句组织查询，函数计算值，过程控制组织执行步骤</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>子句</h3><p>WITH 命名结果；递归 CTE 查先修课</p></article><article class="content-card emphasis-card" tabindex="0"><h3>函数</h3><p>AVG 汇总成绩；日期函数把出生日期转换为下一次生日</p></article><article class="content-card emphasis-card" tabindex="0"><h3>过程控制</h3><p>变量保存累计值，分支选择绩点，循环重复处理每门课程</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>过程代码可作为存储过程或存储函数保存在数据库中，供后续调用</p></div></div>
+    <div class="numeric-progress">4/19</div>
     <div class="semantic-label">SQL EXTENSIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a3b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">WITH 把复杂查询拆成可命名的中间结果</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>给中间结果起了名字，DBMS 就一定先物化它并加速查询吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">命名结果只在紧接的一条 SQL 语句中有效</p>
+    <h2 class="slide-title">两个教学班的平均分差</h2>
+    <div class="slide-content"><p class="slide-lead">课堂样例：同一课程与学期，求 01 班平均分减 02 班平均分</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 23% 22% 25%"><colgroup><col style="width:30%"><col style="width:23%"><col style="width:22%"><col style="width:25%"></colgroup><thead><tr><th>学号 Sno</th><th>课程 Cno</th><th>班号 ClassNo</th><th>成绩 Grade</th></tr></thead><tbody><tr><td>20260001</td><td>81001</td><td>01</td><td>80</td></tr><tr><td>20260002</td><td>81001</td><td>01</td><td>90</td></tr><tr><td>20260003</td><td>81001</td><td>02</td><td>70</td></tr><tr><td>20260004</td><td>81001</td><td>02</td><td>80</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>四行的 Term 均为 <code>2026-1</code>；SC 沿用第 7 章的字段，这里仅展示相关列</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>01 班平均 85 分，02 班平均 75 分；按题目规定的方向相减，结果为 10 分</p></div></div>
+    <div class="numeric-progress">5/19</div>
+    <div class="semantic-label">WITH INPUT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">WITH 给本条查询的中间结果命名</h2>
+    <div class="slide-content"><p class="slide-lead">WITH 定义公用表表达式 Common Table Expression，简称 CTE</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -91,150 +100,202 @@
 05
 06
 07
-08</span><code class="language-sql">WITH class_avg AS (
-  SELECT TeachingClass, AVG(Grade) AS avg_grade
+08
+09</span><code class="language-sql">WITH class_avg AS (
+  SELECT ClassNo, AVG(Grade) AS avg_grade
   FROM SC
-  WHERE TeachingClass IN ('81001-01', '81001-02')
-  GROUP BY TeachingClass
+  WHERE Cno = '81001' AND Term = '2026-1'
+  GROUP BY ClassNo
 )
-SELECT MAX(avg_grade) - MIN(avg_grade) AS difference
-FROM class_avg;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>WITH 的结果只在当前语句中有效；它不创建长期表，也不保证一定物化或提速</p></div></div>
-    <div class="numeric-progress">5/15</div>
+SELECT a.avg_grade - b.avg_grade AS difference
+FROM class_avg a CROSS JOIN class_avg b
+WHERE a.ClassNo = '01' AND b.ClassNo = '02';</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>class_avg 得到 01→85、02→75，相减得 10；名称仅在本条语句有效，不创建长期表，也不保证物化或提速</p></div></div>
+    <div class="numeric-progress">6/19</div>
     <div class="semantic-label">WITH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
   </section>
-<section id="a5" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
-      data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">WITH RECURSIVE 按层扩张结果集</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-thinking" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-thinking.ac909193b22d.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>每轮都可能扩张新行，怎样保证递归最终会停下？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">种子查询定义第一层，递归查询生成后续层</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" data-full-src="resources/decks/dbpa-8-1/assets/generated/dbpa-ch08-recursive-cte.svg" alt="数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" tabindex="0" role="button" aria-label="放大图片：数据库系统概论的先修关系从种子层扩张到空层并停止的递归查询示意" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>L1：数据库系统概论 → 数据结构；L2：数据结构 → 程序设计基础与 C 语言；L3：没有新课程 → 停止</p></div></div></div></div>
-    <div class="numeric-progress">6/15</div>
-    <div class="semantic-label">RECURSIVE QUERY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
-  </section>
-<section id="a5b" class="step slide-surface role-content layout-focus"
+<section id="a5" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">递归 CTE 的查询骨架</h2>
-    <div class="slide-content"><p class="slide-lead">种子查询给出首层，递归项持续扩张，直到不再产生新行</p>
+    <h2 class="slide-title">课程表中的直接与间接先修课</h2>
+    <div class="slide-content"><p class="slide-lead">Cpno 存放本课程的直接先修课号；这里每门课至多一门直接先修课</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 54% 24%"><colgroup><col style="width:22%"><col style="width:54%"><col style="width:24%"></colgroup><thead><tr><th>Cno</th><th>Cname</th><th>Cpno</th></tr></thead><tbody><tr><td>81003</td><td>数据库系统概论</td><td>81002</td></tr><tr><td>81002</td><td>数据结构</td><td>81001</td></tr><tr><td>81001</td><td>程序设计基础与 C 语言</td><td>NULL</td></tr></tbody></table></div>
+<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="起点 81003 → 81002 → 81001 → 空层"><span class="relation-term">起点 81003</span><span class="relation-operator">→</span><span class="relation-term">81002</span><span class="relation-operator">→</span><span class="relation-term">81001</span><span class="relation-operator">→</span><span class="relation-term">空层</span></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>结果是 81002、81001；“程序设计基础与 C 语言”是同一门课的名称。若一门课有多门先修课，应另建课程与先修课的关系表</p></div></div>
+    <div class="numeric-progress">7/19</div>
+    <div class="semantic-label">RECURSIVE INPUT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
+  </section>
+<section id="a5b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">递归 CTE 的种子项与递归项</h2>
+    <div class="slide-content"><p class="slide-lead">种子项从 81003 出发，递归项用上一轮课号查找它的先修课</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
 05
 06
-07</span><code class="language-sql">WITH RECURSIVE prereq(cno) AS (
-  SELECT Cpno FROM Course WHERE Cno = '81003'
-  UNION [ALL]
+07
+08
+09</span><code class="language-sql">WITH RECURSIVE prereq(cno) AS (
+  SELECT Cpno FROM Course
+  WHERE Cno = '81003' AND Cpno IS NOT NULL
+  UNION
   SELECT c.Cpno FROM Course c
   JOIN prereq p ON p.cno = c.Cno
+  WHERE c.Cpno IS NOT NULL
 )
-SELECT cno FROM prereq;</code></pre></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>该骨架只表达递归语义，不是可直接执行的产品脚本。<code>UNION</code> 通常去重，<code>UNION ALL</code> 保留重复；示例没有环，多路径和环需要额外的去重、深度或访问边界策略</p></div></div></div>
-    <div class="numeric-progress">7/15</div>
+SELECT cno FROM prereq ORDER BY cno;</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本查询结果按课号排序为 81001、81002。UNION 对整行去重；改为 UNION ALL 后，重复行可继续参与下一轮</p></div></div>
+    <div class="numeric-progress">8/19</div>
     <div class="semantic-label">RECURSIVE QUERY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
   </section>
-<section id="a6" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
-    <h2 class="slide-title">内置函数把常见数据处理留在数据库端</h2>
-    <div class="slide-content"><p class="slide-lead">函数类别要和任务中的数据类型对应</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 38% 37%"><colgroup><col style="width:25%"><col style="width:38%"><col style="width:37%"></colgroup><thead><tr><th>类别</th><th>典型用途</th><th>任务例子</th></tr></thead><tbody><tr><td>标量数学</td><td>对单个值计算</td><td>绝对值、四舍五入</td></tr><tr><td>聚合</td><td>汇总多行</td><td><code>AVG(Grade)</code>、<code>SUM(Credit)</code></td></tr><tr><td>字符串与格式</td><td>拼接、截取和格式化</td><td>构造日期文本</td></tr><tr><td>日期时间</td><td>当前日期、转换和区间运算</td><td>一周生日提醒</td></tr></tbody></table></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="出生日期月日 → 构造今年或下一年的生日 → 与 `[today, today + 7 天)` 比较；`CURRENT_DATE`、`TO_CHAR`、`TO_DATE` 等名称和参数需按目标 DBMS 核查"><span class="relation-term">出生日期月日</span><span class="relation-operator">→</span><span class="relation-term">构造今年或下一年的生日</span><span class="relation-operator">→</span><span class="relation-term">与 `[today, today</span><span class="relation-operator">+</span><span class="relation-term">7 天)<code> 比较；</code>CURRENT_DATE<code>、</code>TO_CHAR<code>、</code>TO_DATE` 等名称和参数需按目标 DBMS 核查</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>若使用 <code>BETWEEN</code>，两个端点都包含；出生日期为 <code>NULL</code> 时比较结果通常是 UNKNOWN，不会匹配。跨年和 2 月 29 日需要明确业务策略</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>数学和聚合函数处理不同粒度的数据；数据库产品还提供格式化、加密和系统信息函数。具体函数名、参数和返回类型要按目标 DBMS 手册核查</p></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">BUILT-IN FUNCTIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
-  </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a5c" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
-    <h2 class="slide-title">过程化 SQL 块为基本 SQL 加入程序控制</h2>
-    <div class="slide-content"><p class="slide-lead">过程块包含声明、执行和异常分支；过程与函数还需持久化对象定义</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text"><code>DECLARE</code>：声明变量与常量</span></li><li><span class="list-marker">02</span><span class="list-text"><code>BEGIN</code>：执行赋值、SQL、条件与循环</span></li><li><span class="list-marker">03</span><span class="list-text"><code>EXCEPTION</code>：发生错误时进入异常分支</span></li><li><span class="list-marker">04</span><span class="list-text"><code>END</code>：结束当前过程块</span></li></ol></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>声明部分和异常部分的具体写法依赖目标 DBMS；块可以嵌套，游标、存储过程参数和持久化封装属于其他过程化 SQL 能力</p></div></div>
-    <div class="numeric-progress">9/15</div>
-    <div class="semantic-label">PROCEDURAL BLOCK</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">练习：先修关系出现环，查询还会停吗？</h2>
+    <div class="slide-content"><p class="slide-lead">把 81001 的 Cpno 从 NULL 改为 81003，其他记录不变</p>
+<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="81003 → 81002 → 81001 → 81003 → …"><span class="relation-term">81003</span><span class="relation-operator">→</span><span class="relation-term">81002</span><span class="relation-operator">→</span><span class="relation-term">81001</span><span class="relation-operator">→</span><span class="relation-term">81003</span><span class="relation-operator">→</span><span class="relation-term">…</span></div></div>
+<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>CTE 只有课号一列</h3><p>UNION 不再加入已出现的课号，因此会停止；结果却包含起点 81003，说明先修关系有误</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>增加不断变化的层数</h3><p>若结果行是“课号、层数”，同一课号配上新层数仍是不同的行，UNION 去重也不能保证消除环</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>需要防止沿当前路径再次访问同一课号，并检查先修关系是否有效；限制递归层数是保护措施，不证明结果完整</p></div></div>
+    <div class="numeric-progress">9/19</div>
+    <div class="semantic-label">RECURSION CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-grid"
+<section id="a6" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
-    <h2 class="slide-title">变量累计，条件分支，循环逐门处理</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f749626b83cb.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>状态一直在变，为什么循环还是停不下来？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">算 GPA 时，每门课都更新总学分和绩点；课程处理完或显式退出时停止</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>变量</h3><p>初始化并保存状态，例如 <code>v_total := 0</code>；内层同名变量可能遮蔽外层变量</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>常量</h3><p>先初始化，作用域内不可重新赋值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>条件</h3><p><code>IF grade IS NULL</code> 要先定义业务分支；UNKNOWN 不能当作 TRUE</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>循环</h3><p><code>LOOP</code>、<code>WHILE</code>、<code>FOR</code> 都必须有可验证的终止条件</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>变量、条件和循环只描述处理步骤；若要从多行查询中逐行取得课程成绩，还需要游标</p></div></div>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">STATE AND CONTROL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">函数把输入值转换为需要的结果</h2>
+    <div class="slide-content"><p class="slide-lead">函数的参数接收指定类型的输入，返回计算结果</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 39% 36%"><colgroup><col style="width:25%"><col style="width:39%"><col style="width:36%"></colgroup><thead><tr><th>类别</th><th>本题输入</th><th>得到的结果</th></tr></thead><tbody><tr><td>标量数学</td><td>3.333…，保留两位小数</td><td>3.33</td></tr><tr><td>聚合</td><td>两条成绩 80、90</td><td>AVG 得到 85</td></tr><tr><td>字符串与格式</td><td>年、月、日的文本</td><td>可供解析的日期文本</td></tr><tr><td>日期时间</td><td>2004-01-02 与当前日期</td><td>下一次生日与提醒判断</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>日期构造、加减和格式化语法因 DBMS 而异；按生日规则选择目标产品的函数</p></div></div>
+    <div class="numeric-progress">10/19</div>
+    <div class="semantic-label">BUILT-IN FUNCTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="a6b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
-    <h2 class="slide-title">GPA 计算同时需要判断和累加</h2>
-    <div class="slide-content"><p class="slide-lead">过程化逻辑把每门课程的处理步骤串起来</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="GPA = 总学分绩点 ÷ 总学分"><span class="relation-term">GPA</span><span class="relation-operator">=</span><span class="relation-term">总学分绩点 ÷ 总学分</span></div></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="成绩：85、96、87　→　绩点：3、4、3　→　学分：4、4、4 GPA = (3×4 + 4×4 + 3×4) / 12 = 3.33"><span class="relation-term">成绩：85、96、87</span><span class="relation-operator">→</span><span class="relation-term">绩点：3、4、3</span><span class="relation-operator">→</span><span class="relation-term">学分：4、4、4 GPA</span><span class="relation-operator">=</span><span class="relation-term">(3</span><span class="relation-operator">×</span><span class="relation-term">4</span><span class="relation-operator">+</span><span class="relation-term">4</span><span class="relation-operator">×</span><span class="relation-term">4</span><span class="relation-operator">+</span><span class="relation-term">3</span><span class="relation-operator">×</span><span class="relation-term">4) / 12</span><span class="relation-operator">=</span><span class="relation-term">3.33</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 36% 35%"><colgroup><col style="width:29%"><col style="width:36%"><col style="width:35%"></colgroup><thead><tr><th>步骤</th><th>处理</th><th>状态</th></tr></thead><tbody><tr><td>处理</td><td>处理一门有效课程的成绩和学分</td><td>逐门处理的状态模型</td></tr><tr><td>判断</td><td>按分数段得到绩点</td><td>课程绩点</td></tr><tr><td>累加</td><td>计算总学分绩点和总学分</td><td>两个总量</td></tr><tr><td>返回</td><td>总学分大于 0 时计算 GPA</td><td>输出结果</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>先设 <code>total_point := 0</code>、<code>total_credit := 0</code>；没有有效课程或总学分为 0 时不能直接除法。成绩／学分为 <code>NULL</code> 时先按业务规则处理；逐行取得结果集和封装存储程序需要游标与持久化程序能力</p></div></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">CONTROL FLOW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.1</div>
+    <h2 class="slide-title">2026 年 12 月 30 日，要看哪七天？</h2>
+    <div class="slide-content"><p class="slide-lead">先构造今年生日；若已过去，改用下一年生日</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 33% 39%"><colgroup><col style="width:28%"><col style="width:33%"><col style="width:39%"></colgroup><thead><tr><th>出生日期</th><th>下一次生日</th><th>本次是否提醒</th></tr></thead><tbody><tr><td>2004-12-30</td><td>2026-12-30</td><td>是，恰好在起点</td></tr><tr><td>2004-01-02</td><td>2027-01-02</td><td>是，跨年后仍在窗口内</td></tr><tr><td>2004-01-06</td><td>2027-01-06</td><td>否，终点不包含</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>出生日期为 NULL 时无法判定；2 月 29 日需另定规则，例如平年按 2 月 28 日处理，这是课堂假设</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>窗口为 [2026-12-30, 2027-01-06)，不包含终点；BETWEEN 包含两端，不能直接替代</p></div></div>
+    <div class="numeric-progress">11/19</div>
+    <div class="semantic-label">DATE EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
-    <h2 class="slide-title">异常处理：说明业务后果与事务边界</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>已经捕获异常，数据库就会自动回滚吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">异常处理决定如何响应错误；是否回滚取决于事务边界、提交点和目标 DBMS</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>捕获</h3><p>识别异常，或让异常向上层传播</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>判断</h3><p>判断能否继续、记录、重试或终止</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>按业务规则处理；回滚不是捕获异常后的必然动作</p></article></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="总学分为 0 → GPA 无法计算 → 返回提示或 `NULL`，不等于自动回滚；约束冲突 → 写入失败 → 记录、传播或按事务策略撤销修改"><span class="relation-term">总学分为 0</span><span class="relation-operator">→</span><span class="relation-term">GPA 无法计算</span><span class="relation-operator">→</span><span class="relation-term">返回提示或 <code>NULL</code>，不等于自动回滚；约束冲突</span><span class="relation-operator">→</span><span class="relation-term">写入失败</span><span class="relation-operator">→</span><span class="relation-term">记录、传播或按事务策略撤销修改</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>NULL</code> 或 UNKNOWN 可能只改变分支结果，不一定产生异常；异常捕获、业务响应和事务回滚是三个不同判断</p></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">EXCEPTION HANDLING</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <h2 class="slide-title">过程块把声明、执行与异常处理组织起来</h2>
+    <div class="slide-content"><p class="slide-lead">以下是教材风格的结构示意；EXCEPTION 等语法不能直接当作 MySQL 脚本</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08
+09</span><code class="language-text">DECLARE
+  声明累计学分、累计学分绩点等变量
+BEGIN
+  初始化变量
+  读取课程，按分数段计算并累加
+  检查分母后返回 GPA
+EXCEPTION
+  发生可捕获的错误时，记录或向调用者报告
+END</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>正常执行不会经过异常分支；块可以嵌套，具体声明方式和错误处理语法须按目标 DBMS 实现</p></div></div>
+    <div class="numeric-progress">12/19</div>
+    <div class="semantic-label">PROCEDURAL BLOCK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
-    <h2 class="slide-title">四个任务分别用哪种最简单做法</h2>
-    <div class="slide-content"><p class="slide-lead">先试普通集合 SQL；确需递归或循环时，写清数据来源、终止条件和结果去向</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>全部先修课</h3><p>选择递归 CTE；标出种子、递归项、空层停止，并为多路径或环补去重、深度或访问边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一周生日提醒</h3><p>组合日期与字符串函数；明确 <code>[today,today+7天)</code>、跨年、<code>NULL</code> 和 2 月 29 日策略，再核查产品函数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPA 计算</h3><p>用变量保存两个总量，按成绩分支并逐门累加；从查询逐行取数需要游标，要让其他调用者长期使用再定义存储程序</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>评价与反馈</h3><p>界面接收文字、检查登录用户并调用数据库的过程交给 JDBC／MVC 应用；数据库负责保存评价和执行已确定的约束</p></article></div></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
+    <h2 class="slide-title">GPA 累计值与循环控制</h2>
+    <div class="slide-content"><p class="slide-lead">累计值记录算到哪里；迭代位置决定还有没有下一门课</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>变量：保存中间结果</h3><p>总学分、总学分绩点都从 0 开始，每处理一门课更新一次</p></article><article class="content-card emphasis-card" tabindex="0"><h3>常量：固定规则参数</h3><p>若设及格线为 60，则在该作用域内保持不变；各分数段对应绩点另由换算规则确定</p></article><article class="content-card emphasis-card" tabindex="0"><h3>条件：选择处理分支</h3><p>成绩为 NULL 时先决定跳过还是报错，不能直接按不及格算成 0 绩点</p></article><article class="content-card emphasis-card" tabindex="0"><h3>循环：推进并检查结束</h3><p>WHILE 检查条件，FOR 遍历范围，LOOP 显式退出；每轮前进到下一门，无下一门时结束</p></article></div></div></div>
+    <div class="numeric-progress">13/19</div>
+    <div class="semantic-label">STATE AND CONTROL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
+    <h2 class="slide-title">三门课程的 GPA 累计过程</h2>
+    <div class="slide-content"><p class="slide-lead">教材换算：0—59→0，60—69→1，70—79→2，80—89→3，90—100→4</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 20% 26% 25%"><colgroup><col style="width:29%"><col style="width:20%"><col style="width:26%"><col style="width:25%"></colgroup><thead><tr><th>课程：成绩／学分</th><th>本轮绩点</th><th>累计学分绩点</th><th>累计学分</th></tr></thead><tbody><tr><td>初始值</td><td>—</td><td>0</td><td>0</td></tr><tr><td>81001：85／4</td><td>3</td><td>0＋3×4＝12</td><td>4</td></tr><tr><td>81002：96／4</td><td>4</td><td>12＋4×4＝28</td><td>8</td></tr><tr><td>81003：87／4</td><td>3</td><td>28＋3×4＝40</td><td>12</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>GPA＝40÷12≈3.33；有效课程要求成绩为 0—100 整数、学分为正。缺失或非法数据另行处理，没有有效课程时返回 NULL</p></div></div>
+    <div class="numeric-progress">14/19</div>
+    <div class="semantic-label">GPA TRACE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
+  </section>
+<section id="b3b" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
+    <h2 class="slide-title">练习：第二门课学分改成 2，结果怎样变？</h2>
+    <div class="slide-content"><p class="slide-lead">只改变 81002 的学分，成绩仍为 96，其他课程不变</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>累计学分与学分绩点</h3><p>累计学分绩点：3×4＋4×2＋3×4＝32；累计学分：4＋2＋4＝10</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>加权平均绩点</h3><p>GPA＝32÷10＝3.20；各课学分不同，不能直接平均三个绩点</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>CASE 换算绩点，SUM 汇总分子与分母，得到 GPA；循环演示逐门累加</p></div></div>
+    <div class="numeric-progress">15/19</div>
+    <div class="semantic-label">GPA TRANSFER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1 <span>|</span> 8.2</div>
+    <h2 class="slide-title">异常处理与事务回滚</h2>
+    <div class="slide-content"><p class="slide-lead">零分母可预先处理；写入失败时，数据库或应用按事务策略处理未提交修改</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 38% 37%"><colgroup><col style="width:25%"><col style="width:38%"><col style="width:37%"></colgroup><thead><tr><th>情况</th><th>程序处理</th><th>处理说明</th></tr></thead><tbody><tr><td>有效课程数为 0</td><td>返回 NULL 或提示用户</td><td>预先判断，无需触发异常</td></tr><tr><td>成绩违反 CHECK</td><td>记录错误或向调用者传播</td><td>本条写入失败，是否影响同一事务前面的修改？</td></tr><tr><td>应用捕获错误</td><td>向用户说明失败</td><td>显示提示的代码是否调用了回滚？事务是否已经提交？</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>异常捕获、用户提示与回滚分别处理；事务设计明确数据库和应用的回滚责任</p></div></div>
+    <div class="numeric-progress">16/19</div>
+    <div class="semantic-label">EXCEPTION HANDLING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
-    <h2 class="slide-title">普通查询做不到哪一步，就选对应工具</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-1/mindmap-8-1.html" title="普通查询做不到哪一步，就选对应工具"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
+    <h2 class="slide-title">复习：为四类任务选择实现方式</h2>
+    <div class="slide-content"><p class="slide-lead">说明先修课、生日、GPA 与评价的输入、计算、结果及停止条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>全部先修课</h3><p>选择递归 CTE，标出起点、逐层匹配和空层停止；有环时检查访问路径，不能只依赖去重或层数上限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>一周生日提醒</h3><p>组合日期与字符串函数；明确 <code>[today,today+7天)</code>、跨年、<code>NULL</code> 和 2 月 29 日策略，再核查产品函数</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPA 计算</h3><p>GPA 可用循环或 CASE＋SUM 计算；游标逐行读取结果，存储程序保存代码供调用</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>评价与反馈</h3><p>JDBC／MVC 应用接收评价、检查登录并调用数据库；数据库保存评价并执行约束</p></article></div></div></div>
+    <div class="numeric-progress">17/19</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
+    <h2 class="slide-title">SQL 查询扩展与过程控制</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-1/mindmap-8-1.html" title="SQL 查询扩展与过程控制"></iframe></div></div>
+    <div class="numeric-progress">18/19</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定 <code>Course(Cno, Cpno)</code>，如何标出递归 CTE 的种子项、递归项和终止条件，并说明 <code>UNION</code> 与 <code>UNION ALL</code> 的选择？</span></li><li><span class="question-no">02</span><span class="question-text">普通 <code>WITH</code> 的单语句作用域是什么？它与长期表和物化结果有什么区别？</span></li><li><span class="question-no">03</span><span class="question-text">今天是 12 月 30 日，生日是 1 月 2 日；如何构造生日窗口，并处理端点、跨年、<code>NULL</code> 和 2 月 29 日策略？</span></li><li><span class="question-no">04</span><span class="question-text">为 GPA 状态模型列出变量初值和循环终止条件，并说明无课程或总学分为 0 时怎么办？</span></li><li><span class="question-no">05</span><span class="question-text">给定一个异常，如何区分捕获、业务响应、向上层传播和事务回滚？哪些内容属于存储程序或应用接口？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">在本节三行 Course 数据中，递归结果是什么？若 81001 又指向 81003，仅含课号的 UNION 查询怎样停止？</span></li><li><span class="question-no">02</span><span class="question-text">用 01 班 85 分、02 班 75 分说明 WITH 的中间结果和相减方向；下一条 SQL 能直接查询 class_avg 吗？</span></li><li><span class="question-no">03</span><span class="question-text">今天为 2026-12-30，七天半开窗口是否包含 2027-01-06？出生日期为 NULL 时能否断言没有生日？</span></li><li><span class="question-no">04</span><span class="question-text">81002 的学分改为 2 后，为什么 GPA 是 3.20？没有有效课程时返回什么？</span></li><li><span class="question-no">05</span><span class="question-text">程序捕获成绩写入错误并提示用户后，还需要核对哪些事务动作？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-7-3.html" title="上一节：7.3 逻辑、物理设计与实施维护" aria-label="上一节：7.3 逻辑、物理设计与实施维护">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -249,7 +310,7 @@ SELECT cno FROM prereq;</code></pre></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
+    <div class="numeric-progress">19/19</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

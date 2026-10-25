@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 18.1 区块链概念、区块结构与工作机制 | HUST</title>
+  <title>DBPA 18.1 区块链记录与共识 | HUST</title>
   <meta name="description" content="追踪一笔多方物流记录怎样传播、被接受并更新节点状态">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,180 +25,260 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-18-1/assets/dbpa-18-1.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-18-1/assets/dbpa-18-1-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 18.1</div>
-      <h1>区块链概念、区块结构与工作机制</h1>
-      <p class="cover-description">一笔物流记录怎样连入历史、被多个节点接受，并变成可查询状态</p>
+      <h1>区块链的记录<br>核验与共识</h1>
+      <p class="cover-description">多方核验移交记录，共同确定保管方变更</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元从区块链的数据库视角开始，解释区块保存什么、节点怎样处理交易，以及不同共识协议何时接受一段历史。封面图只作概念引导，不代表具体协议或固定系统结构。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">追踪多方物流记录从广播、验证到状态更新，再判断普通数据库是否够用</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分链式数据结构、分布式账本、共识和节点状态数据库</span></li><li><span class="list-marker">02</span><span class="list-text">解释区块头与区块体的作用</span></li><li><span class="list-marker">03</span><span class="list-text">说明父哈希和 Merkle 根如何让改动可检测，并提高历史重写成本</span></li><li><span class="list-marker">04</span><span class="list-text">描述节点验证到状态更新的流程</span></li><li><span class="list-marker">05</span><span class="list-text">比较工作量证明与 PBFT</span></li><li><span class="list-marker">06</span><span class="list-text">区分区块链技术组合与比特币这一具体系统，并判断什么时候普通数据库更简单</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="slide-content"><p class="slide-lead">B001 的移交记录需要签名、状态和共识核验，实物交接另行核实</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">写出 B001 的初始状态、交易字段与更新结果</span></li><li><span class="list-marker">02</span><span class="list-text">区分签名有效、业务有效与已经提交</span></li><li><span class="list-marker">03</span><span class="list-text">计算四笔交易的 Merkle 根并验证成员证明</span></li><li><span class="list-marker">04</span><span class="list-text">根据父哈希识别旧记录改动</span></li><li><span class="list-marker">05</span><span class="list-text">比较 PoW 与四节点 PBFT 模型的确认条件</span></li><li><span class="list-marker">06</span><span class="list-text">区分账本核验与实物交接核实</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.0909%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">物流：链式历史、副本、共识、状态库</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>一条带哈希链接的日志，就是完整区块链了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">四者分别连接历史、保存副本、决定接受、提供当前查询</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-blockchain-image2.webp" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-blockchain-image2.webp" alt="区块链由数据块、链式记录、共识和智能合约共同形成系统能力" tabindex="0" role="button" aria-label="放大图片：区块链由数据块、链式记录、共识和智能合约共同形成系统能力" decoding="async"><figcaption>概念总览图展示记录、Merkle 汇总、链和节点副本的关系；不对应具体协议或固定分层架构</figcaption></figure>
-<div class="cards-grid cards-compact reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>链式结构</h3><p>父哈希连接区块历史，使已接受记录的改动留下可检测证据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>分布式账本</h3><p>多个节点保存并验证共同接受的历史副本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共识</h3><p>节点按协议决定接受哪一段历史及其状态结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>状态数据库</h3><p>节点执行账本记录后维护本地可查询的派生状态</p></article></div></div></div>
-    <div class="numeric-progress">3/15</div>
-    <div class="semantic-label">DEFINITION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">B001：从工厂转给物流公司</h2>
+    <div class="slide-content"><p class="slide-lead">独立物流教学例，与前面订单、库存样本分开</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>对象</th><th>本例取值或职责</th></tr></thead><tbody><tr><td>机构</td><td>F 工厂、L 物流、S 门店、Q 质检</td></tr><tr><td>初始状态</td><td>B001：保管方 F，版本 0，已处理到区块 100</td></tr><tr><td>交易 T1</td><td>批次 B001，从 F 转给 L，预期版本 0，由 F 签名</td></tr><tr><td>本例规则</td><td>当前保管方可申报转出；ID 不能重复，版本必须匹配</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例记录移交申报；签收规则另行约定，实物到达需交接凭证核实</p></div></div>
+    <div class="numeric-progress">3/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.6364%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">区块的元信息与交易记录</h2>
-    <div class="slide-content"><p class="slide-lead">区块头保存链接和协议证据，区块体保存交易；节点按协议验证区块</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-block-structure.svg" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-block-structure.svg" alt="比特币式区块的区块头保存父哈希和 Merkle 根，区块体保存交易，当前区块哈希供后继区块作为父哈希" tabindex="0" role="button" aria-label="放大图片：比特币式区块的区块头保存父哈希和 Merkle 根，区块体保存交易，当前区块哈希供后继区块作为父哈希" decoding="async"><figcaption>比特币式示例；其他区块链的字段和验证流程可能不同</figcaption></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">区块头包含 Version、父区块哈希和 Merkle 根等元信息</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">父哈希把当前区块接入前一区块；当前区块哈希可供后继区块引用</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">Merkle 根承诺区块体交易集合，不负责判断交易是否合法</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">区块体保存交易；交易计数是编码中的计数项，不是区块头字段</span></li></ol></div></div></div>
-    <div class="numeric-progress">4/15</div>
-    <div class="semantic-label">BLOCK STRUCTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块历史与本地状态</h2>
+    <div class="slide-content"><p class="slide-lead">设区块 101 已按协议接受，包含 T1 和另外三个批次的移交</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 41% 33%"><colgroup><col style="width:26%"><col style="width:41%"><col style="width:33%"></colgroup><thead><tr><th>对象</th><th>保存内容</th><th>本例用途</th></tr></thead><tbody><tr><td>区块 101</td><td>T1 等交易、父哈希、Merkle 根</td><td>保留共同接受的历史</td></tr><tr><td>节点账本副本</td><td>按顺序保存已接受区块</td><td>核对历史及重放</td></tr><tr><td>本地状态库</td><td>B001 为 L/版本 1，高度 101</td><td>查询已处理的状态</td></tr><tr><td>共识协议</td><td>决定接受的历史与顺序</td><td>协调冲突结果</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>共识确定共同接受的历史；状态库保存执行结果，可由适用的历史或快照恢复</p></div></div>
+    <div class="numeric-progress">4/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a2b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">改交易：Merkle 根变化并传到后继区块</h2>
-    <div class="slide-content"><p class="slide-lead">以比特币式区块为例，六个核心字段承担不同职责</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>父哈希</h3><p>父哈希把本区块接到上一区块</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Merkle 根</h3><p>承诺区块体中的交易集合；交易变化会传导到根</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Version / Timestamp</h3><p>Version 标记规则版本；Timestamp 是协议约束下的时间信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Bits / Nonce</h3><p>Bits 与 Nonce 服务比特币式工作量证明；不是所有区块链的通用字段</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>区块头字段依协议而定；节点按协议验证交易合法性</p></div></div></div>
-    <div class="numeric-progress">5/15</div>
-    <div class="semantic-label">BLOCK HEADER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">签名与当前状态的核验</h2>
+    <div class="slide-content"><p class="slide-lead">本页独立从 B001＝F、版本 0 开始，依次处理各请求</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 42% 24%"><colgroup><col style="width:34%"><col style="width:42%"><col style="width:24%"></colgroup><thead><tr><th>请求</th><th>核验结果</th><th>状态</th></tr></thead><tbody><tr><td>T1：F→L，预期 0</td><td>F 签名与版本都有效，接受</td><td>L，版本 1</td></tr><tr><td>原样重发 T1</td><td>ID 已处理，返回原结果</td><td>仍为 L，版本 1</td></tr><tr><td>T1′：F→S，预期 0</td><td>签名有效，状态不符</td><td>拒绝，保持 L/1</td></tr><tr><td>T5：L→S，预期 1</td><td>L 签名与版本有效，后续接受</td><td>S，版本 2</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>T1 在区块 101，T5 在 102；同 ID 同字节返回原结果，换内容则拒绝</p></div></div>
+    <div class="numeric-progress">5/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.7273%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a2c" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">Merkle 根如何承诺交易集合</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Merkle 根会把交易内容加密起来吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">Merkle 根变化会传导到区块哈希</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="交易哈希　→　两两合并　→　Merkle 树根　→　区块头哈希"><span class="relation-term">交易哈希</span><span class="relation-operator">→</span><span class="relation-term">两两合并</span><span class="relation-operator">→</span><span class="relation-term">Merkle 树根</span><span class="relation-operator">→</span><span class="relation-term">区块头哈希</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>Merkle 根承诺的是本区块的交易集合；它不负责验证交易合法性，不等于共识、最终性或绝对不可篡改</p></div></div></div>
-    <div class="numeric-progress">6/15</div>
-    <div class="semantic-label">MERKLE ROOT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">用登记公钥核验交易签名</h2>
+    <div class="slide-content"><p class="slide-lead">教学编码 T1|B001|F|L|0；登记公钥须可靠绑定机构 F</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="44% 30% 26%"><colgroup><col style="width:44%"><col style="width:30%"><col style="width:26%"></colgroup><thead><tr><th>收到的内容</th><th>用什么核验</th><th>结果</th></tr></thead><tbody><tr><td>原字节＋F 签名</td><td>F 的登记公钥</td><td>签名通过</td></tr><tr><td>把接收方 L 改成 S，沿用旧签名</td><td>F 的登记公钥</td><td>签名失败</td></tr><tr><td>原字节＋原签名</td><td>另一把公钥</td><td>签名失败</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例选用 Ed25519，其他系统可另选；签名核验消息，实物交接须另核实</p></div></div>
+    <div class="numeric-progress">6/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">改写旧区块会留下可检测的链式证据</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>写进区块链，就绝对不能再修改了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">后续区块的父哈希和已同步节点的副本可能暴露不一致</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">交易变化使 Merkle 根不再匹配</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">区块头哈希随之改变</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">子孙区块保存的父哈希出现断链</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">已同步节点的副本可能与被改写链不一致</span></li></ol></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>这提供改动可检测性并提高重写成本，不保证历史绝对不能改写；最终性和重组边界依协议而异</p></div></div>
-    <div class="numeric-progress">7/15</div>
-    <div class="semantic-label">TAMPER EVIDENCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">区块头连接历史，区块体保存交易</h2>
+    <div class="slide-content"><p class="slide-lead">区块 101 保存 T1—T4，区块 102 通过父哈希引用 101</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>区块 101 的头</h3><p>父哈希引用 100，根覆盖 T1—T4</p></article><article class="content-card emphasis-card" tabindex="0"><h3>区块 101 的体</h3><p>四批移交记录，T1 对应 B001</p></article><article class="content-card emphasis-card" tabindex="0"><h3>区块 102 的头</h3><p>父哈希引用 101，根对应本块交易</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询 B001</h3><p>执行至 101 得到 L/版本 1；执行至 102 得到 S/版本 2</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本页为教学结构；协议确定区块顺序，时间戳不证明精确交接时刻。比特币有专用交易编码</p></div></div>
+    <div class="numeric-progress">7/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.8182%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-grid"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">广播：全节点验，轻节点用区块头／证明</h2>
-    <div class="slide-content"><p class="slide-lead">网络只负责把消息送到其他节点，并不替节点决定这笔交易是否接受</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>P2P 传播</h3><p>节点发现邻居并传播交易或区块；网络传输本身不决定哪条历史被接受</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>全节点</h3><p>全节点通常保存并验证较完整的账本数据，也维护本地状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>轻节点</h3><p>轻节点通常只保存区块头或依赖证明查询，具体能力依系统而异</p></article></div></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">P2P NETWORK</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">比特币区块头的六个字段</h2>
+    <div class="slide-content"><p class="slide-lead">本页采用教材的比特币区块头，其他链可使用不同格式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 66%"><colgroup><col style="width:34%"><col style="width:66%"></colgroup><thead><tr><th>字段</th><th>职责</th></tr></thead><tbody><tr><td>Version / Timestamp</td><td>规则版本与协议约束的时间</td></tr><tr><td>父区块哈希</td><td>引用前一区块头的哈希</td></tr><tr><td>Merkle 根</td><td>汇总区块中的交易</td></tr><tr><td>Bits / Nonce</td><td>Bits 编码计算目标；Nonce 参与试探哈希</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>区块头共 80 字节；交易计数和列表在头外。下一页使用独立教学树，与比特币哈希规则不同</p></div></div>
+    <div class="numeric-progress">8/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">交易从验证到状态更新</h2>
-    <div class="slide-content"><p class="slide-lead">典型流程包括验证、排序、执行和提交；具体顺序依协议而异</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-consensus-flow.svg" data-full-src="resources/decks/dbpa-18-1/assets/generated/dbpa-ch18-consensus-flow.svg" alt="典型流程：交易验证、区块提议与打包、区块验证和共识接受，最后更新本地账本与状态数据库" tabindex="0" role="button" aria-label="放大图片：典型流程：交易验证、区块提议与打包、区块验证和共识接受，最后更新本地账本与状态数据库" decoding="async"><figcaption>状态数据库是节点本地可查询的派生结果，可能存在同步延迟；图示顺序不代表所有协议</figcaption></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">节点收到交易并按协议验证格式、签名和业务状态</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">某节点提议、排序并打包新区块</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">节点验证区块，由共识协议决定是否接受</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">接受后执行状态转移，更新本地账本和状态数据库</span></li></ol></div></div></div>
-    <div class="numeric-progress">9/15</div>
-    <div class="semantic-label">WORKFLOW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">四笔交易的 Merkle 树</h2>
+    <div class="slide-content"><p class="slide-lead">独立计算区块 101 的教学树；四个批次均从 F 移交给 L，预期版本 0</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="70% 30%"><colgroup><col style="width:70%"><col style="width:30%"></colgroup><thead><tr><th>交易字节（UTF-8）</th><th>叶哈希前 8 位</th></tr></thead><tbody><tr><td>T1|B001|F|L|0</td><td>32920eca</td></tr><tr><td>T2|B002|F|L|0</td><td>26d889f8</td></tr><tr><td>T3|B003|F|L|0</td><td>05f5c8b8</td></tr><tr><td>T4|B004|F|L|0</td><td>b41d406a</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>H 为 SHA-256；叶＝H(0x00∥记录)，父＝H(0x01∥左∥右)。∥表示字节拼接；前缀 1 字节、哈希 32 字节；核验用<a href="resources/decks/dbpa-18-1/assets/merkle-example.json" download>完整哈希</a></p></div></div>
+    <div class="numeric-progress">9/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.9091%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">开放网络 PoW，已知机构 PBFT 类投票</h2>
-    <div class="slide-content"><p class="slide-lead">未知节点竞争计算，已知节点按法定多数投票；耗费和确认方式不同</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 25% 30% 25%"><colgroup><col style="width:20%"><col style="width:25%"><col style="width:30%"><col style="width:25%"></colgroup><thead><tr><th>方式</th><th>谁能参与</th><th>节点怎样接受一段历史</th><th>主要代价与限制</th></tr></thead><tbody><tr><td>工作量证明（PoW）</td><td>开放节点；无需预先许可</td><td>竞争满足难度的计算结果，按协议选择历史</td><td>计算与能源开销；确认通常具有概率最终性</td></tr><tr><td>PBFT 类投票</td><td>已知身份的许可节点</td><td>按协议达到法定多数后接受；可容忍部分拜占庭故障</td><td>通信与投票开销；故障假设和节点规模受限</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">CONSENSUS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">T3 的 Merkle 成员证明</h2>
+    <div class="slide-content"><p class="slide-lead">已知可信根为 1c947c44…；显示前 8 位仅方便课堂比对</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 46% 26%"><colgroup><col style="width:28%"><col style="width:46%"><col style="width:26%"></colgroup><thead><tr><th>计算</th><th>输入</th><th>输出前 8 位</th></tr></thead><tbody><tr><td>左半根</td><td>T1 叶∥T2 叶</td><td>74a0e383</td></tr><tr><td>右半根</td><td>T3 叶∥T4 叶</td><td>efd53293</td></tr><tr><td>整棵树根</td><td>左半根∥右半根</td><td>1c947c44</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>T3 证明含 T4 叶、左半根及方向，可复算至可信根；成员关系之外，合法性、提交和实物交接需各自核验</p></div></div>
+    <div class="numeric-progress">10/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
   </section>
-<section id="c3a" class="step slide-surface role-content layout-grid"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">比特币实例：字段、激励、参数不能照搬</h2>
-    <div class="slide-content"><p class="slide-lead">其他业务可以重新选择准入、共识和可编程规则，不必复制数字货币做法</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>可重新选择的技术</h3><p>链式记录、密码学链接、分布式网络、共识和可编程规则可以按业务需要组合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>比特币业务系统</h3><p>以数字货币为业务目标的具体系统；其区块字段、激励和共识安排是一个实例</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>区块链的准入模式和架构应按业务适配；比特币参数不能直接作为通用答案</p></div></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">SYSTEM BOUNDARY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">修改 T1 后的核验结果</h2>
+    <div class="slide-content"><p class="slide-lead">将 T1 中的接收方 L 改成 S，假设 SHA-256 碰撞难以找到</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">沿用旧签名：F 的签名验证失败</span></li><li><span class="list-marker">02</span><span class="list-text">沿用旧根：重算叶、左半根、树根后对不上</span></li><li><span class="list-marker">03</span><span class="list-text">重写 101 的根和头：101 哈希变化，102 仍引用旧值</span></li><li><span class="list-marker">04</span><span class="list-text">连 102 也重写：与可信历史及共识证据对照</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>攻击者可重算整条日志，使哈希自洽；识别伪造需可信根、锚点或共识证据</p></div></div>
+    <div class="numeric-progress">11/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1 <span>|</span> 18.1</div>
-    <h2 class="slide-title">各方信同一中心时，普通数据库更直接</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.54a679689b42.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>节点都达成共识，现实输入就一定真实吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">采用前回答：谁能写、谁担保输入、等多久、历史能否改删、共识耗多少资源</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>场景特征</th><th>适合程度</th><th>原因</th></tr></thead><tbody><tr><td>多方共同记账且缺少共同中心</td><td>可能适合</td><td>满足治理、接入和数据真实性条件时，可能减少重复对账</td></tr><tr><td>需要历史追溯</td><td>可能适合</td><td>链式证据支持追溯，但不自动保证现实输入真实</td></tr><tr><td>单一可信中心且只要求低延迟</td><td>未必适合</td><td>普通数据库可能更简单直接</td></tr><tr><td>极高频低延迟写入</td><td>谨慎</td><td>共识和广播有额外开销</td></tr><tr><td>需要删除或修改历史记录</td><td>谨慎</td><td>已接受的历史记录受删除、修改和隐私控制约束</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>预言机提供现实输入，但区块链只能保护已经写入并达成共识的记录的可追溯性，不能自动证明输入真实</p></div></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">USE CASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">交易传播中的节点职责</h2>
+    <div class="slide-content"><p class="slide-lead">P2P 负责传播 T1；节点收到后按规则处理，交易可能等待或被拒绝</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 46% 39%"><colgroup><col style="width:15%"><col style="width:46%"><col style="width:39%"></colgroup><thead><tr><th>角色</th><th>处理的信息</th><th>处理职责或判断</th></tr></thead><tbody><tr><td>转发节点</td><td>T1 的消息字节</td><td>转发消息；接受状态待核验</td></tr><tr><td>验证节点</td><td>交易、签名、当前状态、协议消息</td><td>按规则核验并参与接受过程</td></tr><tr><td>轻客户端</td><td>相关区块信息与成员证明</td><td>在其信任假设下检查收录证据</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>全节点验证规则，历史保留策略因实现而异；节点的参与和记账权限由协议及治理规则确定</p></div></div>
+    <div class="numeric-progress">12/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
-    <h2 class="slide-title">多方物流记录如何被接受：按四步检查</h2>
-    <div class="slide-content"><p class="slide-lead">让另一个同学能指出改动会在哪里被发现、谁接受记录、节点最后更新什么</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 记录依次到哪里</h3><p>链式结构接上历史，各节点保存已接受副本，共识决定是否接受，本地状态库提供当前物流查询</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 偷改一笔记录会怎样</h3><p>依次检查交易哈希、Merkle 根、区块哈希、后继父哈希和其他节点副本；只能说改动可检测、重写有成本，不能说绝对不可修改</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 写出节点处理流程</h3><p>区分传播、格式／签名／业务状态验证、提议与排序、共识接受、账本追加和本地状态更新；顺序依具体协议核查</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 普通数据库是否已经够用</h3><p>列出参与机构、共同可信中心、现实输入、追溯、延迟和删除要求；若只有一个可信主体，就比较普通数据库</p></article></div></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <h2 class="slide-title">T1 从请求变成查询结果</h2>
+    <div class="slide-content"><p class="slide-lead">本节简化流程；验证、执行、排序的先后随具体系统改变</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">F 提交 T1，其他节点收到字节与签名</span></li><li><span class="list-marker">02</span><span class="list-text">检查身份、格式和当前状态，形成候选交易</span></li><li><span class="list-marker">03</span><span class="list-text">提议者给出含 T1 的 101；按确定顺序再次核查冲突</span></li><li><span class="list-marker">04</span><span class="list-text">协议接受后追加账本，按规则执行并发布本地状态</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Q 只处理到 100 时，返回 F/版本 0 及高度 100，明确标示查询进度</p></div></div>
+    <div class="numeric-progress">13/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.0909%"></div></div>
+  </section>
+<section id="c2a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">两笔移交请求的冲突处理</h2>
+    <div class="slide-content"><p class="slide-lead">F 可以分别为 F→L 与 F→S 签名，两份请求都声称基于版本 0</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>签名层</h3><p>F 的登记公钥可验证两份签名</p></article><article class="content-card emphasis-card" tabindex="0"><h3>状态层</h3><p>T1 后为版本 1，拒绝旧版本请求</p></article><article class="content-card emphasis-card" tabindex="0"><h3>共识层</h3><p>各节点按协议共同接受历史顺序</p></article><article class="content-card emphasis-card" tabindex="0"><h3>现实层</h3><p>交接凭证和责任人支持核实货物去向</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>签名核验消息，状态约束移交，共识确定顺序；实物交接由现场流程核实</p></div></div>
+    <div class="numeric-progress">14/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">工作量证明 PoW</h2>
+    <div class="slide-content"><p class="slide-lead">比特币在有效候选链间比较累计工作量，确认后仍可能发生重组</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>候选区块</h3><p>交易和区块均须满足有效性规则</p></article><article class="content-card emphasis-card" tabindex="0"><h3>试探哈希</h3><p>调整 Nonce 等值，查找达标哈希</p></article><article class="content-card emphasis-card" tabindex="0"><h3>选择历史</h3><p>比较有效链的累计工作量</p></article><article class="content-card emphasis-card" tabindex="0"><h3>等待确认</h3><p>更多后续工作提高重写成本，确认后仍可能重组</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>开放网络可选不同共识协议；本例 PoW 需评估计算成本和确认等待</p></div></div>
+    <div class="numeric-progress">15/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.1818%"></div></div>
+  </section>
+<section id="c3b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">四验证者的 PBFT 教学模型</h2>
+    <div class="slide-content"><p class="slide-lead">独立配置：F、L、S、Q 四验证者，至多一恶意；消息认证与协议规则成立</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="46% 54%"><colgroup><col style="width:46%"><col style="width:54%"></colgroup><thead><tr><th>条件</th><th>本例判断</th></tr></thead><tbody><tr><td>规定阶段收到 2 份有效消息</td><td>未达到所需 3 个不同验证者</td></tr><tr><td>3 个验证者发来协议消息</td><td>核查轮次、阶段、锁定与提交条件</td></tr><tr><td>两个 3 人集合</td><td>交集至少 2 人，其中至少 1 人诚实</td></tr><tr><td>恶意节点超过 1 个</td><td>超出本例安全保证的假设</td></tr><tr><td>网络长期阻断</td><td>可能停止推进；安全与进展条件不同</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>任意 3 个签名不足，提交须符合阶段规则；持续推进需网络最终恢复及时通信</p></div></div>
+    <div class="numeric-progress">16/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
+  </section>
+<section id="c3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">物流账本的协议与业务规则</h2>
+    <div class="slide-content"><p class="slide-lead">B001 账本记录保管方变更，参与机构共同约定验证与确认规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 63%"><colgroup><col style="width:37%"><col style="width:63%"></colgroup><thead><tr><th>设计对象</th><th>本例约定内容</th></tr></thead><tbody><tr><td>参与与治理</td><td>哪些机构验证，谁批准成员变更</td></tr><tr><td>交易与状态规则</td><td>保管方、签名、版本、重复 ID</td></tr><tr><td>共识与确认</td><td>故障模型、证据、何时可对外确认</td></tr><tr><td>存储与查询</td><td>保留哪些记录，状态库如何同步与核对</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>区块链技术可组合复用；物流账本的字段、权限、激励和性能要求按业务设计</p></div></div>
+    <div class="numeric-progress">17/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.2727%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">温度记录与现场采样核实</h2>
+    <div class="slide-content"><p class="slide-lead">独立设备消息：B001 温度 5℃，来源传感器 D7</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="39% 61%"><colgroup><col style="width:39%"><col style="width:61%"></colgroup><thead><tr><th>检查</th><th>能得到的结论</th></tr></thead><tbody><tr><td>D7 签名有效</td><td>消息与登记密钥相符；核查密钥控制情况</td></tr><tr><td>成员证明核验通过</td><td>这份字节被包含在对应根所承诺的记录中</td></tr><tr><td>共识提交证据有效</td><td>网络按约定接受了该记录</td></tr><tr><td>温度是否真的为 5℃</td><td>核验校准、安装、采样及实物对应关系</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>预言机 Oracle 接入链外数据；输入质量依赖设备、采样流程和责任管理</p></div></div>
+    <div class="numeric-progress">18/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">共享数据库与共同账本的选型</h2>
+    <div class="slide-content"><p class="slide-lead">B001 的参与方信任关系和数据管理需求决定候选方案</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="48% 52%"><colgroup><col style="width:48%"><col style="width:52%"></colgroup><thead><tr><th>需求条件</th><th>应比较的方案</th></tr></thead><tbody><tr><td>各方共同信任同一运营方</td><td>共享数据库、访问控制、审计与备份</td></tr><tr><td>多机构不愿单方决定历史</td><td>有治理规则的共同账本及其协调成本</td></tr><tr><td>只需证明收到的文件没变</td><td>签名、哈希与可信时间/存证流程</td></tr><tr><td>敏感资料需受控访问或删除</td><td>链外保存原文，另设计权限与生命周期</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>选型须评估协调成本、更正和历史保留；链上哈希仍可能关联敏感信息</p></div></div>
+    <div class="numeric-progress">19/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.3636%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
+    <h2 class="slide-title">B001 移交记录的四类核验</h2>
+    <div class="slide-content"><p class="slide-lead">执行至 101 为 L/版本 1，至 102 为 S/版本 2；查询结果附处理高度</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>机构签名</h3><p>用 F 的登记公钥核验 T1 原字节</p></article><article class="content-card emphasis-card" tabindex="0"><h3>记录完整性</h3><p>复算根和父哈希，对照可信历史</p></article><article class="content-card emphasis-card" tabindex="0"><h3>共同接受</h3><p>核验当前状态与合规共识提交证据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>实物交接</h3><p>用签收、采样与责任流程核实实物</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>下一节：机构权限、成员变更与合约执行规则</p></div></div>
+    <div class="numeric-progress">20/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="3360" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-18-1/mindmap-18-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <div class="numeric-progress">21/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.4545%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">区块链、分布式账本、共识和节点状态数据库分别解决什么问题？</span></li><li><span class="question-no">02</span><span class="question-text">Merkle 根能承诺什么，不能负责什么？</span></li><li><span class="question-no">03</span><span class="question-text">父区块哈希与 Merkle 根如何让旧区块改动留下链式证据？</span></li><li><span class="question-no">04</span><span class="question-text">交易从 P2P 广播到本地账本与状态更新经过哪些典型阶段？</span></li><li><span class="question-no">05</span><span class="question-text">PoW 与 PBFT 类的参与条件、故障假设和最终性有何不同？</span></li><li><span class="question-no">06</span><span class="question-text">为什么不能直接用比特币的业务逻辑判断区块链是否适合某个应用？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">T1 被接受后再提交 F→S、预期版本 0，为什么应拒绝？</span></li><li><span class="question-no">02</span><span class="question-text">改 T1 的接收方后，原签名、Merkle 根与后继父哈希会怎样？</span></li><li><span class="question-no">03</span><span class="question-text">验证 T3 成员关系需要哪两份旁支哈希和什么可信基础？</span></li><li><span class="question-no">04</span><span class="question-text">Q 只处理到 100 时查到保管方 F，能称为最新结果吗？</span></li><li><span class="question-no">05</span><span class="question-text">四节点 PBFT 为什么不能只收两票，也不能收任意三签名就提交？</span></li><li><span class="question-no">06</span><span class="question-text">温度 5℃已有签名、成员证明和提交证据，为何还要检查设备？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-17-2.html" title="上一节：17.2 内存数据库实现、恢复与异构展望" aria-label="上一节：17.2 内存数据库实现、恢复与异构展望">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -213,8 +293,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">22/22</div>
+    <div class="semantic-label">RECORDS VERIFICATION AND CONSENSUS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

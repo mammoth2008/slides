@@ -44,8 +44,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">本节比较六种措施各自拦什么、留下什么记录，以及哪些泄露仍可能发生</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用视图、授权和 CHECK OPTION 限制用户能看的行列与能做的操作</span></li><li><span class="list-marker">02</span><span class="list-text">区分权限检查与审计，记录成功或失败并追溯行为</span></li><li><span class="list-marker">03</span><span class="list-text">区分透明与非透明存储加密</span></li><li><span class="list-marker">04</span><span class="list-text">比较链路与端到端传输加密，说明证书不等于数据库授权</span></li><li><span class="list-marker">05</span><span class="list-text">用最小案例解释推理控制和隐蔽信道的风险</span></li><li><span class="list-marker">06</span><span class="list-text">按准标识符分组检查 k 匿名，说明数据管理与审计为何要分工</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead">比较视图、审计、加密等措施的保护范围、使用条件与风险</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">用视图、授权和 CHECK OPTION 限制用户能看的行列与能做的操作</span></li><li><span class="list-marker">02</span><span class="list-text">区分权限检查与审计，记录成功或失败并追溯行为</span></li><li><span class="list-marker">03</span><span class="list-text">区分透明与非透明存储加密</span></li><li><span class="list-marker">04</span><span class="list-text">比较链路与端到端传输加密，区分证书验证与数据库授权</span></li><li><span class="list-marker">05</span><span class="list-text">用最小案例解释推理控制和隐蔽信道的风险</span></li><li><span class="list-marker">06</span><span class="list-text">按准标识符分组检查 k 匿名，说明数据管理与审计为何要分工</span></li></ol></div></div></div>
     <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
@@ -92,10 +92,10 @@ WHERE Sno = 'S01';</code></pre></div></div>
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.3</div>
-    <h2 class="slide-title">建好视图，再查账号、权限、规则和日志</h2>
-    <div class="slide-content"><p class="slide-lead">本例视图筛选专业；身份鉴别、分数检查和审计仍需相应机制</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>视图</h3><p>视图隐藏不需要的行和列；还要确认用户没有直接访问基本表的权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GRANT 授权</h3><p>GRANT 决定能做哪些操作；基本表直达权限可绕过视图</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写入检查</h3><p>基本表约束检查数据是否符合规则，CHECK OPTION 要求通过视图写入的数据仍满足视图的筛选条件</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>身份鉴别确认账号，DAC／MAC 判断是否放行，视图给出可见行列，审计记录谁在何时做了什么、结果怎样</p></div></div>
+    <h2 class="slide-title">视图、授权与写入检查的分工</h2>
+    <div class="slide-content"><p class="slide-lead">专业视图限定可见行列，授权与写入检查约束数据操作</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>视图</h3><p>视图筛选指定专业的学生，并隐藏无关列</p></article><article class="content-card emphasis-card" tabindex="0"><h3>GRANT 授权</h3><p>GRANT 控制查询与修改权限；基本表权限可能绕过视图</p></article><article class="content-card emphasis-card" tabindex="0"><h3>写入检查</h3><p>基本表约束检查数据规则；CHECK OPTION 检查经视图写入后是否满足筛选条件</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>身份鉴别确认账号，DAC／MAC 控制访问；审计记录用户、时间、操作和结果</p></div></div>
     <div class="numeric-progress">5/20</div>
     <div class="semantic-label">VIEW BOUNDARY</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -105,9 +105,9 @@ WHERE Sno = 'S01';</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
     <h2 class="slide-title">审计记录成功与失败的安全事件</h2>
-    <div class="slide-content"><p class="slide-lead">审计记录访问者、结果和经过；是否放行仍由访问时的权限检查决定</p>
+    <div class="slide-content"><p class="slide-lead">权限检查决定放行结果，审计记录访问过程并支持追溯</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="发起操作 → 权限检查 → 记录事件 → 审计分析"><span class="relation-term">发起操作</span><span class="relation-operator">→</span><span class="relation-term">权限检查</span><span class="relation-operator">→</span><span class="relation-term">记录事件</span><span class="relation-operator">→</span><span class="relation-term">审计分析</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>记录谁</h3><p>审计可以记录普通用户、特权用户和登录失败时使用的账号</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录什么</h3><p>审计可以记录登录、授权、DDL、DML、DCL 和对象访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>记录结果</h3><p>成功与失败都可能有价值，日志通常还要包含时间、对象和语句</p></article></div></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>访问账号</h3><p>审计可以记录普通用户、特权用户和登录失败时使用的账号</p></article><article class="content-card emphasis-card" tabindex="0"><h3>操作事件</h3><p>审计可以记录登录、授权、DDL、DML、DCL 和对象访问</p></article><article class="content-card emphasis-card" tabindex="0"><h3>事件结果</h3><p>日志记录时间、对象、语句及成功或失败结果</p></article></div></div></div>
     <div class="numeric-progress">6/20</div>
     <div class="semantic-label">AUDIT</div>
     <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
@@ -116,9 +116,9 @@ WHERE Sno = 'S01';</code></pre></div></div>
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
-    <h2 class="slide-title">分清谁管日志、日志记什么</h2>
+    <h2 class="slide-title">审计职责与事件范围</h2>
     <div class="slide-content"><p class="slide-lead">DBA 或审计员管日志；记录登录、GRANT、UPDATE 等。记录越多，成本越高</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 35% 40%"><colgroup><col style="width:25%"><col style="width:35%"><col style="width:40%"></colgroup><thead><tr><th>要区分的问题</th><th>关注什么</th><th>例子</th></tr></thead><tbody><tr><td>责任范围</td><td>谁配规则、谁查日志</td><td>DBA 配置；审计员查阅</td></tr><tr><td>认证事件</td><td>谁尝试登录以及是否成功</td><td>密码错误、成功登录</td></tr><tr><td>特权／授权事件</td><td>谁改变了安全规则</td><td>GRANT、REVOKE、角色变化</td></tr><tr><td>语句与对象事件</td><td>对哪个对象做了什么</td><td>UPDATE SC、ALTER、SELECT</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 35% 40%"><colgroup><col style="width:25%"><col style="width:35%"><col style="width:40%"></colgroup><thead><tr><th>分类</th><th>记录或管理内容</th><th>例子</th></tr></thead><tbody><tr><td>责任范围</td><td>配置规则、查阅日志</td><td>DBA 配置；审计员查阅</td></tr><tr><td>认证事件</td><td>登录账号与认证结果</td><td>密码错误、成功登录</td></tr><tr><td>特权／授权事件</td><td>安全规则的变更</td><td>GRANT、REVOKE、角色变化</td></tr><tr><td>语句与对象事件</td><td>操作类型与目标对象</td><td>UPDATE SC、ALTER、SELECT</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">7/20</div>
     <div class="semantic-label">AUDIT SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
@@ -127,7 +127,7 @@ WHERE Sno = 'S01';</code></pre></div></div>
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.4</div>
-    <h2 class="slide-title">先确认审计已开启，再让两人执行更新</h2>
+    <h2 class="slide-title">配置审计并验证成绩更新记录</h2>
     <div class="slide-content"><p class="slide-lead">教材 KingbaseES 示例：DBA 配置，T17 可改成绩，S01 无修改权限</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -151,7 +151,7 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
-    <h2 class="slide-title">两条日志，分别对应一次访问结果</h2>
+    <h2 class="slide-title">成绩更新的成功与失败日志</h2>
     <div class="slide-content"><p class="slide-lead">以下为课堂模拟日志；审计员按用户与时间，在目标产品的日志入口检索</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 12% 24% 19% 30%"><colgroup><col style="width:15%"><col style="width:12%"><col style="width:24%"><col style="width:19%"><col style="width:30%"></colgroup><thead><tr><th>时间</th><th>账号</th><th>对象／动作</th><th>目标行</th><th>结果</th></tr></thead><tbody><tr><td>02:13:04</td><td>T17</td><td>SC／UPDATE</td><td>S01、C01</td><td>成功，成绩为 90</td></tr><tr><td>02:13:18</td><td>S01</td><td>SC／UPDATE</td><td>S01、C01</td><td>失败，权限不足</td></tr></tbody></table></div>
 <div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">核对原始语句、会话与表内字段，明确谁尝试改哪行</span></li><li><span class="list-marker">02</span><span class="list-text">日志为空时，先查总开关、规则与入口，不能据此认定无人访问</span></li><li><span class="list-marker">03</span><span class="list-text">审计员归档并保护日志，批准后才可清理；实验结束由 DBA 撤销规则</span></li></ol></div>
@@ -167,8 +167,8 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
     <h2 class="slide-title">加密让数据窃取者难以读到明文</h2>
     <div class="slide-content"><p class="slide-lead">发送方或存储系统用算法和密钥加密；获准方用相应密钥解密</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="明文　→　加密算法与密钥　→　密文　→　解密　→　明文"><span class="relation-term">明文</span><span class="relation-operator">→</span><span class="relation-term">加密算法与密钥</span><span class="relation-operator">→</span><span class="relation-term">密文</span><span class="relation-operator">→</span><span class="relation-term">解密</span><span class="relation-operator">→</span><span class="relation-term">明文</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储加密</h3><p>没有密钥时，窃取备份也难以读出明文</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>传输加密</h3><p>传输加密保护客户端与服务器之间传输的信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>密钥由谁保管</h3><p>要规定密钥存放、轮换、备份和恢复；能拿到密钥不等于账号拥有数据库 <code>SELECT</code> 权限</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未持有密钥的人看到密文；服务器解密后，仍要检查查询权限并记录访问</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>存储加密</h3><p>没有密钥时，窃取备份也难以读出明文</p></article><article class="content-card emphasis-card" tabindex="0"><h3>传输加密</h3><p>传输加密保护客户端与服务器之间传输的信息</p></article><article class="content-card emphasis-card" tabindex="0"><h3>密钥管理</h3><p>管理密钥的存放、轮换、备份和恢复</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>密钥用于解密，数据库授权控制查询；服务器端按配置记录访问</p></div></div>
     <div class="numeric-progress">10/20</div>
     <div class="semantic-label">ENCRYPTION</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
@@ -178,9 +178,9 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.5</div>
     <h2 class="slide-title">四种加密方式保护的位置和解密者不同</h2>
-    <div class="slide-content"><p class="slide-lead">先确定保护对象：磁盘、字段、每段链路或通信两端的内容</p>
+    <div class="slide-content"><p class="slide-lead">存储加密保护磁盘或字段，传输加密保护链路或端点间内容</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 37.5% 37.5%"><colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup><thead><tr><th>方式</th><th>保护范围</th><th>应用影响</th></tr></thead><tbody><tr><td>透明存储加密</td><td>磁盘与存储层</td><td>应用通常无需改写</td></tr><tr><td>非透明存储加密</td><td>字段值，由函数加密</td><td>须改造应用、管理密钥</td></tr><tr><td>链路加密</td><td>每段链路的报头与报文</td><td>中间节点可能解密后重加密</td></tr><tr><td>端到端加密</td><td>端点之间的报文内容</td><td>中间节点通常不见内容，仍可能见报头／元数据</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>配置前须查产品的加密实现、密钥位置和解密端；配置命令依产品而异</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>加密实现、密钥位置、解密端与配置命令依产品而异</p></div></div>
     <div class="numeric-progress">11/20</div>
     <div class="semantic-label">STORAGE AND TRANSPORT</div>
     <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
@@ -189,10 +189,10 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.5</div>
-    <h2 class="slide-title">可信传输先确认通信端点，再协商密钥</h2>
-    <div class="slide-content"><p class="slide-lead">这是 TLS／SSL 的概念流程，不等于数据库账户授权</p>
+    <h2 class="slide-title">TLS 加密通信的概念流程</h2>
+    <div class="slide-content"><p class="slide-lead">TLS／SSL 建立加密通信，数据库账户授权控制读写操作</p>
 <div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">按证书和配置验证服务器，必要时验证客户端身份</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">协商加密算法与会话密钥</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">加密传输并校验数据完整性</span></li></ol></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>证书验证确认通信端点，不等于数据库已有 SELECT 权限；账户、视图和 GRANT 仍决定服务器端能读写什么，实际选项属于产品／部署配置</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>服务器按账户、视图与 GRANT 判定读写权限；配置选项依产品与部署而异</p></div></div>
     <div class="numeric-progress">12/20</div>
     <div class="semantic-label">TRUSTED TRANSFER</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -201,11 +201,12 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
-    <h2 class="slide-title">拼接获准查询，仍可能推出隐藏工资</h2>
-    <div class="slide-content"><p class="slide-lead">用户可能把查询结果、函数依赖和已知信息拼起来，算出未授权值</p>
+    <h2 class="slide-title">利用获准查询推断隐藏工资</h2>
+    <div class="slide-content"><p class="slide-lead">查询结果与业务规则结合，可能暴露未授权的工资</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="多次查询结果　＋　函数依赖与背景知识　→　未授权结论"><span class="relation-term">多次查询结果　＋　函数依赖与背景知识</span><span class="relation-operator">→</span><span class="relation-term">未授权结论</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>已知信息 A</h3><p>A：职务=教师，工资=3000（用户已知）</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询结果 B</h3><p>B：职务=教师，但工资字段受限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>推理前提</h3><p>本例假设业务规则 <code>职务 → 工资</code>，所以可能推出 B 的工资为 3000</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>每条查询都可能获准，但 A 的已知工资与“职务决定工资”仍可能推出 B 的工资；该函数依赖只是本例假设，不是普遍事实</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>已知信息 A</h3><p>A 是教师，工资为 3000</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询结果 B</h3><p>B 是教师，工资不可见</p></article><article class="content-card emphasis-card" tabindex="0"><h3>推理前提</h3><p><code>职务 → 工资</code></p>
+<p>本例假设同职务同薪</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>据此可推得 B 的工资为 3000；“职务决定工资”仅为本例假设</p></div></div>
     <div class="numeric-progress">13/20</div>
     <div class="semantic-label">INFERENCE CONTROL</div>
     <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
@@ -214,11 +215,11 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
-    <h2 class="slide-title">约定编码后，错误反馈也能传递秘密</h2>
+    <h2 class="slide-title">通过键冲突反馈传递秘密</h2>
     <div class="slide-content"><p class="slide-lead">假设两人各自可插入；低密级方看不到高密级行，却会收到键冲突反馈</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 30% 30% 22%"><colgroup><col style="width:18%"><col style="width:30%"><col style="width:30%"><col style="width:22%"></colgroup><thead><tr><th>欲发送位</th><th>高密级发送者</th><th>低密级接收者</th><th>解码</th></tr></thead><tbody><tr><td>0</td><td>先插入键 K</td><td>再插入 K，收到冲突</td><td>读出 0</td></tr><tr><td>1</td><td>不插入键 K</td><td>插入 K 成功</td><td>读出 1</td></tr></tbody></table></div>
 <div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">指出发送者、接收者、约定编码和反馈通道</span></li><li><span class="list-marker">02</span><span class="list-text">只通过错误猜测已有值，应先判断为信息泄露，不能直接等同于隐蔽通信</span></li></ol></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>双方事先约定键、时机与编码；每轮使用新键。信息通过共享约束的反馈传播，不是直接读取秘密行</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>双方约定键、时机与编码，每轮使用新键；秘密位通过共享约束的反馈传递</p></div></div>
     <div class="numeric-progress">14/20</div>
     <div class="semantic-label">COVERT CHANNEL</div>
     <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
@@ -227,9 +228,9 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
-    <h2 class="slide-title">从收集到发布，每一步都可能暴露个人</h2>
-    <div class="slide-content"><p class="slide-lead">删掉姓名还不够；发布前要检查出生年、性别、邮编组合后是否只剩一人</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>收集与存储</h3><p>只收必要数据，规定保存期与可访问者</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>检查是否把不同表关联后认出个人，或把数据用于原先未说明的任务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>发布</h3><p>出生年、性别和邮编可组成准标识符；若某种组合只对应一人，外部资料就可能认出他</p></article></div></div>
+    <h2 class="slide-title">个人数据在收集、处理与发布中的风险</h2>
+    <div class="slide-content"><p class="slide-lead">出生年、性别与邮编可组成准标识符，关联外部资料可能识别个人</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>收集与存储</h3><p>只收必要数据，规定保存期与可访问者</p></article><article class="content-card emphasis-card" tabindex="0"><h3>处理</h3><p>跨表关联可能识别个人，改变用途可能超出原先告知的范围</p></article><article class="content-card emphasis-card" tabindex="0"><h3>发布</h3><p>准标识符组合若只对应一人，外部资料可能据此识别其身份</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>k 匿名要求同组至少有 k 条记录；l 多样性与 t 临近留作拓展</p></div></div>
     <div class="numeric-progress">15/20</div>
     <div class="semantic-label">DATA PRIVACY</div>
@@ -239,10 +240,10 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
-    <h2 class="slide-title">删掉姓名之后，先按准标识符数人数</h2>
+    <h2 class="slide-title">按准标识符分组检验 k 匿名</h2>
     <div class="slide-content"><p class="slide-lead">虚构健康记录；准标识符是出生年、性别、邮编，病种是敏感属性</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 16% 20% 22% 24%"><colgroup><col style="width:18%"><col style="width:16%"><col style="width:20%"><col style="width:22%"><col style="width:24%"></colgroup><thead><tr><th>出生年</th><th>性别</th><th>邮编</th><th>病种</th><th>同组条数</th></tr></thead><tbody><tr><td>2003</td><td>女</td><td>150001</td><td>哮喘</td><td>2</td></tr><tr><td>2003</td><td>女</td><td>150001</td><td>过敏</td><td>2</td></tr><tr><td>2004</td><td>男</td><td>150002</td><td>哮喘</td><td>2</td></tr><tr><td>2004</td><td>男</td><td>150002</td><td>哮喘</td><td>2</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>两组均达到 k＝2；但若已知某人属于第二组，仍能推断其病种为哮喘</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>两组均达到 k＝2；已知某人属于第二组，即可推断其病种为哮喘</p></div></div>
     <div class="numeric-progress">16/20</div>
     <div class="semantic-label">PRIVACY WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
@@ -251,10 +252,10 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2 <span>|</span> 4.6</div>
-    <h2 class="slide-title">别让一人同时改数据、改规则和删日志</h2>
+    <h2 class="slide-title">系统管理、数据管理与审计分权</h2>
     <div class="slide-content"><p class="slide-lead">系统管理、数据管理和审计分工以分散高权限，由另一角色复核异常改动</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 35% 42%"><colgroup><col style="width:23%"><col style="width:35%"><col style="width:42%"></colgroup><thead><tr><th>角色</th><th>主要职责</th><th>不应独自执行的操作</th></tr></thead><tbody><tr><td>系统管理员</td><td>账户、配置与平台维护</td><td>修改业务数据或删除审计记录</td></tr><tr><td>数据管理员</td><td>维护业务数据</td><td>修改安全策略或删除日志</td></tr><tr><td>审计员</td><td>读取并分析审计日志</td><td>修改业务数据或审计记录</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分权减少一个账号独自改数据并删日志的机会，但会增加交接和审批；多人串通、账号被盗或紧急授权仍可能出问题</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分权减少单个账号篡改数据并删日志的机会，增加交接与审批成本；串通、盗号及紧急授权可能使分权失效</p></div></div>
     <div class="numeric-progress">17/20</div>
     <div class="semantic-label">SEPARATION OF DUTIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
@@ -263,9 +264,9 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
-    <h2 class="slide-title">四类事故：选措施，再写它拦不住什么</h2>
-    <div class="slide-content"><p class="slide-lead">越权、无日志、数据失窃或匿名失效：选视图、审计、加密、隐私处理或分权</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>学生看到了他人记录</h3><p>用视图限制可见行列，只授予任务所需的权限，并检查是否还保留直接访问基本表的权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>深夜更新被拒却无法追踪</h3><p>权限检查拒绝了更新；审计应留下用户、时间、对象、语句和结果，并保护日志不被改写</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>备份泄露与链路窃听</h3><p>分别选择存储加密与传输加密；两者都不能替代服务器端的账户、视图和对象权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>匿名数据仍识别出一人</h3><p>检查多项信息拼在一起是否能认出个人、发布的数据是否过细；让发布者与复核者分工，但仍需防范重新识别个人或多人串通</p></article></div></div></div>
+    <h2 class="slide-title">练习：为安全事故选择保护措施</h2>
+    <div class="slide-content"><p class="slide-lead">针对越权访问、缺少日志、数据失窃与匿名失效，说明措施及适用范围</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>学生看到了他人记录</h3><p>视图限定行列，GRANT 授予所需操作；撤销可绕过视图的基本表权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>深夜更新被拒却无法追踪</h3><p>审计记录用户、时间、对象、语句及失败结果；日志需防止未授权改写</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>备份泄露与链路窃听</h3><p>存储加密保护备份，传输加密保护链路；服务器按账户、视图和对象权限控制访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>匿名数据仍识别出一人</h3><p>按准标识符检查分组，减少发布细节；发布与复核分工。重识别和串通风险仍存在</p></article></div></div></div>
     <div class="numeric-progress">18/20</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
@@ -274,8 +275,8 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div></div>
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.2</div>
-    <h2 class="slide-title">从看到的事故找到对应措施</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-4-2/mindmap-4-2.html" title="从看到的事故找到对应措施"></iframe></div></div>
+    <h2 class="slide-title">安全机制的保护对象与作用</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-4-2/mindmap-4-2.html" title="安全机制的保护对象与作用"></iframe></div></div>
     <div class="numeric-progress">19/20</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>

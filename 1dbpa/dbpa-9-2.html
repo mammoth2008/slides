@@ -28,8 +28,8 @@
     <img class="cover-image" src="resources/decks/dbpa-9-2/assets/dbpa-9-2.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 9.2</div>
-      <h1>B+ 树、哈希与位图索引</h1>
-      <p class="cover-description">范围查找走叶链，等值查找算桶号，低基数条件做位运算</p>
+      <h1>B+ 树、哈希<br>与位图索引</h1>
+      <p class="cover-description">叶链查范围，哈希桶查等值，位图组合低基数条件</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -44,178 +44,220 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">按 WHERE 画出 B+ 树、哈希或位图的查找步骤，说明增删和高频写入改什么</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 9.1 多级索引在规模和维护上的瓶颈</span></li><li><span class="list-marker">02</span><span class="list-text">画出 B+ 树的点查找、范围查找和叶链路径</span></li><li><span class="list-marker">03</span><span class="list-text">解释 B+ 树插入分裂、删除合并和索引键修改</span></li><li><span class="list-marker">04</span><span class="list-text">用桶、溢出链和增长策略解释哈希查找与维护</span></li><li><span class="list-marker">05</span><span class="list-text">用位与、位或和计数完成低基数条件组合</span></li><li><span class="list-marker">06</span><span class="list-text">根据选择性、规模、更新频率和空间代价选择结构</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/16</div>
+    <div class="slide-content"><p class="slide-lead">比较三类索引的查找路径与更新代价</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 B+ 树怎样用平衡结构组织多级索引</span></li><li><span class="list-marker">02</span><span class="list-text">画出 B+ 树的点查找、范围查找和叶链路径</span></li><li><span class="list-marker">03</span><span class="list-text">解释 B+ 树插入分裂、删除合并和索引键修改</span></li><li><span class="list-marker">04</span><span class="list-text">用桶、溢出链和增长策略解释哈希查找与维护</span></li><li><span class="list-marker">05</span><span class="list-text">用位与、位或和计数完成低基数条件组合</span></li><li><span class="list-marker">06</span><span class="list-text">根据选择性、规模、更新频率和空间代价选择结构</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/19</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">按查询类型选择索引结构</h2>
-    <div class="slide-content"><p class="slide-lead">命中少量行时索引可能省块；命中多数行时回表增多，顺序扫描可能更便宜</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>查询类型</th><th>候选结构</th><th>还要检查的条件</th></tr></thead><tbody><tr><td>随机等值</td><td>B+ 树或哈希</td><td>选择性、规模、分布与溢出</td></tr><tr><td>范围与排序</td><td>B+ 树</td><td>叶链有序，但大范围可能接近扫描</td></tr><tr><td>低基数筛选</td><td>位图</td><td>基数、读写比例与是否要回表</td></tr><tr><td>高频写入</td><td>少量必要索引</td><td>维护成本可能超过查询收益</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>建有索引不等于一定使用：优化器会比较命中行数、回表块数和顺序扫描成本后选择计划</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>同一个等值条件，数据分布改变后还会选同一种索引吗？</p></div></div></div></aside>
-    <div class="numeric-progress">3/16</div>
+    <h2 class="slide-title">按访问需求选择索引结构</h2>
+    <div class="slide-content"><p class="slide-lead">比较查询条件、索引读块与回表代价</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>查询与写入模式</th><th>候选结构</th><th>影响代价的因素</th></tr></thead><tbody><tr><td>随机等值</td><td>B+ 树或哈希</td><td>选择性、规模、分布与溢出</td></tr><tr><td>范围与排序</td><td>B+ 树</td><td>大范围可能接近扫描成本</td></tr><tr><td>低基数筛选</td><td>位图</td><td>基数、读写比与回表成本</td></tr><tr><td>高频写入</td><td>少量必要索引</td><td>维护成本可能超过查询收益</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>优化器根据命中行数、回表块数和顺序扫描成本选择访问计划</p></div></div>
+    <div class="numeric-progress">3/19</div>
     <div class="semantic-label">INDEX CHOICE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">B+ 树用平衡多级结构处理大规模索引</h2>
-    <div class="slide-content"><p class="slide-lead">B+ 树把多级索引块组成平衡树，根到叶的路径长度相同</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bplus-tree.svg" alt="B+ 树的根、中间和叶结点以及叶结点之间的有序链" tabindex="0" role="button" aria-label="放大图片：B+ 树的根、中间和叶结点以及叶结点之间的有序链" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>根结点</h3><p>根结点根据键值范围选择子树</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>中间结点</h3><p>保存分隔键和子指针，按区间继续向下</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>叶结点</h3><p>保存索引项和记录指针，并连接兄弟叶</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>B+ 树的叶链提供有序入口；叶项指向基本表记录，不等于把完整数据记录放进索引结点</p></div></div>
-    <div class="numeric-progress">4/16</div>
+    <h2 class="slide-title">B+ 树的父子关系与有序叶链</h2>
+    <div class="slide-content"><p class="slide-lead">独立样例含学号 01—16，省略共同前缀 201800</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/bplus-example.svg" data-full-src="resources/decks/dbpa-9-2/assets/bplus-example.svg" alt="根分隔键 05、09、13 分别划分四个叶结点，每个叶只有根这一个父结点，叶链按 01 至 16 有序" tabindex="0" role="button" aria-label="放大图片：根分隔键 05、09、13 分别划分四个叶结点，每个叶只有根这一个父结点，叶链按 01 至 16 有序" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例根直接连接叶子，没有中间层；更大的树可增加中间层。根和中间层选子树，叶项保存键与记录指针，完整学生记录仍在基本表</p></div></div>
+    <div class="numeric-progress">4/19</div>
     <div class="semantic-label">B+ TREE STRUCTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">B+ 树点查找要逐层比较键值</h2>
-    <div class="slide-content"><p class="slide-lead">例如查找 <code>Sno = 20180011</code>，找到叶项后再沿记录指针读取 Student 元组</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="根：`20180011 &gt; 20180008`　→　中间：`20180010 &lt; 20180011 &lt; 20180012`　→　叶命中　→　记录指针"><span class="relation-term">根：<code>20180011 &gt; 20180008</code></span><span class="relation-operator">→</span><span class="relation-term">中间：<code>20180010 &lt; 20180011 &lt; 20180012</code></span><span class="relation-operator">→</span><span class="relation-term">叶命中</span><span class="relation-operator">→</span><span class="relation-term">记录指针</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>叶结点没有匹配项时，说明该键不存在；所有叶子同层让不同键值的路径大致平衡</p></div></div>
-    <div class="numeric-progress">5/16</div>
-    <div class="semantic-label">B+ TREE SEARCH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
+    <h2 class="slide-title">教学树的结点容量与分隔规则</h2>
+    <div class="slide-content"><p class="slide-lead">沿教材秩 n＝5 的示例；以下规则只用于这棵教学树</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 39% 35%"><colgroup><col style="width:26%"><col style="width:39%"><col style="width:35%"></colgroup><thead><tr><th>结点</th><th>本例容量</th><th>结构约束</th></tr></thead><tbody><tr><td>非根叶结点</td><td>2—4 个键及记录指针</td><td>另有指向下一叶的指针</td></tr><tr><td>非根中间结点</td><td>2—4 个分隔键</td><td>有 3—5 个孩子</td></tr><tr><td>根结点</td><td>最多 4 个分隔键</td><td>非叶根至少 2 个孩子</td></tr><tr><td>全树</td><td>所有叶子深度相同</td><td>非根结点只有一个父亲</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例分隔键取右子树最小值，等于分隔键时走右侧。只有一个结点的树可由根兼任叶子；实际页容量不固定为 4 个键</p></div></div>
+    <div class="numeric-progress">5/19</div>
+    <div class="semantic-label">NODE CAPACITY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">叶结点链让 B+ 树适合范围查询</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>如果只有下界 <code>Sno &gt;= 20180011</code>，叶链要在哪里停止？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先找入口，再顺序扫描后续叶结点；范围很大时可能接近顺序扫描</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">入口：定位 <code>Sno BETWEEN 20180011 AND 20180016</code> 的起点</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">扫描：读取当前叶结点的后续键值</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">连接：沿兄弟叶指针继续移动</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">结束：读到大于 <code>20180016</code> 的键时停止</span></li></ol></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>开放范围只在到达文件末尾或查询边界时停止；结果覆盖大多数记录时仍要比较顺序扫描成本</p></div></div>
-    <div class="numeric-progress">6/16</div>
-    <div class="semantic-label">RANGE SEARCH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+    <h2 class="slide-title">查 11 的路径：根 R → 叶 L3 → 记录</h2>
+    <div class="slide-content"><p class="slide-lead">延续前图，区间包含 09，不包含 13；等于 13 时应去叶 4</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 42% 34%"><colgroup><col style="width:24%"><col style="width:42%"><col style="width:34%"></colgroup><thead><tr><th>步骤</th><th>比较或读取</th><th>得到什么</th></tr></thead><tbody><tr><td>根 R</td><td>09 ≤ 11 &lt; 13</td><td>选择叶 L3</td></tr><tr><td>叶 L3</td><td>[09,10,11,12]</td><td>找到 11 的记录指针</td></tr><tr><td>基本表</td><td>沿指针读取学生 11</td><td>返回所需列</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>查 17 时，L4 中无匹配键，判定不存在。所有叶子同层；实际耗时还受缓存命中、回表和并发等待影响</p></div></div>
+    <div class="numeric-progress">6/19</div>
+    <div class="semantic-label">B+ TREE SEARCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">B+ 树更新通过分裂和合并保持平衡</h2>
-    <div class="slide-content"><p class="slide-lead">维护可沿父子路径向上扩散；改索引键通常是先删旧项再插新项</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>更新情况</th><th>结构动作</th><th>可能结果</th></tr></thead><tbody><tr><td>叶结点有空间</td><td>直接插入</td><td>树高不变</td></tr><tr><td>叶结点溢出</td><td>分裂并上推分隔键</td><td>树高可能增加</td></tr><tr><td>删除后仍满足下限</td><td>直接删除</td><td>树高不变</td></tr><tr><td>删除后低于下限</td><td>与兄弟合并并向上调整</td><td>树高可能降低</td></tr></tbody></table></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="插入 `20180016` → 叶溢出并分裂 → 分隔键上推 删除 `20180005` → 低于下限 → 与兄弟合并 → 父结点调整"><span class="relation-term">插入 <code>20180016</code></span><span class="relation-operator">→</span><span class="relation-term">叶溢出并分裂</span><span class="relation-operator">→</span><span class="relation-term">分隔键上推 删除 <code>20180005</code></span><span class="relation-operator">→</span><span class="relation-term">低于下限</span><span class="relation-operator">→</span><span class="relation-term">与兄弟合并</span><span class="relation-operator">→</span><span class="relation-term">父结点调整</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>根结点是最低装载约束的例外；修改非索引属性不改变该索引键，修改索引属性则需同步维护</p></div></div>
-    <div class="numeric-progress">7/16</div>
-    <div class="semantic-label">B+ TREE MAINTENANCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+    <h2 class="slide-title">范围 11—14 的叶链扫描</h2>
+    <div class="slide-content"><p class="slide-lead">BETWEEN 包含两端；下界不存在时，从第一个不小于下界的键开始</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 40% 36%"><colgroup><col style="width:24%"><col style="width:40%"><col style="width:36%"></colgroup><thead><tr><th>位置</th><th>本步读取</th><th>取出或停止</th></tr></thead><tbody><tr><td>根 R</td><td>按 11 定位 L3</td><td>只定位一次起点</td></tr><tr><td>L3</td><td>[09,10,11,12]</td><td>取 11、12，沿叶链继续</td></tr><tr><td>L4</td><td>[13,14,15,16]</td><td>取 13、14，遇 15 停止</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>条件为 Sno≥11 时，扫描到叶链末尾。完整记录按指针回表；磁盘 I/O 按实际读入的块数计算</p></div></div>
+    <div class="numeric-progress">7/19</div>
+    <div class="semantic-label">RANGE SEARCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+<section id="b4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">哈希索引把属性值直接映射到桶</h2>
-    <div class="slide-content"><p class="slide-lead">哈希索引的桶保存索引属性值与记录指针；哈希存储的桶直接保存数据记录</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-hash-buckets.svg" alt="哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" tabindex="0" role="button" aria-label="放大图片：哈希函数把属性值映射到桶号，桶满时沿溢出链继续搜索" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="属性值　→　哈希函数　→　桶号　→　索引项　→　记录"><span class="relation-term">属性值</span><span class="relation-operator">→</span><span class="relation-term">哈希函数</span><span class="relation-operator">→</span><span class="relation-term">桶号</span><span class="relation-operator">→</span><span class="relation-term">索引项</span><span class="relation-operator">→</span><span class="relation-term">记录</span></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>哈希索引服务于等值定位，不提供键值顺序；它与哈希存储的桶内容不同</p></div></div></div></div>
-    <div class="numeric-progress">8/16</div>
-    <div class="semantic-label">HASH STRUCTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <h2 class="slide-title">插入 17，叶 4 分成两块，树高未变</h2>
+    <div class="slide-content"><p class="slide-lead">叶最多 4 项；原 L4 为[13,14,15,16]，加入 17 后有 5 项</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 42% 32%"><colgroup><col style="width:26%"><col style="width:42%"><col style="width:32%"></colgroup><thead><tr><th>状态</th><th>叶层</th><th>根的分隔键</th></tr></thead><tbody><tr><td>插入前</td><td>[13,14,15,16]</td><td>[05,09,13]</td></tr><tr><td>分裂后</td><td>[13,14] → [15,16,17]</td><td>[05,09,13,15]</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>把新右叶的最小键 15 复制到父结点，15 仍留在叶子中；接好原叶链与新兄弟。根仍在容量内，所以这一次不会增高</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>父结点也溢出时才继续向上传播；根分裂并产生新根时，树高才增加。修改索引键通常按删旧项、插新项处理</p></div></div>
+    <div class="numeric-progress">8/19</div>
+    <div class="semantic-label">LEAF SPLIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b4b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">哈希查找先检查目标桶，再检查溢出链</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-frustrated" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-frustrated.751969dbb8ad.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>桶号已经算出来了，为什么失败查找还会很慢？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">均匀分布且溢出不严重时路径较短，但失败查找也要检查完整溢出链</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>哈希函数</h3><p>尽量把索引项均匀分散到各桶</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>桶搜索</h3><p>按桶号查找，命中则沿记录指针定位</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>溢出链</h3><p>桶满后沿附加桶继续搜索，查不到才判定不存在</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>因为失败查找仍要检查完整溢出链；范围条件不能利用哈希桶的键值顺序，插入和删除也要维护桶及记录指针</p></div></div>
-    <div class="numeric-progress">9/16</div>
-    <div class="semantic-label">HASH SEARCH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+    <h2 class="slide-title">叶结点删除：直接删除、借项与合并</h2>
+    <div class="slide-content"><p class="slide-lead">三个独立的局部例子；相邻叶属于同一父结点</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 36% 30%"><colgroup><col style="width:34%"><col style="width:36%"><col style="width:30%"></colgroup><thead><tr><th>删除前与操作</th><th>叶层处理</th><th>父结点维护</th></tr></thead><tbody><tr><td>[05,06,07]删 05</td><td>留[06,07]，无需合并</td><td>本例分隔键 05 改 06</td></tr><tr><td>[05,06]删 05，右邻[07,08,09]</td><td>借 07，变[06,07]与[08,09]</td><td>更新两叶的分隔边界</td></tr><tr><td>[05,06]删 05，右邻[07,08]</td><td>合并成[06,07,08]</td><td>删除多余孩子和分隔键</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>合并会删除父结点中的入口，可能引发逐层调整；非叶根只剩一个孩子时可收缩。直接删除块首键也可能需要更新父键</p></div></div>
+    <div class="numeric-progress">9/19</div>
+    <div class="semantic-label">BORROW OR MERGE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">桶越来越满时，重组或改用可扩展桶</h2>
-    <div class="slide-content"><p class="slide-lead">记录增加会拉长溢出链；可重组更多桶，也可让目录和桶逐步扩展</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>结构或策略</th><th>桶／索引如何变化</th><th>主要问题</th></tr></thead><tbody><tr><td>静态哈希索引</td><td>桶数预先固定</td><td>增长后溢出链变长</td></tr><tr><td>周期重组（增长策略）</td><td>定期增加桶并重组索引</td><td>重组耗时且可能影响查询</td></tr><tr><td>动态哈希索引</td><td>随数据逐步扩展桶或目录</td><td>管理逻辑更复杂</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>周期重组是静态哈希的应对策略，不是第三种结构；动态哈希可减轻严重溢出但不保证没有溢出，可扩展哈希和线性哈希只作实现方向提示</p></div></div>
-    <div class="numeric-progress">10/16</div>
-    <div class="semantic-label">STATIC AND DYNAMIC HASH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+    <h2 class="slide-title">哈希查找：桶号定位与键值匹配</h2>
+    <div class="slide-content"><p class="slide-lead">独立示例：h(k)＝学号末两位 mod 3，每桶最多 3 项</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 43% 34%"><colgroup><col style="width:23%"><col style="width:43%"><col style="width:34%"></colgroup><thead><tr><th>桶号</th><th>桶内的键，均另带记录指针</th><th>计算例子</th></tr></thead><tbody><tr><td>B0</td><td>03、06、09</td><td>09 mod 3＝0</td></tr><tr><td>B1</td><td>01、04、07</td><td>07 mod 3＝1</td></tr><tr><td>B2</td><td>02、05、08</td><td>08 mod 3＝2</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>查 07：定位 B1，逐项比较 01、04、07；同桶的键可能不同。哈希索引桶存键与记录指针，哈希存储桶直接存数据记录</p></div></div>
+    <div class="numeric-progress">10/19</div>
+    <div class="semantic-label">HASH STRUCTURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-split axis-vertical order-media-group"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">位图索引把低基数属性变成位向量</h2>
-    <div class="slide-content"><p class="slide-lead">每个可能值对应一条向量，每个位置对应一条记录</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" data-full-src="resources/decks/dbpa-9-2/assets/generated/dbpa-ch09-bitmap.svg" alt="性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" tabindex="0" role="button" aria-label="放大图片：性别和专业位图按位与得到同时满足条件的记录位置并统计 1 的数量" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="属性取值　→　对应位向量　→　记录位置上的 1"><span class="relation-term">属性取值</span><span class="relation-operator">→</span><span class="relation-term">对应位向量</span><span class="relation-operator">→</span><span class="relation-term">记录位置上的 1</span></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>低基数属性对应的向量数量少，因此适合用位图表示；每条向量长度仍由记录数决定</p></div></div></div></div>
-    <div class="numeric-progress">11/16</div>
-    <div class="semantic-label">BITMAP INDEX</div>
-    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+    <h2 class="slide-title">哈希桶溢出与链式查找</h2>
+    <div class="slide-content"><p class="slide-lead">给前页继续插入 12、15，二者都落入已满的 B0</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 42% 32%"><colgroup><col style="width:26%"><col style="width:42%"><col style="width:32%"></colgroup><thead><tr><th>操作</th><th>查找路径</th><th>结果</th></tr></thead><tbody><tr><td>插入 12、15</td><td>B0[03,06,09] → O0[12,15]</td><td>新建溢出块 O0</td></tr><tr><td>查 15</td><td>15 mod 3＝0，查 B0 再查 O0</td><td>命中后取记录指针</td></tr><tr><td>查 18</td><td>18 mod 3＝0，查完整条链</td><td>B0、O0 均无 18</td></tr><tr><td>查 05—08</td><td>键落在 B2、B0、B1、B2</td><td>桶号不能表示键值区间</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>目标桶可溢出，即便其他桶有空位。删除后可按容量合并溢出块；桶数量、键值分布和哈希函数共同影响溢出</p></div></div>
+    <div class="numeric-progress">11/19</div>
+    <div class="semantic-label">HASH OVERFLOW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-focus"
+<section id="c3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">位与和位或可以组合筛选条件</h2>
-    <div class="slide-content"><p class="slide-lead">位图还能直接支持低基数分组统计</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>查询</th><th>位操作</th><th>结果</th></tr></thead><tbody><tr><td><code>Ssex = 男 AND Smajor = 计算机</code></td><td>位与</td><td>同时满足的记录位置</td></tr><tr><td><code>Smajor IN (&#x27;计算机&#x27;,&#x27;管理&#x27;)</code></td><td>位或</td><td>任一取值的记录位置</td></tr><tr><td>按性别统计人数</td><td>统计 1 的数量</td><td>分组计数</td></tr><tr><td>返回完整 Student 行</td><td>位图得到位置后回查基本表</td><td>位图不等于完整记录</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">12/16</div>
-    <div class="semantic-label">BIT OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <h2 class="slide-title">静态哈希重组与动态扩展</h2>
+    <div class="slide-content"><p class="slide-lead">扩桶涉及桶映射更新与索引项迁移</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>结构或策略</th><th>桶／索引如何变化</th><th>主要问题</th></tr></thead><tbody><tr><td>静态哈希索引</td><td>桶数预先固定</td><td>增长后溢出链变长</td></tr><tr><td>周期重组（增长策略）</td><td>定期增加桶并重组索引</td><td>重组耗时且可能影响查询</td></tr><tr><td>动态哈希索引</td><td>随数据逐步扩展桶或目录</td><td>管理逻辑更复杂</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>例如 mod 3 改为 mod 6，键 09 从 B0 移到 B3，旧映射不能继续用。周期重组是策略；可扩展哈希、线性哈希按各自规则逐步扩展，不保证完全没有溢出</p></div></div>
+    <div class="numeric-progress">12/19</div>
+    <div class="semantic-label">STATIC AND DYNAMIC HASH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
   </section>
-<section id="d3" class="step slide-surface role-content layout-focus"
+<section id="d1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
-    <h2 class="slide-title">位图索引要同时考虑低基数和读多写少</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要属性基数低，位图也一定适合频繁更新吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">取值越多，位向量越多；频繁增删记录还要改位，并可能造成并发等待</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>低基数</h3><p>低基数属性的向量数量少，组合和统计较直接</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高基数</h3><p>高基数属性的向量数量多，标准位图可能膨胀</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>编码位图</h3><p>编码位图减少向量数量，但查询时可能检查全部编码向量</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不一定。位图更适合读多写少；更新频繁时要评估位图维护和并发代价</p></div></div>
-    <div class="numeric-progress">13/16</div>
-    <div class="semantic-label">BITMAP TRADEOFF</div>
-    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+    <h2 class="slide-title">位向量的一位，对应一条记录</h2>
+    <div class="slide-content"><p class="slide-lead">取 8 条有效记录，按 R1—R8 固定顺序；本例字段均非 NULL</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 37% 40%"><colgroup><col style="width:23%"><col style="width:37%"><col style="width:40%"></colgroup><thead><tr><th>属性条件</th><th>位向量（左到右 R1—R8）</th><th>为 1 的记录</th></tr></thead><tbody><tr><td>专业＝信息管理</td><td>0 1 0 0 1 0 1 0</td><td>R2、R5、R7</td></tr><tr><td>专业＝计算机</td><td>1 0 1 1 0 0 0 0</td><td>R1、R3、R4</td></tr><tr><td>专业＝信息安全</td><td>0 0 0 0 0 1 0 1</td><td>R6、R8</td></tr><tr><td>性别＝女</td><td>1 0 0 0 1 0 1 0</td><td>R1、R5、R7</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>专业有 3 个取值，标准位图有 3 条向量；8 条记录对应每条向量的 8 位。条件组合要求各向量按同一行位置对齐</p></div></div>
+    <div class="numeric-progress">13/19</div>
+    <div class="semantic-label">BITMAP INPUT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="d2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
-    <h2 class="slide-title">为四种实际查询选择索引或全表扫描</h2>
-    <div class="slide-content"><p class="slide-lead">写出 WHERE、查找路径、增删改动，以及命中太多行时为何改用扫描</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>学号范围查询</h3><p>B+ 树先走根—中间—叶定位起点，再沿叶链到上界；更新时承担分裂、合并和多层维护</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>学号等值查询</h3><p>哈希计算桶号后检查目标桶与溢出链；它不能按键顺序提供范围入口，增长时还要处理扩桶或重组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>性别＋专业统计</h3><p>低基数位图用按位与组合条件并计数；需要完整元组时仍回表，频繁更新要评估并发维护</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高频写入且筛选很宽</h3><p>减少非必要索引并比较顺序扫描；存在索引不等于优化器必须使用，选择性和维护成本可能改变选择</p></article></div></div></div>
-    <div class="numeric-progress">14/16</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
+    <h2 class="slide-title">位图 AND、OR 与命中行数</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 R1—R8：AND 求交集，OR 求并集</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07</span><code class="language-text">信息管理    01001010
+女生        10001010
+按位 AND    00001010  → R5、R7，共 2 人
+
+信息管理    01001010
+计算机      10110000
+按位 OR     11111010  → R1、R2、R3、R4、R5、R7</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>对结果中的 1 计数，本例 AND 命中 2 人；读取姓名需按位置回表。位图包含当前查询可见的有效记录</p></div></div>
+    <div class="numeric-progress">14/19</div>
+    <div class="semantic-label">BIT OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="d3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
+    <h2 class="slide-title">标准位图的空间与更新代价</h2>
+    <div class="slide-content"><p class="slide-lead">前页专业有 3 个值、8 行，未压缩标准位图共 3×8＝24 位</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 43% 31%"><colgroup><col style="width:26%"><col style="width:43%"><col style="width:31%"></colgroup><thead><tr><th>数据变化</th><th>本例要维护什么</th><th>设计判断</th></tr></thead><tbody><tr><td>R5 转入计算机专业</td><td>信息管理位 1→0，计算机位 0→1</td><td>一行变更涉及两条向量</td></tr><tr><td>插入新学生</td><td>分配行位置并维护对应位</td><td>行位置规则必须一致</td></tr><tr><td>专业取值增多</td><td>标准位图需更多向量</td><td>空间还受压缩方式影响</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>低基数指不同取值少。位图适合读多写少的统计筛选；频繁更新的代价包括向量维护、锁定范围和并发等待</p></div></div>
+    <div class="numeric-progress">15/19</div>
+    <div class="semantic-label">BITMAP TRADEOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
+  </section>
+<section id="d3b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2 <span>|</span> 9.2</div>
+    <h2 class="slide-title">专业编码与位图条件组合</h2>
+    <div class="slide-content"><p class="slide-lead">专业编码：信息管理＝00，计算机＝01，信息安全＝10</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 32% 37%"><colgroup><col style="width:31%"><col style="width:32%"><col style="width:37%"></colgroup><thead><tr><th>编码位</th><th>R1—R8 的位向量</th><th>信息管理 00 的判断</th></tr></thead><tbody><tr><td>高位 H</td><td>0 0 0 0 0 1 0 1</td><td>H＝0</td></tr><tr><td>低位 L</td><td>1 0 1 1 0 0 0 0</td><td>L＝0</td></tr><tr><td>组合结果</td><td>0 1 0 0 1 0 1 0</td><td>NOT H AND NOT L</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>K 个取值需 ⌈log₂K⌉ 条向量，本例 2×8＝16 位（未计压缩、NULL 与删除标记）。查 00 组合两向量，取反限于这 8 个有效行位置</p></div></div>
+    <div class="numeric-progress">16/19</div>
+    <div class="semantic-label">ENCODED BITMAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
-    <h2 class="slide-title">看 WHERE 和命中比例，再选索引或扫描</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-9-2/mindmap-9-2.html" title="看 WHERE 和命中比例，再选索引或扫描"></iframe></div></div>
-    <div class="numeric-progress">15/16</div>
+    <h2 class="slide-title">查询与写入的索引取舍</h2>
+    <div class="slide-content"><p class="slide-lead">学号范围、学号等值、信息管理女生统计、高频写入：路径与维护</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>学号范围查询</h3><p>本例根→L3 定位 11，再沿叶链到 L4，遇 15 停止；插入 17 分裂叶子，父结点仍能容纳</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>学号等值查询</h3><p>哈希计算桶号后检查目标桶与溢出链；哈希桶无序，不能沿桶按键值范围查找，增长时还要处理扩桶或重组</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>女生＋信息管理统计</h3><p>两向量按位与得 00001010，R5、R7 共 2 人；取姓名还要回表，转专业还要维护两条向量</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>高频写入与大范围查询</h3><p>高频写入需控制索引维护成本；大范围查询需比较索引读块、回表与顺序扫描代价</p></article></div></div></div>
+    <div class="numeric-progress">17/19</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
+    <h2 class="slide-title">索引结构、访问路径与维护代价</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-9-2/mindmap-9-2.html" title="索引结构、访问路径与维护代价"></iframe></div></div>
+    <div class="numeric-progress">18/19</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="0" data-y="3360" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH09 <span>|</span> 9.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为何大规模多级索引需要 B+ 树？<code>Sno</code> 等值查找如何走根—中间—叶，范围查询如何沿叶链停止？</span></li><li><span class="question-no">02</span><span class="question-text">插入 <code>20180016</code>、删除 <code>20180005</code> 或修改索引键时，B+ 树怎样分裂、合并与维护？</span></li><li><span class="question-no">03</span><span class="question-text">如何区分哈希存储与哈希索引？桶命中、溢出链命中和查找失败分别怎样处理？</span></li><li><span class="question-no">04</span><span class="question-text"><code>Ssex=男 AND Smajor=计算机</code> 与 <code>Smajor IN (...)</code> 各使用什么位操作？何时需要回表？</span></li><li><span class="question-no">05</span><span class="question-text">根据选择性、范围／等值、读写比和空间，如何在 B+ 树、哈希、位图和扫描中选择？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">画出查 11 和查 11—14 的路径；范围查询如何利用叶链？</span></li><li><span class="question-no">02</span><span class="question-text">插入 17 时父结点增加哪个键？为什么树高没变？何时借项，何时合并？</span></li><li><span class="question-no">03</span><span class="question-text">按哈希样例查 15 与 18，分别读哪些桶？桶里存记录还是指针？</span></li><li><span class="question-no">04</span><span class="question-text">信息管理女生有几人？两专业按位或得到哪些行？取姓名时如何回表？</span></li><li><span class="question-no">05</span><span class="question-text">高频更新有哪些索引开销？命中多数行时，怎样比较索引与扫描？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-9-1.html" title="上一节：9.1 数据组织与基础索引" aria-label="上一节：9.1 数据组织与基础索引">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -230,7 +272,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">16/16</div>
+    <div class="numeric-progress">19/19</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

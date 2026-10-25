@@ -28,180 +28,238 @@
     <img class="cover-image" src="resources/decks/dbpa-12-1/assets/dbpa-12-1.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 12.1</div>
-      <h1>并发异常、隔离级别与封锁协议</h1>
-      <p class="cover-description">两个售票点同时读到 16，怎样避免最后只扣掉一张票</p>
+      <h1>并发异常<br>隔离级别<br>与封锁协议</h1>
+      <p class="cover-description">两次扣票：16 → 14</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元先展示异常，再用隔离级别、S/X 锁和三级封锁协议解释如何控制并发。
-11.2 处理故障后的恢复；本节处理正常运行中的并发交错与隔离
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">从两个事务的读写顺序找出丢失更新和脏读，并标出要等待的 S／X 锁请求</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">识别并发操作造成的四类异常</span></li><li><span class="list-marker">02</span><span class="list-text">比较四个事务隔离级别</span></li><li><span class="list-marker">03</span><span class="list-text">解释 X 锁、S 锁及其相容关系</span></li><li><span class="list-marker">04</span><span class="list-text">区分一级、二级和三级封锁协议</span></li><li><span class="list-marker">05</span><span class="list-text">根据一致性需求选择隔离强度或封锁协议</span></li><li><span class="list-marker">06</span><span class="list-text">说明封锁如何把冲突请求变成等待</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
+    <div class="slide-content"><p class="slide-lead">识别读写轨迹中的异常，标明加锁与等待位置</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">算出两个售票事务的串行结果与错误交错结果</span></li><li><span class="list-marker">02</span><span class="list-text">区分脏读、不可重复读和幻读的观察对象</span></li><li><span class="list-marker">03</span><span class="list-text">对照四级隔离的保证与实现边界</span></li><li><span class="list-marker">04</span><span class="list-text">判断同一对象上的 S／X 请求是否相容</span></li><li><span class="list-marker">05</span><span class="list-text">说明 X 锁应保护哪一次读取，S 锁何时释放</span></li><li><span class="list-marker">06</span><span class="list-text">用条件更新和影响行数检查保护余票扣减</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">并发提高资源利用率，也会交错事务操作</h2>
-    <div class="slide-content"><p class="slide-lead">两个售票请求可并发，但各卖一张后库存须从 16 变 14，不能因覆盖写停在 15</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>执行方式</th><th>运行特点</th><th>主要风险</th></tr></thead><tbody><tr><td>串行执行</td><td>一次只有一个事务</td><td>资源空闲、吞吐下降</td></tr><tr><td>交错并发</td><td>单处理机轮流推进</td><td>读写顺序可能覆盖</td></tr><tr><td>同时并发</td><td>多处理机真正并行</td><td>冲突更难直接观察</td></tr></tbody></table></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="调度是多个事务操作的交错次序　｜　串行：`R1(A) → W1(A) → R2(A) → W2(A)`　｜　交错：`R1(A) → R2(A) → W1(A) → W2(A)`"><span class="relation-term">调度是多个事务操作的交错次序　｜　串行：`R1(A)</span><span class="relation-operator">→</span><span class="relation-term">W1(A)</span><span class="relation-operator">→</span><span class="relation-term">R2(A)</span><span class="relation-operator">→</span><span class="relation-term">W2(A)<code>　｜　交错：</code>R1(A)</span><span class="relation-operator">→</span><span class="relation-term">R2(A)</span><span class="relation-operator">→</span><span class="relation-term">W1(A)</span><span class="relation-operator">→</span><span class="relation-term">W2(A)`</span></div></div></div></div>
-    <div class="numeric-progress">3/15</div>
-    <div class="semantic-label">CONCURRENCY</div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">调度：多个事务的读写序列</h2>
+    <div class="slide-content"><p class="slide-lead">课堂表 Flight(Fno, Remaining)：F1 初始余票为 16</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 73%"><colgroup><col style="width:27%"><col style="width:73%"></colgroup><thead><tr><th>符号或场景</th><th>含义</th></tr></thead><tbody><tr><td>R1(F1)</td><td>T1 读取余票，保存到自己的局部变量 r1</td></tr><tr><td>W1(F1,15)</td><td>T1 把数据库余票设为 15</td></tr><tr><td>串行参照</td><td>T1 读 16、写 15、提交；T2 再读 15、写 14、提交</td></tr><tr><td>并发执行</td><td>两事务交错推进，各自内部顺序保持不变</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>单核交错执行，多核可同时执行；并发提高资源利用率的效果取决于负载</p></div></div>
+    <div class="numeric-progress">3/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">丢失修改：两人都拿着旧值写回 15</h2>
+    <div class="slide-content"><p class="slide-lead">两次扣减应得到 14；这里写回的是局部变量计算出的固定值</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="12% 34% 34% 20%"><colgroup><col style="width:12%"><col style="width:34%"><col style="width:34%"><col style="width:20%"></colgroup><thead><tr><th>顺序</th><th>T1：甲售票点</th><th>T2：乙售票点</th><th>数据库余票</th></tr></thead><tbody><tr><td>1</td><td>读 16，r1=16</td><td>—</td><td>16</td></tr><tr><td>2</td><td>—</td><td>读 16，r2=16</td><td>16</td></tr><tr><td>3</td><td>写 r1−1=15，提交</td><td>—</td><td>15</td></tr><tr><td>4</td><td>—</td><td>写 r2−1=15，提交</td><td>15</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两事务都已提交；T2 按旧值写回 15，覆盖了 T1 的扣减</p></div></div>
+    <div class="numeric-progress">4/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
     <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-split axis-vertical order-media-group"
-      data-x="4500" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">两个售票点都读到 16，最终只扣一张票</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>两个事务都成功提交了，结果就一定正确吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">后一次写入的 15 覆盖先前写入的 15</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lost-update.svg" alt="两个事务都读到余额 16 后交错写回 15 形成丢失修改" tabindex="0" role="button" aria-label="放大图片：两个事务都读到余额 16 后交错写回 15 形成丢失修改" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="component component-text text-inset"><p><code>T1: R(A=16) → W(A=15) → COMMIT</code>；<code>T2: R(A=16) → W(A=15) → COMMIT</code></p></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>串行执行两次应得到 14；交错执行得到 15，后写入覆盖了前一更新</p></div></div></div></div>
-    <div class="numeric-progress">4/15</div>
-    <div class="semantic-label">LOST UPDATE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
-  </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">四类并发异常表现为不同的操作结果</h2>
-    <div class="slide-content"><p class="slide-lead">根据操作顺序识别异常，再选择隔离方式</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>丢失修改</h3><p>后一次写入覆盖先前写入，导致前一更新丢失：<code>R1→R2→W1→W2</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>脏读</h3><p>事务读取另一个事务随后撤销的未提交值：<code>W1→R2→ROLLBACK1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不可重复读</h3><p>同一事务两次读取同一数据项，结果不同：<code>R1→W2→COMMIT2→R1</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>幻读</h3><p>同一事务两次按谓词查询，其他事务插入或删除匹配记录，结果集发生变化</p></article></div></div></div>
-    <div class="numeric-progress">5/15</div>
-    <div class="semantic-label">DATA ANOMALIES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">脏读：读到对方尚未提交的值</h2>
+    <div class="slide-content"><p class="slide-lead">独立场景：F1 初始为 16，T2 读取时 T1 仍未提交</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 43% 43%"><colgroup><col style="width:14%"><col style="width:43%"><col style="width:43%"></colgroup><thead><tr><th>顺序</th><th>T1</th><th>T2 观察到什么</th></tr></thead><tbody><tr><td>1</td><td>将余票改为 15，未提交</td><td>—</td></tr><tr><td>2</td><td>仍未提交</td><td>读到 15，已构成脏读</td></tr><tr><td>3</td><td>ROLLBACK，恢复为 16</td><td>先前读到的 15 作废</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>读取时对方尚未提交即为脏读；之后提交或回滚都不改变这次读取的性质</p></div></div>
+    <div class="numeric-progress">5/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">隔离增强，异常少，等待或版本开销增加</h2>
-    <div class="slide-content"><p class="slide-lead">先写业务不能接受脏读、重复读变化还是新增匹配行，再选最低满足级别</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="读未提交　→　读已提交　→　可重复读　→　可串行化"><span class="relation-term">读未提交</span><span class="relation-operator">→</span><span class="relation-term">读已提交</span><span class="relation-operator">→</span><span class="relation-term">可重复读</span><span class="relation-operator">→</span><span class="relation-term">可串行化</span></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可串行化表示结果等价于某个串行次序；具体调度还要检查冲突操作</p></div></div>
-    <div class="numeric-progress">6/15</div>
-    <div class="semantic-label">ISOLATION LEVELS</div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">不可重复读：同一行两次读到不同值</h2>
+    <div class="slide-content"><p class="slide-lead">独立场景：T1 两次读取之间没有结束事务</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 43% 43%"><colgroup><col style="width:14%"><col style="width:43%"><col style="width:43%"></colgroup><thead><tr><th>顺序</th><th>T1</th><th>T2</th></tr></thead><tbody><tr><td>1</td><td>读 F1：余票 16</td><td>—</td></tr><tr><td>2</td><td>仍在同一事务中</td><td>把 F1 改为 15 并提交</td></tr><tr><td>3</td><td>再读 F1：余票 15</td><td>已结束</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一事务对 F1 读到两个不同的已提交值：16 和 15</p></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
+  </section>
+<section id="a4b" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">幻读：同一条件查出的行集合变了</h2>
+    <div class="slide-content"><p class="slide-lead">独立场景：F1 余票 16，F2 余票 0；两次查询在 T1 内</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-sql">SELECT Fno FROM Flight WHERE Remaining &gt; 0;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 53% 33%"><colgroup><col style="width:14%"><col style="width:53%"><col style="width:33%"></colgroup><thead><tr><th>顺序</th><th>动作</th><th>T1 的查询结果</th></tr></thead><tbody><tr><td>1</td><td>T1 第一次查询可售航班</td><td>{F1}</td></tr><tr><td>2</td><td>T2 插入 F3，余票 2，并提交</td><td>—</td></tr><tr><td>3</td><td>T1 重复同一查询</td><td>{F1, F3}</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>F1 保持原值，新行 F3 加入结果；F1 的行锁保护范围不含新行</p></div></div>
+    <div class="numeric-progress">7/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">隔离保证与业务读取要求</h2>
+    <div class="slide-content"><p class="slide-lead">隔离级别规定读写保证，锁、版本与冲突检测实现这些保证</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>读取已提交值</h3><p>读已提交保证排除脏读</p></article><article class="content-card emphasis-card" tabindex="0"><h3>重读同一行</h3><p>可重复读排除本例的 16→15 变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>重复范围查询</h3><p>排除新增 F3 造成的幻读，需要保护匹配行集合</p></article><article class="content-card emphasis-card" tabindex="0"><h3>按当前余票扣减</h3><p>已提交的旧值也可能过期；扣减方法需协调并发更新</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>更强隔离可能增加等待、版本维护或重试成本，实际代价取决于负载</p></div></div>
+    <div class="numeric-progress">8/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
     <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="1120" data-z="0"
+      data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">四级隔离对异常的保证逐步增强</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>隔离级别就是固定的一套加锁规则吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">本表只比脏读、不可重复读和幻读；是否防丢失修改看写冲突、锁或版本规则</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 18% 18% 18% 16%"><colgroup><col style="width:30%"><col style="width:18%"><col style="width:18%"><col style="width:18%"><col style="width:16%"></colgroup><thead><tr><th>隔离级别</th><th>脏读</th><th>不可重复读</th><th>幻读</th><th>典型代价方向</th></tr></thead><tbody><tr><td>读未提交</td><td>可能</td><td>可能</td><td>可能</td><td>低</td></tr><tr><td>读已提交</td><td>避免</td><td>可能</td><td>可能</td><td>较低</td></tr><tr><td>可重复读</td><td>避免</td><td>避免</td><td>可能</td><td>较高</td></tr><tr><td>可串行化</td><td>避免</td><td>避免</td><td>避免</td><td>高</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>隔离级别描述事务可以观察到的结果；封锁、MVCC 等是不同实现路线，幻读还涉及范围或谓词保护</p></div></div>
-    <div class="numeric-progress">7/15</div>
-    <div class="semantic-label">ISOLATION MATRIX</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">四级隔离的最低异常保证</h2>
+    <div class="slide-content"><p class="slide-lead">“可能”表示允许出现该异常，具体结果取决于实现与执行顺序</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 22% 22% 22%"><colgroup><col style="width:34%"><col style="width:22%"><col style="width:22%"><col style="width:22%"></colgroup><thead><tr><th>隔离级别</th><th>脏读</th><th>不可重复读</th><th>幻读</th></tr></thead><tbody><tr><td>读未提交</td><td>可能</td><td>可能</td><td>可能</td></tr><tr><td>读已提交</td><td>禁止</td><td>可能</td><td>可能</td></tr><tr><td>可重复读</td><td>禁止</td><td>禁止</td><td>可能</td></tr><tr><td>可串行化</td><td>禁止</td><td>禁止</td><td>禁止</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可串行化要求等价于某个串行顺序；产品可加强保证，加锁方式依实现而定</p></div></div>
+    <div class="numeric-progress">9/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
 <section id="b3" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">封锁把访问冲突变成可管理的等待</h2>
-    <div class="slide-content"><p class="slide-lead">事务先申请锁，获准后才能按规则读写</p>
-<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>申请</h3><p>事务针对同一数据对象请求 S 锁或 X 锁</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>检查</h3><p>数据库判断新请求与已有锁是否相容</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>调度</h3><p>相容则获准读写，不相容则进入等待</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>释放</h3><p>事务按封锁协议释放锁，等待者才可能继续</p></div></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不相容请求等待持锁事务释放；这是并发控制，不是恢复动作</p></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">LOCKING</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
-  </section>
-<section id="b4" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
-      data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">S 锁允许并发读，X 锁保护写入</h2>
-    <div class="slide-content"><p class="slide-lead">相容性决定第二个事务能否立即继续</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" data-full-src="resources/decks/dbpa-12-1/assets/generated/dbpa-ch12-lock-compatibility.svg" alt="S 锁和 X 锁的相容矩阵" tabindex="0" role="button" aria-label="放大图片：S 锁和 X 锁的相容矩阵" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:1"><article class="content-card emphasis-card substep" tabindex="0"><h3>S 锁 共享型</h3><p>持有者可以读，其他事务还能申请 S 锁，但不能申请 X 锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>X 锁 排他型</h3><p>持有者可以读写，其他事务不能申请任何类型的锁</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求冲突</h3><p>不相容请求进入等待；例如 T1 持有 S(A) 时，T2 请求 X(A) 不能立即继续</p></article></div></div></div>
-    <div class="numeric-progress">9/15</div>
-    <div class="semantic-label">S AND X LOCKS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
-  </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">三级封锁协议何时申请和释放 S／X 锁</h2>
-    <div class="slide-content"><p class="slide-lead">读—改—写前先取 X 锁；各协议都持有 X 锁到事务结束</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 26% 26% 26%"><colgroup><col style="width:22%"><col style="width:26%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>协议</th><th>写入前与读—改—写</th><th>读前</th><th>释放规则</th></tr></thead><tbody><tr><td>一级</td><td>加 X 锁</td><td>不强制加 S 锁</td><td>X 锁到事务结束</td></tr><tr><td>二级</td><td>加 X 锁</td><td>加 S 锁</td><td>S 锁读完释放，X 锁到事务结束</td></tr><tr><td>三级</td><td>加 X 锁</td><td>加 S 锁</td><td>S 锁、X 锁都到事务结束</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>“读前加 X 锁”特指读—改—写场景；所有协议至少要求在写入前取得 X 锁，三级协议还把 S 锁持有到结束</p></div></div>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">LOCKING PROTOCOLS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">锁请求的获准与等待</h2>
+    <div class="slide-content"><p class="slide-lead">本节使用单版本 S／X 封锁模型，冲突请求先等待</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">T1 申请对象 F1 的 X 锁，获准后才读取并修改</span></li><li><span class="list-marker">02</span><span class="list-text">T2 对 F1 发来 S 或 X 请求，系统检查相容性</span></li><li><span class="list-marker">03</span><span class="list-text">不相容则等待，受保护操作暂停执行</span></li><li><span class="list-marker">04</span><span class="list-text">T1 按协议释放锁后，系统重新判断 T2 的请求</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>锁针对具体对象；12.3 再讨论多版本读取与这种封锁模型的差别</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">持锁时间决定能阻止哪一种异常</h2>
-    <div class="slide-content"><p class="slide-lead">从一级到三级，读取保护越来越强</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">一级：读未提交；X 锁持有到事务结束，防止丢失修改</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">二级：读已提交；读前加 S 锁、读完释放，防止脏读</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">三级：可重复读；S 锁也持有到事务结束，防止不可重复读</span></li></ol></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>三级协议把已读取数据项的 S 锁和写入项的 X 锁保持到事务结束，可防不可重复读；若没有范围或谓词保护，仍不能据此宣称完整可串行化</p></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">PROTOCOL GUARANTEES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">S 锁共享读取，X 锁排他读写</h2>
+    <div class="slide-content"><p class="slide-lead">只比较不同事务对同一个数据对象的请求</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>T1 已持有</th><th>T2 请求 S</th><th>T2 请求 X</th></tr></thead><tbody><tr><td>无锁</td><td>可获准</td><td>可获准</td></tr><tr><td>S 锁</td><td>相容，可共同读取</td><td>不相容，等待</td></tr><tr><td>X 锁</td><td>不相容，等待</td><td>不相容，等待</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>修改需取得 X 权限；S 转 X 可能等待或死锁，详见下一节</p></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1 <span>|</span> 12.1</div>
-    <h2 class="slide-title">先写不能发生的错误，再选择隔离级别</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.54a679689b42.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>隔离越强，任何业务都应该直接选最高级别吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">趋势统计和资金扣账对一致性的要求不同</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>业务情境</th><th>关注风险</th><th>隔离目标与实现选择</th></tr></thead><tbody><tr><td>允许暂时不一致读结果的趋势统计</td><td>少量暂时误差</td><td>可从较低隔离、较高并发的方案开始评估</td></tr><tr><td>普通订单查询</td><td>不读未提交数据</td><td>可从读已提交起步，再按实现选择锁或 MVCC</td></tr><tr><td>余额扣账</td><td>不能重复或覆盖</td><td>需要更强隔离或显式 X 锁，按业务语义判断</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>例如扣库存不能覆盖另一次写入，订单查询不能看到回滚值；写清错误后，再核对产品用锁还是 MVCC 实现及其默认级别</p></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">CHOOSE THE LEVEL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">三级封锁协议：读锁要求与释放时机</h2>
+    <div class="slide-content"><p class="slide-lead">本例读—改—写必须在读旧值前取得 X 锁</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 29% 26% 30%"><colgroup><col style="width:15%"><col style="width:29%"><col style="width:26%"><col style="width:30%"></colgroup><thead><tr><th>协议</th><th>只读操作</th><th>修改操作</th><th>锁释放时机</th></tr></thead><tbody><tr><td>一级</td><td>不强制 S 锁</td><td>先取得 X 锁</td><td>X 到事务结束</td></tr><tr><td>二级</td><td>读前取得 S 锁</td><td>先取得 X 锁</td><td>S 读完释放，X 到结束</td></tr><tr><td>三级</td><td>读前取得 S 锁</td><td>先取得 X 锁</td><td>S、X 都到事务结束</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>事务结束指提交或完成回滚；读旧值前取得 X，保护后续扣减计算</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="c1a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
-    <h2 class="slide-title">售票并发：哪次读写错、哪次请求等待</h2>
-    <div class="slide-content"><p class="slide-lead">串行结果应为 14；在交错轨迹找覆盖写，再标 S/X 请求、等待者和释放时刻</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 标记异常</h3><p>用串行结果作参照，按最小轨迹判断丢失修改、脏读、不可重复读或幻读</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 写出隔离目标</h3><p>先写不可接受的异常，再选最低隔离目标；不用产品名替代判断</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 画出等待点</h3><p>标出同一对象上的 S／X 请求；相容继续，不相容则注明等待者与释放者</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 检查持锁边界</h3><p>标明加锁与释放时刻，再判断三级协议各能阻止哪些异常</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整答案连接：操作轨迹 → 异常 → 隔离目标 → 加锁与释放规则</p></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <h2 class="slide-title">X 锁保护读取与扣减，余票变为 14</h2>
+    <div class="slide-content"><p class="slide-lead">两个事务都从取得 F1 的 X 锁开始</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 43% 43%"><colgroup><col style="width:14%"><col style="width:43%"><col style="width:43%"></colgroup><thead><tr><th>顺序</th><th>T1</th><th>T2</th></tr></thead><tbody><tr><td>1</td><td>获 X，读 16</td><td>申请 X，等待</td></tr><tr><td>2</td><td>写 15，提交并释放 X</td><td>等待释放，不执行读写</td></tr><tr><td>3</td><td>已结束</td><td>获 X，读到 15</td></tr><tr><td>4</td><td>—</td><td>写 14，提交并释放 X</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>反例：两人先读 16，再依次取 X 并写死 15，仍会丢失修改</p></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-12-1/mindmap-12-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <h2 class="slide-title">二级与三级协议：读完是否释放 S 锁</h2>
+    <div class="slide-content"><p class="slide-lead">独立场景：T1 只读 F1，T2 试图把余票从 16 改为 15</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 37% 36%"><colgroup><col style="width:27%"><col style="width:37%"><col style="width:36%"></colgroup><thead><tr><th>步骤</th><th>二级协议</th><th>三级协议</th></tr></thead><tbody><tr><td>T1 第一次读取</td><td>获 S，读 16 后释放 S</td><td>获 S，读 16 后仍持有 S</td></tr><tr><td>T2 申请 X</td><td>可获准，写 15 并提交</td><td>与 S 冲突，等待</td></tr><tr><td>T1 再次读取</td><td>重新获 S，读到 15</td><td>仍持 S，读到 16</td></tr><tr><td>T1 结束</td><td>释放尚未释放的锁</td><td>释放 S，T2 才可能获 X</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>二级防脏读；三级持有 S 到事务结束，保护同一行的重复读取</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="c2a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">F1 的行锁与新增的匹配行 F3</h2>
+    <div class="slide-content"><p class="slide-lead">回到可售航班查询：T1 只对 F1 保持 S 锁</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>行锁保护 F1</h3><p>T1 持有 F1 的 S 锁，其他事务的 X 请求等待，余票可重复读取</p></article><article class="content-card emphasis-card" tabindex="0"><h3>新行 F3 可插入</h3><p>T2 插入 F3 无需修改 F1，查询结果可能增加一行</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>消除幻读需保护谓词范围，或采用能保证匹配行集合稳定的并发机制</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">条件更新按当前余票扣减</h2>
+    <div class="slide-content"><p class="slide-lead">单行扣减以 Remaining &gt; 0 为条件，用影响行数判断是否扣减</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-sql">UPDATE Flight
+SET Remaining = Remaining - 1
+WHERE Fno = 'F1' AND Remaining &gt; 0;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 36% 42%"><colgroup><col style="width:22%"><col style="width:36%"><col style="width:42%"></colgroup><thead><tr><th>独立初值</th><th>第一个扣减成功</th><th>第二个请求</th></tr></thead><tbody><tr><td>16 张</td><td>变为 15，影响 1 行</td><td>再变为 14，影响 1 行</td></tr><tr><td>1 张</td><td>变为 0，影响 1 行</td><td>条件不成立，影响 0 行</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>事务型 DBMS 协调条件更新；0 行表示未扣减，1 行需成功提交后确认</p></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="c3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">售票事务：扣票、订单与重试</h2>
+    <div class="slide-content"><p class="slide-lead">扣票与订单共同提交，请求编号识别重复业务</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 66%"><colgroup><col style="width:34%"><col style="width:66%"></colgroup><thead><tr><th>要求</th><th>需要确认的动作</th></tr></thead><tbody><tr><td>防止超卖与覆盖扣减</td><td>条件更新、影响行数检查或正确的锁定读取</td></tr><tr><td>扣票与生成订单一起成功</td><td>纳入同一事务；任何必要步骤失败则回滚</td></tr><tr><td>重试避免重复出票</td><td>识别唯一请求编号，核对是否已处理</td></tr><tr><td>并发冲突后可恢复处理</td><td>按 DBMS 返回结果回滚或重试整个业务事务</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节验证单行扣减；完整售票系统需落实订单事务、错误处理与重试规则</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">CONCURRENCY AND LOCKING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">读写结果、隔离保证与锁等待</h2>
+    <div class="slide-content"><p class="slide-lead">过期值写回造成丢失修改，读前加锁保护余票扣减</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>售票应得到 14</h3><p>旧值覆盖留下 15；正确取 X 锁后，第二个事务读 15 再扣减</p></article><article class="content-card emphasis-card" tabindex="0"><h3>三类读取异常</h3><p>未提交值是脏读，同一行变值是不可重复读，匹配行集合变化是幻读</p></article><article class="content-card emphasis-card" tabindex="0"><h3>锁对象与释放时机</h3><p>同一对象 S／S 相容，其余 S／X 组合冲突；S 的释放时机区分二、三级</p></article><article class="content-card emphasis-card" tabindex="0"><h3>业务成功条件</h3><p>核对扣减行数、事务提交与请求编号；等待中的请求尚未完成</p></article></div></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
+    <h2 class="slide-title">并发异常、隔离保证与封锁规则</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-12-1/mindmap-12-1.html" title="并发异常、隔离保证与封锁规则"></iframe></div></div>
+    <div class="numeric-progress">19/20</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH12 <span>|</span> 12.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定 <code>R1(A) R2(A) W1(A) W2(A)</code>，如何判断它是串行还是交错调度，并说明异常？</span></li><li><span class="question-no">02</span><span class="question-text">如何用最小操作线索区分丢失修改、脏读、不可重复读和幻读？</span></li><li><span class="question-no">03</span><span class="question-text">给定业务风险，如何选择隔离目标，并说明为什么不能只凭产品名称推断实现？</span></li><li><span class="question-no">04</span><span class="question-text">T1 持有 S(A)、T2 请求 X(A) 时是否等待，为什么？</span></li><li><span class="question-no">05</span><span class="question-text">一级、二级和三级协议的 S/X 锁申请与释放时机有什么区别？</span></li><li><span class="question-no">06</span><span class="question-text">冲突图、死锁和可串行化判断分别解决哪些并发控制问题？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">两个事务都读 16 后各写 15，哪一次更新被覆盖？</span></li><li><span class="question-no">02</span><span class="question-text">T1 读取时 T2 未提交，但 T2 后来提交，这仍是脏读吗？</span></li><li><span class="question-no">03</span><span class="question-text">同一行的值变化与多出匹配行，分别是哪种异常？</span></li><li><span class="question-no">04</span><span class="question-text">两人先读 16，再排队取 X 锁，为什么仍可能写回两个 15？</span></li><li><span class="question-no">05</span><span class="question-text">二级和三级协议下，T1 第二次分别读到什么？</span></li><li><span class="question-no">06</span><span class="question-text">仅剩一张票时，第二条条件扣减影响 0 行，应如何处理？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-11-2.html" title="上一节：11.2 日志、检查点与数据库镜像" aria-label="上一节：11.2 日志、检查点与数据库镜像">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -216,7 +274,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
+    <div class="numeric-progress">20/20</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

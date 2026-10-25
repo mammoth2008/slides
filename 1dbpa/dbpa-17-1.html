@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 17.1 内存数据库概述与新硬件 | HUST</title>
+  <title>DBPA 17.1 内存数据库与硬件 | HUST</title>
   <meta name="description" content="用订单提交、断电恢复和内存访问说明内存数据库与新硬件">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,146 +25,248 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-17-1/assets/dbpa-17-1.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-17-1/assets/dbpa-17-1-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 17.1</div>
-      <h1>内存数据库概述与新硬件</h1>
-      <p class="cover-description">订单放进内存后，断电怎样恢复、远程取数为何更慢、GPU 何时值得使用</p>
+      <h1>内存数据库<br>与新硬件</h1>
+      <p class="cover-description">订单驻留内存，持久日志支持断电恢复</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-16.2 讨论了 HTAP、混合负载和新硬件机会；本单元先比较 DRDB 与 IMDB，再说明日志与检查点怎样处理断电，以及多核、GPU、NUMA 和 NVM 各自改变什么。封面图只作概念引导，不是具体系统结构的证据；内存数据库也不等同于 HTAP。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">订单改用内存：写清断电从哪恢复、线程靠近哪份数据、哪些查询交给 GPU</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较磁盘驻留数据库（DRDB）和内存数据库（IMDB）的存储与访问假设</span></li><li><span class="list-marker">02</span><span class="list-text">解释内存数据库不只是把磁盘结构完整缓存到内存</span></li><li><span class="list-marker">03</span><span class="list-text">区分日志、检查点、NVM 与复制在断电恢复和节点切换中各做什么</span></li><li><span class="list-marker">04</span><span class="list-text">区分 SIMD 数据级并行、多线程任务级并行和 NUMA 局部性</span></li><li><span class="list-marker">05</span><span class="list-text">判断哪些批量算子和数据规模足以抵消 CPU 与 GPU 之间的传输时间</span></li><li><span class="list-marker">06</span><span class="list-text">比较 DRAM、NVM 和 SSD／磁盘的典型数据库角色</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="slide-content"><p class="slide-lead">记录位置、访问开销与恢复材料共同影响内存数据库的设计</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较缓冲命中、未命中与内存记录访问</span></li><li><span class="list-marker">02</span><span class="list-text">计算数据、索引和临时工作区的总内存需求</span></li><li><span class="list-marker">03</span><span class="list-text">用检查点与已提交日志恢复订单</span></li><li><span class="list-marker">04</span><span class="list-text">区分 Cache 局部性、SIMD 与多线程</span></li><li><span class="list-marker">05</span><span class="list-text">比较 NUMA 本地等待与跨节点执行</span></li><li><span class="list-marker">06</span><span class="list-text">把传输和启动成本算进 GPU 总耗时</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.5238%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">DRDB 读磁盘页进缓冲，IMDB 直访内存</h2>
-    <div class="slide-content"><p class="slide-lead">两者都有 CPU、内存、Cache；差别是数据放哪、查询经过哪些步骤</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-memory-hardware-image2.webp" data-full-src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-memory-hardware-image2.webp" alt="作为硬件背景示意，展示磁盘驻留与内存数据库在 I/O、CPU、Cache 和存储层次上的典型差异" tabindex="0" role="button" aria-label="放大图片：作为硬件背景示意，展示磁盘驻留与内存数据库在 I/O、CPU、Cache 和存储层次上的典型差异" decoding="async"><figcaption>磁盘驻留与内存数据库的典型存储、访问和优化差异；IMDB 仍需日志、恢复和持久介质</figcaption></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>要比较的事</th><th>磁盘驻留数据库（DRDB）</th><th>内存数据库（IMDB）</th></tr></thead><tbody><tr><td>主存储</td><td>工作数据主要驻留磁盘，内存缓存热点</td><td>核心工作数据驻留内存，仍需持久介质与恢复路径</td></tr><tr><td>访问路径</td><td>页／槽进入缓冲区，再由 CPU 处理</td><td>处理器直接访问面向内存的记录与索引结构</td></tr><tr><td>典型优化重点</td><td>I/O 与缓冲命中，也要关注 CPU 与 Cache</td><td>CPU、Cache 与并行，也要承担持久性 I/O</td></tr><tr><td>外存角色</td><td>工作数据与持久副本</td><td>后备、日志或其他持久性路径</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">DRDB AND IMDB</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">订单 O103/1 的读取路径</h2>
+    <div class="slide-content"><p class="slide-lead">磁盘驻留数据库 DRDB 与内存数据库 IMDB 使用不同的记录访问路径</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 51% 18%"><colgroup><col style="width:31%"><col style="width:51%"><col style="width:18%"></colgroup><thead><tr><th>方案</th><th>索引定位之后的路径</th><th>读到的值</th></tr></thead><tbody><tr><td>DRDB，P9 未缓存</td><td>读 P9 到缓冲区→找槽 2→记录</td><td>1200</td></tr><tr><td>DRDB，P9 已缓存</td><td>查缓冲映射→找槽 2→记录</td><td>1200</td></tr><tr><td>IMDB，记录常驻</td><td>访问内存记录 R17 并检查版本</td><td>1200</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>P9、槽 2、R17 为示意编号；缓冲命中免读盘，记录访问须检查版本与并发</p></div></div>
+    <div class="numeric-progress">3/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-grid"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">磁盘页进 RAM，仍有页、槽、缓冲开销</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>全部数据缓存到 RAM，就已经是内存数据库了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">IMDB 重排记录、索引、查询循环，让 CPU 少走磁盘 I/O 步骤</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>存储布局</h3><p>DRDB 依赖页、槽位和缓冲区；IMDB 面向内存布局组织记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>访问路径</h3><p>DRDB 通过缓冲区间接访问数据；IMDB 直接访问面向内存的结构并缩短指针路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询模型</h3><p>DRDB 以 I/O 与缓冲命中为重点；IMDB 关注 Cache、并行和内存带宽</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>完整缓存仍可能保留页／槽布局和缓冲区管理开销；IMDB 还要面向内存访问重设计存储和查询模型</p></div></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">NOT JUST CACHE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">缓冲页与内存记录的结构区别</h2>
+    <div class="slide-content"><p class="slide-lead">IMDB 以主存为主要工作存储，按内存访问特性设计结构</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>缓存完整的磁盘结构</h3><p>数据页命中后免读盘，保留页映射、槽位和缓冲管理</p></article><article class="content-card emphasis-card" tabindex="0"><h3>面向内存的结构</h3><p>连续数组、紧凑索引、记录句柄可缩短访问路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>共同需要的能力</h3><p>设计索引、版本、并发与恢复机制</p></article><article class="content-card emphasis-card" tabindex="0"><h3>可验证的差别</h3><p>同负载测 CPU 开销、访存与吞吐</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>IMDB 可保留页或块；数据全缓存与面向内存优化结构是两项不同工作</p></div></div>
+    <div class="numeric-progress">4/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a3a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">RAM 断电后，已经提交的订单仍要找回来</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>有多个副本，就可以不要日志和检查点了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">事务可在内存完成，但提交状态必须可恢复</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-persistence.svg" data-full-src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-persistence.svg" alt="内存数据库用日志和检查点支持恢复，用 NVM 作为持久介质，并可用复制副本支持故障切换" tabindex="0" role="button" aria-label="放大图片：内存数据库用日志和检查点支持恢复，用 NVM 作为持久介质，并可用复制副本支持故障切换" decoding="async"><figcaption>日志和检查点帮助恢复提交状态；NVM 提供持久介质；复制主要支持高可用</figcaption></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">日志：提交前写入可靠介质，为后续重做提供依据</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">检查点：周期性保存内存状态，提供较早的恢复基线</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">NVM：一类非易失性介质，可作为低延迟日志或状态存储；特征随介质而变</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">复制：同步或异步副本可用于故障切换和服务连续性；持久性仍由提交和可靠存储语义决定</span></li></ol></div></div></div>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">PERSISTENCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">峰值内存需求包括数据、索引与工作区</h2>
+    <div class="slide-content"><p class="slide-lead">独立容量预算；以下均为同时存在的峰值需求，1 GiB = 2³⁰ 字节</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="70% 30%"><colgroup><col style="width:70%"><col style="width:30%"></colgroup><thead><tr><th>内存用途</th><th>预算</th></tr></thead><tbody><tr><td>基础数据＋索引</td><td>64＋24＝88 GiB</td></tr><tr><td>旧版本与事务状态</td><td>16 GiB</td></tr><tr><td>查询临时工作区</td><td>24 GiB</td></tr><tr><td>操作系统及其他进程</td><td>16 GiB</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>峰值 144 GiB，超过物理 128 GiB 达 16 GiB；常驻方案须另留运行余量</p></div></div>
+    <div class="numeric-progress">5/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.8095%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-grid"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">SIMD、多线程、Cache 局部性各管什么</h2>
-    <div class="slide-content"><p class="slide-lead">SIMD 算一组值，多线程让多核工作，Cache 局部性让核心少等内存</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>SIMD</h3><p>同一条指令同时处理一组数据，适合规则的向量化操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多线程</h3><p>多个核心并行推进任务，但要承担同步和共享资源竞争</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Cache 局部性</h3><p>让重复或相邻数据更可能被快速访问；它是访存优化，不是另一种并行级别</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>选择、投影和聚集等批量算子可能受益；数据布局、内存带宽、分支不规则和同步开销可能抵消收益</p></div></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">MULTI CORE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">检查点与提交日志恢复订单</h2>
+    <div class="slide-content"><p class="slide-lead">接 16.2 的订单；本例用已提交快照与持久日志恢复到 18000 元</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 40% 29%"><colgroup><col style="width:31%"><col style="width:40%"><col style="width:29%"></colgroup><thead><tr><th>持久材料</th><th>保存内容</th><th>恢复动作</th></tr></thead><tbody><tr><td>完整检查点 100</td><td>四条订单行，共 14000 元</td><td>加载这四条记录</td></tr><tr><td>日志 101 及提交标记</td><td>O103 两行，1200 与 2800</td><td>完整重放至 18000</td></tr><tr><td>日志 102，无提交标记</td><td>O104 一行 500 元，尚未提交</td><td>跳过未提交订单</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例检查点仅含已提交状态；其他恢复算法可能需撤销 UNDO</p></div></div>
+    <div class="numeric-progress">6/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-grid"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">NUMA 让本地与远程内存访问有不同代价</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>线程绑得越死、本地访问越多，性能就一定越好吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">NUMA 以节点组织处理器与本地内存，强调局部性与负载均衡</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>本地访问</h3><p>线程访问本节点内存；在竞争条件相近时通常延迟较低</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>远程访问</h3><p>线程跨 NUMA 节点取数；通常延迟更高并占用互连带宽</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>设计取舍</h3><p>数据分区和线程绑定减少远程访问，但过度绑定可能破坏负载均衡</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>“尽量靠近”是优化倾向，不是必须同节点；实际取舍取决于局部性、竞争和负载均衡</p></div></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">NUMA</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">提交日志持久化后返回成功</h2>
+    <div class="slide-content"><p class="slide-lead">本例以本地持久日志保证已确认事务能从整机断电恢复</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">计算：在事务私有状态中准备 O103 两行</span></li><li><span class="list-marker">02</span><span class="list-text">记日志：记录两条更新和事务 101 的提交信息</span></li><li><span class="list-marker">03</span><span class="list-text">持久化：等待该日志可靠保存，满足本例提交条件</span></li><li><span class="list-marker">04</span><span class="list-text">确认：向用户返回成功，稍后生成新检查点</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例可在新检查点生成前确认成功；数据页 I/O 减少，日志持久化成本保留</p></div></div>
+    <div class="numeric-progress">7/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-grid"
+<section id="a4b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">地区汇总交 GPU 前，先算搬数据要多久</h2>
-    <div class="slide-content"><p class="slide-lead">规则、批量、计算量大更可能受益；数据少、分支多、传输慢可能更久</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>CPU</h3><p>CPU 负责解析、事务、分支和复杂流程控制</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>GPU</h3><p>GPU 负责规则、大批量、计算密集型的数据处理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>算子</h3><p>选择、投影、连接、聚集和排序等操作都可能成为候选操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可能不更快的情况</h3><p>CPU 与 GPU 传输、分支不规则或数据规模不足可能抵消收益</p></article></div></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">GPU</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">副本状态与故障范围决定恢复结果</h2>
+    <div class="slide-content"><p class="slide-lead">以下独立场景分别检查副本进度、断电范围和历史恢复材料</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="55% 45%"><colgroup><col style="width:55%"><col style="width:45%"></colgroup><thead><tr><th>场景</th><th>故障后能否保住 101？</th></tr></thead><tbody><tr><td>主库与副本都只在 DRAM，且同时断电</td><td>不能仅凭这些副本恢复</td></tr><tr><td>主库失效，异步副本只收到 100</td><td>接管可能缺少事务 101</td></tr><tr><td>可靠介质已有 100 检查点和 101 提交日志</td><td>可按本节规则恢复到 18000</td></tr><tr><td>误删已复制到全部副本</td><td>仍需可回溯的备份或日志策略</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>复制支持故障接管；提交条件、故障范围与持久材料共同决定恢复保证</p></div></div>
+    <div class="numeric-progress">8/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.0952%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1 <span>|</span> 17.1</div>
-    <h2 class="slide-title">NVM 替代 DRAM、SSD？看介质读写</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>NVM 非易失，就能完全替代 DRAM 和 SSD 吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">NVM 是一类技术，不是单一设备；具体读写特征决定它适合什么角色</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-memory-hierarchy.svg" data-full-src="resources/decks/dbpa-17-1/assets/generated/dbpa-ch17-memory-hierarchy.svg" alt="典型硬件层次示意：Cache、DRAM、NVM 和 SSD 或磁盘构成存储路径，CPU 与 GPU 构成不同计算路径" tabindex="0" role="button" aria-label="放大图片：典型硬件层次示意：Cache、DRAM、NVM 和 SSD 或磁盘构成存储路径，CPU 与 GPU 构成不同计算路径" decoding="async"><figcaption>NVM 可处于 DRAM 与 SSD／磁盘之间，具体位置取决于介质和部署</figcaption></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>层次</th><th>主要优势</th><th>数据库角色</th></tr></thead><tbody><tr><td>DRAM</td><td>延迟低但易失</td><td>活跃数据和高速计算</td></tr><tr><td>NVM</td><td>非易失；容量和读写特征随介质而变</td><td>日志或温数据等候选角色</td></tr><tr><td>SSD／磁盘</td><td>常见成本低、容量大</td><td>冷数据或备份等常见角色</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>“越靠上通常越快、越靠下通常容量更大”是层次趋势；具体部署仍取决于介质特征、成本和恢复要求</p></div></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">NVM</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">连续布局减少触及的 Cache 行</h2>
+    <div class="slide-content"><p class="slide-lead">CPU 高速缓存 Cache 按行取数；设每行 64 B，恰容纳 8 个 64 位整数</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="53% 29% 18%"><colgroup><col style="width:53%"><col style="width:29%"><col style="width:18%"></colgroup><thead><tr><th>布局与读取</th><th>首次冷读触及的 Cache 行</th><th>带入字节</th></tr></thead><tbody><tr><td>8 值连续，起点按 64 B 对齐</td><td>1 行</td><td>64 B</td></tr><tr><td>8 值分散，每值位于不同 Cache 行</td><td>8 行</td><td>512 B</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>只计这些值的数据行，忽略预取等访问；字节量增至 8 倍，耗时比例仍须实测</p></div></div>
+    <div class="numeric-progress">9/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
-    <h2 class="slide-title">订单进内存：四项检查避免快而不可靠</h2>
-    <div class="slide-content"><p class="slide-lead">写订单放哪、断电怎样恢复、线程与数据在哪个 NUMA 节点、GPU 是否真更快</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 一次订单查询经过哪里</h3><p>指出哪些订单和索引常驻内存，哪些页、槽和缓冲步骤被移除，再画出 CPU 从索引到记录的访问顺序</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 拔掉电源后怎样恢复</h3><p>说明从哪个检查点开始、读取哪段日志、重做哪些订单，以及副本何时接管服务；NVM 保存什么也要写明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 线程靠近哪份数据</h3><p>标出订单分区和线程所在 NUMA 节点；若把地区汇总交给 GPU，还要计入搬运数据和等待设备的时间</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 亲手测五件事</h3><p>测订单延迟、每秒处理量、断电后提交是否仍在、节点能否切换、线程是否挤在一个节点；性能结果只对本次硬件和负载负责</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">SIMD 处理向量，多线程处理分区</h2>
+    <div class="slide-content"><p class="slide-lead">单指令多数据 SIMD 以向量为单位；本例金额为[3000，2000，3200，5800]</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 47% 27%"><colgroup><col style="width:26%"><col style="width:47%"><col style="width:27%"></colgroup><thead><tr><th>操作</th><th>本例过程</th><th>结果</th></tr></thead><tbody><tr><td>SIMD 选择示意</td><td>一组四值同时比较&gt;2500</td><td>掩码[1,0,1,1]</td></tr><tr><td>按掩码取值后求和</td><td>3000＋3200＋5800</td><td>12000</td></tr><tr><td>两线程分区求和</td><td>T0 前半 5000，T1 后半 9000</td><td>合并 14000</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>SIMD 宽度随类型与硬件变化；线程各算局部值，再安全合并，避免无保护地更新共享总数</p></div></div>
+    <div class="numeric-progress">10/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
+  </section>
+<section id="b1b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">串行部分限制多核加速</h2>
+    <div class="slide-content"><p class="slide-lead">独立理想模型：任务 20% 只能串行，80% 可完美分给 8 核</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 29% 29%"><colgroup><col style="width:42%"><col style="width:29%"><col style="width:29%"></colgroup><thead><tr><th>部分</th><th>单核耗时</th><th>8 核理想耗时</th></tr></thead><tbody><tr><td>串行部分</td><td>20 ms</td><td>20 ms</td></tr><tr><td>可并行部分</td><td>80 ms</td><td>10 ms</td></tr><tr><td>合计</td><td>100 ms</td><td>30 ms</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>理想加速 100/30≈3.33 倍；实际耗时包含调度、同步、访存和带宽争用</p></div></div>
+    <div class="numeric-progress">11/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.3810%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">NUMA 线程访问本地与远程内存</h2>
+    <div class="slide-content"><p class="slide-lead">非均匀内存访问 NUMA 中，线程与数据的位置影响访存路径</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-17-1/assets/numa-sales-partitions.svg" data-full-src="resources/decks/dbpa-17-1/assets/numa-sales-partitions.svg" alt="节点 0 的线程 T0 就近汇总华东 3000 加 2000 加 5800 得 10800；节点 1 线程 T1 就近汇总华北 3200，再合并为 14000；跨节点取数经过互连" tabindex="0" role="button" aria-label="放大图片：节点 0 的线程 T0 就近汇总华东 3000 加 2000 加 5800 得 10800；节点 1 线程 T1 就近汇总华北 3200，再合并为 14000；跨节点取数经过互连" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>使用 16.1 四条事实；远程访存经过节点互连，地区分区可能负载不均</p></div></div>
+    <div class="numeric-progress">12/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">本地访问比例改变累计等待</h2>
+    <div class="slide-content"><p class="slide-lead">独立串行访存估算：本地 100 ns、远程 180 ns，均为教学假设</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 38% 22%"><colgroup><col style="width:40%"><col style="width:38%"><col style="width:22%"></colgroup><thead><tr><th>1000 次访问的分布</th><th>计算</th><th>累计等待</th></tr></thead><tbody><tr><td>500 次本地＋500 次远程</td><td>500×100＋500×180</td><td>140 μs</td></tr><tr><td>900 次本地＋100 次远程</td><td>900×100＋100×180</td><td>108 μs</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例访存串行、不重叠，未计 Cache 命中与并行；实际硬件延迟须测量</p></div></div>
+    <div class="numeric-progress">13/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
+  </section>
+<section id="b2b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">节点调度比较排队与执行总时间</h2>
+    <div class="slide-content"><p class="slide-lead">独立调度例按排队与执行时间之和比较两个节点</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 20% 20% 20%"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>选择</th><th>排队</th><th>执行</th><th>合计</th></tr></thead><tbody><tr><td>留在本地节点</td><td>8 ms</td><td>1 ms</td><td>9 ms</td></tr><tr><td>转到空闲远程节点</td><td>0 ms</td><td>2 ms</td><td>2 ms</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例远程完成更早；实际估算需包含迁移、共享状态和互连竞争</p></div></div>
+    <div class="numeric-progress">14/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">GPU 总耗时包含传输、启动与计算</h2>
+    <div class="slide-content"><p class="slide-lead">独立 CPU 与 GPU 存储的串行耗时模型；下列均为教学设定，单位 ms</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="48% 26% 26%"><colgroup><col style="width:48%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>成本</th><th>大批任务</th><th>小批任务</th></tr></thead><tbody><tr><td>CPU 直接完成</td><td>20</td><td>0.20</td></tr><tr><td>GPU 输入与结果传输</td><td>8＋1＝9</td><td>0.50＋0.10＝0.60</td></tr><tr><td>GPU 启动与计算</td><td>2＋3＝5</td><td>0.20＋0.05＝0.25</td></tr><tr><td>GPU 路径合计</td><td>14</td><td>0.85</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>大批 14&lt;20，小批 0.85&gt;0.20；共享内存或数据复用会改变传输成本</p></div></div>
+    <div class="numeric-progress">15/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">GPU 候选任务的计算与数据特征</h2>
+    <div class="slide-content"><p class="slide-lead">规则并行计算可摊薄开销，收益须结合数据传输和任务规模评估</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>规则批量</h3><p>数值筛选、聚合、连接与排序</p></article><article class="content-card emphasis-card" tabindex="0"><h3>不规则控制与少量点查</h3><p>分支与随机访存可能抵消并行收益</p></article><article class="content-card emphasis-card" tabindex="0"><h3>容量与传输</h3><p>数据是否已在设备上，显存是否足够，结果有多大</p></article><article class="content-card emphasis-card" tabindex="0"><h3>事务责任</h3><p>数据库负责提交、隔离与恢复，GPU 可加速算子</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>CPU 与 GPU 按算子分工；查询耗时与事务正确性须分别验证</p></div></div>
+    <div class="numeric-progress">16/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.1905%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">存储介质的访问接口与持久化责任</h2>
+    <div class="slide-content"><p class="slide-lead">非易失性存储 NVM 包括闪存；访问接口决定读写方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 25% 43%"><colgroup><col style="width:32%"><col style="width:25%"><col style="width:43%"></colgroup><thead><tr><th>这里比较的介质</th><th>典型访问接口</th><th>断电与数据库责任</th></tr></thead><tbody><tr><td>DRAM 主存</td><td>内存读写</td><td>易失；需其他恢复依据</td></tr><tr><td>持久内存的一种实现</td><td>内存读写</td><td>仍需持久化顺序和一致更新</td></tr><tr><td>SSD / 磁盘设备</td><td>块 I/O</td><td>仍需日志、备份和恢复协议</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>各类介质的延迟、带宽、容量、写入耐久与成本须逐项比较</p></div></div>
+    <div class="numeric-progress">17/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.9524%"></div></div>
+  </section>
+<section id="b4a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">转账的持久状态与事务完整性</h2>
+    <div class="slide-content"><p class="slide-lead">独立账户转账例：A=100 元、B=50 元，计划转 10 元后变为 90/60</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 28% 30%"><colgroup><col style="width:42%"><col style="width:28%"><col style="width:30%"></colgroup><thead><tr><th>已持久保存的内容</th><th>断电后状态</th><th>是否正确</th></tr></thead><tbody><tr><td>只有 A 减 10 已经保存</td><td>A=90，B=50</td><td>总额 140，不完整</td></tr><tr><td>两项更新及提交条件均满足</td><td>A=90，B=60</td><td>总额 150，完整结果</td></tr><tr><td>按恢复协议撤回未提交事务</td><td>A=100，B=50</td><td>总额 150，原状态</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>CPU 写入可能暂留缓存；恢复协议须控制持久化顺序并保证事务原子性</p></div></div>
+    <div class="numeric-progress">18/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
+    <h2 class="slide-title">内存数据库的访问、计算与恢复</h2>
+    <div class="slide-content"><p class="slide-lead">记录布局决定访问路径，提交与恢复协议保护事务结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>驻留与容量</h3><p>数据、索引、版本、工作区占内存</p></article><article class="content-card emphasis-card" tabindex="0"><h3>提交与恢复</h3><p>检查点与提交日志恢复 18000 元</p></article><article class="content-card emphasis-card" tabindex="0"><h3>局部与并行</h3><p>分别核算缓存、并行与访存成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>异构与持久</h3><p>GPU 计传输；NVM 配恢复协议</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第 17.2 节讨论列存、查询执行、索引、连接与事务恢复的实现</p></div></div>
+    <div class="numeric-progress">19/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-17-1/mindmap-17-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <div class="numeric-progress">20/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH17 <span>|</span> 17.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">一个系统把全部磁盘数据缓存到 DRAM，为什么仍不一定是 IMDB？</span></li><li><span class="question-no">02</span><span class="question-text">订单提交后 DRAM 断电，日志、检查点、NVM 和复制分别承担什么角色？</span></li><li><span class="question-no">03</span><span class="question-text">同一查询访问本地 NUMA 节点和远程节点时，性能差异可能来自哪里？</span></li><li><span class="question-no">04</span><span class="question-text">一个小规模、分支复杂的查询交给 GPU，为什么可能没有收益？</span></li><li><span class="question-no">05</span><span class="question-text">NVM 与 SSD／磁盘分别适合承担什么角色，判断依据是什么？</span></li><li><span class="question-no">06</span><span class="question-text">在 HTAP 场景中，IMDB 能解决哪些存储或访问问题，又不能自动解决哪些问题？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">P9 已在缓冲区时，还需要再读一次磁盘页吗？</span></li><li><span class="question-no">02</span><span class="question-text">64 GiB 基础数据为什么可能装不进 128 GiB 机器？</span></li><li><span class="question-no">03</span><span class="question-text">检查点 100、已提交 101 与未提交 102，恢复后金额是多少？</span></li><li><span class="question-no">04</span><span class="question-text">同样 8 个值，连续和分散布局为何触及不同数量的 Cache 行？</span></li><li><span class="question-no">05</span><span class="question-text">NUMA 远程执行何时可能比留在本地等待更合适？</span></li><li><span class="question-no">06</span><span class="question-text">GPU 小批任务 0.85 ms 为什么比 CPU 的 0.20 ms 慢？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-16-2.html" title="上一节：16.2 HTAP 与大数据时代的新型数据仓库" aria-label="上一节：16.2 HTAP 与大数据时代的新型数据仓库">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -179,8 +281,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">21/21</div>
+    <div class="semantic-label">MEMORY LOCALITY AND RECOVERY</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

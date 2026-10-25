@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 14.3 分布式、云原生与数据库发展展望 | HUST</title>
+  <title>DBPA 14.3 分布式与云原生数据库 | HUST</title>
   <meta name="description" content="当单机装不下、热点集中或节点故障时，比较分片、副本、共识、计算存储解耦与 HTAP 的实际作用">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,149 +25,236 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-14-3/assets/dbpa-14-3.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-14-3/assets/dbpa-14-3-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 14.3</div>
-      <h1>分布式、云原生与数据库发展展望</h1>
-      <p class="cover-description">单机装不下、一个节点坏了、报表又要看刚提交订单时，系统怎样继续工作</p>
+      <h1>分布式与云原生<br>数据库发展展望</h1>
+      <p class="cover-description">分片定位数据，协议决定提交，快照确定报表版本</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元用分片、多副本、硬件、云原生、HTAP、DB4AI 和多模型串起未来架构。
-封面图用于建立主题，不作为具体系统架构证据。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">分片扩容量，副本存多份，共识决定提交；写跨片、复制、实时分析的等待</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">从规模、热点和故障压力判断分片与副本分别解决什么</span></li><li><span class="list-marker">02</span><span class="list-text">说明高速网络、多核、大内存和 NVM 让哪些读写更快，以及网络故障、持久化和协调为何仍有代价</span></li><li><span class="list-marker">03</span><span class="list-text">解释分片、路由、副本和共识之间的职责关系</span></li><li><span class="list-marker">04</span><span class="list-text">比较传统云数据库托管与云原生资源解耦的收益和代价</span></li><li><span class="list-marker">05</span><span class="list-text">说明 HTAP、DB4AI 和多模型对新鲜度、隔离、接口与治理提出的要求</span></li><li><span class="list-marker">06</span><span class="list-text">对一种新架构写出原问题、使用的硬件或网络条件、请求怎样执行以及新增故障和运维工作</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="slide-content"><p class="slide-lead">说明 P01 的请求位置、提交条件和查询可见时间</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">按 P01 的分片规则找到副本组</span></li><li><span class="list-marker">02</span><span class="list-text">判断故障后三副本的多数人数条件</span></li><li><span class="list-marker">03</span><span class="list-text">计算请求分布，识别单键写热点</span></li><li><span class="list-marker">04</span><span class="list-text">区分托管责任与计算、存储的组织方式</span></li><li><span class="list-marker">05</span><span class="list-text">用提交序号和时间线核对 HTAP 新鲜度</span></li><li><span class="list-marker">06</span><span class="list-text">区分 AI4DB、DB4AI 和多模型接口的作用</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">按订单号分片：先找到保存订单的节点</h2>
-    <div class="slide-content"><p class="slide-lead">单个订单在一个分片完成可少通信；同时改多个分片仍要跨节点协调</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" data-full-src="resources/decks/dbpa-14-3/assets/generated/dbpa-ch14-shard-replica.svg" alt="请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" tabindex="0" role="button" aria-label="放大图片：请求按键或范围路由到目标分片，分片包含副本并通过提交协调保持状态" decoding="async"><figcaption>概念关系图：分片路由、复制与提交协调</figcaption></figure>
-<div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>识别</h3><p>定位容量压力或访问热点</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>切分</h3><p>按键或范围把不同数据划入分片</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>路由</h3><p>把请求发送到持有目标数据的分片</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>本地化</h3><p>尽量在目标分片完成查询或事务</p></div></div></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>分片之后，每个请求都能独立在一个节点完成吧？</p></div></div></div></aside>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">DIVIDE AND CONQUER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">P01 的请求路由与副本选择</h2>
+    <div class="slide-content"><p class="slide-lead">P01 位于 S1；副本协议与读策略决定本次可用副本</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-14-3/assets/shard-routing-example.svg" data-full-src="resources/decks/dbpa-14-3/assets/shard-routing-example.svg" alt="P01 请求经路由进入 S1 的 A1 A2 A3 副本组；S2 由 B1 B2 B3 存储 P03 P04" tabindex="0" role="button" aria-label="放大图片：P01 请求经路由进入 S1 的 A1 A2 A3 副本组；S2 由 B1 B2 B3 存储 P03 P04" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>分片划分数据；节点可承载多个分片的副本，图中为便于读图分开放置</p></div></div>
+    <div class="numeric-progress">3/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-grid"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">分片、副本与共识的职责</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分片、副本和共识解决的是同一个问题吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">能否继续服务取决于副本位置、法定人数和故障范围</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>分片</h3><p>拆分不同数据，扩展容量与并行；跨片查询和事务需要协调</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>多副本</h3><p>保存同一分片的多份数据；冗余带来存储和复制延迟</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>共识</h3><p>协调副本对提交状态的一致判断；失去法定多数时可能等待</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>副本保存多个状态；共识决定哪个状态可以作为提交结果</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>在采用多数派法定人数的三副本配置中，至少两个副本可达时可能继续提交；是否继续还取决于共识配置和故障范围</p></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">SCALE AND AVAILABILITY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">请求访问的键决定参与分片</h2>
+    <div class="slide-content"><p class="slide-lead">独立操作：P01 初始 16，P03 初始 8；两者各买一件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 32% 42%"><colgroup><col style="width:26%"><col style="width:32%"><col style="width:42%"></colgroup><thead><tr><th>请求</th><th>参与范围</th><th>执行结果要求</th></tr></thead><tbody><tr><td>只查 P01 库存</td><td>S1 副本组</td><td>按读策略返回一个库存值</td></tr><tr><td>统计所有零件库存</td><td>S1 与 S2</td><td>按约定的一致视图合并结果</td></tr><tr><td>同时扣 P01 与 P03</td><td>S1、S2 及订单参与者</td><td>一起得到 15、7，或一起撤销</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一订单可跨多个分片；分片设计须结合事务访问范围</p></div></div>
+    <div class="numeric-progress">4/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a2b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">内存、CPU、网络更快后，慢点会移动</h2>
-    <div class="slide-content"><p class="slide-lead">数据驻内存，查询并行、远程读加快；断电恢复、断网、跨节点提交仍需处理</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>硬件条件</th><th>带来的机会</th><th>必须承担的取舍</th></tr></thead><tbody><tr><td>多核与众核</td><td>并行查询与事务执行</td><td>共享状态与并发控制成本</td></tr><tr><td>大内存与 NVM（非易失性存储器）</td><td>更多数据驻留内存，部分访问与持久化代价下降</td><td>存储层次、持久性与恢复仍需设计</td></tr><tr><td>高速网络与 RDMA（远程直接内存访问）</td><td>降低远程访问代价，支持计算与存储解耦尝试</td><td>网络故障、远程一致性与资源隔离</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>硬件变化可以降低部分访问成本，但内存数据库仍需设计存储、查询和恢复</p></div></div>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">IN-MEMORY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">P01 的单键写热点</h2>
+    <div class="slide-content"><p class="slide-lead">每 100 个写请求：P01 有 90 个，P02 有 5 个，P03/P04 合计 5 个</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 29% 31%"><colgroup><col style="width:40%"><col style="width:29%"><col style="width:31%"></colgroup><thead><tr><th>放置方法</th><th>各处请求数</th><th>写入压力</th></tr></thead><tbody><tr><td>原规则：P01/P02 在 S1</td><td>S1=95，S2=5</td><td>S1 明显更忙</td></tr><tr><td>单独把 P01 放进 S3</td><td>S1=5，S2=5，S3=90</td><td>90 个请求集中到 S3</td></tr><tr><td>只增加 P01 的副本</td><td>仍然更新同一个键</td><td>同键更新存在写冲突</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>迁移可平衡不同键的负载；单键热点取决于写入频率、冲突与更新方式</p></div></div>
+    <div class="numeric-progress">5/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a2c" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">查询增多扩计算，数据增长扩存储</h2>
-    <div class="slide-content"><p class="slide-lead">计算、存储分开扩容，少闲置；远程读仍靠网络，元数据、隔离、恢复更复杂</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 25% 29%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:25%"><col style="width:29%"></colgroup><thead><tr><th>路径</th><th>资源组织</th><th>适合的变化</th><th>新增边界</th></tr></thead><tbody><tr><td>传统云托管</td><td>数据库实例与基础设施绑定程度较高</td><td>简化部署与运维</td><td>扩展粒度受实例形态影响</td></tr><tr><td>云原生路线</td><td>计算、服务与存储可以按负载解耦</td><td>查询量或数据量变化时弹性调整</td><td>网络、元数据、隔离与运维复杂度</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>云原生按负载选择计算、服务与存储的解耦边界</p></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">CLOUD NATIVE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">P02 迁移与写入交接</h2>
+    <div class="slide-content"><p class="slide-lead">简化迁移例：P02 从 S1 迁到 S3，路由版本从 v7 变为 v8</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">复制 P02 的已有数据，并追上迁移期间的更新</span></li><li><span class="list-marker">02</span><span class="list-text">按协议交接写入责任，避免两处独立接受新写</span></li><li><span class="list-marker">03</span><span class="list-text">发布 v8 路由：P02→S3</span></li><li><span class="list-marker">04</span><span class="list-text">持 v7 的请求被转发、重定向或拒绝后重试</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>迁移协议协调数据追赶、写入交接、路由更新与故障恢复</p></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">HTAP 兼顾事务与分析</h2>
-    <div class="slide-content"><p class="slide-lead">订单写入与经营分析共享业务事实，但必须约定新鲜度、可见性和隔离方式</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="订单写入（短事务）＋经营分析（长查询）　→　共享业务事实　→　新鲜度与隔离约束"><span class="relation-term">订单写入（短事务）＋经营分析（长查询）</span><span class="relation-operator">→</span><span class="relation-term">共享业务事实</span><span class="relation-operator">→</span><span class="relation-term">新鲜度与隔离约束</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>同一业务数据不等于同一物理副本；物理上可以有行存与列存副本，但会增加同步和隔离成本</p>
-<p>订单提交后报表允许延迟几秒，还是必须读到刚提交结果，是不同的新鲜度要求</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>HTAP 的副本刷新与共存策略决定报表新鲜度和事务隔离成本</p></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">HTAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">三副本中的“多数”是至少两份</h2>
+    <div class="slide-content"><p class="slide-lead">本例为固定三成员、非恶意故障、正确多数派协议；不推演完整协议</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 22% 36%"><colgroup><col style="width:42%"><col style="width:22%"><col style="width:36%"></colgroup><thead><tr><th>可互通成员</th><th>人数条件</th><th>提交约束</th></tr></thead><tbody><tr><td>A1、A2、A3</td><td>3≥2</td><td>有效领导者与日志条件</td></tr><tr><td>A1 停机，A2/A3 互通</td><td>2≥2</td><td>完成必要选主与日志衔接</td></tr><tr><td>A1/A2 停机，只剩 A3</td><td>1&lt;2</td><td>不能确认新的多数派提交</td></tr><tr><td>A1 隔离，A2/A3 互通</td><td>A2/A3：2≥2</td><td>A1 不能单独确认提交</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多数成员互通是必要条件；新提交还须满足选主与日志要求</p></div></div>
+    <div class="numeric-progress">7/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-grid"
+<section id="a3a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">DB4AI 的数据库支撑</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>数据库管好训练数据，就能自动保证模型准确和合规吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">DB4AI 支撑人工智能的数据处理与治理；模型准确性和数据合规仍需额外验证</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>声明式处理</h3><p>筛选、连接并构造训练数据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询与资源优化</h3><p>选择数据处理计划和资源路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>异构执行</h3><p>协调 CPU、GPU 等资源，同时承担数据搬运代价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据治理</h3><p>管理权限、血缘、敏感数据与质量规则</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>DB4AI 能支撑数据准备、查询优化、异构执行和治理，但不能替代模型评估与合规判断；GPU 细节取决于具体实现</p></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">DB4AI</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">机房故障与网络隔离</h2>
+    <div class="slide-content"><p class="slide-lead">同一机房断电可同时损失多个副本，网络隔离会阻断多数派通信</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>同一故障范围</h3><p>A1、A2 同机房断电，A3 尚在：只剩一份，缺少多数</p></article><article class="content-card emphasis-card" tabindex="0"><h3>旧主被隔离</h3><p>A1 与多数隔离，无法确认新提交</p></article><article class="content-card emphasis-card" tabindex="0"><h3>另一分片不可用</h3><p>S1 正常但 S2 无法提交，跨 S1/S2 订单仍可能等待或失败</p></article><article class="content-card emphasis-card" tabindex="0"><h3>已确认的提交</h3><p>正确协议保护已提交状态；落后节点须补齐才能按规则服务</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>超时可能由回复丢失引起；客户端须核查事务结果或幂等重试，避免重复扣减</p></div></div>
+    <div class="numeric-progress">8/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3 <span>|</span> 14.3</div>
-    <h2 class="slide-title">多模型协作的接口与调度</h2>
-    <div class="slide-content"><p class="slide-lead">模型选择先看数据形态与访问方式，统一入口不消除模型语义和事务边界</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 42% 38%"><colgroup><col style="width:20%"><col style="width:42%"><col style="width:38%"></colgroup><thead><tr><th>模型</th><th>典型访问</th><th>典型边界</th></tr></thead><tbody><tr><td>关系</td><td>约束、连接和精细事务</td><td>结构约束与事务边界清晰</td></tr><tr><td>键值</td><td>按键点查、缓存和简单读写</td><td>关系连接语义通常较弱</td></tr><tr><td>文档</td><td>灵活嵌套且变化较快的内容</td><td>跨文档事务与约束取决于实现</td></tr><tr><td>图</td><td>多跳关系和网络结构</td><td>图查询语义不同于关系连接</td></tr><tr><td>时序</td><td>按时间连续写入和窗口聚合</td><td>适合时间窗口，不替代通用事务模型</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多模型系统可以共享入口、跨模型优化和资源调度，但具体接口、一致性和事务能力取决于实现</p></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">MULTI MODEL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">硬件改变数据库的处理成本</h2>
+    <div class="slide-content"><p class="slide-lead">不同硬件改善不同环节，具体收益随负载与系统设计变化</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 36% 35%"><colgroup><col style="width:29%"><col style="width:36%"><col style="width:35%"></colgroup><thead><tr><th>硬件</th><th>具体帮助</th><th>配套设计</th></tr></thead><tbody><tr><td>更多 CPU 核</td><td>并行扫描多个分片</td><td>同一库存键上的冲突</td></tr><tr><td>更大内存</td><td>缓存更多数据与索引</td><td>断电恢复、内存带宽</td></tr><tr><td>非易失性介质 NVM</td><td>某些介质支持持久存储</td><td>持久化顺序和故障一致性</td></tr><tr><td>高速网络与 RDMA</td><td>降低部分远端数据传输开销</td><td>网络故障与远端并发访问</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>RDMA 提供远程直接内存访问；事务语义与数据持久化由相应协议保证</p></div></div>
+    <div class="numeric-progress">9/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
-    <h2 class="slide-title">给一个分布式方案做故障与延迟检查</h2>
-    <div class="slide-content"><p class="slide-lead">写数据位置、副本数、提交可达数；再查跨片事务、断网、报表延迟能否接受</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 分片、副本、共识各做什么</h3><p>用分片处理数据分布与热点，用副本处理节点冗余，用共识协调提交；不能用同一个词替代三项职责</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 坏几个节点还能提交</h3><p>说明副本放置、可达法定人数和故障范围；跨片事务、失去多数或网络分区时可能等待或失败</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 计算扩容与报表延迟</h3><p>分别判断计算量、数据量和分析新鲜度；资源解耦与 HTAP 仍要承担网络、同步、隔离和运维成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 测延迟、恢复和降级</h3><p>写出延迟、可见性、恢复、治理和降级条件；产品版本、具体协议、性能数字与配置必须另行核查</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">托管责任与云资源组织</h2>
+    <div class="slide-content"><p class="slide-lead">托管是责任安排，存算解耦是架构方式，两者可以同时存在</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 34% 33%"><colgroup><col style="width:33%"><col style="width:34%"><col style="width:33%"></colgroup><thead><tr><th>事项</th><th>一种安排</th><th>配套工作</th></tr></thead><tbody><tr><td>实例与备份维护</td><td>使用托管数据库服务</td><td>用户负责设计与授权</td></tr><tr><td>计算与存储分别扩容</td><td>采用支持独立扩容的架构</td><td>按瓶颈选择扩容对象</td></tr><tr><td>云资源池使用</td><td>按负载申请与释放资源</td><td>按负载设计资源组织</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>存算解耦是一种云原生设计思路，托管服务也可采用</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b1a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">计算与存储的扩容选择</h2>
+    <div class="slide-content"><p class="slide-lead">数据量与核数用于说明扩容选择，不代表实测吞吐或价格</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 33% 35%"><colgroup><col style="width:32%"><col style="width:33%"><col style="width:35%"></colgroup><thead><tr><th>观察</th><th>候选动作</th><th>效果核对</th></tr></thead><tbody><tr><td>500 GB，CPU 满载</td><td>计算从 8 核增至 16 核</td><td>检查锁冲突与 I/O 瓶颈</td></tr><tr><td>数据增长到 2 TB</td><td>增加存储容量与带宽</td><td>核对索引、备份与带宽</td></tr><tr><td>CPU 空闲，远端读拥堵</td><td>检查存储与网络路径</td><td>检查远端读取耗时变化</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>计算扩容可复用存储数据；缓存加载、远程访问与调度可能增加成本</p></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">混合事务分析处理 HTAP</h2>
+    <div class="slide-content"><p class="slide-lead">独立例：提交按顺序编号，分析水位表示已完整应用到该序号</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 30% 47%"><colgroup><col style="width:23%"><col style="width:30%"><col style="width:47%"></colgroup><thead><tr><th>时刻</th><th>事务源</th><th>分析副本</th></tr></thead><tbody><tr><td>10:03:00</td><td>O100 以序号 501 提交</td><td>完整水位仍为 500</td></tr><tr><td>10:03:02</td><td>501 已提交</td><td>水位 500，新查询尚不含 O100</td></tr><tr><td>10:03:04</td><td>501 已提交</td><td>水位 501，新查询可含 O100</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例延迟 4 秒，满足假设的 5 秒可查询目标；教学时间线不代表产品实测</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">长查询使用选定的快照</h2>
+    <div class="slide-content"><p class="slide-lead">假设分析查询采用一致快照，在 10:03:02 选定水位 500</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 66%"><colgroup><col style="width:34%"><col style="width:66%"></colgroup><thead><tr><th>事件</th><th>查询所用版本</th></tr></thead><tbody><tr><td>10:03:02 启动</td><td>快照不含序号 501 的订单</td></tr><tr><td>10:03:04 副本追到 501</td><td>原查询保持快照 500</td></tr><tr><td>10:03:08 查询完成</td><td>结果仍标注所用数据版本</td></tr><tr><td>重新发起查询</td><td>可按策略选择包含 501 的新快照</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>副本水位表示同步进度，查询快照确定本次读取的数据版本</p></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+  </section>
+<section id="b2b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">HTAP 的资源争用与隔离</h2>
+    <div class="slide-content"><p class="slide-lead">行存与分析副本可以分开，但仍可能共享网络、CPU 或存储</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>交易侧</h3><p>记录短事务响应时间及其峰值，关注长时间等待</p></article><article class="content-card emphasis-card" tabindex="0"><h3>分析侧</h3><p>记录查询完成时间和所用数据水位</p></article><article class="content-card emphasis-card" tabindex="0"><h3>共同资源</h3><p>检查扫描是否挤占写入和日志带宽</p></article><article class="content-card emphasis-card" tabindex="0"><h3>调度措施</h3><p>限并发、分配资源或排队，核对两类请求的响应目标</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>HTAP 兼顾事务与分析，具体负载下须测量同步延迟与相互干扰</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">DB4AI：从销售记录得到模型输入</h2>
+    <div class="slide-content"><p class="slide-lead">14.1 的三条销售记录汇总为月销量 5 与 4，供模型使用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 40% 37%"><colgroup><col style="width:23%"><col style="width:40%"><col style="width:37%"></colgroup><thead><tr><th>环节</th><th>输入或动作</th><th>核对内容</th></tr></thead><tbody><tr><td>数据准备</td><td>筛选、连接、统一日期与单位</td><td>两条月销量记录</td></tr><tr><td>数据治理</td><td>保存来源、版本、访问权限</td><td>能追查每个数来自哪些行</td></tr><tr><td>执行优化</td><td>选择计划及 CPU/GPU</td><td>核对运行时间与搬运成本</td></tr><tr><td>模型环节</td><td>使用数据训练或预测</td><td>预测准确性须另行评估</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DB4AI 用数据库支持 AI 的数据处理；预测准确性由模型评估检验</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">AI4DB：用学习方法帮助数据库决策</h2>
+    <div class="slide-content"><p class="slide-lead">AI4DB 用 AI 辅助行数估计、参数配置与异常检测</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 42% 35%"><colgroup><col style="width:23%"><col style="width:42%"><col style="width:35%"></colgroup><thead><tr><th>任务</th><th>具体例子</th><th>效果核对</th></tr></thead><tbody><tr><td>估计查询行数</td><td>均匀假设估 50，实际返回 7000</td><td>学习估计是否更接近、计划是否改善</td></tr><tr><td>建议参数</td><td>根据历史负载建议内存配额</td><td>新负载效果及回退方法</td></tr><tr><td>异常检测</td><td>标记异常访问模式</td><td>检验误报漏报和权限</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>估计从 50 改为 6000，行数误差减小；执行速度须用实际运行时间检验</p></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">多模型接口的请求与返回结果</h2>
+    <div class="slide-content"><p class="slide-lead">同一零件业务可以有多种访问要求；第 15 章逐项展开</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 51% 31%"><colgroup><col style="width:18%"><col style="width:51%"><col style="width:31%"></colgroup><thead><tr><th>模型</th><th>明确请求</th><th>结果形态</th></tr></thead><tbody><tr><td>键值</td><td>按键 part:P01 查名称</td><td>一个键对应的值</td></tr><tr><td>文档</td><td>取 P01 的额定电压</td><td>值 220 与单位 V</td></tr><tr><td>图</td><td>找 P01 的两跳供应关系</td><td>节点与关系路径</td></tr><tr><td>时序</td><td>按一分钟统计设备温度</td><td>时间窗口与聚合值</td></tr><tr><td>关系</td><td>连接库存和零件名称</td><td>关系查询结果行</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>统一接口须明确语义、权限和事务范围；跨模型原子提交需要相应支持</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
+    <h2 class="slide-title">P01 请求的运行过程</h2>
+    <div class="slide-content"><p class="slide-lead">路由定位分片，协议决定提交，快照确定查询版本</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>找数据</h3><p>P01 在 S1，P03 在 S2</p></article><article class="content-card emphasis-card" tabindex="0"><h3>判故障</h3><p>三副本至少两份可互通，并满足选主、日志与路由条件</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查时效</h3><p>序号 501 在 4 秒后可用于新快照；旧查询继续使用水位 500</p></article><article class="content-card emphasis-card" tabindex="0"><h3>看代价</h3><p>测量热点、同步、远程读取、资源争用与恢复开销</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第 15.1 节用键值与文档接口实现具体数据访问</p></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-14-3/mindmap-14-3.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <div class="numeric-progress">19/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">三副本配置发生节点故障时，分片、副本和共识如何决定能否提交？</span></li><li><span class="question-no">02</span><span class="question-text">大内存、NVM 和高速网络降低哪些成本？如何处理持久性与网络故障？</span></li><li><span class="question-no">03</span><span class="question-text">查询量或数据量增长时，云原生应扩展哪一侧？代价是什么？</span></li><li><span class="question-no">04</span><span class="question-text">秒级报表中，短事务与长分析分别关注哪些新鲜度和隔离要求？</span></li><li><span class="question-no">05</span><span class="question-text">声明式处理、优化、异构执行和治理如何支持训练？数据库不能保证什么？</span></li><li><span class="question-no">06</span><span class="question-text">目录、供应商网络、设备观测和按键查询分别适合哪些模型？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">查 P01 与同时扣 P01/P03，各要访问哪些分片？</span></li><li><span class="question-no">02</span><span class="question-text">P01 占 90 个写请求，移到新分片后为什么仍可能是热点？</span></li><li><span class="question-no">03</span><span class="question-text">三副本只剩 A3，与 A2/A3 可互通，两种情况怎样判断提交条件？</span></li><li><span class="question-no">04</span><span class="question-text">托管数据库与存算解耦分别回答什么问题？</span></li><li><span class="question-no">05</span><span class="question-text">10:03:02 选快照 500，10:03:04 副本到 501，原查询是否换快照？</span></li><li><span class="question-no">06</span><span class="question-text">AI4DB 与 DB4AI 分别支持哪些任务，如何检验效果？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-14-2.html" title="上一节：14.2 关系系统扩展与 SQL NoSQL NewSQL" aria-label="上一节：14.2 关系系统扩展与 SQL NoSQL NewSQL">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -182,8 +269,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">20/20</div>
+    <div class="semantic-label">ROUTING FAILURES AND FRESHNESS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

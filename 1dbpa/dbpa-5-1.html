@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 5.1</div>
       <h1>完整性与约束</h1>
-      <p class="cover-description">用主码、外码和取值规则检查数据变化</p>
+      <p class="cover-description">主码、外码与取值约束维护数据完整性</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -54,10 +54,10 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.1</div>
-    <h2 class="slide-title">从“谁写的”转向“写完是否合法”</h2>
-    <div class="slide-content"><p class="slide-lead">教师有权修改成绩回答安全问题；<code>Grade=130</code> 能否进入数据库回答完整性问题</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 36% 24%"><colgroup><col style="width:40%"><col style="width:36%"><col style="width:24%"></colgroup><thead><tr><th>现场请求</th><th>要检查什么</th><th>主要是哪类问题</th></tr></thead><tbody><tr><td>无权限学生执行 <code>UPDATE SC</code></td><td>账号、操作与授权路径</td><td>安全性</td></tr><tr><td>有权限教师写入 <code>Grade=130</code></td><td>成绩范围和数据库状态</td><td>完整性</td></tr><tr><td>向 SC 写入不存在的 <code>S999</code></td><td>能否找到被引用学生</td><td>完整性</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>教师账号可能有权执行 UPDATE，但 <code>Grade=130</code> 仍会因成绩约束被拒绝；权限和取值合法性是两次不同检查</p></div></div>
+    <h2 class="slide-title">操作权限与数据合法性</h2>
+    <div class="slide-content"><p class="slide-lead">安全性检查修改权限，完整性检查成绩取值及引用关系</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 36% 24%"><colgroup><col style="width:40%"><col style="width:36%"><col style="width:24%"></colgroup><thead><tr><th>请求示例</th><th>检查内容</th><th>问题类别</th></tr></thead><tbody><tr><td>无权限学生执行 <code>UPDATE SC</code></td><td>账号、操作与授权路径</td><td>安全性</td></tr><tr><td>有权限教师写入 <code>Grade=130</code></td><td>成绩范围和数据库状态</td><td>完整性</td></tr><tr><td>向 SC 写入不存在的 <code>S999</code></td><td>能否找到被引用学生</td><td>完整性</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>教师获准执行 UPDATE，<code>Grade=130</code> 因成绩约束被拒绝</p></div></div>
     <div class="numeric-progress">3/19</div>
     <div class="semantic-label">INTEGRITY SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
@@ -66,8 +66,8 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.1</div>
-    <h2 class="slide-title">先存规则，数据变化时检查，违约后处理</h2>
-    <div class="slide-content"><p class="slide-lead">插入 <code>(S01,C01)</code> 检查组合主码；写入 <code>S999</code> 检查 Student；成绩 130 检查范围</p>
+    <h2 class="slide-title">完整性约束的定义、检查与违约处理</h2>
+    <div class="slide-content"><p class="slide-lead">组合主码检查重复选课，外码检查学生是否存在，CHECK 检查成绩范围</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="保存规则 → 检查变化 → 处理违约"><span class="relation-term">保存规则</span><span class="relation-operator">→</span><span class="relation-term">检查变化</span><span class="relation-operator">→</span><span class="relation-term">处理违约</span></div></div>
 <div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定义</h3><p>DBMS 把主码、外码和 CHECK 等规则存入模式与数据字典</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查</h3><p>相关行被插入、修改或删除时按规则检查；立即检查还是事务结束前检查要看目标 DBMS</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>处理</h3><p>拒绝非法写入；被引用行变化时，按规则拒绝、级联或置空</p></article></div></div></div>
     <div class="numeric-progress">4/19</div>
@@ -78,7 +78,7 @@
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">本节从一份固定的三表数据开始</h2>
+    <h2 class="slide-title">练习起点：Student、Course 与 SC</h2>
     <div class="slide-content"><p class="slide-lead"><a href="resources/decks/dbpa-5-1/assets/practice/integrity-practice.zip" download>下载练习包</a>：先读 README，在专用空实验库中按编号操作</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 45% 29%"><colgroup><col style="width:26%"><col style="width:45%"><col style="width:29%"></colgroup><thead><tr><th>材料</th><th>内容</th><th>本节任务</th></tr></thead><tbody><tr><td>00 起始数据</td><td>建三表，载入 2 人、2 课、3 条选课</td><td>只运行一次</td></tr><tr><td>10 追加约束</td><td>给同一组表追加外码与 CHECK</td><td>随课件逐段执行</td></tr><tr><td>20 成败对照</td><td>主码、外码、成绩与删除对照</td><td>一次一例，比较结果</td></tr><tr><td>域与 ASSERTION</td><td>教材扩展概念</td><td>仅作阅读</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>语法参照 MySQL 8.4；实际版本与运行结果填写在练习记录中</p></div></div>
@@ -90,8 +90,8 @@
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.2</div>
-    <h2 class="slide-title">组合主码让每条选课记录有稳定身份</h2>
-    <div class="slide-content"><p class="slide-lead">以下为起始脚本中的 SC 定义；Student、Course 已先创建，不要重复建表</p>
+    <h2 class="slide-title">组合主码唯一标识每条选课记录</h2>
+    <div class="slide-content"><p class="slide-lead">以下为起始脚本中的 SC 定义，仅供对照；Student、Course 已创建</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -113,8 +113,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.2</div>
     <h2 class="slide-title">重复插入 `(S01,C01)`，组合主码会拒绝</h2>
-    <div class="slide-content"><p class="slide-lead">规则要求 <code>(Sno,Cno)</code> 组合唯一、两列均非空；索引可加速检查，但不等于规则</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>规则或实现手段</th><th>DBMS 怎样处理</th><th>目的</th></tr></thead><tbody><tr><td>组合值唯一</td><td>拒绝重复插入或修改</td><td>避免重复选课</td></tr><tr><td>主码属性非空</td><td>拒绝 NULL</td><td>每条记录都能用主码识别</td></tr><tr><td>主码索引</td><td>加速查找与检查</td><td>帮助执行规则，本身不是规则的定义</td></tr></tbody></table></div></div></div>
+    <div class="slide-content"><p class="slide-lead">规则要求 <code>(Sno,Cno)</code> 组合唯一、两列均非空；主码索引加速检查</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 34% 34%"><colgroup><col style="width:32%"><col style="width:34%"><col style="width:34%"></colgroup><thead><tr><th>规则或实现手段</th><th>DBMS 怎样处理</th><th>目的</th></tr></thead><tbody><tr><td>组合值唯一</td><td>拒绝重复插入或修改</td><td>避免重复选课</td></tr><tr><td>主码属性非空</td><td>拒绝 NULL</td><td>每条记录都能用主码识别</td></tr><tr><td>主码索引</td><td>加速查找与检查</td><td>作为规则的执行手段</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">7/19</div>
     <div class="semantic-label">ENTITY INTEGRITY</div>
     <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
@@ -123,7 +123,7 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.3</div>
-    <h2 class="slide-title">在已有 SC 上追加外码，保留 Grade 列</h2>
+    <h2 class="slide-title">为 SC 追加学生与课程外码</h2>
     <div class="slide-content"><p class="slide-lead">Student 有 S01、S02，Course 有 C01、C02；三条选课均有引用目标</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -141,7 +141,7 @@ ALTER TABLE SC ADD CONSTRAINT FK_SC_Course
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.3</div>
-    <h2 class="slide-title">参照完整性：引用双方变化都要检查</h2>
+    <h2 class="slide-title">参照完整性检查引用两端的变化</h2>
     <div class="slide-content"><p class="slide-lead">SC 是参照表；Student 和 Course 是被参照表</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>变化</th><th>可能出现的问题</th><th>DBMS 怎样处理</th></tr></thead><tbody><tr><td>SC 插入外码</td><td>无对应主码</td><td>拒绝非法引用</td></tr><tr><td>SC 修改外码</td><td>新值无对应主码</td><td>拒绝非法引用</td></tr><tr><td>被参照表删除所引主码</td><td>SC 出现悬空引用</td><td>拒绝或按策略处理</td></tr><tr><td>被参照表修改所引主码</td><td>原引用可能失效</td><td>拒绝或按策略处理</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未指定动作时通常拒绝；级联或置空必须在外码定义中显式选择</p></div></div>
@@ -153,7 +153,7 @@ ALTER TABLE SC ADD CONSTRAINT FK_SC_Course
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.3</div>
-    <h2 class="slide-title">删除 S01，三条选课分别会怎样</h2>
+    <h2 class="slide-title">删除 S01 后的学生与选课记录</h2>
     <div class="slide-content"><p class="slide-lead">各策略从相同数据开始；若须保留原始学籍与选课，应拒绝物理删除</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01</span><code class="language-sql">DELETE FROM Student WHERE Sno = 'S01';</code></pre></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 26% 50%"><colgroup><col style="width:24%"><col style="width:26%"><col style="width:50%"></colgroup><thead><tr><th>ON DELETE 策略</th><th>剩余学生</th><th>SC 剩余的 (Sno,Cno)</th></tr></thead><tbody><tr><td>拒绝删除</td><td>S01、S02</td><td>(S01,C01)、(S01,C02)、(S02,C01)</td></tr><tr><td>CASCADE</td><td>S02</td><td>(S02,C01)</td></tr><tr><td>SET NULL</td><td>本模型不适用</td><td>Sno 属于主码，不能置空</td></tr></tbody></table></div></div></div>
@@ -165,7 +165,7 @@ ALTER TABLE SC ADD CONSTRAINT FK_SC_Course
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">删除专业，但保留学生：外码可以置空</h2>
+    <h2 class="slide-title">删除专业时，将学生的专业外码置空</h2>
     <div class="slide-content"><p class="slide-lead">独立表 StudentMajor：Sno 是主码，MajorId 是可空外码</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -173,7 +173,7 @@ ALTER TABLE SC ADD CONSTRAINT FK_SC_Course
   ON DELETE SET NULL
 -- 从 Major 删除 M1 后，学生行仍然存在</code></pre></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>StudentMajor 行</th><th>删除 M1 前</th><th>删除 M1 后</th></tr></thead><tbody><tr><td>S01</td><td>MajorId = M1</td><td>MajorId = NULL</td></tr><tr><td>S02</td><td>MajorId = M2</td><td>MajorId = M2</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>置空的是引用专业的字段，不是学生主码；SC.Sno 与 StudentMajor.MajorId 的约束不同</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例置空 MajorId，学生主码不变；SC.Sno 属于主码，不能置空</p></div></div>
     <div class="numeric-progress">11/19</div>
     <div class="semantic-label">NULLABLE FOREIGN KEY</div>
     <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
@@ -182,8 +182,8 @@ ALTER TABLE SC ADD CONSTRAINT FK_SC_Course
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.4</div>
-    <h2 class="slide-title">给原来的两张表追加取值规则</h2>
-    <div class="slide-content"><p class="slide-lead">沿用起始表：姓名非空、邮箱唯一，这里再添加 CHECK</p>
+    <h2 class="slide-title">为 Student 与 SC 添加 CHECK 约束</h2>
+    <div class="slide-content"><p class="slide-lead">起始表已定义姓名非空、邮箱唯一；新增规则约束性别和成绩</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -211,9 +211,9 @@ ALTER TABLE SC ADD CONSTRAINT CK_SC_Grade
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.4</div>
-    <h2 class="slide-title">约束查一列、一行，还是跨表数据</h2>
+    <h2 class="slide-title">列、元组与跨表约束的作用范围</h2>
     <div class="slide-content"><p class="slide-lead">Ssex 只看一列，起止日期比较同一行；跨表规则需另选机制</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">属性级 CHECK：限制一个列的取值范围或集合</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">元组级 CHECK：比较同一元组中的多个属性</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">域用于复用取值规则；ASSERTION 用于表达跨表或聚集规则</span></li></ol></div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">属性级 CHECK：限制一个列的取值范围或集合</span></li><li><span class="list-marker">02</span><span class="list-text">元组级 CHECK：比较同一元组中的多个属性</span></li><li><span class="list-marker">03</span><span class="list-text">域用于复用取值规则；ASSERTION 用于表达跨表或聚集规则</span></li></ol></div>
 <div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02</span><code class="language-sql">-- 元组级 CHECK 片段
 CHECK (StartDate &lt;= EndDate)</code></pre></div>
@@ -226,7 +226,7 @@ CHECK (StartDate &lt;= EndDate)</code></pre></div>
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1 <span>|</span> 5.5-5.6</div>
-    <h2 class="slide-title">扩大学号范围，先确认旧数据仍合法</h2>
+    <h2 class="slide-title">修改命名约束：扩大学号范围</h2>
     <div class="slide-content"><p class="slide-lead">IdDemo 已有 11000001、21000001；现将上界扩至 39999999</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -265,7 +265,7 @@ CREATE TABLE DomainDemo
   Ssex GenderDomain,
   EmergencyContactSex GenderDomain
 );</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>域负责复用取值规则；<code>ASSERTION</code> 表达跨表或聚集约束。二者的产品支持都要核查，不能把概念语法直接当作实验脚本</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>域复用取值规则，<code>ASSERTION</code> 表达跨表或聚集约束；执行前确认产品支持</p></div></div>
     <div class="numeric-progress">16/19</div>
     <div class="semantic-label">DOMAIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:84.2105%"></div></div>
@@ -274,9 +274,9 @@ CREATE TABLE DomainDemo
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">诊断四次数据变化并给出处理结果</h2>
-    <div class="slide-content"><p class="slide-lead">逐次说明约束、接受或拒绝，以及按所选策略留下的记录</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>重复选课</h3><p>再次插入 <code>(S01,C01)</code>：组合主码检查重复，拒绝；单看 Sno 或 Cno 重复不能得出结论</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除学生</h3><p>Student 的 S01 仍被 SC 引用：按外码定义拒绝、级联或置空；本例中外码也是主码的一部分，不能置空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写入空性别</h3><p>只有 <code>CHECK (Ssex IN ...)</code> 时结果为 UNKNOWN，不因该 CHECK 被拒绝；要求必填还需 <code>NOT NULL</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>扩大学号范围</h3><p>新范围包含两个旧学号；先查询确认无不合规行，再替换命名 CHECK，最后测试 3 字头学号</p></article></div></div></div>
+    <h2 class="slide-title">练习：判断约束检查与处理结果</h2>
+    <div class="slide-content"><p class="slide-lead">重复选课、删除学生、空性别与扩大号段：说明约束及处理结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>重复选课</h3><p>组合主码拒绝重复的 <code>(S01,C01)</code>；Sno、Cno 各自允许重复</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>删除学生</h3><p>删除 S01：拒绝删除会保留三条选课，级联只留 <code>(S02,C01)</code>；SC.Sno 属于主码，不能置空</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写入空性别</h3><p>空性别使 <code>CHECK (Ssex IN ...)</code> 为 UNKNOWN，通过该检查；必填要求由 <code>NOT NULL</code> 实现</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>扩大学号范围</h3><p>旧学号满足新范围；验证旧行、替换 CHECK、测试 3 字头学号</p></article></div></div></div>
     <div class="numeric-progress">17/19</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
@@ -285,8 +285,8 @@ CREATE TABLE DomainDemo
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH05 <span>|</span> 5.1</div>
-    <h2 class="slide-title">从插入、修改或删除找到要检查的规则</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-1/mindmap-5-1.html" title="从插入、修改或删除找到要检查的规则"></iframe></div></div>
+    <h2 class="slide-title">完整性规则与数据变化</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-5-1/mindmap-5-1.html" title="完整性规则与数据变化"></iframe></div></div>
     <div class="numeric-progress">18/19</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:94.7368%"></div></div>

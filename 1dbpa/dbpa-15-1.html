@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 15.1 大数据特征与键值、文档数据库 | HUST</title>
+  <title>DBPA 15.1 键值与文档数据库 | HUST</title>
   <meta name="description" content="用订单、日志和学生档案的读写需求选择键值或文档数据库">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,167 +25,268 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-15-1/assets/dbpa-15-1.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-15-1/assets/dbpa-15-1-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 15.1</div>
-      <h1>大数据特征与键值、文档数据库</h1>
-      <p class="cover-description">先看数据有多少、长什么样、怎么查，再决定用键值还是文档数据库</p>
+      <h1>大数据特征<br>键值与文档数据库</h1>
+      <p class="cover-description">按学号读取档案，按字段筛选学生</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元从 4V 开始，经过访问模式和索引取舍，落到键值接口、文档模型和 MongoDB 集群。
-封面图用于建立大数据模型与系统路线的主题，不作为具体架构证据。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">订单、日志、学生档案：说明为何选键值或文档数据库，程序还要做什么</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">根据 4V 说清数据太多、格式太杂、来得太快或用途不明分别会造成什么问题</span></li><li><span class="list-marker">02</span><span class="list-text">用 GET、SET、SCAN 和 DELETE 表达点查、更新和范围访问</span></li><li><span class="list-marker">03</span><span class="list-text">按点查、范围查和写入比例比较哈希、有序索引和 LSM-tree</span></li><li><span class="list-marker">04</span><span class="list-text">解释字段可以增减或嵌套后，哪个程序负责识别、校验和迁移旧文档</span></li><li><span class="list-marker">05</span><span class="list-text">追踪 MongoDB 请求从路由到分片与结果聚合的路径</span></li><li><span class="list-marker">06</span><span class="list-text">根据实际要存什么、怎样查询和更新，选择键值或文档数据库并说明取舍</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/13</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:15.3846%"></div></div>
+    <div class="slide-content"><p class="slide-lead">用学生档案说明键值和文档接口的读写结果</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">从设备数量、记录大小和频率估算数据规模</span></li><li><span class="list-marker">02</span><span class="list-text">写出键值请求，明确缺失值和范围边界</span></li><li><span class="list-marker">03</span><span class="list-text">说明整值替换为何可能丢失已有字段</span></li><li><span class="list-marker">04</span><span class="list-text">用新旧版本与删除标记解释 LSM 读取</span></li><li><span class="list-marker">05</span><span class="list-text">迁移一份旧文档，保留标识和字段含义</span></li><li><span class="list-marker">06</span><span class="list-text">按分片键说明文档请求经过哪些服务器</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.5238%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">4V 四问：多少、什么样、多快、做什么</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>只要数据量够大，另外三个 V 就不用管了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">它们不是“大数据”的四个标签，而是四个会改变系统做法的问题</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-1/assets/generated/dbpa-ch15-nosql-models-image2.webp" data-full-src="resources/decks/dbpa-15-1/assets/generated/dbpa-ch15-nosql-models-image2.webp" alt="第 15 章键值、文档、图和时序模型的总览关系" tabindex="0" role="button" aria-label="放大图片：第 15 章键值、文档、图和时序模型的总览关系" decoding="async"><figcaption>数据模型总览与四个 V 对应的具体问题</figcaption></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>数据量 Volume</h3><p>多年订单或视频装不进一台机器 → 分到多台机器</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>数据多样性 Variety</h3><p>表格、JSON、图片、日志字段不同 → 不能都按一种表格处理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>到达速度 Velocity</h3><p>设备每秒上报且告警不能久等 → 写入、查询都要跟上</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>潜在价值 Value</h3><p>数据用于报表、推荐或告警才有用 → 先说明谁用、做什么</p></article></div></div></div>
-    <div class="numeric-progress">3/13</div>
-    <div class="semantic-label">4V</div>
-    <div class="progress-track"><div class="progress-fill" style="width:23.0769%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">设备数据的 4V 特征</h2>
+    <div class="slide-content"><p class="slide-lead">教学例：1 万台设备，每台每秒上报一条 200 字节的记录</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>数据量 Volume</h3><p>仅原始记录：2 MB/秒，一天约 172.8 GB</p></article><article class="content-card emphasis-card" tabindex="0"><h3>多样性 Variety</h3><p>温度数值、单位、设备照片：结构和处理方法不同</p></article><article class="content-card emphasis-card" tabindex="0"><h3>到达速度 Velocity</h3><p>每秒写入 1 万条，并及时处理告警</p></article><article class="content-card emphasis-card" tabindex="0"><h3>价值 Value</h3><p>超温告警供值班员判断是否检查设备</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按十进制 MB/GB 计算，未计索引、副本和协议开销；4V 共同影响选型</p></div></div>
+    <div class="numeric-progress">3/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">数据多、杂、快：多台机器和程序协作</h2>
-    <div class="slide-content"><p class="slide-lead">下表是常见做法，不表示关系数据库只能单机，也不表示大数据系统一定如此</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>要比较的问题</th><th>典型关系系统常见做法</th><th>典型大数据系统常见做法</th></tr></thead><tbody><tr><td>部署</td><td>常见单机或有限集群</td><td>常见多节点集群</td></tr><tr><td>机器怎样协作</td><td>程序与存储在部分系统中结合较紧</td><td>计算和存储在部分系统中可以分开扩展</td></tr><tr><td>坏数据由谁拦下</td><td>更多由数据库约束拒绝</td><td>采集、清洗、平台和应用分别检查</td></tr><tr><td>扩展</td><td>纵向扩展或受限横向扩展</td><td>横向与弹性扩展更常见</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>如果数据库不再拒绝缺字段或格式错误的记录，采集程序、清洗任务和应用就必须说明谁检查、谁修复</p>
-<p>有的资料还会加入真实性 veracity；本课用四个 V 提问，不把它们当成必须逐项套用的模板</p></div></div></div>
-    <div class="numeric-progress">4/13</div>
-    <div class="semantic-label">BIG DATA SYSTEM</div>
-    <div class="progress-track"><div class="progress-fill" style="width:30.7692%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">单位校验、容量与写入积压</h2>
+    <div class="slide-content"><p class="slide-lead">关系系统也可分布式部署，文档系统也可设置验证规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 31% 34%"><colgroup><col style="width:35%"><col style="width:31%"><col style="width:34%"></colgroup><thead><tr><th>遇到的问题</th><th>具体检查</th><th>可能的动作</th></tr></thead><tbody><tr><td>温度只有 220，没有单位</td><td>采集字段与单位约定</td><td>校验单位后比较数值</td></tr><tr><td>一天记录已超过容量预算</td><td>保留时长与额外开销</td><td>压缩、分层或扩容并复测</td></tr><tr><td>写入积压，告警延迟</td><td>到达速度与处理速度</td><td>按处理瓶颈选择扩容对象</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统选型须核对容量、约束、事务和数据质量要求</p></div></div>
+    <div class="numeric-progress">4/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">键值模型用可定位的键连接访问与数据</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="68" data-character-exposure="60" data-character-scale="0.9" style="--character-along:68%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>值只能是一段简单字符串，不能保存对象吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先把键的定位职责与值的内容职责分开，再判断具体查询能力</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="student:2021001　→　{ name, grade }　→　GET／SET／DELETE"><span class="relation-term">student:2021001</span><span class="relation-operator">→</span><span class="relation-term">{ name, grade }</span><span class="relation-operator">→</span><span class="relation-term">GET／SET／DELETE</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>范围扫描不是所有键值系统的共同能力；通常需要有序键值组织或具体系统提供的范围接口</p></div></div></div>
-    <div class="numeric-progress">5/13</div>
-    <div class="semantic-label">KEY VALUE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:38.4615%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">学号键与学生档案值</h2>
+    <div class="slide-content"><p class="slide-lead">下面是独立教学数据；学号固定为八位，按字符串顺序排列</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 58%"><colgroup><col style="width:42%"><col style="width:58%"></colgroup><thead><tr><th>键</th><th>值的内容</th></tr></thead><tbody><tr><td>student:20180001</td><td>{&quot;name&quot;:&quot;林晓&quot;,&quot;major&quot;:&quot;IMIS&quot;}</td></tr><tr><td>student:20180003</td><td>{&quot;name&quot;:&quot;周航&quot;,&quot;major&quot;:&quot;IMIS&quot;}</td></tr><tr><td>student:20180004</td><td>{&quot;name&quot;:&quot;许晨&quot;,&quot;major&quot;:&quot;CS&quot;}</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例按键存取整个字节串；按 major 筛选需额外的字段解析与查询能力</p></div></div>
+    <div class="numeric-progress">5/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.8095%"></div></div>
   </section>
 <section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">看接口就能知道系统按什么方式找数据</h2>
-    <div class="slide-content"><p class="slide-lead">接口简单不等于每一种访问都同样便宜</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 31% 23% 23%"><colgroup><col style="width:23%"><col style="width:31%"><col style="width:23%"><col style="width:23%"></colgroup><thead><tr><th>接口</th><th>系统做什么</th><th>常见用途</th><th>使用前要确认</th></tr></thead><tbody><tr><td><code>GET(key)</code></td><td>按键读取一个值</td><td>点查询</td><td>需要可定位键</td></tr><tr><td><code>SET(key,value)</code></td><td>插入或更新键值对</td><td>写入或状态更新</td><td>写入语义由系统定义</td></tr><tr><td><code>SCAN(key,count)</code></td><td>从起点读取若干键</td><td>连续读取</td><td>具体接口可能不同</td></tr><tr><td><code>SCAN(key1,key2)</code></td><td>读取键范围</td><td>范围访问</td><td>通常依赖有序组织</td></tr><tr><td><code>DELETE(key)</code></td><td>删除键值对</td><td>生命周期管理</td><td>删除和回收语义由系统定义</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>点查、范围查和写入需求决定接口与索引选择</p></div></div>
-    <div class="numeric-progress">6/13</div>
-    <div class="semantic-label">KEY VALUE API</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.1538%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">键值接口的读写约定</h2>
+    <div class="slide-content"><p class="slide-lead">本节自定义有序键值教学接口，不是任意产品的通用命令</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 60%"><colgroup><col style="width:40%"><col style="width:60%"></colgroup><thead><tr><th>接口</th><th>约定</th></tr></thead><tbody><tr><td>GET(k)</td><td>返回当前值；键不存在时返回 NOT_FOUND</td></tr><tr><td>SET(k,v)</td><td>不存在则新增，存在则替换整个值</td></tr><tr><td>SCAN(start,end)</td><td>按键升序返回 start≤k&lt;end 的键值对</td></tr><tr><td>SCAN_FROM(start,n)</td><td>从 k≥start 起，最多返回 n 对</td></tr><tr><td>DELETE(k)</td><td>使后续当前值查询找不到该键</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>NOT_FOUND 表示键缺失；空字符串、0 和 null 是不同的值</p></div></div>
+    <div class="numeric-progress">6/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="b2a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">哈希、树、LSM-tree 各自加速不同操作</h2>
-    <div class="slide-content"><p class="slide-lead">选结构时要同时看按键点查、连续范围查询和大量写入</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>组织结构</th><th>通常擅长</th><th>局限或代价</th></tr></thead><tbody><tr><td>哈希</td><td>按键点查与更新</td><td>不擅长按键顺序的范围访问</td></tr><tr><td>B／B+ 树</td><td>点查和范围查</td><td>更新可能带来外存随机写成本</td></tr><tr><td>LSM-tree</td><td>写入较多的工作负载</td><td>读取可能跨层搜索，后台合并会增加读写放大</td></tr></tbody></table></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="写入　→　MemTable　→　Immutable MemTable　→　外存分层　→　后台合并"><span class="relation-term">写入</span><span class="relation-operator">→</span><span class="relation-term">MemTable</span><span class="relation-operator">→</span><span class="relation-term">Immutable MemTable</span><span class="relation-operator">→</span><span class="relation-term">外存分层</span><span class="relation-operator">→</span><span class="relation-term">后台合并</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>LSM-tree 以写入路径和后台合并换取吞吐，具体性能仍取决于负载和实现</p></div></div>
-    <div class="numeric-progress">7/13</div>
-    <div class="semantic-label">INDEX CHOICE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.8462%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">键范围与返回条数</h2>
+    <div class="slide-content"><p class="slide-lead">本页省略共同前缀 student:201800，使用最初的三条数据</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 31% 26%"><colgroup><col style="width:43%"><col style="width:31%"><col style="width:26%"></colgroup><thead><tr><th>请求</th><th>返回键</th><th>原因</th></tr></thead><tbody><tr><td>GET(02)</td><td>NOT_FOUND</td><td>键不存在</td></tr><tr><td>SCAN(01,04)</td><td>01、03</td><td>左闭右开</td></tr><tr><td>SCAN_FROM(03,2)</td><td>03、04</td><td>含起点，最多两条</td></tr><tr><td>SCAN_FROM(04,2)</td><td>04</td><td>只有一条</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>不足两条时返回已有记录；变长数字字符串可能按“10、2”排列</p></div></div>
+    <div class="numeric-progress">7/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b2b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">学生档案：字段可嵌套，也可暂缺</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>同一集合里的字段不同，就是坏数据吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">字段可以随版本变化，但程序仍要识别旧版本、检查格式并迁移数据</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
-02
-03
-04</span><code class="language-json">[
-  {"_id":"s1","name":"Wang","major":"IMIS"},
-  {"_id":"s2","name":"Li","phones":{"main":"..."}}
-]</code></pre></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>两个文档可以有不同字段；缺失字段不自动等于错误</p></div></div></div>
-    <div class="numeric-progress">8/13</div>
-    <div class="semantic-label">DOCUMENT</div>
-    <div class="progress-track"><div class="progress-fill" style="width:61.5385%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">SET 替换整个档案值</h2>
+    <div class="slide-content"><p class="slide-lead">独立操作：从 student:20180003 的完整初始值开始</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>阶段</th><th>值或动作</th></tr></thead><tbody><tr><td>原值</td><td>{&quot;name&quot;:&quot;周航&quot;,&quot;major&quot;:&quot;IMIS&quot;}</td></tr><tr><td>执行 SET</td><td>只提交 {&quot;name&quot;:&quot;周航&quot;}</td></tr><tr><td>再执行 GET</td><td>仅剩 {&quot;name&quot;:&quot;周航&quot;}，major 已丢失</td></tr><tr><td>若需要局部修改</td><td>选择明确的字段更新接口，并检查并发语义</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>GET 后再 SET 可能覆盖他人的新修改；整值替换须配合并发保护</p></div></div>
+    <div class="numeric-progress">8/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.0952%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">MongoDB 文档集群的三类服务器</h2>
-    <div class="slide-content"><p class="slide-lead">请求先由路由端定位目标分片，再返回单片结果或聚合结果</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="应用请求　→　路由服务器　→　目标分片读写　→　返回或聚合结果 配置服务器维护路由所需的集群元信息，不承载业务数据"><span class="relation-term">应用请求</span><span class="relation-operator">→</span><span class="relation-term">路由服务器</span><span class="relation-operator">→</span><span class="relation-term">目标分片读写</span><span class="relation-operator">→</span><span class="relation-term">返回或聚合结果 配置服务器维护路由所需的集群元信息，不承载业务数据</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>分片服务器</h3><p>保存数据子集；实际部署可由副本集承载</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>配置服务器</h3><p>保存分片范围和集群元信息</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>路由服务器</h3><p>接收请求、转发并聚合结果；本身不保存业务数据</p></article></div></div></div>
-    <div class="numeric-progress">9/13</div>
-    <div class="semantic-label">MONGODB CLUSTER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:69.2308%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">索引的查找与维护成本</h2>
+    <div class="slide-content"><p class="slide-lead">点查、范围查与写入比例影响结构选择，吞吐随负载与实现变化</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 37% 40%"><colgroup><col style="width:23%"><col style="width:37%"><col style="width:40%"></colgroup><thead><tr><th>组织</th><th>具体访问</th><th>代价</th></tr></thead><tbody><tr><td>哈希</td><td>给定学号的等值点查</td><td>不能自然按键顺序扫描</td></tr><tr><td>B/B+ 树</td><td>按学号点查或范围查</td><td>更新要维护树与页面</td></tr><tr><td>LSM-tree</td><td>批量写入并保留有序访问</td><td>查多处、合并及空间成本</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>日志结构合并树 LSM-tree 暂存更新并批量写出，后台合并有序文件</p></div></div>
+    <div class="numeric-progress">9/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b3a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1 <span>|</span> 15.1</div>
-    <h2 class="slide-title">文档字段可不同，程序仍要识别各版本</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.54a679689b42.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>没有固定模式，应用就不必维护结构</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">集合像表、文档像记录只是帮助理解的类比，不是严格等价</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="新增 phones 字段或改名 major　→　旧文档仍存在　→　程序识别版本、检查字段并安排迁移"><span class="relation-term">新增 phones 字段或改名 major</span><span class="relation-operator">→</span><span class="relation-term">旧文档仍存在</span><span class="relation-operator">→</span><span class="relation-term">程序识别版本、检查字段并安排迁移</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>经常新增字段或保存嵌套资料时，文档数据库更顺手；涉及扣款、库存等操作时，仍要核查具体产品的事务与一致性保证</p></div></div>
-    <div class="numeric-progress">10/13</div>
-    <div class="semantic-label">SCHEMA FLEXIBILITY</div>
-    <div class="progress-track"><div class="progress-fill" style="width:76.9231%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">LSM 的日志、内存表与有序文件</h2>
+    <div class="slide-content"><p class="slide-lead">本页假设启用持久化日志，成功回复前日志必须落到稳定存储</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">写日志并更新内存表 MemTable；日志持久化后回复成功</span></li><li><span class="list-marker">02</span><span class="list-text">MemTable 达到阈值后冻结，新的更新进入另一张表</span></li><li><span class="list-marker">03</span><span class="list-text">冻结表按键顺序刷成外存有序文件 SST</span></li><li><span class="list-marker">04</span><span class="list-text">后台合并 SST，按版本与保留规则整理旧记录</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>日志、刷盘与合并的具体顺序和参数依实现而定</p></div></div>
+    <div class="numeric-progress">10/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b3b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
-    <h2 class="slide-title">校园数据怎么存：先答四个问题</h2>
-    <div class="slide-content"><p class="slide-lead">不要只写“数据量大”或“需要灵活”，要写出程序实际怎样读写</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 数据哪里难处理</h3><p>有多少条、包含哪些格式、每秒来多少、最后给谁使用；缺字段或错误格式由哪个程序拦下</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 程序怎样读写</h3><p>用 <code>GET</code>、<code>SET</code>、<code>SCAN</code>、<code>DELETE</code> 写出一次真实请求；若产品没有范围接口，就明确写“不能这样查”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 哪种操作要快</h3><p>在按学号查一人、按学号段查多人和批量写入之间排序，再比较哈希、有序索引和 LSM-tree</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 字段变化后谁来处理</h3><p>若使用文档模型，写清哪个程序识别、校验并迁移旧字段；若使用分片，说明请求经过哪个路由、落到哪个分片</p></article></div></div></div>
-    <div class="numeric-progress">11/13</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:84.6154%"></div></div>
+    <h2 class="slide-title">删除标记防止旧值重新出现</h2>
+    <div class="slide-content"><p class="slide-lead">独立键 grade:20180003:81001，只讨论读取最新版本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 35% 43%"><colgroup><col style="width:22%"><col style="width:35%"><col style="width:43%"></colgroup><thead><tr><th>写入序号</th><th>所在位置</th><th>内容</th></tr></thead><tbody><tr><td>1</td><td>旧 SST 文件</td><td>88</td></tr><tr><td>2</td><td>较新的 SST 文件</td><td>90</td></tr><tr><td>3</td><td>当前 MemTable</td><td>删除标记 tombstone</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>最新序号 3 使 GET 返回 NOT_FOUND；删除标记遮住旧文件中的 88 和 90</p></div></div>
+    <div class="numeric-progress">11/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.3810%"></div></div>
+  </section>
+<section id="b3c" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">版本合并与清理条件</h2>
+    <div class="slide-content"><p class="slide-lead">每次独立读取都选择该键最新有效版本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 24% 44%"><colgroup><col style="width:32%"><col style="width:24%"><col style="width:44%"></colgroup><thead><tr><th>已有版本</th><th>当前 GET</th><th>版本保留要求</th></tr></thead><tbody><tr><td>序号 1：88</td><td>88</td><td>保留当前可见值</td></tr><tr><td>再有序号 2：90</td><td>90</td><td>旧值能否删除还受快照约束</td></tr><tr><td>再有序号 3：删除</td><td>NOT_FOUND</td><td>须遮住较旧的 88 和 90</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>清理旧版本与删除标记须满足快照等保留要求，并保证更旧值不会重新可见</p></div></div>
+    <div class="numeric-progress">12/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">文档模型能识别字段与嵌套结构</h2>
+    <div class="slide-content"><p class="slide-lead">两份示例均用版本 2；phones 可选，program.code 必填</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-json">[
+ {"_id":"20180001","name":"林晓","schemaVersion":2,
+  "program":{"code":"IMIS"}},
+ {"_id":"20180003","name":"周航","schemaVersion":2,
+  "program":{"code":"IMIS"},"phones":{"main":"校内分机1234"}}
+]</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>program.code=IMIS 匹配两名学生；索引影响字段查询效率</p></div></div>
+    <div class="numeric-progress">13/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
+  </section>
+<section id="b4a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">可选字段、必填类型与文档版本</h2>
+    <div class="slide-content"><p class="slide-lead">应用须规定字段含义与类型；phones 可选，专业代码与版本须合法</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 31% 31%"><colgroup><col style="width:38%"><col style="width:31%"><col style="width:31%"></colgroup><thead><tr><th>文档内容</th><th>本例含义</th><th>应用处理</th></tr></thead><tbody><tr><td>没有 phones</td><td>未提供可选联系方式</td><td>允许缺失，不补成 0</td></tr><tr><td>program.code 是 &quot;IMIS&quot;</td><td>合法的专业代码字符串</td><td>按代码规则校验</td></tr><tr><td>program.code 是 0</td><td>类型或代码不符合约定</td><td>拒绝或隔离，安排修正</td></tr><tr><td>schemaVersion 未知</td><td>程序尚不识别此版本</td><td>报错并安排版本适配</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>验证可由数据库或应用层执行，并约定错误返回方式</p></div></div>
+    <div class="numeric-progress">14/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">文档分片的元数据与请求路由</h2>
+    <div class="slide-content"><p class="slide-lead">按教材三类角色分别部署的简化拓扑，不描述所有产品版本的配置</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 68%"><colgroup><col style="width:32%"><col style="width:68%"></colgroup><thead><tr><th>角色</th><th>本例职责</th></tr></thead><tbody><tr><td>配置服务器</td><td>维护范围：学号&lt;20180003→S1，否则→S2</td></tr><tr><td>路由服务器 mongos</td><td>查路由元数据，把请求发给相关分片</td></tr><tr><td>S1 分片</td><td>保存本例 20180001 文档</td></tr><tr><td>S2 分片</td><td>保存本例 20180003 文档</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例配置服务保存元数据，分片保存业务文档；分片可由副本组承载</p></div></div>
+    <div class="numeric-progress">15/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="c1a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">按学号与按专业查询的分片范围</h2>
+    <div class="slide-content"><p class="slide-lead">本例以 _id 为范围分片键，路由端已掌握完整范围信息</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 26% 32%"><colgroup><col style="width:42%"><col style="width:26%"><col style="width:32%"></colgroup><thead><tr><th>查询条件</th><th>访问范围</th><th>示例结果</th></tr></thead><tbody><tr><td>_id=&quot;20180003&quot;</td><td>路由→S2</td><td>周航的文档</td></tr><tr><td>program.code=&quot;IMIS&quot;</td><td>路由→S1 与 S2</td><td>两个学生文档</td></tr><tr><td>按专业查询又缺少索引</td><td>路由→S1 与 S2</td><td>每片可能扫描数据</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例无专业定向路由机制；专业索引可加快片内查询，访问范围仍为两片</p></div></div>
+    <div class="numeric-progress">16/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.1905%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">专业字段从 major 迁移到 program.code</h2>
+    <div class="slide-content"><p class="slide-lead">独立迁移例：保持 _id 和 name，只改变专业字段的结构</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JAVASCRIPT</span><pre tabindex="0" aria-label="JAVASCRIPT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-javascript">// 旧版本 1
+{"_id":"20180001","name":"林晓",
+ "schemaVersion":1,"major":"IMIS"}
+// 新版本 2
+{"_id":"20180001","name":"林晓",
+ "schemaVersion":2,"program":{"code":"IMIS"}}</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同步更新版本与字段；校验新值后移除旧字段，重复执行保持迁移结果</p></div></div>
+    <div class="numeric-progress">17/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.9524%"></div></div>
+  </section>
+<section id="c2a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">两种文档版本的读取规则</h2>
+    <div class="slide-content"><p class="slide-lead">迁移期间，readProgram(doc) 按版本读取专业代码</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 31% 35%"><colgroup><col style="width:34%"><col style="width:31%"><col style="width:35%"></colgroup><thead><tr><th>版本</th><th>读取字段</th><th>返回或处理</th></tr></thead><tbody><tr><td>1</td><td>major</td><td>本例返回 IMIS</td></tr><tr><td>2</td><td>program.code</td><td>本例返回 IMIS</td></tr><tr><td>其他版本或必填字段缺失</td><td>无法读出合法代码</td><td>报错，不填成空专业</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>迁移须配合并发写入保护；读出旧文档再整份覆盖，可能抹掉用户的新修改</p></div></div>
+    <div class="numeric-progress">18/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
+    <h2 class="slide-title">学生档案的模型与读写选择</h2>
+    <div class="slide-content"><p class="slide-lead">键值与文档接口分别说明读取对象、更新方式和返回结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>估算规模</h3><p>原始数据 1 万条/秒、172.8 GB/天；另计索引、副本等开销</p></article><article class="content-card emphasis-card" tabindex="0"><h3>说明键值语义</h3><p>缺失有标记，SET 替换整值，范围含起点、不含终点</p></article><article class="content-card emphasis-card" tabindex="0"><h3>解释存储代价</h3><p>本例回复前持久化日志，LSM 管理版本与删除标记</p></article><article class="content-card emphasis-card" tabindex="0"><h3>管好字段版本</h3><p>验证字段、迁移版本并定位分片</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第 15.2 节用图查询查找人与人的关系路径</p></div></div>
+    <div class="numeric-progress">19/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-15-1/mindmap-15-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">12/13</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:92.3077%"></div></div>
+    <div class="numeric-progress">20/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="3360" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单、日志、资料、传感器数据分别体现哪些 4V 压力？</span></li><li><span class="question-no">02</span><span class="question-text">学生记录如何选择键和值？如何执行点查、更新和范围扫描？</span></li><li><span class="question-no">03</span><span class="question-text">点查与时间范围扫描分别优先哪类索引？为什么？</span></li><li><span class="question-no">04</span><span class="question-text">档案字段变化且文档结构不同，模式灵活带来什么收益与责任？</span></li><li><span class="question-no">05</span><span class="question-text">MongoDB 请求中，路由服务器、配置服务器和分片服务器各做什么？</span></li><li><span class="question-no">06</span><span class="question-text">高吞吐写入兼顾范围访问时，哈希、有序索引和 LSM-tree 如何取舍？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">1 万台设备每秒各发 200 字节，一天原始记录有多少？</span></li><li><span class="question-no">02</span><span class="question-text">省略 student: 前缀时，SCAN(20180001,20180004) 返回哪些键？</span></li><li><span class="question-no">03</span><span class="question-text">本例只 SET name 后，major 为什么消失？</span></li><li><span class="question-no">04</span><span class="question-text">旧文件有 88/90，新版本是删除标记，GET 应返回什么？</span></li><li><span class="question-no">05</span><span class="question-text">按学号与按专业查询，分别经过哪些分片？</span></li><li><span class="question-no">06</span><span class="question-text">major 改成 program.code 时，怎样处理仍未迁移的文档？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-14-3.html" title="上一节：14.3 分布式、云原生与数据库发展展望" aria-label="上一节：14.3 分布式、云原生与数据库发展展望">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -200,8 +301,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">13/13</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">21/21</div>
+    <div class="semantic-label">KEYS VALUES AND DOCUMENTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

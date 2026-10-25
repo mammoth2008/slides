@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 18.3 区块链与数据库的对比与融合 | HUST</title>
+  <title>DBPA 18.3 查询、提交与审计 | HUST</title>
   <meta name="description" content="用多机构物流查询与审计选择关系数据库、区块链或两者组合">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,147 +25,265 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-18-3/assets/dbpa-18-3.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-18-3/assets/dbpa-18-3-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 18.3</div>
-      <h1>区块链与数据库的对比与融合</h1>
-      <p class="cover-description">日常物流查询放关系库，多机构审计是否还需要链式记录</p>
+      <h1>区块链与数据库<br>怎样分工</h1>
+      <p class="cover-description">用 B001 的查询、提交与审计比较三种方案</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元比较谁能写、一次请求经过哪里、业务状态和审计记录放哪里，再讨论给区块链加入数据库技术与给数据库加入链式日志两种做法。封面图只作概念引导，不代表技术演进或固定系统结构。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">按写入者、每秒请求、历史追查、查询类型，选择关系库、区块链或组合</p>
-<div class="slide-main-content"><div class="component component-text text-inset"><p>先写哪些机构互信；若组合，说明业务表、链式日志各放什么、谁维护</p></div>
-<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较两类系统的设计目标、信任环境和错误模型</span></li><li><span class="list-marker">02</span><span class="list-text">区分链式历史、节点状态库、关系表及其事务边界</span></li><li><span class="list-marker">03</span><span class="list-text">解释副本、协调、提交、查询、状态组织的差异</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据库技术在一致验证下怎样缓解区块链瓶颈</span></li><li><span class="list-marker">05</span><span class="list-text">说明链式日志、签名怎样提供可验证审计证据</span></li><li><span class="list-marker">06</span><span class="list-text">按机构、吞吐延迟、历史审计、复杂查询选择数据库、区块链或组合</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="slide-content"><p class="slide-lead">说明 B001 的记录存在哪、签收何时生效、故障后怎样恢复</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">按参与者、故障假设和具体请求比较系统</span></li><li><span class="list-marker">02</span><span class="list-text">分清区块历史、状态库、关系表、WAL 与审计日志</span></li><li><span class="list-marker">03</span><span class="list-text">用实例说明分片、并发、索引和 Bloom 过滤器的作用</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据库提交与外部审计同步为何可能分开成功</span></li><li><span class="list-marker">05</span><span class="list-text">用事务发件表、去重和进度核对补齐审计记录</span></li><li><span class="list-marker">06</span><span class="list-text">比较关系数据库、共同账本与融合方案的适用条件</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.0909%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">先问谁会作恶、谁来恢复，再比两类系统</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>区块链天生更安全，关系数据库天生更快？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">两类系统的典型取向不是绝对二分；许可链和分布式数据库可能处于中间</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-blockchain-image2.webp" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-blockchain-image2.webp" alt="区块链全章概念总览：业务输入、Merkle 汇总、链式记录、多节点副本、状态查询与可信性和效率取舍" tabindex="0" role="button" aria-label="放大图片：区块链全章概念总览：业务输入、Merkle 汇总、链式记录、多节点副本、状态查询与可信性和效率取舍" decoding="async"><figcaption>概念总览图展示业务输入、链式记录、状态查询以及可信性和效率取舍</figcaption></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>要比较的问题</th><th>区块链</th><th>关系数据库</th></tr></thead><tbody><tr><td>典型设计重点</td><td>强调改动可检测、可追溯和多主体验证</td><td>强调响应、吞吐、完整功能和事务并发</td></tr><tr><td>典型错误模型</td><td>需要处理恶意节点、分歧和开放网络协调</td><td>重点处理宕机、故障、非法访问和组织治理</td></tr><tr><td>典型运行环境</td><td>开放或多主体，也可采用许可网络</td><td>受控组织，也可处于分布式多方环境</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>两类系统都要防错、持续服务并达到性能要求；区别在于是否要让多个主体独立验证，以及提交时要协调哪些节点</p></div></div>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">DESIGN GOALS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">B001 的四类查询与核验请求</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 18.2 的 E01，查询业务状态并核验交接记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 62%"><colgroup><col style="width:38%"><col style="width:62%"></colgroup><thead><tr><th>请求</th><th>返回或核验内容</th></tr></thead><tbody><tr><td>门店查询保管方</td><td>B001 为 S/版本 2，查询处理到高度 102</td></tr><tr><td>物流核对签收</td><td>E01 的字段、L/S 签名和接受记录</td></tr><tr><td>运营统计物流在管批次</td><td>查询返回批次清单，注明数据范围与进度</td></tr><tr><td>机构质疑一段历史</td><td>核验完整记录、可信锚点与协议证据</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>比较写入权限、恶意节点与运营者信任，以及延迟、吞吐、恢复和审计能力</p></div></div>
+    <div class="numeric-progress">3/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.6364%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-grid"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">链式历史、状态库与关系表保存不同事实</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>链上的区块，不就是数据库的 WAL 吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">三者都能承载结构化信息，但保存的事实、可执行操作和事务边界不同</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>链式交易历史</h3><p>区块保存已接受的追加式交易及其顺序；它不等于业务当前表，也不等于数据库 WAL</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>节点状态库</h3><p>根据链上历史物化出的本地可查询状态，常见键值结构但不限定为一种实现</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>关系表与 SQL</h3><p>按关系模式组织当前或历史业务数据；SQL 支持增删改查和事务并发，表不必只保存当前数据</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>链式历史回答“接受了哪些操作”；状态库回答“节点当前可查询什么”；关系表回答“业务如何组织和操作数据”</p></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">DATA AND OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">三种配置的故障与信任条件</h2>
+    <div class="slide-content"><p class="slide-lead">三种配置分别处理组织内故障、多机构协作和外部审计</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 40% 32%"><colgroup><col style="width:28%"><col style="width:40%"><col style="width:32%"></colgroup><thead><tr><th>配置</th><th>处理的问题</th><th>边界与风险</th></tr></thead><tbody><tr><td>组织内复制数据库</td><td>节点宕机、事务冲突与恢复</td><td>管理员合谋改历史</td></tr><tr><td>四机构 PBFT 账本</td><td>按协议容忍至多一恶意节点</td><td>故障超限与虚假签收</td></tr><tr><td>数据库加独立审计</td><td>外部保存记录，供事后比对</td><td>独立保存审计锚点</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>关系库可分布式复制，区块链可分工并发；比较数据模型、部署与信任条件</p></div></div>
+    <div class="numeric-progress">4/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">请求路径：副本、验证、提交、查询</h2>
-    <div class="slide-content"><p class="slide-lead">别只写“去中心化”“分布式”：画出请求经过的节点、表、索引、状态库</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>历史与副本</h3><p>区块链的全节点、轻节点、归档节点职责不同；分布式数据库也可分片、复制或保留控制平面</p></article><article class="content-card emphasis-card" tabindex="0"><h3>验证与提交</h3><p>节点按协议验证和接受历史；关系数据库按事务与协调机制提交，具体架构依系统而异</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询与状态</h3><p>区块链常由状态库提供当前查询；关系系统用表、索引和查询执行组织业务状态</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>比较时写明哪些节点保存全历史、谁参与提交、分析端查状态库还是关系表</p></div></div>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">ARCHITECTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">五类记录的内容与用途</h2>
+    <div class="slide-content"><p class="slide-lead">查询状态、核验历史与恢复数据分别依赖不同记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 70%"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>对象</th><th>B001 例中保存什么</th></tr></thead><tbody><tr><td>区块历史</td><td>按协议接受的 T1、E01 等操作与顺序</td></tr><tr><td>节点状态库</td><td>执行至 102：S/版本 2</td></tr><tr><td>关系业务表</td><td>Shipment(BatchId, Custodian, Version)</td></tr><tr><td>WAL 恢复日志</td><td>支持本数据库故障后重做/撤销的记录</td></tr><tr><td>审计记录</td><td>操作者、事件 ID、前后状态、摘要和关联证据</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.7273%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">分片、MVCC、索引加速，不能替代共识</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>加上分片和 MVCC，共识瓶颈就消失了？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">技术要对应具体瓶颈；跨片协调、冲突回滚、索引维护和一致验证仍然存在</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-sharding-concurrency.svg" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-sharding-concurrency.svg" alt="区块链通过分片、并发执行、索引和 Bloom Filter 减少全网处理与区块扫描" tabindex="0" role="button" aria-label="放大图片：区块链通过分片、并发执行、索引和 Bloom Filter 减少全网处理与区块扫描" decoding="async"><figcaption>分片、并发、索引和 Bloom Filter 可以组合使用；它们不是固定流水线，每片仍需一致验证</figcaption></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">分片：不同片处理不同事务；跨片事务仍需协调，每片仍需满足安全和数据可用性要求</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">并发：STM 或 MVCC 利用多核并行；系统仍需进行冲突检测、回滚和确定性验证</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">索引：辅助定位区块和交易；索引维护不等于共识数据本身</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">布隆过滤器 Bloom Filter：可排除不可能命中的区块，可能假阳性；命中仍需实际验证</span></li></ol></div></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">DATABASE INTO BLOCKCHAIN</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">查询结果与区块处理进度</h2>
+    <div class="slide-content"><p class="slide-lead">关系投影用表保存账本状态；下表已处理至 102，仅含四批</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>BatchId</th><th>Custodian</th><th>Version</th></tr></thead><tbody><tr><td>B001</td><td>S</td><td>2</td></tr><tr><td>B002</td><td>L</td><td>1</td></tr><tr><td>B003</td><td>L</td><td>1</td></tr><tr><td>B004</td><td>L</td><td>1</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>高度 102 查询 Custodian=L 返回 B002、B003、B004，共 3 批；高度 101 返回四批，查询须标明进度</p></div></div>
+    <div class="numeric-progress">6/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">链式日志与签名提供可验证审计</h2>
-    <div class="slide-content"><p class="slide-lead">关系库保存业务状态，链式日志保存操作证据；二者以事务 ID 绑定</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-db-audit-log.svg" data-full-src="resources/decks/dbpa-18-3/assets/generated/dbpa-ch18-db-audit-log.svg" alt="关系数据库保存当前业务状态，链式操作日志保存时间、摘要和签名证据，分层支持可验证审计" tabindex="0" role="button" aria-label="放大图片：关系数据库保存当前业务状态，链式操作日志保存时间、摘要和签名证据，分层支持可验证审计" decoding="async"><figcaption>链式日志保存操作证据，不是业务表本身；虚线表示审计、校验或补偿路径，不是普通查询路径</figcaption></figure></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>关系表　＋　链式操作日志　＋　数字签名　→　可验证审计；签名不自动证明现实事实，按时点回溯数据仍需完整事件、同步和恢复设计</p></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">TRUST INTO DATABASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">关系投影的 SQL 查询与索引</h2>
+    <div class="slide-content"><p class="slide-lead">关系投影可以存当前状态，也可以另表存历史</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-sql">SELECT BatchId FROM Shipment
+WHERE Custodian = 'L'
+ORDER BY BatchId;
+-- 高度 102：B002、B003、B004</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Custodian 索引可改变访问路径，结果保持一致；可见的投影版本取决于同步进度、事务快照与查询规则</p></div></div>
+    <div class="numeric-progress">7/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.8182%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">链上索引≠共识，链式日志≠表查询</h2>
-    <aside class="character-intervention character-edge-left character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-misconception" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-misconception.c0e85a5e3b2c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>把两套组件叠在一起，能力不就自动相加了？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">组合前分别写业务状态、审计日志放在哪里，以及哪一方负责验证和恢复</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 22% 30% 24%"><colgroup><col style="width:24%"><col style="width:22%"><col style="width:30%"><col style="width:24%"></colgroup><thead><tr><th>做法</th><th>加到哪里</th><th>数据放在哪里、谁验证</th><th>可能改善什么、又多做什么</th></tr></thead><tbody><tr><td>数据库技术进入区块链</td><td>数据库 → 区块链</td><td>分片、并发、索引辅助处理；跨片与一致验证仍需保留</td><td>可能改善扩展或查询；增加协调、维护和确定性执行成本</td></tr><tr><td>区块链特征进入数据库</td><td>区块链 → 数据库</td><td>关系库保存业务状态，链式日志保存摘要、时间和签名证据</td><td>可能增强审计；还要处理漏写日志、故障恢复和哪些人能看日志</td></tr><tr><td>代表性融合思路</td><td>分层组合</td><td>BigchainDB、ChainSQL 类或共享数据库可作为案例，具体实现各异</td><td>收益取决于日志内容、提交绑定、查询路径和治理，不能由产品名称直接保证</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>融合不是把组件叠在一起；必须说明业务查询走哪条路、审计校验走哪条路、同步失败后怎样恢复</p></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">FUSION EXAMPLES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">分片访问与跨片事务</h2>
+    <div class="slide-content"><p class="slide-lead">独立设计：S1 保存 B001/B002，S2 保存 B003/B004</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 27% 33%"><colgroup><col style="width:40%"><col style="width:27%"><col style="width:33%"></colgroup><thead><tr><th>请求</th><th>访问分片</th><th>核验内容</th></tr></thead><tbody><tr><td>更新 B001</td><td>S1</td><td>片内验证与提交</td></tr><tr><td>统计四批保管方</td><td>S1＋S2</td><td>同一统计口径与可见进度</td></tr><tr><td>B001、B003 必须一同变更</td><td>S1＋S2</td><td>跨片原子性与失败恢复</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>各分片须保障安全与数据可用性；跨片提交依赖协调协议，事务 ID 关联请求</p></div></div>
+    <div class="numeric-progress">8/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-grid"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3 <span>|</span> 18.3</div>
-    <h2 class="slide-title">四问：谁写、多快、历史审计、复杂查询</h2>
-    <div class="slide-content"><p class="slide-lead">先给四个问题具体答案，再选关系数据库、区块链或两者组合</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>先写四个答案</h3><p>哪些机构能写；每秒多少次且最多等多久；是否要让多方核验历史；要不要复杂查询、更新和事务并发</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>关系数据库</h3><p>单一可信主体、复杂查询、低延迟和可修改数据优先；仍需普通审计、备份和权限治理</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>区块链／分布式账本</h3><p>多主体需要独立验证追加历史时可能合适；需承担共识、同步、隐私和运维成本</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>融合方案</h3><p>业务查询与跨组织审计并存时，可让关系库保存状态、链式日志保存记录；必须用事务 ID 绑定两次写入，说明漏写后怎样补、谁能查看和维护日志</p></article></div></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">CHOOSE THE SYSTEM</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">独立更新与版本冲突</h2>
+    <div class="slide-content"><p class="slide-lead">独立状态演示从 B001=L/1、B002=L/1 开始，不包含付款</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 31% 34%"><colgroup><col style="width:35%"><col style="width:31%"><col style="width:34%"></colgroup><thead><tr><th>操作组合</th><th>本例关系</th><th>处理要求</th></tr></thead><tbody><tr><td>B001→S，与 B002→F</td><td>假定无其他共享读写项</td><td>尝试并发，再核验</td></tr><tr><td>B001→S，与 B001→F</td><td>均读版本 1，更新冲突</td><td>按序接受一笔，其余重验</td></tr><tr><td>节点各自选不同先后</td><td>可能分别得到 S 或 F</td><td>不能同时接受两种结果</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>软件事务内存 STM、MVCC 支持局部并发；跨节点顺序由协议确定，冲突通过重试、撤销或重新验证处理</p></div></div>
+    <div class="numeric-progress">9/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.9091%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-grid"
+<section id="b1b" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
-    <h2 class="slide-title">物流查询、多方审计选系统：四步决定</h2>
-    <div class="slide-content"><p class="slide-lead">写数据位置、提交绑定、同步失败恢复，以及不用另一方案的理由</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 谁参与，系统要做到多快</h3><p>列出供应商、物流商和门店，谁可能故障或作恶，每秒请求、最长等待、历史追溯、查询、更新和删除要求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 每份数据放在哪里</h3><p>说明链式历史、节点状态库、关系表、WAL 和审计日志分别保存什么，再用同一事务 ID 绑定业务提交与审计记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 谁验证，失败后谁修复</h3><p>指定哪家机构验证链上记录、谁维护关系表、同步失败怎样补写、故障后从何恢复、签收信息由谁担保</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 选一个并排除另两个</h3><p>在关系数据库、区块链／分布式账本或两者组合中选择，指出另两种会在哪项速度、查询、审计或维护要求上失败</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">历史索引与查询完整性</h2>
+    <div class="slide-content"><p class="slide-lead">本例 B001 相关历史：101 中的 T1，102 中的 E01</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 31% 33%"><colgroup><col style="width:36%"><col style="width:31%"><col style="width:33%"></colgroup><thead><tr><th>操作</th><th>结果</th><th>核验范围</th></tr></thead><tbody><tr><td>索引查 B001</td><td>指向 T1 和 E01 的位置</td><td>索引是否遗漏或滞后</td></tr><tr><td>依据可信根核验成员证明</td><td>E01 已被区块收录</td><td>T1 是否被查询漏掉</td></tr><tr><td>核验接受记录与进度</td><td>确认历史与同步范围</td><td>现实货物是否确实交接</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>成员证明可证明一条记录被收录，不能单独证明整个查询没有漏项；完整性与最新性还需额外设计</p></div></div>
+    <div class="numeric-progress">10/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
+  </section>
+<section id="b1c" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">布隆过滤器的排除与误报</h2>
+    <div class="slide-content"><p class="slide-lead">Bloom Filter：8 位全 0，h1=x mod 8，h2=(3x+1) mod 8</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>操作</th><th>访问的位置</th><th>判断</th></tr></thead><tbody><tr><td>加入键 1、3</td><td>1 和 4；3 和 2</td><td>置位集合{1,2,3,4}</td></tr><tr><td>查询 2</td><td>2 和 7，位置 7 为 0</td><td>可排除</td></tr><tr><td>查询 9</td><td>1 和 4，两位都是 1</td><td>假阳性：命中但没有 9</td></tr><tr><td>查询 3</td><td>3 和 2，两位都是 1</td><td>再读真实数据确认</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>无假阴性要求过滤器完整、同步且未损坏；新增 2 后须同步置位。候选记录仍需核验合法性与提交状态</p></div></div>
+    <div class="numeric-progress">11/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">方案 A：数据库提交后，签收生效</h2>
+    <div class="slide-content"><p class="slide-lead">以下是独立方案 A：各方信任数据库运营者，外部日志用于事后核验</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 66%"><colgroup><col style="width:34%"><col style="width:66%"></colgroup><thead><tr><th>数据</th><th>写入与用途</th></tr></thead><tbody><tr><td>Shipment</td><td>业务已提交状态：B001 从 L/1 变 S/2</td></tr><tr><td>Outbox 事务发件表</td><td>同一事务保存待投递 E01，包含前后状态与事件 ID</td></tr><tr><td>外部审计日志</td><td>异步收到 E01，验证并追加记录、返回收据</td></tr><tr><td>同步状态</td><td>PENDING 待确认；ACKED 已收到收据</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>审计可暂时落后；需多方接受才生效的业务采用方案 B</p></div></div>
+    <div class="numeric-progress">12/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">业务状态与发件记录的原子提交</h2>
+    <div class="slide-content"><p class="slide-lead">方案 A 重置 B001=L/1，准备接受 E01</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="39% 25% 36%"><colgroup><col style="width:39%"><col style="width:25%"><col style="width:36%"></colgroup><thead><tr><th>写法</th><th>故障时刻</th><th>结果</th></tr></thead><tbody><tr><td>先改表提交，再写外部日志</td><td>提交后崩溃</td><td>S/2 生效，审计可能缺 E01</td></tr><tr><td>Shipment＋Outbox 同事务</td><td>提交前失败</td><td>两者回滚，仍为 L/1</td></tr><tr><td>Shipment＋Outbox 同事务</td><td>提交后投递前失败</td><td>S/2 与待投递 E01 都保留，可恢复发送</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>业务表与发件表的写入在同一事务中提交或回滚；投递器异步写外部日志，事件 ID 用于关联和去重</p></div></div>
+    <div class="numeric-progress">13/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.0909%"></div></div>
+  </section>
+<section id="b2b" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">审计收据丢失后的去重重发</h2>
+    <div class="slide-content"><p class="slide-lead">方案 A 的外部日志按事件 ID 去重，并检查相同 ID 对应相同内容</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">投递器读取 PENDING 的 E01，发送固定内容与摘要</span></li><li><span class="list-marker">02</span><span class="list-text">外部日志追加 E01，返回收据；本次收据在网络中丢失</span></li><li><span class="list-marker">03</span><span class="list-text">投递器再次发送 E01，日志核对内容后返回原收据</span></li><li><span class="list-marker">04</span><span class="list-text">本地记录 ACKED；定期比对提交、投递与收录进度</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同 ID 换内容报冲突，保留原记录；失败队列、积压告警和恢复演练用于发现未送达事件</p></div></div>
+    <div class="numeric-progress">14/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
+  </section>
+<section id="b2c" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">哈希链与独立审计锚点</h2>
+    <div class="slide-content"><p class="slide-lead">合并前一摘要 h0 与 E01 的固定编码计算摘要 h1，由审计者独立保存为锚点</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="42% 58%"><colgroup><col style="width:42%"><col style="width:58%"></colgroup><thead><tr><th>发现的情况</th><th>能怎样核对</th></tr></thead><tbody><tr><td>E01 正文被改</td><td>重算摘要比对 h1，并核验原签名</td></tr><tr><td>末尾 E01 整条被删</td><td>剩余记录可自洽，但末尾摘要不等于 h1</td></tr><tr><td>只留下 E01 摘要，没有正文</td><td>能比对已知正文，不能由摘要还原状态</td></tr><tr><td>数据库管理员直接改业务表</td><td>须用完整审计记录与业务快照对账发现差异</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>保护采集路径、密钥与外部锚点；完整事件和备份用于恢复，摘要用于比对</p></div></div>
+    <div class="numeric-progress">15/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.1818%"></div></div>
+  </section>
+<section id="b2d" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">完整事件的顺序重放</h2>
+    <div class="slide-content"><p class="slide-lead">独立恢复演示：基线 B001=F/0，事件按完整已接受顺序保存</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 39% 30%"><colgroup><col style="width:31%"><col style="width:39%"><col style="width:30%"></colgroup><thead><tr><th>恢复范围</th><th>执行内容</th><th>结果</th></tr></thead><tbody><tr><td>基线</td><td>尚未重放</td><td>F/0</td></tr><tr><td>重放至 101</td><td>T1：F/0→L/1</td><td>L/1</td></tr><tr><td>再重放至 102</td><td>E01：L/1→S/2</td><td>S/2</td></tr><tr><td>缺 T1 却直接重放 E01</td><td>期望 L/1 与 F/0 不符</td><td>拒绝，查缺失事件</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>逻辑重放使用基线与完整事件；实际时点恢复依赖匹配的备份、模式、规则版本和恢复日志</p></div></div>
+    <div class="numeric-progress">16/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">方案 B：共同账本接受后，签收生效</h2>
+    <div class="slide-content"><p class="slide-lead">本地先保存待处理请求，账本接受后再更新查询表</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 29% 43%"><colgroup><col style="width:28%"><col style="width:29%"><col style="width:43%"></colgroup><thead><tr><th>阶段</th><th>业务状态</th><th>本地数据库用途</th></tr></thead><tbody><tr><td>候选 E01</td><td>尚未共同接受</td><td>记待处理请求，不能当已签收</td></tr><tr><td>共同接受，高度 102</td><td>按共同规则生效</td><td>等待或开始同步投影</td></tr><tr><td>投影到 102</td><td>可查 S/版本 2</td><td>更新关系表与已处理高度</td></tr><tr><td>投影只到 101</td><td>业务可能已生效</td><td>标记滞后，按 E01 查提交结果</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>方案 A 以数据库提交为准，方案 B 以共同接受为准；分别记录请求响应、业务生效和查询可见时间</p></div></div>
+    <div class="numeric-progress">17/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.2727%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">练习：解释三种方案的选择</h2>
+    <div class="slide-content"><p class="slide-lead">比较方案时要考虑信任关系、查询与审计需求</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="41% 26% 33%"><colgroup><col style="width:41%"><col style="width:26%"><col style="width:33%"></colgroup><thead><tr><th>需求</th><th>候选方案</th><th>核验内容</th></tr></thead><tbody><tr><td>受信运营者，复杂 SQL 与恢复</td><td>关系数据库</td><td>权限、事务、索引、恢复</td></tr><tr><td>多机构要求独立接受关键凭证</td><td>共同账本与投影</td><td>治理、故障、提交与同步</td></tr><tr><td>受信业务库，需要外部审计</td><td>方案 A：异步审计</td><td>发件、去重、锚点、对账</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>共同账本依赖多方治理；文件改动可用签名与可靠存证核验，输入真实性另查</p></div></div>
+    <div class="numeric-progress">18/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
+  </section>
+<section id="c1a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">练习：设计查询、提交与审计测试</h2>
+    <div class="slide-content"><p class="slide-lead">教学目标：本地查询 P95≤100 ms；共同提交≤5 秒；审计确认≤60 秒</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 60%"><colgroup><col style="width:40%"><col style="width:60%"></colgroup><thead><tr><th>计时区间</th><th>检查内容</th></tr></thead><tbody><tr><td>查询请求进入→返回结果</td><td>A、B：查询延迟</td></tr><tr><td>签收请求进入→共同接受</td><td>B：共同提交耗时</td></tr><tr><td>业务提交→本地 ACKED</td><td>A：审计确认耗时</td></tr><tr><td>故障发生→恢复完成</td><td>无漏事件、重复动作或错误版本</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>在正常负载、峰值和故障下测试，同时记录查询耗时与数据更新进度</p></div></div>
+    <div class="numeric-progress">19/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.3636%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
+    <h2 class="slide-title">B001 的查询、提交与恢复</h2>
+    <div class="slide-content"><p class="slide-lead">回顾 SQL、事务、恢复与多节点协作，解释 B001 的处理过程</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>输入和状态</h3><p>E01 的权限、初态 L/1 与结果 S/2</p></article><article class="content-card emphasis-card" tabindex="0"><h3>请求与数据路径</h3><p>SQL、索引、分片、账本与投影</p></article><article class="content-card emphasis-card" tabindex="0"><h3>提交与恢复</h3><p>本地提交、共同接受、审计与重放</p></article><article class="content-card emphasis-card" tabindex="0"><h3>选择的依据</h3><p>负载、故障、治理条件与核验结果</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>复算查询结果，检查故障后保留的记录，说明由谁补发事件或恢复数据</p></div></div>
+    <div class="numeric-progress">20/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="4500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-18-3/mindmap-18-3.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <div class="numeric-progress">21/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.4545%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH18 <span>|</span> 18.3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">区块链与关系数据库的设计目标和信任假设有何不同？</span></li><li><span class="question-no">02</span><span class="question-text">链式历史、节点状态库、关系表与 WAL／审计日志分别保存什么？</span></li><li><span class="question-no">03</span><span class="question-text">分片、STM／MVCC 和索引各缓解什么瓶颈，又留下什么代价？</span></li><li><span class="question-no">04</span><span class="question-text">布隆过滤器能排除什么、不能证明什么？命中后为何仍需验证？</span></li><li><span class="question-no">05</span><span class="question-text">链式日志与签名提供什么审计证据？时点回溯还需要什么？</span></li><li><span class="question-no">06</span><span class="question-text">单一可信中心、多方协作、混合审计三种场景各应选择什么方案？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">查询高度 102 时，为什么 Custodian=L 应返回三个批次？</span></li><li><span class="question-no">02</span><span class="question-text">B001 的 E01 成员证明有效，能否证明历史查询没漏掉 T1？</span></li><li><span class="question-no">03</span><span class="question-text">8 位 Bloom 例中，键 2 为何能排除，键 9 为何会误报？</span></li><li><span class="question-no">04</span><span class="question-text">Shipment 和 Outbox 同事务提交后，外部日志一定已收到吗？</span></li><li><span class="question-no">05</span><span class="question-text">E01 被整条删除时，独立保存的 h1 怎样帮助发现问题？</span></li><li><span class="question-no">06</span><span class="question-text">方案 A 与方案 B 分别在哪一步确认签收生效？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-18-2.html" title="上一节：18.2 区块链发展阶段、准入模式与技术架构" aria-label="上一节：18.2 区块链发展阶段、准入模式与技术架构">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -173,15 +291,15 @@
         <span class="nav-title">区块链架构与模式</span>
       </a>
       <a class="exercise-link" href="dbpa-18-3-exec.html">本节练习</a>
-      <a class="side-nav nav-next" href="#map" title="课程全景" aria-label="课程全景">
+      <a class="side-nav nav-next" href="dbpa-0.html" title="课程全景" aria-label="课程全景">
         <span class="nav-title">课程全景</span>
         <span class="nav-number">MAP</span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">22/22</div>
+    <div class="semantic-label">QUERIES COMMIT AND AUDIT</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

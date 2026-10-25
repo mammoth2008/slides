@@ -28,194 +28,243 @@
     <img class="cover-image" src="resources/decks/dbpa-10-2/assets/dbpa-10-2.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 10.2</div>
-      <h1>查询优化与执行计划</h1>
-      <p class="cover-description">结果相同也可能差几万个块：先缩小中间结果，再比较执行计划</p>
+      <h1>查询优化<br>与执行计划</h1>
+      <p class="cover-description">查询改写、中间行数与块读写代价</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元从 81003 查询的等价改写开始，比较先筛选与先连接产生多少中间行，再用统计信息选扫描和连接方法，并追踪执行器怎样请求和返回元组。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">证明改写前后结果相同，估计每步行数和块 I/O，再画出请求与元组流向</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释非过程化 SQL 为何允许自动优化</span></li><li><span class="list-marker">02</span><span class="list-text">区分代数优化和物理优化</span></li><li><span class="list-marker">03</span><span class="list-text">应用选择与投影下推规则</span></li><li><span class="list-marker">04</span><span class="list-text">说明启发式与代价优化的差异</span></li><li><span class="list-marker">05</span><span class="list-text">依据选择率、块数、索引、内存和统计信息比较候选计划</span></li><li><span class="list-marker">06</span><span class="list-text">比较查询计划的需求驱动与主动生产在请求、缓冲和流水上的差异</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/16</div>
+    <div class="slide-content"><p class="slide-lead">比较 81003 课程查询的改写、代价与执行</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">写出三种等价方案的中间行数</span></li><li><span class="list-marker">02</span><span class="list-text">复算 2,002,100、4,100 与 200 次块读写</span></li><li><span class="list-marker">03</span><span class="list-text">下推筛选与列裁剪时，保留连接键和重复行</span></li><li><span class="list-marker">04</span><span class="list-text">根据块数、索引与内存比较物理算法</span></li><li><span class="list-marker">05</span><span class="list-text">发现均匀分布估算与实际行数的差别</span></li><li><span class="list-marker">06</span><span class="list-text">追踪一条结果如何经过算子返回</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">优化器先改写代数，再选扫描和连接</h2>
-    <div class="slide-content"><p class="slide-lead">SQL 只说明返回什么；优化器按块数、命中行数、索引和内存改变执行顺序</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>用户／应用</h3><p>用户和应用表达结果需求，不指定存取路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>优化器</h3><p>优化器从合法内部表示出发改写逻辑表达式，再比较物理候选</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>物理状态</h3><p>表块、索引、内存和数据分布变化后，系统可能重新优化</p></article></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="内部关系表示与操作算法　→　等价改写与物理选路"><span class="relation-term">内部关系表示与操作算法</span><span class="relation-operator">→</span><span class="relation-term">等价改写与物理选路</span></div></div></div></div>
-    <div class="numeric-progress">3/16</div>
-    <div class="semantic-label">WHY OPTIMIZE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:18.7500%"></div></div>
+    <h2 class="slide-title">查询需求、逻辑改写与物理选路</h2>
+    <div class="slide-content"><p class="slide-lead">查询选修 81003 的学生姓名；比较逻辑顺序与物理算法</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>应用提出需求</h3><p>查询选修 81003 的学生姓名，保持每条选课记录对应的结果行</p></article><article class="content-card emphasis-card" tabindex="0"><h3>逻辑改写</h3><p>先过滤 SC，再按学号连接 Student，避免处理无关课程</p></article><article class="content-card emphasis-card" tabindex="0"><h3>物理选路</h3><p>比较全表与索引扫描，再选择连接算法</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>修改执行方法必须保持结果多重集相同；没有 ORDER BY 时，不承诺返回顺序</p></div></div>
+    <div class="numeric-progress">3/20</div>
+    <div class="semantic-label">OPTIMIZER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">优化目标是用较小代价得到相同结果</h2>
-    <div class="slide-content"><p class="slide-lead">集中式系统尤其关注块 I/O；分布式系统还要估计节点间通信</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>I/O</h3><p>I/O 包括块的读取、写出和随机访问</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>CPU</h3><p>CPU 处理比较、排序和哈希计算</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>内存</h3><p>内存提供缓冲区以及排序、哈希工作区</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>通信</h3><p>通信表示分布式节点之间传输数据</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>常见组合策略是先用启发式缩小候选，再估算代价并选择较优计划；实际优化器不一定固定按此顺序执行</p></div></div>
-    <aside class="character-intervention character-edge-right character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-confirm" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-confirm.0b7e8cc008e7.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>结果等价还不够，优化器要比较总代价，而不是只看一个指标</p></div></div></div></aside>
-    <div class="numeric-progress">4/16</div>
+    <h2 class="slide-title">块 I/O、CPU、内存与通信代价</h2>
+    <div class="slide-content"><p class="slide-lead">本节按磁盘块读写计数，其他代价单独说明</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>本节计入</h3><p>从磁盘读一个块、向磁盘写一个块，各算一次块 I/O</p></article><article class="content-card emphasis-card" tabindex="0"><h3>CPU 与内存</h3><p>比较键、计算哈希、排序都耗时；内存决定能否少写临时结果</p></article><article class="content-card emphasis-card" tabindex="0"><h3>缓存与通信</h3><p>缓存命中的块无需读盘；分布式执行需计入数据传输</p></article><article class="content-card emphasis-card" tabindex="0"><h3>搜索成本</h3><p>用规则筛选候选计划，可减少后续代价估算的工作量</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>以下数值均为指定假设下的块读写估算，实际耗时需另行测量</p></div></div>
+    <div class="numeric-progress">4/20</div>
     <div class="semantic-label">COST MODEL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-table-code"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:1fr;--split-b:1fr;">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">课程查询的输入与结果</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 10.1：Student 列为学号／姓名，SC 列为学号／课程号</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>Student</th><th>SC</th></tr></thead><tbody><tr><td>01 / 林晓</td><td>01 / 81001</td></tr><tr><td>02 / 陈宁</td><td>01 / 81002</td></tr><tr><td>03 / 周航</td><td>03 / 81001</td></tr><tr><td>—</td><td>03 / 81003</td></tr></tbody></table></div>
+<div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">SELECT s.Sname
+FROM Student AS s
+JOIN SC AS sc
+  ON s.Sno = sc.Sno
+WHERE sc.Cno = '81003';</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>没有 DISTINCT：不同选课记录或同名学生产生的同名结果都要保留</p></div></div>
+    <div class="numeric-progress">5/20</div>
+    <div class="semantic-label">QUERY AND RESULT</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-split axis-vertical order-media-text"
-      data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">代数优化：改写逻辑，再选物理路径</h2>
-    <div class="slide-content"><p class="slide-lead">结果不变，参与后续操作的中间关系变小</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-query-equivalence.svg" data-full-src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-query-equivalence.svg" alt="三个等价查询计划因操作顺序不同产生不同中间结果和块读写代价" tabindex="0" role="button" aria-label="放大图片：三个等价查询计划因操作顺序不同产生不同中间结果和块读写代价" decoding="async"></figure>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="SQL　→　关系代数表达式　→　语法树　→　等价逻辑方案　→　物理计划"><span class="relation-term">SQL</span><span class="relation-operator">→</span><span class="relation-term">关系代数表达式</span><span class="relation-operator">→</span><span class="relation-term">语法树</span><span class="relation-operator">→</span><span class="relation-term">等价逻辑方案</span><span class="relation-operator">→</span><span class="relation-term">物理计划</span></div></div>
-<div class="component component-code"><p>SELECT Student.Sname FROM Student, SC WHERE Student.Sno = SC.Sno AND SC.Cno = &#x27;81003&#x27;</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>在相同关系模式和语义下，<code>Q1 ≡ Q2 ≡ Q3</code> 表示结果相同；它们是等价关系代数表达式，不是已经确定的物理执行计划</p></div></div>
-    <div class="numeric-progress">5/16</div>
-    <div class="semantic-label">ALGEBRAIC OPTIMIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:31.2500%"></div></div>
-  </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">选择下推通常是最重要的启发式规则</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-astonished" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-astonished.b6705ee6e65e.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>结果明明等价，块读写为什么会相差几个数量级？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">本例先过滤再连接，块读写估算从约 2,002,100 降到约 200</p>
-<div class="slide-main-content"><p>示例假设：Student 有 1000 条记录，SC 有 10000 条记录，<code>Cno=&#x27;81003&#x27;</code> 命中 50 条记录</p>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>计划</th><th>中间结果</th><th>示例假设下块读写估算</th></tr></thead><tbody><tr><td>先笛卡儿积</td><td>约 10⁷ 个元组</td><td>约 2,002,100 块</td></tr><tr><td>先连接再选择</td><td>约 10⁴ 个连接结果</td><td>约 4,100 块</td></tr><tr><td>先选择 SC</td><td>只保留 50 条课程记录</td><td>约 200 块</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>差异来自中间结果规模和扫描次数；这些数字只属于本组示例假设，不是跨数据库常数</p></div></div>
-    <div class="numeric-progress">6/16</div>
-    <div class="semantic-label">PUSH SELECTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+    <h2 class="slide-title">Q1、Q2、Q3 的中间行数</h2>
+    <div class="slide-content"><p class="slide-lead">小样本的三种方案均返回周航这一行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 54% 19%"><colgroup><col style="width:27%"><col style="width:54%"><col style="width:19%"></colgroup><thead><tr><th>方案</th><th>中间数据变化</th><th>最终输出</th></tr></thead><tbody><tr><td>Q1：先笛卡儿积</td><td>3 × 4 = 12 行 → 同学号且课程为 81003</td><td>周航</td></tr><tr><td>Q2：先按学号连接</td><td>4 行连接结果 → 课程为 81003</td><td>周航</td></tr><tr><td>Q3：先筛选 SC</td><td>SC 剩 (03, 81003) → 按学号连接</td><td>周航</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Q1、Q2、Q3 只是逻辑顺序，尚未确定连接算法和中间结果是否写盘</p></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">EQUIVALENT PLANS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-grid"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">语法树优化把规则变成可检查步骤</h2>
-    <div class="slide-content"><p class="slide-lead">重点是减少中间数据和重复扫描，同时保持关系代数等价</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>选择下推</h3><p>把选择条件尽可能移向叶端</p></article><article class="content-card emphasis-card" tabindex="0"><h3>投影下推</h3><p>把投影尽早下推，去掉无用列，但保留后续连接和选择所需属性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>连接化</h3><p>把笛卡儿积和连接条件合为连接</p></article><article class="content-card emphasis-card" tabindex="0"><h3>复用</h3><p>结果较小且复用成本合算时，再共享公共子表达式</p></article></div></div></div>
-    <div class="numeric-progress">7/16</div>
-    <div class="semantic-label">TREE RULES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:43.7500%"></div></div>
+    <h2 class="slide-title">教材算例的数据与缓冲条件</h2>
+    <div class="slide-content"><p class="slide-lead">以下是教材例 10.3 的独立规模，不是上一页的小样本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 55% 22%"><colgroup><col style="width:23%"><col style="width:55%"><col style="width:22%"></colgroup><thead><tr><th>对象</th><th>明确假设</th><th>据此得到</th></tr></thead><tbody><tr><td>Student</td><td>1000 行，10 行/块；Sno 为主码</td><td>共 100 块</td></tr><tr><td>SC</td><td>10000 行，100 行/块；Sno 为非空外键</td><td>共 100 块</td></tr><tr><td>课程 81003</td><td>命中 50 条 SC，全部留在内存</td><td>筛选后 50 行</td></tr><tr><td>Q1 / Q2 输入</td><td>5 块装 Student，1 块装 SC</td><td>分 20 批读入</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>无缓存，每批重扫 SC；输出缓冲另计，不计 CPU 与最终输出</p></div></div>
+    <div class="numeric-progress">7/20</div>
+    <div class="semantic-label">ASSUMPTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
-<section id="b3b" class="step slide-surface role-content layout-focus"
+<section id="b2a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">把选择下推应用到 Q1</h2>
-    <div class="slide-content"><p class="slide-lead">保留后续连接属性，并逐步检查结果等价</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">Q1 先从笛卡儿积和合取条件开始</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">拆分选择条件并把只涉及 SC 的条件下推</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">保留 <code>Sno</code> 等后续连接属性，不把连接列投影掉</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">再连接和投影得到 Q3，逐步检查结果等价</span></li></ol></div></div></div>
-    <div class="numeric-progress">8/16</div>
-    <div class="semantic-label">APPLY TREE RULES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <h2 class="slide-title">Q1 与 Q2：读入相同，中间结果不同</h2>
+    <div class="slide-content"><p class="slide-lead">共同输入成本：Student 100 + 20 批 × SC 100 = 2100</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 40% 33%"><colgroup><col style="width:27%"><col style="width:40%"><col style="width:33%"></colgroup><thead><tr><th>计算项目</th><th>Q1：先笛卡儿积</th><th>Q2：先按学号连接</th></tr></thead><tbody><tr><td>中间行数</td><td>1000 × 10000 = 10000000</td><td>10000</td></tr><tr><td>中间块数</td><td>10000000 ÷ 10 = 1000000</td><td>10000 ÷ 10 = 1000</td></tr><tr><td>写出再读回</td><td>2 × 1000000 = 2000000</td><td>2 × 1000 = 2000</td></tr><tr><td>加上输入 2100</td><td>2,002,100 次块 I/O</td><td>4,100 次块 I/O</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>假定中间结果每块 10 行，写出后再读回；最后两种方案都筛出 50 行</p></div></div>
+    <div class="numeric-progress">8/20</div>
+    <div class="semantic-label">MATERIALIZATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b2b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">物理优化在等价逻辑计划中选择存取算法</h2>
-    <div class="slide-content"><p class="slide-lead">逻辑计划不变，扫描、索引、排序和哈希会改变执行代价</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>选择对象</th><th>候选</th><th>依据</th></tr></thead><tbody><tr><td>单表选择</td><td>全表或索引扫描</td><td>表大小和选择率</td></tr><tr><td>等值连接</td><td>索引、排序—合并、哈希或嵌套循环</td><td>索引、排序、块数和内存</td></tr><tr><td>通用连接</td><td>嵌套循环等候选</td><td>块数量和可用缓冲</td></tr><tr><td>条件组合</td><td>组合索引或多个索引</td><td>条件结构与选择性</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>Student ⋈ SC</code> 可使用嵌套循环、排序—合并、索引连接或哈希连接；物理优化依据条件筛选候选，不重新定义算法</p></div></div>
-    <div class="numeric-progress">9/16</div>
-    <div class="semantic-label">PHYSICAL OPTIMIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:56.2500%"></div></div>
+    <h2 class="slide-title">Q3：50 行留在内存，只扫描两张表</h2>
+    <div class="slide-content"><p class="slide-lead">先读 SC 100 块并过滤，再扫描 Student 100 块完成连接</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">扫描 SC：保留 Cno 为 81003 的 50 行</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">在内存中保存这 50 行，按 Sno 匹配学生</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">扫描 Student：把匹配到的姓名交给输出</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">中间结果不写盘，输入成本为 100 + 100 = 200</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Q3 提前筛选并将 50 行留在内存，省去中间结果写读。Q1、Q2 若采用流水执行，需重新计算代价</p></div></div>
+    <div class="numeric-progress">9/20</div>
+    <div class="semantic-label">FILTER FIRST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">启发式规则先缩小候选计划</h2>
-    <div class="slide-content"><p class="slide-lead">规则通常有效，但只是候选起点，不保证每种数据状态都最好</p>
-<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">主码等值查询：优先检查主码索引</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">非主属性或范围查询：低选择率时考虑索引扫描，不把 10% 当作固定阈值</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">AND 条件：比较组合索引、多个索引和全表扫描；OR 条件通常先考虑顺序扫描</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">连接属性已有排序：考虑排序—合并连接</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">内表连接属性有索引：考虑索引连接</span></li><li class="substep"><span class="list-marker">06</span><span class="list-text">等值连接且构建输入适合内存：考虑哈希连接</span></li><li class="substep"><span class="list-marker">07</span><span class="list-text">没有明显优势时再比较嵌套循环，并优先让块数较小的表作外表</span></li></ol></div></div></div>
-    <div class="numeric-progress">10/16</div>
-    <div class="semantic-label">HEURISTIC RULES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+    <h2 class="slide-title">过滤、连接与输出所需的列</h2>
+    <div class="slide-content"><p class="slide-lead">Cno 负责过滤，Sno 负责连接，Sname 负责输出</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 35% 36%"><colgroup><col style="width:29%"><col style="width:35%"><col style="width:36%"></colgroup><thead><tr><th>步骤</th><th>保留的数据</th><th>列用途与结果语义</th></tr></thead><tbody><tr><td>读取 SC 并过滤</td><td>判断 Cno，保留 Sno</td><td>Cno 保留到过滤完成</td></tr><tr><td>读取 Student</td><td>保留 Sno、Sname</td><td>Sno 保留到连接完成</td></tr><tr><td>按 Sno 连接</td><td>得到匹配学生的 Sname</td><td>保留每次匹配产生的行</td></tr><tr><td>形成最终输出</td><td>仅输出 Sname</td><td>普通 SELECT 保留重复行</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>内连接下推筛选可减少行数，列裁剪减少行宽；外连接需另证等价性</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">REQUIRED COLUMNS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-focus"
+<section id="b3b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">块数和列的不同值数量决定代价估算</h2>
-    <aside class="character-intervention character-edge-top character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-thinking" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-thinking.598c0de4d4b4.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>统计信息已经过期时，这些公式还能保证计划更快吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">缺少元组数、块数、不同值、分布和索引层数，就无法估计扫描、回表或连接</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>信息</th><th>例子</th><th>用途</th></tr></thead><tbody><tr><td>表级</td><td>元组数、块数、元组长度</td><td>扫描和连接成本</td></tr><tr><td>列级</td><td>不同值个数、分布</td><td>选择率估算</td></tr><tr><td>索引级</td><td>层数、叶数、选择基数</td><td>索引扫描成本</td></tr><tr><td>系统级</td><td>内存和通信条件</td><td>计划总体代价</td></tr></tbody></table></div>
-<div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="均匀分布时 `f ≈ 1/m`　｜　全表扫描 `cost ≈ B`　｜　主码 B+ 树等值查找 `cost ≈ L + 1`"><span class="relation-term">均匀分布时 <code>f ≈ 1/m</code>　｜　全表扫描 <code>cost ≈ B</code>　｜　主码 B</span><span class="relation-operator">+</span><span class="relation-term">树等值查找 `cost ≈ L</span><span class="relation-operator">+</span><span class="relation-term">1`</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能保证。<code>B</code>、<code>L</code>、<code>m</code> 和 <code>f</code> 只形成代价估算；数据分布、缓存和统计信息变化都可能改变实际结果</p></div></div>
-    <div class="numeric-progress">11/16</div>
-    <div class="semantic-label">COST ESTIMATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:68.7500%"></div></div>
+    <h2 class="slide-title">列裁剪与重复行保留</h2>
+    <div class="slide-content"><p class="slide-lead">独立反例：林晓在两个学期都选过 81003</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 30% 45%"><colgroup><col style="width:25%"><col style="width:30%"><col style="width:45%"></colgroup><thead><tr><th>Sno</th><th>Cno</th><th>Term</th></tr></thead><tbody><tr><td>01</td><td>81003</td><td>2025 秋</td></tr><tr><td>01</td><td>81003</td><td>2026 春</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>保留多重集的列裁剪</h3><p>SC 筛选后只保留 Sno，仍是 01、01 两行；连接后输出林晓、林晓</p></article><article class="content-card emphasis-card" tabindex="0"><h3>错误地先去重</h3><p>把 Sno 变成一行 01，输出只剩一个林晓，改变了原 SQL 的结果</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>经典关系代数采用集合语义；SQL 默认保留重复行。把 Π 的去重含义搬进普通 SELECT，会改变查询</p></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">BAG SEMANTICS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
   </section>
-<section id="d1" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">查询计划描述算子如何产生结果</h2>
-    <div class="slide-content"><p class="slide-lead">执行器按计划读取基本表或索引，并逐层产生输出</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="基本表／索引访问　→　选择／连接／投影算子　→　根节点结果"><span class="relation-term">基本表／索引访问</span><span class="relation-operator">→</span><span class="relation-term">选择／连接／投影算子</span><span class="relation-operator">→</span><span class="relation-term">根节点结果</span></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>计划树同时描述访问路径和关系算子；叶节点表示基本表或索引访问</p></div></div>
-    <div class="numeric-progress">12/16</div>
-    <div class="semantic-label">PLAN EXECUTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <h2 class="slide-title">Q3 的扫描与连接候选</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 10.1 的算法，比较索引、排序和内存条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 33% 39%"><colgroup><col style="width:28%"><col style="width:33%"><col style="width:39%"></colgroup><thead><tr><th>候选步骤</th><th>必要条件</th><th>需要计入的成本</th></tr></thead><tbody><tr><td>SC 按课程查索引</td><td>存在 Cno 索引</td><td>索引路径与回表</td></tr><tr><td>扫描 SC 后过滤</td><td>不依赖索引</td><td>读完 SC 的数据块</td></tr><tr><td>向 Student 探测索引</td><td>Student.Sno 有索引</td><td>50 次探测及重复访问</td></tr><tr><td>哈希连接</td><td>等值；评估构建端内存</td><td>建表、探测；溢出时分区</td></tr><tr><td>排序—合并连接</td><td>两侧按 Sno 排序</td><td>已有顺序可省排序成本</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整查询成本包括 SC 筛选、Student 连接和姓名输出</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">PHYSICAL PLANS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
   </section>
-<section id="d2" class="step slide-surface role-content layout-split axis-vertical order-media-table"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
-    <h2 class="slide-title">执行计划可以需求驱动，也可以主动生产</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="70" data-character-exposure="58" data-character-scale="0.9" style="--character-along:70%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>自顶向下执行时，请求和结果都向下流动吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">两种方向对应不同的请求、缓冲和流水行为</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-plan-execution.svg" data-full-src="resources/decks/dbpa-10-2/assets/generated/dbpa-ch10-plan-execution.svg" alt="查询计划自顶向下拉取结果或自底向上生产结果" tabindex="0" role="button" aria-label="放大图片：查询计划自顶向下拉取结果或自底向上生产结果" decoding="async"></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>方式</th><th>请求或元组关系</th><th>直观特点</th></tr></thead><tbody><tr><td>自顶向下</td><td>根算子请求向下；元组逐层向上返回</td><td>需求驱动，按需拉取一条或一批</td></tr><tr><td>自底向上</td><td>叶算子生成元组写入缓冲，父算子取走</td><td>主动生产，可能受缓冲和阻塞影响</td></tr><tr><td>共同目标</td><td>按计划完成查询</td><td>结果语义不改变</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不是。自顶向下时请求向下、结果向上；自底向上时叶算子主动生产元组</p></div></div>
-    <div class="numeric-progress">13/16</div>
-    <div class="semantic-label">TOP DOWN OR BOTTOM UP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:81.2500%"></div></div>
+    <h2 class="slide-title">启发式候选与代价核查</h2>
+    <div class="slide-content"><p class="slide-lead">索引、分布、缓存与回表共同影响计划代价</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 40% 33%"><colgroup><col style="width:27%"><col style="width:40%"><col style="width:33%"></colgroup><thead><tr><th>查询条件</th><th>候选方法</th><th>代价因素</th></tr></thead><tbody><tr><td>主码等值查询</td><td>主码索引查找</td><td>索引是否覆盖、缓存状态</td></tr><tr><td>命中比例较低</td><td>索引扫描与回表</td><td>命中行分散在多少块</td></tr><tr><td>AND 条件</td><td>组合索引、索引求交、扫描</td><td>可用索引与各条件分布</td></tr><tr><td>OR 条件</td><td>扫描；也可比较索引求并</td><td>两支能否有效访问并合并</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>没有跨系统通用的“10% 阈值”。公共子结果需要复用时，也要比较保存、读回与重算成本</p></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">CANDIDATE RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="c3" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
-    <h2 class="slide-title">81003 查询：结果、块 I/O 和执行方式</h2>
-    <div class="slide-content"><p class="slide-lead">先证明下推不丢行或连接列，再估计行数和块数；最后选算法并实测</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>改写后结果相同吗</h3><p>写出 Q1、Q2、Q3 的关系代数语义，说明选择下推和连接替代笛卡儿积为何不改变结果</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>先筛选后剩多少</h3><p>先筛选 <code>SC.Cno=&#x27;81003&#x27;</code>，只保留连接与输出所需属性；估计参与连接的元组或块如何减少</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>各方案读写多少块</h3><p>列出 SC 索引／扫描与四类连接候选，用块数、选择率、索引层数、内存和分布假设估算</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求和元组怎样流动</h3><p>标出自顶向下请求或自底向上生产、缓冲与阻塞位置；统计过期或实测偏离时重新评估计划</p></article></div></div></div>
-    <div class="numeric-progress">14/16</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">行数估算与主码查找成本</h2>
+    <div class="slide-content"><p class="slide-lead">课程筛选估计命中行数；主码查找计算索引与回表读块</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 42% 32%"><colgroup><col style="width:26%"><col style="width:42%"><col style="width:32%"></colgroup><thead><tr><th>估算任务</th><th>已知条件</th><th>计算结果</th></tr></thead><tbody><tr><td>SC 按课程筛选</td><td>10000 行，200 门课程；假定每门课程选课数相同</td><td>f = 1 / 200 = 0.5%，预计命中 50 行</td></tr><tr><td>Student 主码查找</td><td>索引从根到叶共 3 层，另读 1 个数据块，无缓存</td><td>3 + 1 = 4 次块读取</td></tr><tr><td>Student 全表扫描</td><td>100 个数据块，读完整表，无可复用缓存</td><td>100 次块读取</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>L 为索引层数，L + 1 计单条主码查找；多行查询需重算索引与回表成本</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">STATISTICS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="c3a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">热门课程的行数估算</h2>
+    <div class="slide-content"><p class="slide-lead">独立示例：仍有 200 门课程，改设 81003 命中 7000 行</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>均匀分布估算</h3><p>10000 ÷ 200 = 50 行，选择率 0.5%，可能倾向索引扫描</p></article><article class="content-card emphasis-card" tabindex="0"><h3>示例数据</h3><p>81003 命中 7000 行，选择率 70%，回表可能遍及全部数据块</p></article><article class="content-card emphasis-card" tabindex="0"><h3>检查记录</h3><p>比较计划的估计行数和实际行数，核对统计时效与热门值分布</p></article><article class="content-card emphasis-card" tabindex="0"><h3>重新比较</h3><p>更新或改进统计后，再比较扫描、回表和连接成本，并测量实际执行</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>条件相关时，联合选择率可能偏离各条件选择率的乘积；更新统计后也需检查估算误差</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">SKEW AND ESTIMATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">需求驱动：请求向下，元组向上</h2>
+    <div class="slide-content"><p class="slide-lead">按小样本顺序扫描 SC，假设 Student.Sno 有索引</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 62%"><colgroup><col style="width:38%"><col style="width:62%"></colgroup><thead><tr><th>请求与返回</th><th>这一步实际发生什么</th></tr></thead><tbody><tr><td>连接 → 过滤 → 扫描</td><td>根投影请求姓名，扫描从 SC 第一行开始</td></tr><tr><td>SC 过滤 → 索引连接</td><td>前三行被过滤，继续请求；第四行返回 03</td></tr><tr><td>索引连接 → Student 索引</td><td>用 03 查到周航</td></tr><tr><td>索引连接 → 根投影</td><td>返回周航，再次请求直至输入结束</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>请求向下，元组向上；要一条结果可能读过多条不匹配的输入行</p></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">PULL EXECUTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">主动生产：下层生成，上层消费</h2>
+    <div class="slide-content"><p class="slide-lead">执行同一查询，过滤与连接产生周航这一行</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">SC 扫描主动生产输入行，过滤器只传递 (03, 81003)</span></li><li><span class="list-marker">02</span><span class="list-text">连接算子接收这行，查询 Student，产生周航</span></li><li><span class="list-marker">03</span><span class="list-text">姓名进入输出缓冲，供上层算子或客户端取走</span></li><li><span class="list-marker">04</span><span class="list-text">缓冲满时生产者等待，消费后才继续推进</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>拉取和推送均可流水执行；完整排序需收齐输入，哈希连接需先构建再探测</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">PUSH EXECUTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2 <span>|</span> 10.2</div>
+    <h2 class="slide-title">查询计划的语义、代价与执行</h2>
+    <div class="slide-content"><p class="slide-lead">核对结果行、代价假设和执行路径</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>结果语义</h3><p>连接键还在，筛选条件没丢，重复姓名与重复选课没有被误删</p></article><article class="content-card emphasis-card" tabindex="0"><h3>读写计算</h3><p>100 + 20 × 100 是输入；中间块数乘 2 是写出再读回</p></article><article class="content-card emphasis-card" tabindex="0"><h3>候选代价</h3><p>明确索引、内存、分布与缓存条件，计算完整访问路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>执行反馈</h3><p>记录估计与实际行数；差异大时检查统计与数据分布，再比较计划</p></article></div></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
-    <h2 class="slide-title">说明为何选这个计划：给出四项计算</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-10-2/mindmap-10-2.html" title="说明为何选这个计划：给出四项计算"></iframe></div></div>
-    <div class="numeric-progress">15/16</div>
+    <h2 class="slide-title">查询改写、代价估算与执行反馈</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-10-2/mindmap-10-2.html" title="查询改写、代价估算与执行反馈"></iframe></div></div>
+    <div class="numeric-progress">19/20</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.7500%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="0" data-y="3360" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH10 <span>|</span> 10.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么 Q1 与 Q3 结果等价但代价不同？</span></li><li><span class="question-no">02</span><span class="question-text">下推 <code>SC.Cno=&#x27;81003&#x27;</code> 时，哪些连接属性必须保留？</span></li><li><span class="question-no">03</span><span class="question-text">如何区分代数优化与物理优化？</span></li><li><span class="question-no">04</span><span class="question-text">用 <code>B</code>、<code>m</code>、<code>f</code>、<code>L</code>、块数、排序、索引与内存选择扫描和连接算法。</span></li><li><span class="question-no">05</span><span class="question-text">对照自顶向下请求、元组返回与自底向上缓冲生产。</span></li></ol>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>等价变换不决定代价；计划选择还要结合选择率、块、索引与内存</p></div><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">小样本中，Q1、Q2、Q3 各自先产生多少行？</span></li><li><span class="question-no">02</span><span class="question-text">2100、2000000、2000 和 200 分别如何算出？</span></li><li><span class="question-no">03</span><span class="question-text">把两个学期的 Sno 去重，为什么会改变查询结果？</span></li><li><span class="question-no">04</span><span class="question-text">有 200 个不同课程号，为什么不能保证每门课占 0.5%？</span></li><li><span class="question-no">05</span><span class="question-text">需求驱动时，为什么请求一条结果可能读取四条 SC？</span></li></ol>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>结果多重集、成本假设与执行路径</p></div><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-10-1.html" title="上一节：10.1 查询处理与操作算法" aria-label="上一节：10.1 查询处理与操作算法">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -230,7 +279,7 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">16/16</div>
+    <div class="numeric-progress">20/20</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

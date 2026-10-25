@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 4.1</div>
       <h1>安全性与存取控制</h1>
-      <p class="cover-description">检查访问对象、操作和授权来源</p>
+      <p class="cover-description">DBMS 根据账号权限与安全策略控制数据访问</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2610</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -45,7 +45,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
     <h2 class="slide-title">学习目标</h2>
     <div class="slide-content"><p class="slide-lead">说明 DBMS 为何允许或拒绝访问，以及权限回收会影响谁</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分安全性、完整性与运行环境安全</span></li><li><span class="list-marker">02</span><span class="list-text">沿一次请求说明身份鉴别、授权检查、DAC/MAC 和审计分别在检查什么</span></li><li><span class="list-marker">03</span><span class="list-text">读懂教材 SQL 中的 GRANT、REVOKE，预测回收前后谁还能操作</span></li><li><span class="list-marker">04</span><span class="list-text">为岗位配置角色，区分撤销成员与撤销角色权限</span></li><li><span class="list-marker">05</span><span class="list-text">区分自主与强制存取控制</span></li><li><span class="list-marker">06</span><span class="list-text">用主体、客体和密级解释 MAC 读写规则</span></li></ol></div></div></div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分安全性、完整性与运行环境安全</span></li><li><span class="list-marker">02</span><span class="list-text">说明身份鉴别、授权检查、DAC/MAC 和审计的作用</span></li><li><span class="list-marker">03</span><span class="list-text">读懂教材 SQL 中的 GRANT、REVOKE，预测回收前后谁还能操作</span></li><li><span class="list-marker">04</span><span class="list-text">为岗位配置角色，区分撤销成员与撤销角色权限</span></li><li><span class="list-marker">05</span><span class="list-text">区分自主与强制存取控制</span></li><li><span class="list-marker">06</span><span class="list-text">用主体、客体和密级解释 MAC 读写规则</span></li></ol></div></div></div>
     <div class="numeric-progress">2/19</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
     <div class="progress-track"><div class="progress-fill" style="width:10.5263%"></div></div>
@@ -54,9 +54,9 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
-    <h2 class="slide-title">哪一步没拦住？别只说“不安全”</h2>
-    <div class="slide-content"><p class="slide-lead">数据出错可能因账号越权、分数不合法、备份盘被偷，或输入改写了 SQL</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 38% 26%"><colgroup><col style="width:36%"><col style="width:38%"><col style="width:26%"></colgroup><thead><tr><th>看到的情况</th><th>首先要问</th><th>主要由哪一层处理</th></tr></thead><tbody><tr><td>未授权账户读到了成绩</td><td>谁能对哪个对象做什么</td><td>数据库安全性</td></tr><tr><td>合法教师写入了 130 分</td><td>分数是否符合业务规则</td><td>数据库完整性</td></tr><tr><td>未授权者读取主机或备份</td><td>谁能接触、读取备份或主机</td><td>运行环境安全</td></tr><tr><td>输入改变了 SQL 结构</td><td>输入如何进入 SQL</td><td>应用层风险</td></tr></tbody></table></div></div></div>
+    <h2 class="slide-title">越权访问、非法取值与运行环境风险</h2>
+    <div class="slide-content"><p class="slide-lead">数据泄露、非法取值和 SQL 注入涉及不同的控制机制</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 38% 26%"><colgroup><col style="width:36%"><col style="width:38%"><col style="width:26%"></colgroup><thead><tr><th>发生的情况</th><th>检查内容</th><th>主要控制机制</th></tr></thead><tbody><tr><td>未授权账户读到了成绩</td><td>账户的访问权限</td><td>数据库安全性控制</td></tr><tr><td>合法教师写入了 130 分</td><td>分数的允许范围</td><td>完整性约束</td></tr><tr><td>未授权者读取主机或备份</td><td>主机与备份的访问保护</td><td>运行环境安全措施</td></tr><tr><td>输入改变了 SQL 结构</td><td>输入与 SQL 的拼接方式</td><td>应用层输入处理</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">3/19</div>
     <div class="semantic-label">SECURITY SCOPE</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
@@ -65,11 +65,11 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
-    <h2 class="slide-title">一次成绩修改要经过哪些检查</h2>
+    <h2 class="slide-title">成绩修改的三类检查</h2>
     <div class="slide-content"><p class="slide-lead">账号、权限和数据规则各检查一件事；任何必要检查失败，都不能完成修改</p>
 <div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="身份鉴别 → 权限检查 → 数据检查 → 执行与留痕"><span class="relation-term">身份鉴别</span><span class="relation-operator">→</span><span class="relation-term">权限检查</span><span class="relation-operator">→</span><span class="relation-term">数据检查</span><span class="relation-operator">→</span><span class="relation-term">执行与留痕</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>确认账号</h3><p>口令、证书等用于鉴别身份；连续登录失败等异常还需检测</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查操作</h3><p>查 T17 的有效授权；若启用 MAC，还要满足密级规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>检查数据</h3><p>拒绝越界成绩，例如 130 分</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>检查职责不限定内部顺序；数据库文件、备份和传输仍需保护</p></div></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>确认账号</h3><p>口令、证书用于鉴别身份；入侵检测识别连续登录失败等异常</p></article><article class="content-card emphasis-card" tabindex="0"><h3>检查操作</h3><p>核对权限；启用 MAC 时检查密级</p></article><article class="content-card emphasis-card" tabindex="0"><h3>检查数据</h3><p>拒绝越界成绩，例如 130 分</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>图示按职责划分，执行顺序依实现而定；文件、备份与传输各需保护</p></div></div>
     <div class="numeric-progress">4/19</div>
     <div class="semantic-label">CONTROL CHAIN</div>
     <div class="progress-track"><div class="progress-fill" style="width:21.0526%"></div></div>
@@ -84,7 +84,7 @@
 02</span><code class="language-sql">UPDATE SC SET Grade = 90
 WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div>
 <div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 28% 28% 26%"><colgroup><col style="width:18%"><col style="width:28%"><col style="width:28%"><col style="width:26%"></colgroup><thead><tr><th>执行账号</th><th>身份鉴别</th><th>对本次操作的权限</th><th>预期结果</th></tr></thead><tbody><tr><td>教师 T17</td><td>已通过</td><td>有 UPDATE(Grade)</td><td>继续检查数据规则</td></tr><tr><td>学生 S01</td><td>已通过</td><td>没有 UPDATE 权限</td><td>拒绝修改</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>用两个独立登录会话执行同一语句，再查询成绩；登录成功只能回答“是谁”</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>验证方法：两个独立登录会话执行同一语句，查询成绩并比较结果</p></div></div>
     <div class="numeric-progress">5/19</div>
     <div class="semantic-label">AUTHENTICATION</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
@@ -110,7 +110,7 @@ WHERE Sno = 'S01' AND Cno = 'C01';</code></pre></div></div>
 <div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02</span><code class="language-sql">GRANT SELECT ON TABLE Student TO U1;
 GRANT UPDATE(Smajor), SELECT ON TABLE Student TO U4;</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>U4 可查整表，只能改专业；限制可见行还需受限视图等机制</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>U4 可查整表，修改范围限于专业列；受限视图可控制可见行</p></div></div>
     <div class="numeric-progress">7/19</div>
     <div class="semantic-label">GRANT</div>
     <div class="progress-track"><div class="progress-fill" style="width:36.8421%"></div></div>
@@ -119,7 +119,7 @@ GRANT UPDATE(Smajor), SELECT ON TABLE Student TO U4;</code></pre></div></div></d
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
-    <h2 class="slide-title">先建立三段授权，再由 DBA 回收</h2>
+    <h2 class="slide-title">授权传播与级联回收</h2>
     <div class="slide-content"><p class="slide-lead">教材模型：U5、U6、U7 起初都没有 INSERT 权限，也没有其他授权路径</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -148,7 +148,7 @@ REVOKE INSERT ON TABLE SC FROM U5 CASCADE;</code></pre></div></div></div>
     <h2 class="slide-title">回收同一条授权，独立路径会改变结果</h2>
     <div class="slide-content"><p class="slide-lead">每行从三段授权已建立的状态重新开始；表中判断的是 INSERT 权限是否仍存在</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 20% 20% 20%"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>DBA 的回收操作</th><th>U5</th><th>U6</th><th>U7</th></tr></thead><tbody><tr><td>回收前</td><td>有</td><td>有</td><td>有</td></tr><tr><td>CASCADE；没有其他授权</td><td>无</td><td>无</td><td>无</td></tr><tr><td>CASCADE；此前 DBA 另授 U7</td><td>无</td><td>无</td><td>有</td></tr><tr><td>RESTRICT；拒绝本次回收</td><td>有</td><td>有</td><td>有</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>以上是教材模型的预期结果；上机须按产品语法回收，并逐个登录验证，不能直接套用 CASCADE</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>表中为教材模型的预期结果；上机使用产品支持的回收语法，逐个登录验证</p></div></div>
     <div class="numeric-progress">9/19</div>
     <div class="semantic-label">REVOKE RESULTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
@@ -191,8 +191,8 @@ GRANT R1 TO 赵玲 WITH ADMIN OPTION;</code></pre></div></div>
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">自主存取控制 DAC：授权者决定访问权限</h2>
     <div class="slide-content"><p class="slide-lead">对象所有者或持有转授权资格的人，可以允许别人对指定对象执行某种操作</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>谁决定</h3><p>DBA、对象属主，或拥有该权限及 <code>WITH GRANT OPTION</code> 的用户可以作出授权决定</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>决定什么</h3><p>决定用户对对象可以执行哪些具体操作</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可能出错</h3><p>权限可能沿转授权继续传播，也可能授给了不该获得的人</p></article></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DAC 检查用户是否有权执行操作，完整性检查判断数据是否符合规则；若系统同时采用 MAC，通过 DAC 后还必须满足密级规则</p></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>授权者</h3><p>DBA、对象属主，或拥有该权限及 <code>WITH GRANT OPTION</code> 的用户可以作出授权决定</p></article><article class="content-card emphasis-card" tabindex="0"><h3>授权内容</h3><p>指定用户、数据库对象和允许的操作</p></article><article class="content-card emphasis-card" tabindex="0"><h3>泄露风险</h3><p>权限可能沿转授权继续传播，也可能授给了不该获得的人</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>DAC 检查操作权限，完整性检查数据规则</p></div></div>
     <div class="numeric-progress">12/19</div>
     <div class="semantic-label">DAC</div>
     <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
@@ -202,10 +202,10 @@ GRANT R1 TO 赵玲 WITH ADMIN OPTION;</code></pre></div></div>
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.2</div>
     <h2 class="slide-title">强制存取控制 MAC：按密级限制读写</h2>
-    <div class="slide-content"><p class="slide-lead">普通授权通过后，还要满足系统规定的密级规则</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 38% 42%"><colgroup><col style="width:20%"><col style="width:38%"><col style="width:42%"></colgroup><thead><tr><th>概念</th><th>含义</th><th>本例</th></tr></thead><tbody><tr><td>主体</td><td>发起访问的用户或进程</td><td>持有 S 级许可证的用户</td></tr><tr><td>客体</td><td>被访问的表、视图或文件</td><td>标为 C 级的成绩表</td></tr><tr><td>密级标记</td><td>主体许可证与客体密级</td><td>系统比较 S 与 C，再判断读写</td></tr></tbody></table></div>
+    <div class="slide-content"><p class="slide-lead">采用 MAC 的系统按主体许可证与客体密级判定读写权限</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 38% 42%"><colgroup><col style="width:20%"><col style="width:38%"><col style="width:42%"></colgroup><thead><tr><th>概念</th><th>含义</th><th>本例</th></tr></thead><tbody><tr><td>主体</td><td>发起访问的用户或进程</td><td>持有 S 级许可证的用户</td></tr><tr><td>客体</td><td>被访问的表、视图或文件</td><td>标为 C 级的成绩表</td></tr><tr><td>密级标记</td><td>主体许可证与客体密级</td><td>S 与 C 的高低关系决定读写限制</td></tr></tbody></table></div>
 <div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="普通授权通过 → 密级规则通过 → 允许访问"><span class="relation-term">普通授权通过</span><span class="relation-operator">→</span><span class="relation-term">密级规则通过</span><span class="relation-operator">→</span><span class="relation-term">允许访问</span></div></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两项检查缺一不可；用户不能用普通 GRANT 绕过系统的密级规则</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>访问须同时通过 DAC 与 MAC；普通 GRANT 不改变系统的密级规则</p></div></div>
     <div class="numeric-progress">13/19</div>
     <div class="semantic-label">MAC LABELS</div>
     <div class="progress-track"><div class="progress-fill" style="width:68.4211%"></div></div>
@@ -237,7 +237,7 @@ GRANT R1 TO 赵玲 WITH ADMIN OPTION;</code></pre></div></div>
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1 <span>|</span> 4.1</div>
-    <h2 class="slide-title">安全等级写的是要求，不是现状</h2>
+    <h2 class="slide-title">安全保护要求与评估保证等级</h2>
     <div class="slide-content"><p class="slide-lead">TCSEC/TDI 规定安全保护要求，CC EAL 表示评估严格程度；等级不能直接对应</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 38% 34%"><colgroup><col style="width:28%"><col style="width:38%"><col style="width:34%"></colgroup><thead><tr><th>标准或等级</th><th>重点</th><th>课堂理解</th></tr></thead><tbody><tr><td>TCSEC/TDI D</td><td>最小保护</td><td>低于更高等级要求</td></tr><tr><td>C1</td><td>自主保护、DAC</td><td>按对象和用户配置权限</td></tr><tr><td>C2</td><td>受控存取、审计</td><td>记录到个人，便于查明谁做了什么</td></tr><tr><td>B1、B2、B3</td><td>标记、结构化、安全域</td><td>引入强制策略</td></tr><tr><td>A1</td><td>验证设计</td><td>形式化验证设计与实现</td></tr><tr><td>CC EAL1—EAL7</td><td>评估保证</td><td>说明评估和保证程度</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">16/19</div>
@@ -248,9 +248,9 @@ GRANT R1 TO 赵玲 WITH ADMIN OPTION;</code></pre></div></div>
       data-x="0" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH04 <span>|</span> 4.1</div>
-    <h2 class="slide-title">练习：先预测四个请求，再解释依据</h2>
-    <div class="slide-content"><p class="slide-lead">先判断登录、对象授权和密级分别是否足够，再展开卡片核对</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>请求一：学生查 Student</h3><p>学生已登录但请求整表 <code>SELECT</code>：检查该学生是否有查询权限，以及是否需要限制为只看自己的记录；登录成功本身不足以放行</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求二：教师改成绩</h3><p><code>T17</code> 请求 <code>UPDATE SC.Grade</code>：检查有效角色、列级权限和数据完整性；三者回答不同问题</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求三：U7 继续插入</h3><p>U5 的授权被回收后 U7 仍请求 <code>INSERT SC</code>：查清权限经谁转授、收回时会影响谁，以及 U7 是否还从别处获得同一权限</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求四：S 写入 C</h3><p>即使 DAC 已允许，主体 S 写入客体 C 仍被 MAC 拒绝，以阻止高密级信息向下流动</p></article></div></div></div>
+    <h2 class="slide-title">练习：判断四个访问请求</h2>
+    <div class="slide-content"><p class="slide-lead">判断学生查整表、教师改成绩、回收 U5 后 U7 插入、S 写 C 的放行条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>请求一：学生查 Student</h3><p>学生已登录；整表查询需 <code>SELECT</code> 权限，受限视图可限定为个人记录</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求二：教师改成绩</h3><p><code>T17</code> 修改成绩：有效角色可提供 <code>UPDATE(Grade)</code> 权限；完整性约束限定成绩的合法取值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求三：U7 继续插入</h3><p>级联回收 U5 会撤销沿该路径授予 U7 的 <code>INSERT</code>；U7 从其他独立路径获得的同一权限保留</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>请求四：S 写入 C</h3><p>MAC 拒绝 S 向 C 写入，以阻止高密级信息向下流动；此时 DAC 的允许结果不足以放行</p></article></div></div></div>
     <div class="numeric-progress">17/19</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>

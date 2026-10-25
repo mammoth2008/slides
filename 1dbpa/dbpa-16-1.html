@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 16.1 数据仓库与联机分析处理 | HUST</title>
+  <title>DBPA 16.1 数据仓库与 OLAP | HUST</title>
   <meta name="description" content="用电器订单说明数据仓库怎样形成地区、商品和月份报表">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,185 +25,280 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-16-1/assets/dbpa-16-1.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-16-1/assets/dbpa-16-1-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 16.1</div>
-      <h1>数据仓库与联机分析处理</h1>
-      <p class="cover-description">把多年订单统一后，按地区、商品和月份查看销售额</p>
+      <h1>数据仓库<br>与联机分析处理</h1>
+      <p class="cover-description">四条订单明细按地区与月份汇总成销售报表</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元比较 OLTP 与 OLAP，建立数据仓库四特征、数据粒度和多维分析操作；封面图只作概念引导，不作为架构证据。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">跟订单到月度报表：说明事实表一行代表什么、何时更新、能否下钻到明细</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">比较下单时读写一条记录与月报扫描多年订单的差别</span></li><li><span class="list-marker">02</span><span class="list-text">用电器销售说明数据仓库四个基本特征，以及“不可更新”不等于永不装入新数据</span></li><li><span class="list-marker">03</span><span class="list-text">区分 ECTL、常用 ETL 与 ELT 在装入前后何时清洗、转换数据</span></li><li><span class="list-marker">04</span><span class="list-text">用事实表粒度、维度、度量和时间层级解释数据立方体</span></li><li><span class="list-marker">05</span><span class="list-text">说明切片、切块、旋转、上卷和下钻</span></li><li><span class="list-marker">06</span><span class="list-text">比较 MOLAP、ROLAP、HOLAP 以及星型、雪花关系组织</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="slide-content"><p class="slide-lead">同一组订单事实经过规范化与汇总，形成不同角度的销售报表</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分交易处理、历史分析与刷新时点</span></li><li><span class="list-marker">02</span><span class="list-text">把四个仓库特征落实到数据管理动作</span></li><li><span class="list-marker">03</span><span class="list-text">完成一条记录的单位、编码和日期转换</span></li><li><span class="list-marker">04</span><span class="list-text">明确明细事实与汇总事实的不同粒度</span></li><li><span class="list-marker">05</span><span class="list-text">算出切片、切块、旋转、上卷和下钻的结果</span></li><li><span class="list-marker">06</span><span class="list-text">区分 OLAP 实现路线与星型、雪花表结构</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">下单改几条记录，月报扫描多年订单</h2>
-    <div class="slide-content"><p class="slide-lead">订单系统要尽快完成一笔交易，分析仓库要读取大量历史记录并求和</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-olap-warehouse-image2.webp" data-full-src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-olap-warehouse-image2.webp" alt="同一业务事实从 OLTP 复制或装载到分析仓库并服务 OLAP" tabindex="0" role="button" aria-label="放大图片：同一业务事实从 OLTP 复制或装载到分析仓库并服务 OLAP" decoding="async"></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>要比较的事</th><th>OLTP</th><th>OLAP</th></tr></thead><tbody><tr><td>操作</td><td>细粒度记录查询和更新</td><td>大范围历史读取和聚合</td></tr><tr><td>谁在使用</td><td>顾客下单、员工改单等业务请求</td><td>经理查看地区、商品和月份报表</td></tr><tr><td>一致性</td><td>事务一致性严格</td><td>口径需一致，但可有刷新延迟</td></tr><tr><td>响应</td><td>快速且可预测</td><td>复杂且可能较长</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>传统做法常把下单和历史分析放在不同系统；报表可以晚几分钟或几小时更新，但“销售额是否含退款”等计算规则不能两边各算一套</p></div></div></div>
-    <div class="numeric-progress">3/15</div>
-    <div class="semantic-label">OLTP AND OLAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">一次交易和一张月报，访问要求不同</h2>
+    <div class="slide-content"><p class="slide-lead">交易处理与历史分析具有不同访问需求，可在同一系统中分工</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 35% 41%"><colgroup><col style="width:24%"><col style="width:35%"><col style="width:41%"></colgroup><thead><tr><th>事项</th><th>联机事务处理 OLTP</th><th>联机分析处理 OLAP</th></tr></thead><tbody><tr><td>具体任务</td><td>提交 O100 的两条明细</td><td>按月份、地区、商品统计金额</td></tr><tr><td>主要操作</td><td>核验库存并原子提交</td><td>扫描、连接、分组与求和</td></tr><tr><td>响应要求</td><td>控制提交延迟与并发冲突</td><td>在约定时间交付分析结果</td></tr><tr><td>正确性要求</td><td>事务范围与业务约束</td><td>一致视图、口径与完整数据范围</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>报表可有约定的刷新延迟，结果仍须一致；两类负载的资源竞争须受控</p></div></div>
+    <div class="numeric-progress">3/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
   </section>
 <section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">数据仓库整理历史订单，不是复制生产库</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>把生产库复制一份，就已经是数据仓库了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">电器销售可以按地区、商品和月份观察已完成订单</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="电器订单（金额／日期／商品编号）　→　统一口径　→　商品、地区、月份主题仓库　→　销售分析"><span class="relation-term">电器订单（金额／日期／商品编号）</span><span class="relation-operator">→</span><span class="relation-term">统一口径</span><span class="relation-operator">→</span><span class="relation-term">商品、地区、月份主题仓库</span><span class="relation-operator">→</span><span class="relation-term">销售分析</span></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>订单系统记录交易事实，仓库存储统一口径的历史分析数据；两者用途不同</p></div></div></div>
-    <div class="numeric-progress">4/15</div>
-    <div class="semantic-label">DATA WAREHOUSE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">四条订单明细的日期、商品与实付金额</h2>
+    <div class="slide-content"><p class="slide-lead">完整模拟样本：每行一条订单商品明细；实付单位元，暂不含退款</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 25% 13% 13% 11% 18%"><colgroup><col style="width:20%"><col style="width:25%"><col style="width:13%"><col style="width:13%"><col style="width:11%"><col style="width:18%"></colgroup><thead><tr><th>订单 / 行</th><th>日期</th><th>地区键</th><th>商品键</th><th>数量</th><th>实付元</th></tr></thead><tbody><tr><td>O100 / 1</td><td>2026-01-10</td><td>R1</td><td>P01</td><td>1</td><td>3000</td></tr><tr><td>O100 / 2</td><td>2026-01-10</td><td>R1</td><td>P02</td><td>1</td><td>2000</td></tr><tr><td>O101 / 1</td><td>2026-01-20</td><td>R2</td><td>P01</td><td>1</td><td>3200</td></tr><tr><td>O102 / 1</td><td>2026-02-05</td><td>R1</td><td>P01</td><td>2</td><td>5800</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>R1=华东，R2=华北；P01=空调，P02=冰箱；总实付 14000 元</p></div></div>
+    <div class="numeric-progress">4/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a3a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">数据仓库：主题、集成、不可更新、时变</h2>
-    <div class="slide-content"><p class="slide-lead">用电器销售检查四个术语各自对应的数据做法</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>面向主题</h3><p>按商品、顾客、地区等报表问题组织，而不是照搬下单、付款、发货页面的表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>集成</h3><p>把“元／万元”、不同日期格式和旧新商品编号统一后再汇总</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>不可更新</h3><p>分析使用期间不做联机事务式修改；新时期仍可通过批量装载增加</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>随时间变化</h3><p>持续装载新时期并保留历史变化，综合层随数据刷新或重算</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>“不可更新”指分析期间不做事务式修改；“时变”指持续保留、追加历史</p></div></div></div>
-    <div class="numeric-progress">5/15</div>
-    <div class="semantic-label">FOUR FEATURES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">来源记录的单位、日期与商品编码转换</h2>
+    <div class="slide-content"><p class="slide-lead">来源 B 的记录 501/1 对应 O101/1，转换过程保留来源与规则</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>来源记录</th><th>规范结果</th></tr></thead><tbody><tr><td>金额 0.32，单位万元</td><td>实付金额 3200，单位元</td></tr><tr><td>日期 20/01/2026，格式日/月/年</td><td>日期键 2026-01-20</td></tr><tr><td>来源商品码 AC-01</td><td>按映射表转换为 P01</td></tr><tr><td>来源系统 B，记录 501/1</td><td>保留来源标识，对应 O101/1</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>未知单位或缺失商品映射须报错或隔离；转换使用原单位和明确映射</p></div></div>
+    <div class="numeric-progress">5/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.7391%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">ECTL、ETL 与 ELT 的数据流程</h2>
-    <div class="slide-content"><p class="slide-lead">ECTL 分成抽取、清洗、转换和装载四步；工程上常合并清洗与转换</p>
-<div class="slide-main-content"><div class="component component-list list-process reveal-items"><div class="process-item substep"><span class="process-marker">01</span><div class="process-content"><h3>Extract 抽取</h3><p>从订单、顾客和供应链系统取得记录</p></div></div><div class="process-item substep"><span class="process-marker">02</span><div class="process-content"><h3>Clean 清洗</h3><p>处理缺失、重复、冲突和异常</p></div></div><div class="process-item substep"><span class="process-marker">03</span><div class="process-content"><h3>Transform 转换</h3><p>统一金额单位、日期粒度、商品编号和业务口径</p></div></div><div class="process-item substep"><span class="process-marker">04</span><div class="process-content"><h3>Load 装载</h3><p>写入仓库细节、综合层并维护历史</p></div></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>ECTL 分列清洗与转换，ETL 合并二者，ELT 后置转换</p></div></div></div>
-    <div class="numeric-progress">6/15</div>
-    <div class="semantic-label">ECTL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">抽取、清洗、转换与装载 ECTL</h2>
+    <div class="slide-content"><p class="slide-lead">本例保留来源记录，完成清洗与转换后装入规范事实表</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">抽取：读取 B:501/1，记录来源与抽取批次</span></li><li><span class="list-marker">02</span><span class="list-text">清洗：核对必填值，识别同一来源记录的重复</span></li><li><span class="list-marker">03</span><span class="list-text">转换：0.32 万元→3200 元，AC-01→P01</span></li><li><span class="list-marker">04</span><span class="list-text">装载：写入 O101/1，并核对行数与金额</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>ETL 常将清洗并入转换；ELT 先装原始数据再转换，规范事实须经检查</p></div></div>
+    <div class="numeric-progress">6/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.0870%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">只存月度汇总，就不能再找回某天的订单</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-question" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-question.0bffaf9f9788.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>只保留月度汇总，还能无损下钻到每天吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">细节表保留可追查的订单，日、周、月汇总表让常用报表少扫数据</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 42% 34%"><colgroup><col style="width:24%"><col style="width:42%"><col style="width:34%"></colgroup><thead><tr><th>级别</th><th>典型粒度</th><th>主要作用与取舍</th></tr></thead><tbody><tr><td>当前细节</td><td>最近装入的订单明细</td><td>追查最新业务；数据量较大</td></tr><tr><td>早期细节</td><td>较早时期的订单明细</td><td>保留历史证据；访问频率可能较低</td></tr><tr><td>轻度综合</td><td>日／周 × 商品或地区</td><td>支持常用分析；仍保留较多细节</td></tr><tr><td>高度综合</td><td>月／地区 × 品类</td><td>快速回答概览问题；需要刷新或重算</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>当前细节会随时间转入早期细节；综合层与细节层并列服务不同粒度的查询。只有更细粒度数据仍被保留，才能下钻回明细</p></div></div>
-    <div class="numeric-progress">7/15</div>
-    <div class="semantic-label">DATA LEVELS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">同批重跑后仍为四行、14000 元</h2>
+    <div class="slide-content"><p class="slide-lead">本例以来源系统＋来源记录号识别重复，正式事实有订单行唯一键</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="47% 53%"><colgroup><col style="width:47%"><col style="width:53%"></colgroup><thead><tr><th>操作</th><th>正确结果</th></tr></thead><tbody><tr><td>首次装入四条明细</td><td>4 行，实付合计 14000</td></tr><tr><td>原样重跑同一批</td><td>仍为 4 行、14000</td></tr><tr><td>同一来源编号出现不同金额</td><td>按更正版本与冲突规则处理</td></tr><tr><td>缺失单位或无法匹配商品</td><td>隔离并反馈，暂不进入规范汇总</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一来源身份用于识别重复；内容改动可能是原事实的更正，须核对版本</p></div></div>
+    <div class="numeric-progress">7/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">一笔订单经过五层，直到报表显示结果</h2>
-    <div class="slide-content"><p class="slide-lead">数据源、ECTL、仓库、OLAP 服务器和前台工具依次接收、处理并交出什么</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-warehouse-architecture.svg" data-full-src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-warehouse-architecture.svg" alt="业务数据源经过 ECTL 进入数据仓库，再由 OLAP 服务器和前台工具提供分析" tabindex="0" role="button" aria-label="放大图片：业务数据源经过 ECTL 进入数据仓库，再由 OLAP 服务器和前台工具提供分析" decoding="async"></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">业务源提供订单、顾客和供应链事实</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">ECTL 统一字段、单位、编码和业务口径</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">数据仓库保存细节、综合层与历史</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">OLAP 服务器按维度组织查询并提供多维操作</span></li><li class="substep"><span class="list-marker">05</span><span class="list-text">前台工具把结果呈现为报表、比较和可视化</span></li></ol></div></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">WAREHOUSE ARCHITECTURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">数据仓库的主题、集成、稳定与历史</h2>
+    <div class="slide-content"><p class="slide-lead">教材的“不可更新”指分析用户以查询为主；仓库维护仍受控进行</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>面向主题</h3><p>按销售主题组织日期、地区与商品</p></article><article class="content-card emphasis-card" tabindex="0"><h3>集成</h3><p>统一跨来源的单位、日期和编码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>相对稳定</h3><p>查询为主，装载、更正与重算受控</p></article><article class="content-card emphasis-card" tabindex="0"><h3>反映历史变化</h3><p>保留各时期事实及必要版本；按既定策略归档或清理</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>新增时期、纠错与重算可能改变仓库，须记录来源、版本与统计定义</p></div></div>
+    <div class="numeric-progress">8/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.7826%"></div></div>
   </section>
-<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">维度、度量与立方体</h2>
-    <div class="slide-content"><p class="slide-lead">电器销售中，时间、地区和商品是维度，销售额是度量</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-olap-cube.svg" data-full-src="resources/decks/dbpa-16-1/assets/generated/dbpa-ch16-olap-cube.svg" alt="时间、地区和商品构成销售数据立方体的三个维度，单元格保存销售额" tabindex="0" role="button" aria-label="放大图片：时间、地区和商品构成销售数据立方体的三个维度，单元格保存销售额" decoding="async"></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">维度决定观察坐标；时间维可按日 → 月 → 季度 → 年组织层级</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">度量记录坐标组合上的数值，例如销售额；通常可求和、计数或平均</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">数据立方体由多个维度定位单元格，单元格通常保存该粒度的聚合结果</span></li></ol></div>
-<div class="component component-text text-inset substep reveal-self"><p>事实表存键和度量；维度表存属性与层级</p></div></div></div>
-    <div class="numeric-progress">9/15</div>
-    <div class="semantic-label">MULTIDIMENSIONAL MODEL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">从订单行到日汇总、月汇总</h2>
+    <div class="slide-content"><p class="slide-lead">当前/早期描述历史时期，轻度/高度综合描述汇总程度</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 35% 36%"><colgroup><col style="width:29%"><col style="width:35%"><col style="width:36%"></colgroup><thead><tr><th>层次</th><th>本例一行代表什么</th><th>能回答什么</th></tr></thead><tbody><tr><td>当前或早期细节</td><td>一张订单的一条商品明细</td><td>追查 O100/1 的实付 3000</td></tr><tr><td>日汇总</td><td>日期×地区×商品</td><td>查询该日实付合计</td></tr><tr><td>月汇总</td><td>月份×地区×商品</td><td>每月各地区商品销售</td></tr><tr><td>更粗汇总</td><td>月份</td><td>1 月 8200，2 月 5800</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一事实表保持一致粒度；明细与月汇总混算会重复计入销售额</p></div></div>
+    <div class="numeric-progress">9/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-grid"
+<section id="b2a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">切片、切块与旋转</h2>
-    <div class="slide-content"><p class="slide-lead">它们改变视图或范围，不改写原始销售事实</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>切片</h3><p>固定一个维度取一个值：只看“华东”</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>切块</h3><p>在多个维度上选范围：华东 × 空调 × 2026 年第 3 季度</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>旋转</h3><p>交换行列或轴：把地区从行换到列，比较方式改变</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>切片只看华东，切块再限定空调和季度，旋转只交换行列；从日汇总到月或从月展开到日属于上卷或下钻</p></div></div>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">OLAP OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">四条明细对应三张订单</h2>
+    <div class="slide-content"><p class="slide-lead">O100 有两行，订单标识与明细行标识要分开计数</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 39% 24%"><colgroup><col style="width:37%"><col style="width:39%"><col style="width:24%"></colgroup><thead><tr><th>统计问题</th><th>算法</th><th>本例结果</th></tr></thead><tbody><tr><td>明细行数</td><td>COUNT(*)</td><td>4</td></tr><tr><td>不同订单数</td><td>COUNT(DISTINCT OrderId)</td><td>3</td></tr><tr><td>1 月不同订单数</td><td>筛选 1 月后去重订单号</td><td>2</td></tr><tr><td>1 月两种商品的订单数相加</td><td>空调 2＋冰箱 1</td><td>3（有重复）</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>O100 在空调和冰箱组各计一次；跨商品统计订单数须重新去重</p></div></div>
+    <div class="numeric-progress">10/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
   </section>
-<section id="c3" class="step slide-surface role-content layout-grid"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">上卷和下钻沿维度层级改变汇总粒度</h2>
-    <aside class="character-intervention character-edge-top character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="top-misconception" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-misconception.54a679689b42.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>点一下下钻，就一定能回到订单明细吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">例：沿时间和地区层级观察电器销售额</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>上卷</h3><p>从日汇总到月、从城市汇总到地区；例如把每天销售额合计为月度销售额</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>下钻</h3><p>从月展开到日、从地区展开到城市；依赖更细粒度事实仍被保存</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>下钻需要保留对应的细粒度事实；聚合方法随度量而定：销售额常用 sum，订单数用 count，客单价等指标要先说明平均口径</p></div></div></div>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">OLAP OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">订单行经过集成、仓库与分析生成报表</h2>
+    <div class="slide-content"><p class="slide-lead">五层按职责划分，可组合部署在同一系统中</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>环节</th><th>交付物</th></tr></thead><tbody><tr><td>业务源</td><td>已提交的订单行与来源标识</td></tr><tr><td>集成处理</td><td>统一单位、键、日期的规范记录</td></tr><tr><td>仓库</td><td>可追查明细及相应汇总</td></tr><tr><td>OLAP 层</td><td>按月份、地区和商品形成分析结果</td></tr><tr><td>前台报表</td><td>显示金额、计算规则和数据截至时间</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>仓库完整装入至 10:00，报表不含 10:03 新提交的订单</p></div></div>
+    <div class="numeric-progress">11/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.8261%"></div></div>
   </section>
-<section id="c4" class="step slide-surface role-content layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1 <span>|</span> 16.1</div>
-    <h2 class="slide-title">三类 OLAP 怎样存明细和汇总</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>星型、雪花和三种 OLAP 路线是五个并列方案吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">星型、雪花讲表怎样连接；三种 OLAP 讲明细和汇总怎么存</p>
-<div class="slide-main-content"><div class="component component-text text-inset"><p>ROLAP 的基本结构：事实表保存维度键与度量，维度表保存描述属性和层级。星型模式让维度表直接围绕事实表；雪花模式再按层级拆分维表</p></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 38% 35%"><colgroup><col style="width:27%"><col style="width:38%"><col style="width:35%"></colgroup><thead><tr><th>方式</th><th>组织方式</th><th>典型特点</th></tr></thead><tbody><tr><td>MOLAP</td><td>直接存多维数组与综合结果</td><td>多维读取直接；需要维护多维存储</td></tr><tr><td>ROLAP</td><td>事实表连接维度表，用关系操作映射立方体</td><td>接口灵活；连接与聚合需要优化</td></tr><tr><td>HOLAP</td><td>细节走关系组织，部分综合走多维组织</td><td>兼顾访问路径；维护路径更复杂</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>星型和雪花都在说明关系表怎样连接，并不是另外两种 OLAP：星型连接较少但可能重复保存描述，雪花拆表更多、连接也更多；慢变维还要用代理键保存历史版本</p></div></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">MOLAP ROLAP HOLAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">月份、地区、商品与实付金额</h2>
+    <div class="slide-content"><p class="slide-lead">同一立方体：月份×地区×商品，单元格保存实付金额</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-16-1/assets/sales-cube-slices.svg" data-full-src="resources/decks/dbpa-16-1/assets/sales-cube-slices.svg" alt="1 月华东空调 3000 冰箱 2000 华北空调 3200 冰箱 0；2 月华东空调 5800 其余 0，构成月份地区商品三维销售切面" tabindex="0" role="button" aria-label="放大图片：1 月华东空调 3000 冰箱 2000 华北空调 3200 冰箱 0；2 月华东空调 5800 其余 0，构成月份地区商品三维销售切面" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>完整样本中无对应事实的格子显示 0；数据未到齐时，应标记未知</p></div></div>
+    <div class="numeric-progress">12/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
-    <h2 class="slide-title">一笔订单做成地区月报：写清四件事</h2>
-    <div class="slide-content"><p class="slide-lead">让另一个同学能判断报表何时更新、一行代表什么、点击下钻后能看到什么</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 订单何时出现在报表里</h3><p>写明订单在哪个系统提交、几点装入仓库；报表可以晚更新，但“销售额是否含退款”必须使用同一规则</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 事实表一行代表什么</h3><p>统一金额、日期和商品编号，明确一行代表“某日×某地区×某商品”的销售额，并决定是否保留订单明细</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 用户会点哪些筛选</h3><p>写出时间、地区、商品维和销售额度量；演示只看华东、再选空调与季度，以及从月展开到日</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 明细和汇总存在哪里</h3><p>区分 MOLAP／ROLAP／HOLAP 与星型／雪花；如果没有保存每日或订单明细，就明确写出下钻到哪一步会停止</p></article></div></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <h2 class="slide-title">切片与切块按维度筛选事实</h2>
+    <div class="slide-content"><p class="slide-lead">切片固定一个维度值，切块限定多个维度；原始销售记录保持不变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 47% 33%"><colgroup><col style="width:20%"><col style="width:47%"><col style="width:33%"></colgroup><thead><tr><th>操作</th><th>筛选条件</th><th>留下的金额</th></tr></thead><tbody><tr><td>切片 Slice</td><td>地区固定为华东</td><td>3000、2000、5800</td></tr><tr><td>切块 Dice</td><td>华东＋空调＋2026 年 1—2 月</td><td>3000、5800</td></tr><tr><td>再限定月份</td><td>上述条件再取 1 月</td><td>3000</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>筛选确定事实范围，输出可保留明细或另行汇总</p></div></div>
+    <div class="numeric-progress">13/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
+  </section>
+<section id="c2a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">旋转 Pivot：交换月份与地区的行列</h2>
+    <div class="slide-content"><p class="slide-lead">先对商品求和，再交换月份与地区的行列；总实付仍为 14000</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 25% 25% 25%"><colgroup><col style="width:25%"><col style="width:25%"><col style="width:25%"><col style="width:25%"></colgroup><thead><tr><th>月份</th><th>华东</th><th>华北</th><th>月合计</th></tr></thead><tbody><tr><td>1 月</td><td>5000</td><td>3200</td><td>8200</td></tr><tr><td>2 月</td><td>5800</td><td>0</td><td>5800</td></tr></tbody></table></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>地区</th><th>1 月</th><th>2 月</th></tr></thead><tbody><tr><td>华东</td><td>5000</td><td>5800</td></tr><tr><td>华北</td><td>3200</td><td>0</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">上卷 Roll-up：按时间层级汇总</h2>
+    <div class="slide-content"><p class="slide-lead">本例金额可按日到月、按商品到全部商品求和</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="41% 34% 25%"><colgroup><col style="width:41%"><col style="width:34%"><col style="width:25%"></colgroup><thead><tr><th>层级或范围</th><th>计算</th><th>结果</th></tr></thead><tbody><tr><td>1 月 10 日全部商品</td><td>3000+2000</td><td>5000</td></tr><tr><td>1 月 20 日全部商品</td><td>3200</td><td>3200</td></tr><tr><td>1 月上卷汇总</td><td>5000+3200</td><td>8200</td></tr><tr><td>1—2 月合计</td><td>8200+5800</td><td>14000</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>日→月→季度→年与日→周是两条层级；跨月周的金额须按日期归入各月</p></div></div>
+    <div class="numeric-progress">15/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.2174%"></div></div>
+  </section>
+<section id="c3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">下钻 Drill-down：查看更细粒度</h2>
+    <div class="slide-content"><p class="slide-lead">1 月 8200 可展开到已保留的粒度；订单明细还须有可追查的关联</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="38% 32% 30%"><colgroup><col style="width:38%"><col style="width:32%"><col style="width:30%"></colgroup><thead><tr><th>已保存的数据</th><th>可以查看</th><th>不能仅凭它恢复</th></tr></thead><tbody><tr><td>只有月合计 8200</td><td>1 月总额</td><td>每天各卖多少</td></tr><tr><td>有日汇总 5000/3200</td><td>1 月 10 日与 20 日</td><td>每张订单的每条商品</td></tr><tr><td>有四条原始明细及关联键</td><td>追查 O100/1=3000</td><td>未保存过的字段</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>月→日是维度下钻；经关联键查看订单行称为明细穿透 Drill-through</p></div></div>
+    <div class="numeric-progress">16/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.5652%"></div></div>
+  </section>
+<section id="c3b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">按件平均单价＝总实付／总件数</h2>
+    <div class="slide-content"><p class="slide-lead">只取 P01 空调：共 4 件，实付金额 12000 元</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 20% 26% 26%"><colgroup><col style="width:28%"><col style="width:20%"><col style="width:26%"><col style="width:26%"></colgroup><thead><tr><th>订单行</th><th>数量</th><th>实付</th><th>该行单价</th></tr></thead><tbody><tr><td>O100/1</td><td>1</td><td>3000</td><td>3000</td></tr><tr><td>O101/1</td><td>1</td><td>3200</td><td>3200</td></tr><tr><td>O102/1</td><td>2</td><td>5800</td><td>2900</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>按件平均单价=12000/4=3000；直接平均 3000、3200、2900 会得到约 3033.33，权重不同</p></div></div>
+    <div class="numeric-progress">17/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.9130%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">MOLAP、ROLAP 与 HOLAP 的存储组织</h2>
+    <div class="slide-content"><p class="slide-lead">存储组织服务同一分析定义，关系表与多维结构承担不同工作</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 49% 29%"><colgroup><col style="width:22%"><col style="width:49%"><col style="width:29%"></colgroup><thead><tr><th>路线</th><th>本例可能的组织</th><th>需要维护</th></tr></thead><tbody><tr><td>多维 MOLAP</td><td>按多维结构组织月份/地区/商品金额</td><td>预计算、空间与刷新</td></tr><tr><td>关系 ROLAP</td><td>事实表＋维度表，用 SQL 连接分组</td><td>连接与聚合优化</td></tr><tr><td>混合 HOLAP</td><td>关系表存明细，多维结构存部分汇总</td><td>两种表示的一致版本</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>立方体提供多维分析视图；物理存储可采用不同结构，并省略空组合</p></div></div>
+    <div class="numeric-progress">18/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.2609%"></div></div>
+  </section>
+<section id="c4a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">星型：事实表直接连接三张维度表</h2>
+    <div class="slide-content"><p class="slide-lead">星型 Star schema 以维度键解释每条订单行的日期、地区与商品</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">Sales(OrderId, LineNo, DateKey, RegionKey,
+      ProductKey, Qty, PaidYuan)
+DateDim(DateKey, Month, Quarter, Year)
+RegionDim(RegionKey, RegionName)
+ProductDim(ProductKey, ProductName, Category)</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>R1 连接华东，P01 连接空调；维度键须唯一，重复键可能放大事实行数</p></div></div>
+    <div class="numeric-progress">19/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.6087%"></div></div>
+  </section>
+<section id="c4b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">雪花：把维度中的层级继续拆成表</h2>
+    <div class="slide-content"><p class="slide-lead">雪花 Snowflake schema 拆分维度层级；四条销售事实与总额保持不变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>方案</th><th>从事实到商品类别的路径</th></tr></thead><tbody><tr><td>星型</td><td>Sales→ProductDim，表内直接保存类别名</td></tr><tr><td>雪花</td><td>Sales→ProductDim→CategoryDim</td></tr><tr><td>拆分的收益</td><td>类别说明可集中维护</td></tr><tr><td>新增的工作</td><td>需要额外连接和正确的键关系</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>星型与雪花是关系模式的组织方式，属于 OLAP 实现中的表结构选择</p></div></div>
+    <div class="numeric-progress">20/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.9565%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
+    <h2 class="slide-title">四条订单事实与销售报表</h2>
+    <div class="slide-content"><p class="slide-lead">每个报表金额对应具体事实、汇总范围、计算规则和数据版本</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>来源与转换</h3><p>统一单位，重复装载不增加行数</p></article><article class="content-card emphasis-card" tabindex="0"><h3>粒度与计数</h3><p>明细 4 行、订单 3 张，跨商品去重</p></article><article class="content-card emphasis-card" tabindex="0"><h3>操作与结果</h3><p>旋转只换行列，月度金额保持不变</p></article><article class="content-card emphasis-card" tabindex="0"><h3>下钻与均价</h3><p>下钻使用已存细节，均价按件数加权</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第 16.2 节研究刷新延迟与资源隔离，沿用已确定的粒度和统计规则</p></div></div>
+    <div class="numeric-progress">21/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="3360" data-z="0"
+      data-x="3000" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-16-1/mindmap-16-1.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <div class="numeric-progress">22/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.6522%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="1500" data-y="3360" data-z="0"
+      data-x="1500" data-y="5600" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH16 <span>|</span> 16.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单既要快写又要按地区、商品、月份汇总，为什么要分 OLTP 与 OLAP？</span></li><li><span class="question-no">02</span><span class="question-text">金额单位和日期格式不同，ECTL、ETL、ELT 各在哪一步统一口径？</span></li><li><span class="question-no">03</span><span class="question-text">销售汇总事实表中，哪些是维度键，哪些是度量？</span></li><li><span class="question-no">04</span><span class="question-text">只看华东、选择华东×空调×季度、地区行列互换分别是什么操作？</span></li><li><span class="question-no">05</span><span class="question-text">日销售额到月销售额是上卷；下钻需要保留什么粒度？</span></li><li><span class="question-no">06</span><span class="question-text">事实表与维度表的星型／雪花取舍，属于 ROLAP 还是 MOLAP？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">来源 0.32 万元、AC-01 和 20/01/2026 如何成为规范事实？</span></li><li><span class="question-no">02</span><span class="question-text">重跑相同批次后，行数与金额应该是多少？</span></li><li><span class="question-no">03</span><span class="question-text">四条订单行为什么只有三张订单？</span></li><li><span class="question-no">04</span><span class="question-text">只看华东，或再限定空调与月份，各留下哪些事实？</span></li><li><span class="question-no">05</span><span class="question-text">1 月 8200 可以下钻到哪一层，由什么决定？</span></li><li><span class="question-no">06</span><span class="question-text">P01 平均单价为何是 3000，而不是约 3033.33？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-15-3.html" title="上一节：15.3 时序数据库与时间窗口查询" aria-label="上一节：15.3 时序数据库与时间窗口查询">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -218,8 +313,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">23/23</div>
+    <div class="semantic-label">GRAIN DIMENSIONS AND SALES FACTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

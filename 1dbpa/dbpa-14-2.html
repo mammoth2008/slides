@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 14.2 关系系统扩展与 SQL、NoSQL、NewSQL | HUST</title>
+  <title>DBPA 14.2 SQL、NoSQL 与 NewSQL | HUST</title>
   <meta name="description" content="为订单扣库存、结构常变的商品目录和历史报表分别比较关系型 SQL、NoSQL、NewSQL 与数据仓库">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,138 +25,254 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-14-2/assets/dbpa-14-2.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-14-2/assets/dbpa-14-2-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 14.2</div>
-      <h1>关系系统扩展与 SQL、NoSQL、NewSQL</h1>
-      <p class="cover-description">订单要原子扣库存，目录字段常变化，报表要扫多年数据：是否该用同一种数据库</p>
+      <h1>SQL、NoSQL<br>与 NewSQL</h1>
+      <p class="cover-description">订单、目录与报表所需的系统能力</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元先看关系扩展，再比较 SQL、NoSQL 与 NewSQL 的模型和一致性边界。
-封面图只用于引入数据库系统面向不同负载演进，不作为技术路线或历史时间线证据。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">订单、目录、报表：写清读写、事务、字段变化、一致性时限，再比候选系统</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释 OLTP 与 OLAP 为什么分离，以及 ETL/ELT 如何把事务数据送入分析环境</span></li><li><span class="list-marker">02</span><span class="list-text">区分面向对象数据库、对象关系数据库与 XML 的表达能力</span></li><li><span class="list-marker">03</span><span class="list-text">按模型、接口、事务和一致性边界比较 SQL、NoSQL 与 NewSQL</span></li><li><span class="list-marker">04</span><span class="list-text">解释分片、副本和横向扩展分别改善什么，并指出协调成本</span></li><li><span class="list-marker">05</span><span class="list-text">区分 ACID 与 BASE 的关注点，说明 BASE 不是没有一致性</span></li><li><span class="list-marker">06</span><span class="list-text">根据负载、事务范围、模式稳定性和一致性要求选择候选路线</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/11</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:18.1818%"></div></div>
+    <div class="slide-content"><p class="slide-lead">按事务范围、数据表达与读取保证比较系统能力</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">明确订单、目录、报表各自的输入与结果</span></li><li><span class="list-marker">02</span><span class="list-text">区分 ETL 与 ELT 的顺序和分析数据时效</span></li><li><span class="list-marker">03</span><span class="list-text">用零件形状与文档解释对象、对象关系和 XML</span></li><li><span class="list-marker">04</span><span class="list-text">分别追踪分片位置与同一数据的副本</span></li><li><span class="list-marker">05</span><span class="list-text">区分事务完整性、隔离性与副本读取保证</span></li><li><span class="list-marker">06</span><span class="list-text">用事务范围、模式和扩展成本提出候选方案</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:9.5238%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-table"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">事务、历史分析、复杂数据各有做法</h2>
-    <div class="slide-content"><p class="slide-lead">订单短事务会和大报表争资源；嵌套对象、半结构化交换也需表外表达</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-14-2/assets/generated/dbpa-ch14-history-newdb-image2.webp" data-full-src="resources/decks/dbpa-14-2/assets/generated/dbpa-ch14-history-newdb-image2.webp" alt="数据库从文件、层次／网状、关系到分布式与多模型的演进示意" tabindex="0" role="button" aria-label="放大图片：数据库从文件、层次／网状、关系到分布式与多模型的演进示意" decoding="async"><figcaption>概念示意：关系扩展回应新的负载和数据形态</figcaption></figure>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 28% 28% 24%"><colgroup><col style="width:20%"><col style="width:28%"><col style="width:28%"><col style="width:24%"></colgroup><thead><tr><th>扩展方向</th><th>新压力</th><th>主要扩展</th><th>保留能力与代价</th></tr></thead><tbody><tr><td>数据仓库</td><td>OLTP 与 OLAP 互相干扰</td><td>ETL/ELT 后按主题组织历史、集成数据</td><td>保留关系基础，但存在数据延迟和额外处理链</td></tr><tr><td>面向对象／对象关系</td><td>复杂对象、用户自定义类型和操作</td><td>在关系与 SQL 基础上扩展对象表达</td><td>保留事务和工具链，但实现与语言更复杂</td></tr><tr><td>XML</td><td>半结构化交换与异构集成</td><td>树状、自描述数据表达</td><td>便于跨系统交换，但查询和约束语义需要额外机制</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">3/11</div>
-    <div class="semantic-label">RELATIONAL EXTENSIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:27.2727%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">订单、目录与报表的结果要求</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 P01 与 W1，明确三项教学任务的成功条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 42% 35%"><colgroup><col style="width:23%"><col style="width:42%"><col style="width:35%"></colgroup><thead><tr><th>任务</th><th>具体操作</th><th>成功标准</th></tr></thead><tbody><tr><td>订单 O100</td><td>卖出 P01 三件：库存 16→13</td><td>扣库存和记订单一起成功</td></tr><tr><td>零件目录</td><td>P01 增加额定电压 220 V</td><td>兼容旧条目，记录单位</td></tr><tr><td>历史报表</td><td>统计截至 10:00 的逐月销量</td><td>标明数据截止时间</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>目录选型比较字段保存、校验和查询能力，可采用关系扩展或文档等模型</p></div></div>
+    <div class="numeric-progress">3/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.2857%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-focus"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">订单、目录、报表不必共用一种存储做法</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>既然一种系统装不下所有负载，关系数据库就已经不适用了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">订单要原子事务，目录看字段变化和点查，报表看批量扫描与允许延迟</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="单一通用模型　→　承认不同负载的差异　→　多种互补系统按任务组合"><span class="relation-term">单一通用模型</span><span class="relation-operator">→</span><span class="relation-term">承认不同负载的差异</span><span class="relation-operator">→</span><span class="relation-term">多种互补系统按任务组合</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Fits All</h3><p>关系数据库和 SQL 试图覆盖大多数数据管理与事务需求</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Does Not Fit All</h3><p>分析、复杂对象、半结构化数据、海量和分布式负载暴露单一系统的边界</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>One Size Fits a Bunch</h3><p>SQL、NoSQL、NewSQL 与数据仓库在不同负载中共存并相互借鉴</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>可以按负载组合互补系统：订单与库存采用关系型 SQL，历史报表进入数据仓库，结构变化快或高吞吐的访问再评估其他路线</p></div></div>
-    <div class="numeric-progress">4/11</div>
-    <div class="semantic-label">ONE SIZE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:36.3636%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">ETL 与 ELT：转换发生的位置不同</h2>
+    <div class="slide-content"><p class="slide-lead">两条原始记录都表示一公斤：1000 g 与 1 kg，要统一成 kg</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 54% 28%"><colgroup><col style="width:18%"><col style="width:54%"><col style="width:28%"></colgroup><thead><tr><th>方式</th><th>处理顺序</th><th>得到什么</th></tr></thead><tbody><tr><td>ETL</td><td>抽取 → 换算为 kg → 装载</td><td>两条记录均为 1 kg</td></tr><tr><td>ELT</td><td>抽取 → 装载原始值 → 在目标转换</td><td>原始层保留单位，分析层为 1 kg</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>E 是抽取，T 是转换，L 是装载；两种顺序都必须处理口径、质量和来源追踪</p></div></div>
+    <div class="numeric-progress">4/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a2b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">关系数据库与 ACID 事务</h2>
-    <div class="slide-content"><p class="slide-lead">在正确配置事务、约束和隔离级别的前提下，订单与库存更新可保持清晰边界</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>模型</h3><p>关系模式和完整性约束使数据结构与可接受状态更明确</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>接口</h3><p>SQL 表达目标，不要求用户直接写出物理访问路径</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务</h3><p>ACID、并发控制与恢复支持订单和库存的整体更新</p></article></div>
-<div class="component component-text text-inset substep reveal-self"><p>原子性要求全做或全不做；一致性要求状态变化保持完整性约束；隔离性避免并发事务看到未定义的中间状态；持久性要求提交后故障恢复仍能保留结果</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>具体保证取决于事务边界、隔离级别和系统配置，跨节点协调可能增加扩展成本</p></div></div>
-    <div class="numeric-progress">5/11</div>
-    <div class="semantic-label">SQL DATABASE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:45.4545%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">分析副本的数据截止时间</h2>
+    <div class="slide-content"><p class="slide-lead">本例已完整同步截至 10:00 的提交，O100 在 10:03 提交</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>位置</th><th>已完整包含的提交</th><th>10:03 提交 O100 后</th></tr></thead><tbody><tr><td>事务源</td><td>包含 O100</td><td>新订单与库存已更新</td></tr><tr><td>分析副本</td><td>截至 10:00 的数据</td><td>尚不包含 O100</td></tr><tr><td>报表说明</td><td>数据截至 10:00</td><td>不能称为实时库存</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>报表标注完整数据截止点，反映分析副本的同步进度</p></div></div>
+    <div class="numeric-progress">5/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.8095%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="a2c" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">NoSQL：模型与一致性取舍</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>分片和副本，不都是把数据多放到几台机器上吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">典型系统在柔性、吞吐、可用性与一致性之间做不同组合</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 25% 30% 25%"><colgroup><col style="width:20%"><col style="width:25%"><col style="width:30%"><col style="width:25%"></colgroup><thead><tr><th>概念</th><th>解决的问题</th><th>得到什么</th><th>代价或边界</th></tr></thead><tbody><tr><td>数据模型</td><td>键值、宽表、文档、图</td><td>针对结构与访问模式提供选择</td><td>不同模型的关系语义和接口不统一</td></tr><tr><td>分片</td><td>把数据分到多个节点</td><td>扩大容量、并行处理和横向扩展</td><td>跨分片查询和事务需要协调</td></tr><tr><td>副本</td><td>同一分片保存多份</td><td>提高节点故障下的可用性，也可能支持读扩展</td><td>同步带来通信和一致性成本</td></tr><tr><td>BASE 与最终一致性</td><td>部分系统放宽即时一致性</td><td>换取特定负载下的可用性或吞吐；更新停止后副本可能收敛</td><td>BASE 不是所有 NoSQL 的统一契约，也不等于没有一致性</td></tr><tr><td>查询与事务</td><td>NoSQL 仍可提供查询和局部事务</td><td>由具体系统定义灵活边界</td><td>跨分片事务和全局关系语义可能受限</td></tr><tr><td>模式</td><td>模式较柔性，更多语义由应用解释</td><td>快速适应结构变化</td><td>数据质量由系统、应用和管道共同维护</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>分片解决数据如何分布和扩展，副本解决节点故障下如何继续服务；最终一致性描述副本传播过程，不等于 BASE 适用于所有系统</p></div></div>
-    <div class="numeric-progress">6/11</div>
-    <div class="semantic-label">NOSQL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:54.5455%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">形状对象、形状类型与 XML 文档</h2>
+    <div class="slide-content"><p class="slide-lead">面向对象与对象关系数据库是系统路线；XML 是表示与管理方向</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 40% 31%"><colgroup><col style="width:29%"><col style="width:40%"><col style="width:31%"></colgroup><thead><tr><th>路线</th><th>具体材料与操作</th><th>保留或新增什么</th></tr></thead><tbody><tr><td>面向对象数据库</td><td>保存形状对象及其对象标识</td><td>按对象和联系组织</td></tr><tr><td>对象关系数据库</td><td>表中增加形状类型和面积操作</td><td>保留 SQL，扩展类型</td></tr><tr><td>XML 数据管理</td><td>读取说明中的电压节点</td><td>树形表示、查询与约束</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>XML 可由专门系统或关系系统管理；事务保证由具体实现提供</p></div></div>
+    <div class="numeric-progress">6/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:28.5714%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="a2d" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">NewSQL 的目标与代价</h2>
-    <div class="slide-content"><p class="slide-lead">它是多种系统路线的共同目标，不是单一产品或固定实现</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="SQL／关系接口　＋　分布式事务与一致性机制　＋　分片、多副本与横向扩展　→　NewSQL 路线"><span class="relation-term">SQL／关系接口　＋　分布式事务与一致性机制　＋　分片、多副本与横向扩展</span><span class="relation-operator">→</span><span class="relation-term">NewSQL 路线</span></div></div>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>保留</h3><p>SQL 接口、关系语义和事务开发接口</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>吸收</h3><p>分片、多副本、横向扩展和分布式事务</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>代价</h3><p>跨节点协调、延迟、故障处理、运维复杂度和一致性实现成本</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>NewSQL 的目标需要共识、分片、动态迁移和云原生支撑，具体机制会增加协调与运维成本</p></div></div>
-    <div class="numeric-progress">7/11</div>
-    <div class="semantic-label">NEWSQL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:63.6364%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">可选字段的缺失、类型与单位</h2>
+    <div class="slide-content"><p class="slide-lead">同一份目录可以有不同属性；下面是两个独立零件的 JSON 示例</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-json">{"pno":"P01","ratedVoltage":220,"unit":"V"}
+{"pno":"P02","pressure":2.0,"unit":"MPa"}</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 57%"><colgroup><col style="width:43%"><col style="width:57%"></colgroup><thead><tr><th>应用必须判断</th><th>为什么</th></tr></thead><tbody><tr><td>P02 没有 ratedVoltage</td><td>缺失不是电压为 0</td></tr><tr><td>220 与 &quot;220&quot;</td><td>数字和字符串需要约定</td></tr><tr><td>新增一个字段</td><td>仍需校验单位、类型与读取规则</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用按字段含义验证类型和单位，并安排数据迁移</p></div></div>
+    <div class="numeric-progress">7/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2 <span>|</span> 14.2</div>
-    <h2 class="slide-title">按负载选择数据库路线</h2>
-    <aside class="character-intervention character-edge-top character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="top-confirm" data-character-edge="top" data-character-along="82" data-character-exposure="62" data-character-scale="0.9" style="--character-along:82%;--character-exposure:62;--character-hidden:38%;--character-scale:0.9;--character-bubble-x:5px;--character-bubble-y:460px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/top-confirm.5a2dce8e98ff.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-top"><p>模型、事务和一致性取舍要一起看</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先描述负载、事务范围、模式和一致性，再判断扩展方式与代价</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 22% 21% 18% 24%"><colgroup><col style="width:15%"><col style="width:22%"><col style="width:21%"><col style="width:18%"><col style="width:24%"></colgroup><thead><tr><th>路线</th><th>模型与接口</th><th>一致性／事务</th><th>扩展方式</th><th>典型负载与边界</th></tr></thead><tbody><tr><td>关系型 SQL</td><td>关系模式、SQL、完整性约束</td><td>通常强调 ACID</td><td>传统扩展或特定分布式方案</td><td>精细事务；极大规模扩展可能成本较高</td></tr><tr><td>NoSQL</td><td>键值、宽表、文档、图等</td><td>取舍多样，部分系统采用 BASE</td><td>分片和副本</td><td>海量、柔性或高吞吐负载；跨分片语义可能复杂</td></tr><tr><td>NewSQL</td><td>关系模型和 SQL</td><td>目标是保留分布式事务语义</td><td>分片、多副本、横向扩展</td><td>跨节点关系事务；协调和运维成本更高</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>一种可能的系统分工是：订单与库存先检查 ACID 和完整性约束；零部件目录与缓存先检查模型柔性、吞吐和横向扩展；历史报表先检查 OLAP 与数据仓库分工</p></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统分工取决于负载和约束，不能仅按业务名称固定选择</p></div></div>
-    <div class="numeric-progress">8/11</div>
-    <div class="semantic-label">CHOOSE BY WORKLOAD</div>
-    <div class="progress-track"><div class="progress-fill" style="width:72.7273%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">单一系统与多系统分工</h2>
+    <div class="slide-content"><p class="slide-lead">One Size Fits a Bunch 表示一类系统可服务一组负载，多个路线并存</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>沿用现有系统</h3><p>现有关系系统满足订单、目录和报表需求时，可继续共用</p></article><article class="content-card emphasis-card" tabindex="0"><h3>评估专用系统</h3><p>核对查询、数据量和时效瓶颈</p></article><article class="content-card emphasis-card" tabindex="0"><h3>不同系统共同服务</h3><p>订单源与分析副本分工，需要明确数据来源和同步范围</p></article><article class="content-card emphasis-card" tabindex="0"><h3>新增成本</h3><p>多一套系统就多一套运维、权限、备份与一致性安排</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>系统分工依据负载需求与实测瓶颈，比较处理收益与同步、运维成本</p></div></div>
+    <div class="numeric-progress">8/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.0952%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
-    <h2 class="slide-title">为订单、目录、报表分别写选择理由</h2>
-    <div class="slide-content"><p class="slide-lead">逐类写读写、一起提交范围、允许延迟、字段变化；再说另一做法为何不合适</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 实际怎样读写</h3><p>记录点查／范围／连接／分析比例、结构变化速度、写入吞吐和响应期限；不能从业务名称直接推出数据库类型</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 哪些修改必须一起成功</h3><p>指出哪些状态必须原子提交、哪些读取允许暂时滞后，以及跨分片或跨系统后需要哪些协调</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 数据怎样分、节点坏了怎样继续</h3><p>分别说明分片解决的数据分布问题、副本解决的故障继续服务问题，以及两者带来的通信和一致性成本</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 选择并说明不用另一种的理由</h3><p>在关系型 SQL、NoSQL、NewSQL 或数据仓库中提出候选组合，同时写出另一条路线在哪项约束上不合适</p></article></div></div></div>
-    <div class="numeric-progress">9/11</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:81.8182%"></div></div>
+    <h2 class="slide-title">订单事务的四项 ACID 保证</h2>
+    <div class="slide-content"><p class="slide-lead">O100 卖出三件，库存 16→13，订单保存数量 3</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>A · 原子性</h3><p>扣库存和记订单共同提交；任一项失败，整体撤销</p></article><article class="content-card emphasis-card" tabindex="0"><h3>C · 一致性</h3><p>保持库存非负、订单编号唯一等规则</p></article><article class="content-card emphasis-card" tabindex="0"><h3>I · 隔离性</h3><p>并发读写按所选隔离保证执行；不同级别允许的现象不同</p></article><article class="content-card emphasis-card" tabindex="0"><h3>D · 持久性</h3><p>确认提交后，系统按故障模型与持久化机制保存结果</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>应用定义扣减规则与事务范围，数据库执行约束和事务机制</p></div></div>
+    <div class="numeric-progress">9/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-14-2/mindmap-14-2.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">10/11</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:90.9091%"></div></div>
+    <h2 class="slide-title">条件扣减与订单的共同提交</h2>
+    <div class="slide-content"><p class="slide-lead">假设一次购买三件，扣减语句必须检查剩余量与影响行数</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-sql">UPDATE Stock SET Qty = Qty - 3
+WHERE Wno='W1' AND Pno='P01' AND Qty &gt;= 3;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 43% 33%"><colgroup><col style="width:24%"><col style="width:43%"><col style="width:33%"></colgroup><thead><tr><th>扣减结果</th><th>后续处理</th><th>提交后的状态</th></tr></thead><tbody><tr><td>影响 1 行</td><td>插入 O100，再提交同一事务</td><td>库存 13，订单数量 3</td></tr><tr><td>影响 0 行</td><td>回滚或结束失败，不建成功订单</td><td>不能声称购买成功</td></tr><tr><td>插入订单失败</td><td>回滚整个事务</td><td>恢复库存 16</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>0 行可能是余量不足或记录缺失；成功路径包含扣减、记订单和提交</p></div></div>
+    <div class="numeric-progress">10/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">SQL、NoSQL 与 NewSQL 的能力比较</h2>
+    <div class="slide-content"><p class="slide-lead">名称是路线线索；模型、接口、事务范围和复制保证要分别核对</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 41% 41%"><colgroup><col style="width:18%"><col style="width:41%"><col style="width:41%"></colgroup><thead><tr><th>路线</th><th>通常强调什么</th><th>具体核对什么</th></tr></thead><tbody><tr><td>关系型 SQL</td><td>关系模型、SQL 与事务机制</td><td>分片或扩展方式及其代价</td></tr><tr><td>NoSQL</td><td>键值、文档、宽列、图等模型</td><td>事务范围、复制与读取保证</td></tr><tr><td>NewSQL</td><td>SQL、事务与扩展能力</td><td>故障时的写入条件、协调成本</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>NewSQL 通常提供 SQL；NoSQL 也可能支持声明式查询或跨记录事务</p></div></div>
+    <div class="numeric-progress">11/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.3810%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">分片分不同数据，副本存相同数据</h2>
+    <div class="slide-content"><p class="slide-lead">独立分布式示例：四个零件按编号范围分为两个分片</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 34% 47%"><colgroup><col style="width:19%"><col style="width:34%"><col style="width:47%"></colgroup><thead><tr><th>分片</th><th>负责的数据</th><th>三份副本所在节点</th></tr></thead><tbody><tr><td>S1</td><td>P01、P02</td><td>A1、A2、A3</td></tr><tr><td>S2</td><td>P03、P04</td><td>B1、B2、B3</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>P01 属于 S1，A1/A2 保存同一分片；增加副本增加数据拷贝</p></div></div>
+    <div class="numeric-progress">12/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
+  </section>
+<section id="b2b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">三个副本暂时不同，读取策略决定所见</h2>
+    <div class="slide-content"><p class="slide-lead">示例允许读滞后副本：A1 的库存已更新为 13，更新已确认，A2 尚为 16</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 20% 20% 20%"><colgroup><col style="width:40%"><col style="width:20%"><col style="width:20%"><col style="width:20%"></colgroup><thead><tr><th>时刻</th><th>A1</th><th>A2</th><th>A3</th></tr></thead><tbody><tr><td>更新前</td><td>16</td><td>16</td><td>16</td></tr><tr><td>刚确认更新</td><td>13</td><td>16</td><td>16</td></tr><tr><td>更新传播完成</td><td>13</td><td>13</td><td>13</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>停止更新、恢复通信、完成传播与冲突处理后收敛；读取可能滞后</p></div></div>
+    <div class="numeric-progress">13/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
+  </section>
+<section id="b2c" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">完整性规则、隔离与副本读取</h2>
+    <div class="slide-content"><p class="slide-lead">部分系统采用 BASE：基本可用、软状态、最终一致性</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 71%"><colgroup><col style="width:29%"><col style="width:71%"></colgroup><thead><tr><th>关注点</th><th>本例要问什么</th></tr></thead><tbody><tr><td>事务一致性</td><td>库存非负、订单唯一等规则是否保持</td></tr><tr><td>事务隔离性</td><td>并发订单允许看见哪些读写状态</td></tr><tr><td>副本读取保证</td><td>更新确认后，读 A2 能否仍见到 16</td></tr><tr><td>最终一致性</td><td>停止更新并满足传播条件后，副本能否收敛</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>库存扣减依赖业务读写与事务机制；副本收敛描述更新传播后的状态</p></div></div>
+    <div class="numeric-progress">14/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b2d" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">单键写入成功后的跨键失败</h2>
+    <div class="slide-content"><p class="slide-lead">假设某系统只保证单键原子操作，不提供下面两个键的共同事务</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 34% 50%"><colgroup><col style="width:16%"><col style="width:34%"><col style="width:50%"></colgroup><thead><tr><th>步骤</th><th>写入对象</th><th>结果</th></tr></thead><tbody><tr><td>1</td><td>stock:W1:P01</td><td>16→13 成功</td></tr><tr><td>2</td><td>order:O100</td><td>写入失败</td></tr><tr><td>3</td><td>最终状态</td><td>库存已少三件，却没有订单</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>订单与库存共同提交，需要覆盖两键的事务或可靠业务协议</p></div></div>
+    <div class="numeric-progress">15/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">跨分片订单的提交协调</h2>
+    <div class="slide-content"><p class="slide-lead">本例按零件分片：同一订单同时购买 P01 和 P03，各扣一件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 35% 36%"><colgroup><col style="width:29%"><col style="width:35%"><col style="width:36%"></colgroup><thead><tr><th>参与者</th><th>要做什么</th><th>事务撤销时</th></tr></thead><tbody><tr><td>S1 的库存记录</td><td>P01 从 16 扣到 15</td><td>撤销 P01 的扣减</td></tr><tr><td>S2 的库存记录</td><td>P03 从 8 扣到 7</td><td>撤销 P03 的扣减</td></tr><tr><td>订单及事务机制</td><td>协调共同提交或撤销</td><td>撤销整笔订单的修改</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>副本共识确定组内状态顺序；跨分片事务协调多个分片的共同提交</p></div></div>
+    <div class="numeric-progress">16/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.1905%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">扩容效果与故障时的写入条件</h2>
+    <div class="slide-content"><p class="slide-lead">扩容效果受数据分布影响；故障时写入需要满足复制与协调条件</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>扩容目标</h3><p>增加节点以提升容量或吞吐</p></article><article class="content-card emphasis-card" tabindex="0"><h3>负载条件</h3><p>分布均衡度、热点与跨分片操作量</p></article><article class="content-card emphasis-card" tabindex="0"><h3>故障处理</h3><p>若无法满足所需副本或协调条件，系统可能等待或拒绝写入</p></article><article class="content-card emphasis-card" tabindex="0"><h3>运行成本</h3><p>通信、重试、恢复、数据迁移与运维</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可用范围取决于复制与协调条件；应用负责失败处理与幂等重试</p></div></div>
+    <div class="numeric-progress">17/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.9524%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">订单、目录与报表的候选方向</h2>
+    <div class="slide-content"><p class="slide-lead">按事务、查询和同步要求筛选方案，性能结论需要实测</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 46% 31%"><colgroup><col style="width:23%"><col style="width:46%"><col style="width:31%"></colgroup><thead><tr><th>任务</th><th>必须核对的能力</th><th>候选方向</th></tr></thead><tbody><tr><td>O100 扣库存</td><td>事务覆盖订单与库存，正确处理重试</td><td>有合适事务能力的系统</td></tr><tr><td>零件目录</td><td>可选字段、单位验证、查询</td><td>关系扩展或文档等模型</td></tr><tr><td>历史报表</td><td>完整截止点、聚合、历史保留</td><td>现有系统或分析副本</td></tr><tr><td>跨分片订单</td><td>关系查询、协调、故障与扩展能力</td><td>分布式关系系统</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>候选方案注明规模、性能和故障处理的待验证条件</p></div></div>
+    <div class="numeric-progress">18/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.7143%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">订单、目录、报表与分布式要求</h2>
+    <div class="slide-content"><p class="slide-lead">各类实现须满足对应事务范围、字段含义和读取保证</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>订单</h3><p>记订单失败，已扣库存也须撤销</p></article><article class="content-card emphasis-card" tabindex="0"><h3>目录</h3><p>P02 电压为缺失状态，区别于 0</p></article><article class="content-card emphasis-card" tabindex="0"><h3>报表</h3><p>完整截止 10:00，尚无 O100</p></article><article class="content-card emphasis-card" tabindex="0"><h3>分布式</h3><p>分片决定数据在哪组；副本与事务各有协调边界</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>14.3 接着解释分片、副本、网络故障与云上资源怎样支撑这些承诺</p></div></div>
+    <div class="numeric-progress">19/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
+    <h2 class="slide-title">系统能力与具体业务要求</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-14-2/mindmap-14-2.html" title="系统能力与具体业务要求"></iframe></div></div>
+    <div class="numeric-progress">20/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH14 <span>|</span> 14.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">订单与月度分析为何分开？事务数据如何进入分析环境？</span></li><li><span class="question-no">02</span><span class="question-text">对象关系数据库与 XML 各解决什么问题？</span></li><li><span class="question-no">03</span><span class="question-text">分片与副本各解决什么问题？</span></li><li><span class="question-no">04</span><span class="question-text">订单扣库存属于 ACID 的哪一性质？副本未同步体现 BASE 的哪一特点？</span></li><li><span class="question-no">05</span><span class="question-text">NewSQL 为何适合跨节点 SQL 事务？协调代价是什么？</span></li><li><span class="question-no">06</span><span class="question-text">订单、事件、跨节点 SQL 事务如何选择路线？各自边界是什么？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">1000 g 与 1 kg 经 ETL、ELT 后，转换分别发生在哪里？</span></li><li><span class="question-no">02</span><span class="question-text">分析副本只完整同步到 10:00，怎样描述 10:03 订单的可见性？</span></li><li><span class="question-no">03</span><span class="question-text">P02 没有电压字段，为什么不能当成电压为 0？</span></li><li><span class="question-no">04</span><span class="question-text">P01 在哪个分片，A1 与 A2 又是什么关系？</span></li><li><span class="question-no">05</span><span class="question-text">ACID 的一致性、事务隔离性与副本读取保证分别关心什么？</span></li><li><span class="question-no">06</span><span class="question-text">单键原子更新、多个副本、跨分片事务为何不能相互替代？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-14-1.html" title="上一节：14.1 数据库发展动力与发展简史" aria-label="上一节：14.1 数据库发展动力与发展简史">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -171,8 +287,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">11/11</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">21/21</div>
+    <div class="semantic-label">MODELS TRANSACTIONS AND REPLICAS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

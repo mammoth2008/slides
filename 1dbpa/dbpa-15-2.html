@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DBPA 15.2 图数据库与关系的图化表达 | HUST</title>
+  <title>DBPA 15.2 图模型与路径查询 | HUST</title>
   <meta name="description" content="用选课、好友和路线问题理解属性图与路径查询">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
@@ -25,155 +25,254 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <img class="cover-image" src="resources/decks/dbpa-15-2/assets/dbpa-15-2.webp" alt="">
+    <img class="cover-image" src="resources/decks/dbpa-15-2/assets/dbpa-15-2-readable.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 15.2</div>
-      <h1>图数据库与关系的图化表达</h1>
-      <p class="cover-description">要查的不只是一行记录，而是谁连着谁、隔了几步</p>
+      <h1>图数据库<br>与关系的图化表达</h1>
+      <p class="cover-description">选课边连接学生与课程，两跳路径找出同课同学</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元用学生选课图说明顶点、边、属性和路径查询。
-封面图用于建立数据与联系网络化的主题，不代表某个实际产品架构。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">选课、好友、交通路线写成顶点与边，再比较图遍历和表连接要经过哪些步骤</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">根据是否经常追问“从谁出发、经过几跳、到达谁”判断是否需要图数据库</span></li><li><span class="list-marker">02</span><span class="list-text">用选课案例区分顶点、边、标签、属性和属性值</span></li><li><span class="list-marker">03</span><span class="list-text">用具体问题区分图匹配、图导航和“匹配后再过滤”的复合操作</span></li><li><span class="list-marker">04</span><span class="list-text">比较邻接访问与关系连接在邻居查询上的路径差异</span></li><li><span class="list-marker">05</span><span class="list-text">读懂 Cypher 中的变量、标签、属性、MATCH、WHERE 和 RETURN</span></li><li><span class="list-marker">06</span><span class="list-text">说明属性图、RDF 三元组图与查询语言并非一一对应</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="slide-content"><p class="slide-lead">用王林、顾芳和英语课说明属性归属与查询结果</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分对象标识、标签、关系类型和属性</span></li><li><span class="list-marker">02</span><span class="list-text">把成绩与日期放到它们所属的关系上</span></li><li><span class="list-marker">03</span><span class="list-text">从一次模式匹配算出具体结果</span></li><li><span class="list-marker">04</span><span class="list-text">说明两跳方向、重复路径与结果去重</span></li><li><span class="list-marker">05</span><span class="list-text">对照 SQL 连接和图查询的同一业务含义</span></li><li><span class="list-marker">06</span><span class="list-text">解释邻接访问的优势与遍历扩张的代价</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">查王林选课：先连起人、课程和选课</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>把外键画成线，就是图数据库了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">属性图把学生、课程和选课关系表示为顶点、边与属性</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-15-2/assets/generated/dbpa-ch15-property-graph.svg" data-full-src="resources/decks/dbpa-15-2/assets/generated/dbpa-ch15-property-graph.svg" alt="学生王林与课程英语通过一条带成绩和日期属性的选课边连接" tabindex="0" role="button" aria-label="放大图片：学生王林与课程英语通过一条带成绩和日期属性的选课边连接" decoding="async"><figcaption>单个边实例示意：王林与英语的一条选课关系，边上挂有成绩和日期属性</figcaption></figure>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="王林　—选课→　英语　→　可以查课程、成绩，也可以继续沿课程查教师"><span class="relation-term">王林　—选课</span><span class="relation-operator">→</span><span class="relation-term">英语</span><span class="relation-operator">→</span><span class="relation-term">可以查课程、成绩，也可以继续沿课程查教师</span></div></div></div></div>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">GRAPH DATA</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">两名学生，四条不同的关系</h2>
+    <div class="slide-content"><p class="slide-lead">依教材例图重绘；边的编号表示不同关系实例</p>
+<div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-15-2/assets/student-course-graph.svg" data-full-src="resources/decks/dbpa-15-2/assets/student-course-graph.svg" alt="王林和顾芳各有一条选课边指向英语，成绩分别 90 和 92；两学生还有室友边日期 2020-09-01 和队友边运动 Basketball" tabindex="0" role="button" aria-label="放大图片：王林和顾芳各有一条选课边指向英语，成绩分别 90 和 92；两学生还有室友边日期 2020-09-01 和队友边运动 Basketball" decoding="async"></figure></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>成绩属于选课边 e1/e2，日期属于室友边 e3，运动属于队友边 e4</p></div></div>
+    <div class="numeric-progress">3/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-grid"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">图里的点、线和字段，在选课中各指什么</h2>
-    <div class="slide-content"><p class="slide-lead">先把每个术语对应到一个看得见的人、课程或选课记录</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>顶点 V</h3><p>业务对象：王林、英语等学生和课程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>边 E</h3><p>业务关系：SC 选课，连接王林与英语</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>标签 L</h3><p>类型分类：Student、Course、SC</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>属性 A/T</h3><p>字段和值：Score=90、Date=2020-09-01</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例只需理解图元素与业务语义的对应关系</p></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">PROPERTY GRAPH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">对象标识、类别与属性</h2>
+    <div class="slide-content"><p class="slide-lead">本例以学号定位学生；姓名可能重名，不作为唯一标识</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 45% 32%"><colgroup><col style="width:23%"><col style="width:45%"><col style="width:32%"></colgroup><thead><tr><th>元素</th><th>本例对象</th><th>说明</th></tr></thead><tbody><tr><td>顶点</td><td>王林、顾芳、英语</td><td>共 3 个对象</td></tr><tr><td>边</td><td>e1/e2 选课，e3 室友，e4 队友</td><td>共 4 个关系实例</td></tr><tr><td>标签与关系类型</td><td>Student、Course；SC 等</td><td>描述对象或关系的类别</td></tr><tr><td>属性与值</td><td>Score 是属性，90 是值</td><td>值属于具体顶点或边</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>内部标识定位图对象，业务学号标识学生；学号唯一性由约束或应用保证</p></div></div>
+    <div class="numeric-progress">4/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
 <section id="a4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">选课这条边也能保存成绩和日期</h2>
-    <div class="slide-content"><p class="slide-lead">可沿选课边找课程；是否换数据库，要看是否常查多跳路线</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="王林　—[SC {Score=90，Date=2020-09-01}]→　英语"><span class="relation-term">王林　—[SC {Score</span><span class="relation-operator">=</span><span class="relation-term">90，Date</span><span class="relation-operator">=</span><span class="relation-term">2020-09-01}]</span><span class="relation-operator">→</span><span class="relation-term">英语</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 70%"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>表达方式</th><th>直观含义</th></tr></thead><tbody><tr><td>关系模型</td><td>通过 <code>Student ⋈ SC ⋈ Course</code> 组合业务事实</td></tr><tr><td>图模型</td><td>直接匹配并导航 <code>Student — SC — Course</code> 路径</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>查询谁选了什么课以及成绩时，图中的边是查询对象；关系系统也能表达同一事实</p></div></div>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">STUDENT COURSE GRAPH</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">选课、室友与队友的关系属性</h2>
+    <div class="slide-content"><p class="slide-lead">王林与顾芳既是室友，又是篮球队队友</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 33% 31%"><colgroup><col style="width:36%"><col style="width:33%"><col style="width:31%"></colgroup><thead><tr><th>关系实例</th><th>属性</th><th>属性属于谁</th></tr></thead><tbody><tr><td>e1：王林→英语</td><td>Score=90</td><td>王林这次选课</td></tr><tr><td>e2：顾芳→英语</td><td>Score=92</td><td>顾芳这次选课</td></tr><tr><td>e3：王林→顾芳</td><td>Date=2020-09-01</td><td>室友关系</td></tr><tr><td>e4：王林→顾芳</td><td>Sports=Basketball</td><td>队友关系</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例只设一次选课；允许重修时，须用学期或选课编号区分每次成绩</p></div></div>
+    <div class="numeric-progress">5/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-grid"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">匹配、导航和过滤分别在做什么</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>匹配、导航和过滤只能三选一吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">用“王林选过什么课”和“王林的课程由谁授课”区分一步与多步查询</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>图匹配</h3><p>找出 Student—SC→Course 形状，例如王林选过的课程</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>图导航</h3><p>从王林出发，先到课程，再到教师，寻找两跳关系</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>复合操作</h3><p>先找王林的选课边，再留下成绩大于 90 的课程</p></article></div></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">GRAPH OPERATIONS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">选课方向与室友关系的对称性</h2>
+    <div class="slide-content"><p class="slide-lead">本例选课箭头从学生指向课程，室友边仅选一个存储方向</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 60%"><colgroup><col style="width:40%"><col style="width:60%"></colgroup><thead><tr><th>问题</th><th>应怎样查</th></tr></thead><tbody><tr><td>王林选了什么课</td><td>从王林沿 SC 出边到 Course</td></tr><tr><td>谁选了英语</td><td>从英语沿 SC 入边回到 Student</td></tr><tr><td>王林与顾芳是否室友</td><td>按室友关系语义检查两端</td></tr><tr><td>英语“选了”王林吗</td><td>反向遍历不改变关系的业务含义</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>室友关系具有对称性；图中单向存储，查询须检查关系两端</p></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">SPARQL、Cypher、Gremlin：不同图</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-misconception" data-character-edge="bottom" data-character-along="72" data-character-exposure="60" data-character-scale="0.9" style="--character-along:72%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-misconception.15fad7e1206f.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>Cypher 是所有图数据库的统一 SQL 吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">先确认数据采用 RDF 三元组还是属性图，再看系统支持哪种语言</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>语言</th><th>常见数据表示</th><th>查询写法</th></tr></thead><tbody><tr><td>SPARQL</td><td>RDF 三元组图</td><td>三元组匹配</td></tr><tr><td>Cypher</td><td>属性图</td><td>模式和路径表达</td></tr><tr><td>Gremlin</td><td>属性图</td><td>程序化遍历</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能把 Cypher 语句原样交给所有图数据库；产品采用哪种图表示和语言，需要分别核查</p></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">QUERY LANGUAGES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">选课查询中的匹配、导航与过滤</h2>
+    <div class="slide-content"><p class="slide-lead">一次选课查询可组合模式匹配、沿边导航和属性过滤</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>匹配一个形状</h3><p>Student—SC→Course，匹配选课</p></article><article class="content-card emphasis-card" tabindex="0"><h3>沿边导航</h3><p>王林→英语←顾芳，经过两条 SC 边</p></article><article class="content-card emphasis-card" tabindex="0"><h3>按属性过滤</h3><p>在匹配结果中只留下 Score&gt;90</p></article><article class="content-card emphasis-card" tabindex="0"><h3>投影与去重</h3><p>输出同学学号，按查询要求去重</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>图与关系复合操作把选择、投影、连接和集合操作用于图匹配与导航</p></div></div>
+    <div class="numeric-progress">7/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">Cypher 用图形符号表达选课路径</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-question" data-character-edge="right" data-character-along="68" data-character-exposure="60" data-character-scale="0.9" style="--character-along:68%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-question.5660f5fb2d46.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>谁负责找路径，谁负责筛选和输出？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">括号表示顶点，中括号表示关系，WHERE 过滤属性</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">CYPHER</span><pre tabindex="0" aria-label="CYPHER code"><span class="code-line-numbers" aria-hidden="true">01
-02
-03</span><code class="language-cypher">MATCH (n:Student)-[e:SC]-&gt;(c:Course)
-WHERE n.Sname = "王林"
-RETURN c.Cname, e.Score</code></pre></div></div>
-<div class="component component-text text-inset substep reveal-self"><p>n、e、c 是变量；Student、SC、Course 是标签；Sname、Score 是属性</p>
-<p>MATCH 找模式；WHERE 过滤；RETURN 输出</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>预期结果是课程英语与成绩 90</p></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">CYPHER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">图模型与查询语言</h2>
+    <div class="slide-content"><p class="slide-lead">这里比较教材中的常见搭配，不作产品或标准现状判断</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>表示或语言</th><th>具体含义</th></tr></thead><tbody><tr><td>属性图</td><td>点与边可带属性；e1 上有 Score=90</td></tr><tr><td>RDF</td><td>资源描述框架：以主语—谓语—宾语表达事实</td></tr><tr><td>SPARQL</td><td>用图模式查询 RDF 数据</td></tr><tr><td>Cypher</td><td>写出属性图中的顶点、边与路径模式</td></tr><tr><td>Gremlin</td><td>以遍历步骤组织图访问</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>语言支持范围随系统而异；查询须符合所选系统的语法与语义</p></div></div>
+    <div class="numeric-progress">8/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b2a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2 <span>|</span> 15.2</div>
-    <h2 class="slide-title">以 Neo4j 为例，邻接存储有利于邻居遍历</h2>
-    <div class="slide-content"><p class="slide-lead">顶点记录可维护邻接信息，但实现各异</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="顶点记录　→　相邻边或邻居地址　→　邻居顶点"><span class="relation-term">顶点记录</span><span class="relation-operator">→</span><span class="relation-term">相邻边或邻居地址</span><span class="relation-operator">→</span><span class="relation-term">邻居顶点</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 70%"><colgroup><col style="width:30%"><col style="width:70%"></colgroup><thead><tr><th>访问路径</th><th>直观过程</th></tr></thead><tbody><tr><td>关系系统</td><td>索引定位记录，再通过连接找到邻居</td></tr><tr><td>原生图存储</td><td>从顶点记录沿邻接关系定位邻居</td></tr></tbody></table></div>
-<div class="component component-text text-inset substep reveal-self"><p>Neo4j 作为代表性实现可以支持事务；不能据此假定所有图数据库都有同样的事务保证</p></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>图数据库是否更快取决于数据布局与查询模式是否匹配</p></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">NATIVE TRAVERSAL</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">RDF 的对象标识与文字值</h2>
+    <div class="slide-content"><p class="slide-lead">下面用简写标识说明事实，不是完整 RDF 文件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 28% 37%"><colgroup><col style="width:35%"><col style="width:28%"><col style="width:37%"></colgroup><thead><tr><th>主语</th><th>谓语</th><th>宾语</th></tr></thead><tbody><tr><td>student:2020001</td><td>选修</td><td>course:001</td></tr><tr><td>student:2020001</td><td>姓名</td><td>字符串“王林”</td></tr><tr><td>course:001</td><td>课程名</td><td>字符串“英语”</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>course:001 标识课程对象；“英语”是课程名，重名课程须用不同标识区分</p></div></div>
+    <div class="numeric-progress">9/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b3" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
-    <h2 class="slide-title">王林查课：写路径，决定是否用图数据库</h2>
-    <div class="slide-content"><p class="slide-lead">把同一个问题分别写成图路径和表连接，比较程序实际要经过哪些步骤</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>1 · 每个点和边代表什么</h3><p>把学生、课程、选课分别放到顶点或边上，再决定成绩和日期放在哪里；不能只把外键画成线</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2 · 语句怎样找到王林的课程</h3><p>用 <code>MATCH</code> 找 Student—SC→Course，<code>WHERE</code> 留下王林或指定成绩，<code>RETURN</code> 输出课程和成绩</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>3 · 若继续使用三张表</h3><p>把图路径和 <code>Student ⋈ SC ⋈ Course</code> 并列，指出索引先找到哪张表、连接再找到哪张表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>4 · 什么情况下值得采用</h3><p>只有经常查询多跳关系时才继续评估；再逐项核查所选产品的事务、约束、报表和查询语言</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">按学号查询课程名称与成绩</h2>
+    <div class="slide-content"><p class="slide-lead">本例王林学号 2020001，顾芳学号 2020002</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">CYPHER</span><pre tabindex="0" aria-label="CYPHER code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-cypher">MATCH (n:Student)-[e:SC]-&gt;(c:Course)
+WHERE n.Sno = "2020001"
+RETURN c.Cname, e.Score</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="65% 35%"><colgroup><col style="width:65%"><col style="width:35%"></colgroup><thead><tr><th>c.Cname</th><th>e.Score</th></tr></thead><tbody><tr><td>英语</td><td>90</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>n/e/c 是变量；Student/Course 是标签，SC 是关系类型；Sno/Cname/Score 是属性</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">成绩条件与空结果</h2>
+    <div class="slide-content"><p class="slide-lead">继续只查询王林；其唯一选课成绩为 90</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="41% 26% 33%"><colgroup><col style="width:41%"><col style="width:26%"><col style="width:33%"></colgroup><thead><tr><th>条件</th><th>结果</th><th>原因</th></tr></thead><tbody><tr><td>n.Sno=&quot;2020001&quot;</td><td>英语，90</td><td>找到王林的选课</td></tr><tr><td>再加 e.Score&gt;90</td><td>无结果行</td><td>90 不大于 90</td></tr><tr><td>改为 e.Score&gt;=90</td><td>英语，90</td><td>90 满足包含边界的条件</td></tr><tr><td>改查顾芳且 Score&gt;90</td><td>英语，92</td><td>顾芳是另一个学生</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Score&gt;90 排除了王林的记录；空结果表示没有匹配行，成绩 0 则是具体值</p></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
+  </section>
+<section id="b3b" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">两跳查询其他同课同学</h2>
+    <div class="slide-content"><p class="slide-lead">从王林沿出边到英语，再沿入边到其他学生</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">CYPHER</span><pre tabindex="0" aria-label="CYPHER code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-cypher">MATCH (n:Student)-[:SC]-&gt;(c:Course)&lt;-[:SC]-(m:Student)
+WHERE n.Sno = "2020001" AND m.Sno &lt;&gt; n.Sno
+RETURN DISTINCT m.Sno, m.Sname</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="50% 50%"><colgroup><col style="width:50%"><col style="width:50%"></colgroup><thead><tr><th>m.Sno</th><th>m.Sname</th></tr></thead><tbody><tr><td>2020002</td><td>顾芳</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同课关系由两条 SC 边推导，图中未存直接“同学”边</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="b3c" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">两条选课路径对应同一名同学</h2>
+    <div class="slide-content"><p class="slide-lead">独立扩展：两人又都选了课程 002“数据库”，其余事实不变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="62% 38%"><colgroup><col style="width:62%"><col style="width:38%"></colgroup><thead><tr><th>匹配路径</th><th>输出同学</th></tr></thead><tbody><tr><td>王林→英语←顾芳</td><td>2020002，顾芳</td></tr><tr><td>王林→数据库←顾芳</td><td>2020002，顾芳</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两条匹配路径输出两行顾芳；按学号、姓名 DISTINCT 后得到一名同学</p></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+  </section>
+<section id="b3d" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">选课表自连接查询同课同学</h2>
+    <div class="slide-content"><p class="slide-lead">学生表与选课表保存同一组事实，SQL 返回同一位同学</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">SELECT DISTINCT m.Sno, m.Sname
+FROM SC a JOIN SC b ON a.Cno = b.Cno
+JOIN Student m ON m.Sno = b.Sno
+WHERE a.Sno = '2020001'
+  AND b.Sno &lt;&gt; a.Sno;</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>a/b 是 SC 的两个别名；按同一课程连接并排除自己，结果为顾芳</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">邻接访问的过程与成本</h2>
+    <div class="slide-content"><p class="slide-lead">用简化存储路径说明教材中的原生图存储思路</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 68%"><colgroup><col style="width:32%"><col style="width:68%"></colgroup><thead><tr><th>阶段</th><th>具体工作</th></tr></thead><tbody><tr><td>找到起点王林</td><td>可借助学号索引或其他定位机制</td></tr><tr><td>访问相邻关系</td><td>沿邻接信息读取相关边与顶点</td></tr><tr><td>检查关系与属性</td><td>区分 SC/Roommate，核对成绩条件</td></tr><tr><td>输出或继续展开</td><td>读取、过滤、去重并传输结果</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>邻接记录可能分散存放并产生 I/O；查询性能须结合负载与实现比较</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="b4a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">多跳展开，访问量可能迅速增大</h2>
+    <div class="slide-content"><p class="slide-lead">独立树形例：每点有 100 个不同后继，三层没有重复顶点</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>层数</th><th>本层到达顶点数</th><th>累计到达数</th></tr></thead><tbody><tr><td>第 1 跳</td><td>100</td><td>100</td></tr><tr><td>第 2 跳</td><td>10 000</td><td>10 100</td></tr><tr><td>第 3 跳</td><td>1 000 000</td><td>1 010 100</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例第三跳到达 100 万个顶点；查询须限定关系类型、方向、深度与结果范围</p></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="b4b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">环路中的可达性与路径规则</h2>
+    <div class="slide-content"><p class="slide-lead">独立好友例：A→B、B→A，询问从 A 出发能到达谁</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>判断可达性</h3><p>记录已访问顶点，避免 A/B 反复展开</p></article><article class="content-card emphasis-card" tabindex="0"><h3>限定遍历深度</h3><p>明确最多几跳，超过边界停止</p></article><article class="content-card emphasis-card" tabindex="0"><h3>枚举走法</h3><p>允许重复顶点和边时，可无限绕 A→B→A</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查找最短路径</h3><p>定义按边数还是权重，以及是否存在并列结果</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>重复顶点、重复边和最短路径的度量须在查询语义中明确</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
+    <h2 class="slide-title">选课图的事实、路径与结果</h2>
+    <div class="slide-content"><p class="slide-lead">关系属性记录事实，查询方向、过滤和去重决定返回行</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>模型归属</h3><p>选课成绩、室友日期、队友运动</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询边界</h3><p>学号定位、方向、&gt; 与 &gt;=、排除自己</p></article><article class="content-card emphasis-card" tabindex="0"><h3>结果形态</h3><p>同一学号、姓名的结果合并为一行</p></article><article class="content-card emphasis-card" tabindex="0"><h3>实现取舍</h3><p>核对定位、邻接、扩张成本与约束</p></article></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>第 15.3 节按时间戳把设备记录归入窗口并聚合</p></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
   </section>
 <section id="map" class="step slide-surface role-map layout-single"
-      data-x="3000" data-y="2240" data-z="0"
+      data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
     <h2 class="slide-title">本节知识地图</h2>
     <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-15-2/mindmap-15-2.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <div class="numeric-progress">19/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
   </section>
 <section id="questions" class="step slide-surface role-questions layout-single"
-      data-x="4500" data-y="2240" data-z="0"
+      data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH15 <span>|</span> 15.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">学生选课、社交关系和交通路径中，哪些更适合图模型，为什么？</span></li><li><span class="question-no">02</span><span class="question-text">在选课案例中，顶点、边、标签、属性和属性值分别是什么？</span></li><li><span class="question-no">03</span><span class="question-text">找成绩大于 90 的选课和找两个学生之间的两跳关系分别属于哪类操作？</span></li><li><span class="question-no">04</span><span class="question-text">如何用 <code>MATCH</code>、<code>WHERE</code>、<code>RETURN</code> 查询王林的课程和成绩？</span></li><li><span class="question-no">05</span><span class="question-text">为什么 Neo4j 的邻接存储不能推出所有图查询都比关系查询快？</span></li><li><span class="question-no">06</span><span class="question-text">RDF 三元组、属性图和程序化遍历通常分别使用哪种语言？为什么一条 Cypher 语句不能交给所有图数据库？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">图中的成绩 90、日期 2020-09-01 与 Basketball 各属于哪条边？</span></li><li><span class="question-no">02</span><span class="question-text">为什么要用学号定位，而不能默认姓名唯一？</span></li><li><span class="question-no">03</span><span class="question-text">王林成绩为 90，&gt;90 与&gt;=90 分别返回什么？</span></li><li><span class="question-no">04</span><span class="question-text">两人共有两门课时，返回路径与返回不同同学有什么区别？</span></li><li><span class="question-no">05</span><span class="question-text">同课同学的图查询如何写成 SC 的自连接？</span></li><li><span class="question-no">06</span><span class="question-text">为什么邻接访问不能保证三跳查询总是便宜？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-15-1.html" title="上一节：15.1 大数据特征与键值文档数据库" aria-label="上一节：15.1 大数据特征与键值文档数据库">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -188,8 +287,8 @@ RETURN c.Cname, e.Score</code></pre></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">20/20</div>
+    <div class="semantic-label">GRAPH FACTS PATHS AND RESULTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

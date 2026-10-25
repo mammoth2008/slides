@@ -28,140 +28,208 @@
     <img class="cover-image" src="resources/decks/dbpa-13-3/assets/dbpa-13-3.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 13.3</div>
-      <h1>缓冲区管理与数据库物理组织</h1>
-      <p class="cover-description">目标页不在内存时：淘汰哪一页、何时写回、怎样读入目标块</p>
+      <h1>缓冲区管理<br>与物理组织</h1>
+      <p class="cover-description">P4 写回，P9 装入</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元说明缓冲区的命中、装入、淘汰，以及数据库物理组织的四类信息。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead"><code>READBUF</code> 未命中：选空闲帧或淘汰页，再画 WAL、写回和 OS <code>READ</code> 顺序</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">解释系统缓冲区如何提供设备独立性和访问效率</span></li><li><span class="list-marker">02</span><span class="list-text">描述 <code>READBUF</code> 的命中、装入和淘汰，以及修改页的写回边界</span></li><li><span class="list-marker">03</span><span class="list-text">比较 FIFO 与 LRU 的依据和访问局部性</span></li><li><span class="list-marker">04</span><span class="list-text">列举数据库物理组织的四类信息</span></li><li><span class="list-marker">05</span><span class="list-text">说明数据字典、数据文件和存取路径之间的关系</span></li><li><span class="list-marker">06</span><span class="list-text">解释关系数据库如何让存取路径对用户隐藏并动态维护</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
+    <div class="slide-content"><p class="slide-lead">依据帧状态和日志位置，判断页面装入与写回的动作</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分页号、内存帧与记录槽号</span></li><li><span class="list-marker">02</span><span class="list-text">判断命中、空闲、可淘汰和暂时无法装入</span></li><li><span class="list-marker">03</span><span class="list-text">排出先保存日志、写回脏页、读入目标页的顺序</span></li><li><span class="list-marker">04</span><span class="list-text">用同一串访问分别算出 FIFO 和 LRU 的选择</span></li><li><span class="list-marker">05</span><span class="list-text">在 SC 案例中找到描述、数据、联系与存取路径</span></li><li><span class="list-marker">06</span><span class="list-text">区分文件读取与物理设备读取</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">GET 请求记录，READBUF 提供页面</h2>
+    <div class="slide-content"><p class="slide-lead">接 13.2：NEXT 已定位 RID=(P9,1)，GET 将读取这行的 76 分成绩</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 32% 41%"><colgroup><col style="width:27%"><col style="width:32%"><col style="width:41%"></colgroup><thead><tr><th>对象</th><th>本例中的值</th><th>含义</th></tr></thead><tbody><tr><td>记录位置 RID</td><td>(P9,1)</td><td>P9 页内的第 1 个槽</td></tr><tr><td>数据库页</td><td>P9</td><td>外存中可按页定位的数据</td></tr><tr><td>内存缓冲帧</td><td>F2</td><td>可先装 P4，再装 P9</td></tr><tr><td>上层结果</td><td>20180003 / 81002 / 76</td><td>取页后，按槽解释记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>READBUF 提供页面入口，记录存取子系统按槽取出学号、课程号和成绩</p></div></div>
+    <div class="numeric-progress">3/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
     <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-vertical order-media-text"
-      data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">DBMS 先查内存页，未命中才让 OS 读盘</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>页面进入缓冲区后，就不再需要外存版本了吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">存取层提交页号；命中就返回，否则申请缓冲帧并让 OS 读取块</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" data-full-src="resources/decks/dbpa-13-3/assets/generated/dbpa-ch13-buffer-read.svg" alt="缓冲区的命中、未命中、装入、淘汰与写回路径" tabindex="0" role="button" aria-label="放大图片：缓冲区的命中、未命中、装入、淘汰与写回路径" decoding="async"></figure></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>同一个页面号可以由不同设备和文件布局实现，上层调用不变；缓冲中的页只是副本，脏页最终仍要按 WAL 顺序写回外存</p></div></div>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">BUFFER PURPOSE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
-  </section>
-<section id="a3" class="step slide-surface role-content layout-focus"
+<section id="a2a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">读取 SC 中未缓存的成绩记录</h2>
-    <div class="slide-content"><p class="slide-lead">未缓存的 SC 成绩记录所在页面需要读入目标缓冲帧</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 45% 30%"><colgroup><col style="width:25%"><col style="width:45%"><col style="width:30%"></colgroup><thead><tr><th>路径</th><th>缓冲区动作</th><th>结果</th></tr></thead><tbody><tr><td>命中</td><td><code>READBUF</code> 找到含有目标元组的页面</td><td>直接取记录，不访问外存</td></tr><tr><td>未命中且有空闲页</td><td>申请页面并调用 OS <code>READ</code> 装入目标页</td><td>返回目标记录</td></tr><tr><td>未命中且候选页未修改</td><td>选择可淘汰页后覆盖装入目标页</td><td>返回目标记录</td></tr><tr><td>未命中且候选页已修改</td><td>先满足先写日志约束并写回候选页，再装入目标页</td><td>返回目标记录</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">BUFFER READ</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">P9 未命中：两个缓冲帧已占满</h2>
+    <div class="slide-content"><p class="slide-lead">只展示两个数据页帧；索引页等资源不计入这个独立小例子</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="12% 14% 22% 22% 30%"><colgroup><col style="width:12%"><col style="width:14%"><col style="width:22%"><col style="width:22%"><col style="width:30%"></colgroup><thead><tr><th>帧</th><th>当前页</th><th>是否修改</th><th>使用计数</th><th>能否淘汰</th></tr></thead><tbody><tr><td>F1</td><td>P7</td><td>否</td><td>1</td><td>暂时不能</td></tr><tr><td>F2</td><td>P4</td><td>是</td><td>0</td><td>先写回再复用</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>使用计数大于 0 表示页面被固定；F1 由操作持有，暂不参与淘汰</p></div></div>
+    <div class="numeric-progress">4/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-grid"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">延迟写回减少磁盘 I/O 并受恢复约束</h2>
-    <div class="slide-content"><p class="slide-lead">脏页状态、可释放条件和写回时机分别影响淘汰决策</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>脏页</h3><p>缓冲区中的页面已被修改，与外存版本不同</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>可释放标志</h3><p>可释放标志表示页面需要空间时可以作为淘汰候选，不等于立即写回或随时可以淘汰</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>写回约束</h3><p>事务结束或缓冲区需要空间时，系统可按策略处理可释放页面；选中被修改页面时先满足先写日志约束，再写回数据页</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>延迟写回减少内外存交换，但数据页写回仍受事务状态和恢复约束控制</p></div></div>
-    <aside class="character-intervention character-edge-left character-intent-conclusion substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="left-confirm" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confirm.a0ae48cf4b59.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>延迟写回省下 I/O，也把恢复约束带进来</p></div></div></div></aside>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">WRITE BACK</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">页面状态决定装入分支</h2>
+    <div class="slide-content"><p class="slide-lead">下列情形彼此独立；命中只免去本次目标页的文件读取</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 57%"><colgroup><col style="width:43%"><col style="width:57%"></colgroup><thead><tr><th>状态</th><th>缓冲区管理动作</th></tr></thead><tbody><tr><td>P9 已在可用帧中</td><td>固定该帧，返回页面入口</td></tr><tr><td>P9 不在，有空闲帧</td><td>把 P9 读入空闲帧</td></tr><tr><td>满了，有未固定的干净页</td><td>直接复用其帧，读入 P9</td></tr><tr><td>满了，候选页脏且未固定</td><td>满足 WAL，写回后读入 P9</td></tr><tr><td>所有帧都被固定</td><td>等待释放等处理，不能任意覆盖</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>命中免读目标页；页内协调可能等待，其他查询操作可能产生 I/O</p></div></div>
+    <div class="numeric-progress">5/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.7778%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">缓冲满：FIFO 看进入，LRU 看最近使用</h2>
-    <div class="slide-content"><p class="slide-lead">候选若是脏页，先确认日志稳定，再写回并装入目标页</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>策略</th><th>依据</th><th>直观特点</th></tr></thead><tbody><tr><td>FIFO</td><td>进入缓冲区时间</td><td>简单但不看最近访问</td></tr><tr><td>LRU</td><td>最近一次访问时间</td><td>利用时间局部性</td></tr><tr><td>改进算法</td><td>访问、脏页和 I/O 成本</td><td>更贴近实际负载</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若 A、B、C 按顺序进入缓冲区，随后再次访问 A 并请求 D，FIFO 可能淘汰 A，LRU 可能淘汰 B；被修改的候选页要先完成日志稳定保存，再写回</p></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">EVICTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">脏标志、固定状态与日志位置</h2>
+    <div class="slide-content"><p class="slide-lead">WRITEBUF 修改缓冲页后置脏；脏标志与使用状态分别判断</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 30% 43%"><colgroup><col style="width:27%"><col style="width:30%"><col style="width:43%"></colgroup><thead><tr><th>控制信息</th><th>本例状态</th><th>回答什么问题</th></tr></thead><tbody><tr><td>页号映射</td><td>P4 在 F2</td><td>这页在哪里</td></tr><tr><td>脏标志</td><td>是</td><td>内存内容是否尚未写回</td></tr><tr><td>使用计数</td><td>0</td><td>是否仍被某个操作持有</td></tr><tr><td>页面日志位置</td><td>pageLSN=120</td><td>写回前须持久化到哪里</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>帧固定防止淘汰；页内保护协调读写；事务锁控制事务冲突</p></div></div>
+    <div class="numeric-progress">6/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-focus"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">物理组织要为四类信息安排存储结构</h2>
-    <div class="slide-content"><p class="slide-lead">数据字典描述结构，数据文件保存内容，存取路径负责定位</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>信息</th><th>例子</th><th>作用</th></tr></thead><tbody><tr><td>数据描述</td><td>数据字典／系统目录</td><td>解释外模式、模式和内模式</td></tr><tr><td>数据本身</td><td>元组、页面、数据文件</td><td>保存业务内容</td></tr><tr><td>数据联系</td><td>表关联、指针或邻接关系</td><td>表达实体联系</td></tr><tr><td>存取路径</td><td>索引、哈希、顺序组织</td><td>支持定位、扫描和访问</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>数据字典保存描述，数据文件保存业务数据，存取路径帮助定位它们；四类内容都要采用合适的物理组织</p></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">PHYSICAL ORGANIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">P4 写回要求日志持久化到 120</h2>
+    <div class="slide-content"><p class="slide-lead">本例日志已持久化到 110，P4 的 pageLSN=120；WAL 要求日志先行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="13% 48% 39%"><colgroup><col style="width:13%"><col style="width:48%"><col style="width:39%"></colgroup><thead><tr><th>步骤</th><th>动作</th><th>完成后状态</th></tr></thead><tbody><tr><td>1</td><td>把日志持久化到至少 120</td><td>durableLSN≥120</td></tr><tr><td>2</td><td>将 F2 中的 P4 写回文件</td><td>P4 可安全被替换</td></tr><tr><td>3</td><td>将 P9 读入 F2</td><td>F2 映射改为 P9</td></tr><tr><td>4</td><td>返回 P9 页面，取槽 1</td><td>得到课程成绩 76</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>日志持久化应满足系统耐久性保证；仅存入内存缓冲尚未完成持久化</p></div></div>
+    <div class="numeric-progress">7/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.8889%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="a4b" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">文件组织方式要和访问模式匹配</h2>
-    <div class="slide-content"><p class="slide-lead">堆文件、顺序文件、哈希文件和 B+ 树文件适合不同访问模式</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 42% 28%"><colgroup><col style="width:30%"><col style="width:42%"><col style="width:28%"></colgroup><thead><tr><th>组织方式</th><th>主要特点</th><th>适合的访问</th></tr></thead><tbody><tr><td>堆文件</td><td>记录通常无序存放，不维护全局顺序</td><td>插入简单、无序扫描</td></tr><tr><td>顺序／索引顺序文件</td><td>顺序文件按记录顺序组织，索引顺序文件增加定位信息</td><td>顺序扫描、批处理、范围访问</td></tr><tr><td>哈希文件</td><td>用哈希函数把键映射到桶</td><td>等值点查询</td></tr><tr><td>B+ 树文件（有序索引）</td><td>多级有序结构，叶结点支持顺序访问</td><td>等值、范围和有序访问</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">FILE ORGANIZATION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">页面写回与事务提交分别管理</h2>
+    <div class="slide-content"><p class="slide-lead">本节沿用第 11 章允许未提交页写回、提交不强制刷数据页的模型</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 43% 29%"><colgroup><col style="width:28%"><col style="width:43%"><col style="width:29%"></colgroup><thead><tr><th>情况</th><th>可能出现的状态</th><th>故障后依赖什么</th></tr></thead><tbody><tr><td>事务尚未提交</td><td>修改页已按 WAL 写回</td><td>撤销未提交修改</td></tr><tr><td>事务已提交</td><td>日志已稳定，修改页仍在内存</td><td>重做已提交修改</td></tr><tr><td>缓冲帧要复用</td><td>页未固定，脏页已安全写回</td><td>再装入另一页</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>写回更新文件中的页面；提交状态由事务记录确认，脏标志只描述页面状态</p></div></div>
+    <div class="numeric-progress">8/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="a4c" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3 <span>|</span> 13.3</div>
-    <h2 class="slide-title">索引路径的建立、选择与维护</h2>
-    <aside class="character-intervention character-edge-bottom character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="bottom-confused" data-character-edge="bottom" data-character-along="76" data-character-exposure="56" data-character-scale="0.9" style="--character-along:76%;--character-exposure:56;--character-hidden:44%;--character-scale:0.9;--character-bubble-x:25px;--character-bubble-y:-110px;--character-tail-at:78%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/bottom-confused.03750077d2ac.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-bottom"><p>建立索引、优化器选路和更新索引，不都是同一个动作吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">用户只面对逻辑表，系统在已有路径中选路并保持索引一致</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>建立与删除路径</h3><p>用户或管理员通过 <code>CREATE INDEX</code>、<code>DROP INDEX</code> 改变可用的存取路径集合</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>查询选路</h3><p>查询优化器只在已有索引路径、顺序扫描等候选方案中选择执行方案</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>同步维护路径</h3><p>更新索引键时同步修改相关索引项，更新非索引属性时通常不改变该索引项</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>逻辑表与独立索引路径分离，用户无需知道物理布局；建立、选择和维护由不同系统职责完成</p></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">RELATIONS AND PATHS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">P9 的文件地址与装入位置</h2>
+    <div class="slide-content"><p class="slide-lead">沿用 13.1 的教学布局：sc.dat，页长 8 KiB，P1 从偏移 0 开始</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 66%"><colgroup><col style="width:34%"><col style="width:66%"></colgroup><thead><tr><th>要素</th><th>这次请求</th></tr></thead><tbody><tr><td>页号转字节偏移</td><td>(9−1)×8192 = 65536</td></tr><tr><td>文件操作</td><td>从 sc.dat 的 65536 处读取 8192 字节</td></tr><tr><td>缓冲区交付</td><td>读入 F2，建立 P9→F2 映射</td></tr><tr><td>记录交付</td><td>从 P9 的槽 1 取出 76 分记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>地址计算限定本例布局；OS 文件缓存命中时，读取可由缓存完成</p></div></div>
+    <div class="numeric-progress">9/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
-    <h2 class="slide-title">SC 页未命中且候选为脏页：画六步 I/O</h2>
-    <div class="slide-content"><p class="slide-lead">SC 页未命中且候选为脏页：写出从逻辑请求到返回记录的动作链</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 定位目标页</h3><p>用字典和存取路径把元组请求定位到目标页；索引只提供路径</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 判断命中并选择候选</h3><p><code>READBUF</code> 未命中且无空闲帧，按访问记录、可释放状态与 I/O 代价选候选</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 满足 WAL 后写回</h3><p>脏页写回前先确认日志稳定；不能为腾空间跳过 WAL</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 装入并返回记录</h3><p>操作系统读目标块，页面入缓冲，DBMS 取元组并返回；标出实际 I/O</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">FIFO 按进入次序，LRU 按使用次序</h2>
+    <div class="slide-content"><p class="slide-lead">独立例：三个帧先后装入 A、B、C，全部干净且未固定，再访问 A</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="35% 39% 26%"><colgroup><col style="width:35%"><col style="width:39%"><col style="width:26%"></colgroup><thead><tr><th>依据</th><th>再次访问 A 后的次序</th><th>请求 D 时淘汰</th></tr></thead><tbody><tr><td>FIFO：进入顺序</td><td>A → B → C</td><td>A</td></tr><tr><td>LRU：最久未用在前</td><td>B → C → A</td><td>B</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>两种策略都从未固定的候选页中选择；本例 A、B、C 均可淘汰</p></div></div>
+    <div class="numeric-progress">10/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b1a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-13-3/mindmap-13-3.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <h2 class="slide-title">四页循环访问，三帧持续未命中</h2>
+    <div class="slide-content"><p class="slide-lead">仍用三个空帧，逐个访问 A、B、C、D、A、B、C、D</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 39% 39%"><colgroup><col style="width:22%"><col style="width:39%"><col style="width:39%"></colgroup><thead><tr><th>策略</th><th>前四次访问</th><th>后四次访问</th></tr></thead><tbody><tr><td>FIFO</td><td>4 次未命中</td><td>4 次未命中</td></tr><tr><td>LRU</td><td>4 次未命中</td><td>4 次未命中</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>四页循环访问超过三帧容量，本例 FIFO 与 LRU 均为 8 次未命中</p></div></div>
+    <div class="numeric-progress">11/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.1111%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">选课数据库保存的四类信息</h2>
+    <div class="slide-content"><p class="slide-lead">SC 中的 Sno、Cno 表达学生选修课程的联系</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 43% 34%"><colgroup><col style="width:23%"><col style="width:43%"><col style="width:34%"></colgroup><thead><tr><th>类别</th><th>本例内容</th><th>帮助系统做什么</th></tr></thead><tbody><tr><td>数据描述</td><td>SC 的列、类型、主键定义</td><td>解释记录并检查约束</td></tr><tr><td>数据本身</td><td>20180003 / 81002 / 76</td><td>保存一次选课成绩</td></tr><tr><td>数据联系</td><td>Sno、Cno 对应学生和课程</td><td>表达谁选了哪门课</td></tr><tr><td>存取路径</td><td>Sno 索引：20180003→两个 RID</td><td>更快定位候选记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一表值可同时表达业务数据与实体联系；文件数量由物理组织决定</p></div></div>
+    <div class="numeric-progress">12/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="b2a" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">元数据、表、联系与外键的实现</h2>
+    <div class="slide-content"><p class="slide-lead">目录表保存 SC 定义，SC 数据页保存业务记录，两者都需要物理组织</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 35% 40%"><colgroup><col style="width:25%"><col style="width:35%"><col style="width:40%"></colgroup><thead><tr><th>对象</th><th>表达内容</th><th>实现或职责</th></tr></thead><tbody><tr><td>数据字典</td><td>SC 的列、类型与约束</td><td>DBMS 存取的元数据</td></tr><tr><td>表与文件</td><td>表是逻辑数据对象</td><td>可共用文件或跨多个文件</td></tr><tr><td>学生与课程联系</td><td>谁选了哪门课</td><td>关系模型用表和列值表达</td></tr><tr><td>外键约束</td><td>限制引用是否合法</td><td>约束检查引用，索引加速定位</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">13/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.2222%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">文件组织支持的访问方式</h2>
+    <div class="slide-content"><p class="slide-lead">以下按成绩扫描、等值查找和范围访问比较基本组织方式</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 35% 37%"><colgroup><col style="width:28%"><col style="width:35%"><col style="width:37%"></colgroup><thead><tr><th>组织方式</th><th>用成绩数据提问</th><th>访问特点</th></tr></thead><tbody><tr><td>堆组织</td><td>把所有成绩读一遍</td><td>可扫描，不维护全局键序</td></tr><tr><td>按键顺序组织</td><td>连续读取一个学号区间</td><td>可沿顺序访问；插入要维护</td></tr><tr><td>哈希组织</td><td>查 Sno=20180003</td><td>按桶定位，范围通常不占优</td></tr><tr><td>B+ 树组织或索引</td><td>查学号区间并按键访问</td><td>有序叶节点支持范围扫描</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>索引叶页只含键和 RID 时，Grade 从 RID 指向的数据记录中读取</p></div></div>
+    <div class="numeric-progress">14/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">索引建立、选用、维护与删除</h2>
+    <div class="slide-content"><p class="slide-lead">继续 13.2 的独立 Grade 索引例，假定记录 RID 不变</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 44% 34%"><colgroup><col style="width:22%"><col style="width:44%"><col style="width:34%"></colgroup><thead><tr><th>时机</th><th>具体动作</th><th>结果</th></tr></thead><tbody><tr><td>建索引</td><td>CREATE INDEX … ON SC(Grade)</td><td>为已有成绩建立索引入口</td></tr><tr><td>查 Grade=88</td><td>优化器比较扫描和索引路径</td><td>选定这次查询的计划</td></tr><tr><td>88 改 90</td><td>移除旧键入口、加入新键入口</td><td>表与索引保持一致</td></tr><tr><td>删除附加索引</td><td>DROP INDEX …</td><td>路径减少，逻辑成绩不变</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例显式建索引；部分系统支持自动创建，并非每次查询的固定步骤</p></div></div>
+    <div class="numeric-progress">15/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">P9 装入：选帧、写回、读取与交付</h2>
+    <div class="slide-content"><p class="slide-lead">P7 在 F1 且使用计数 1；P4 在 F2，脏且计数 0，pageLSN 为 120</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 72%"><colgroup><col style="width:28%"><col style="width:72%"></colgroup><thead><tr><th>阶段</th><th>本例动作</th></tr></thead><tbody><tr><td>选帧</td><td>排除 F1，选择 F2 中的 P4</td></tr><tr><td>写回</td><td>日志持久化到至少 120，再写回 P4</td></tr><tr><td>装入</td><td>读取 P9 到 F2，更新映射</td></tr><tr><td>交付</td><td>从 P9 槽 1 取出 76 分记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本例写 P4、读 P9，日志可能另写；设备 I/O 次数受缓存影响</p></div></div>
+    <div class="numeric-progress">16/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
+    <h2 class="slide-title">缓冲页状态与文件组织</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-13-3/mindmap-13-3.html" title="缓冲页状态与文件组织"></iframe></div></div>
+    <div class="numeric-progress">17/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.4444%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.3</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">缓冲区如何兼顾设备独立与访问效率？</span></li><li><span class="question-no">02</span><span class="question-text">SC 未缓存时，<code>READBUF</code>、申请缓冲页、淘汰、OS <code>READ</code> 的顺序是什么？</span></li><li><span class="question-no">03</span><span class="question-text">可释放标志如何影响淘汰资格？WAL 为何要求日志先于修改页写回？</span></li><li><span class="question-no">04</span><span class="question-text">访问 A 后请求 D，FIFO 和 LRU 各可能淘汰谁？</span></li><li><span class="question-no">05</span><span class="question-text">数据字典、元组文件、联系、索引各属哪类物理信息？</span></li><li><span class="question-no">06</span><span class="question-text"><code>CREATE INDEX</code>、优化、维护各做什么？用户 SQL 为何不变？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">RID=(P9,1) 中，P9、1 与缓冲帧 F2 分别是什么？</span></li><li><span class="question-no">02</span><span class="question-text">两个帧都被固定时，为什么不能直接覆盖其中一个？</span></li><li><span class="question-no">03</span><span class="question-text">P4 的 pageLSN=120，日志只稳定到 110，应按什么顺序处理？</span></li><li><span class="question-no">04</span><span class="question-text">页已写回能否证明事务提交，页仍脏又能否证明尚未提交？</span></li><li><span class="question-no">05</span><span class="question-text">A、B、C 入缓冲后再次访问 A，再请求 D，两种策略各选谁？</span></li><li><span class="question-no">06</span><span class="question-text">SC 中谁选了哪门课，为什么既是业务内容，也是实体联系？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-13-2.html" title="上一节：13.2 语言处理层与数据存取层" aria-label="上一节：13.2 语言处理层与数据存取层">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -176,8 +244,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">18/18</div>
+    <div class="semantic-label">PAGES FRAMES AND FILES</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>

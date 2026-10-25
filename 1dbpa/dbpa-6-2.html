@@ -54,7 +54,7 @@
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.3</div>
-    <h2 class="slide-title">用三条公理逐步证明依赖能否推出</h2>
+    <h2 class="slide-title">Armstrong 函数依赖公理</h2>
     <div class="slide-content"><p class="slide-lead">例如 <code>Sno→School</code> 且 <code>School→Mname</code>，用传递律可推出 <code>Sno→Mname</code></p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>公理</th><th>形式</th><th>直观含义</th></tr></thead><tbody><tr><td>自反律</td><td><code>Y ⊆ X</code> 则 <code>X → Y</code></td><td>已有属性决定其子集</td></tr><tr><td>增广律</td><td><code>X → Y</code> 则 <code>XZ → YZ</code></td><td>两端都加同一属性组 Z</td></tr><tr><td>传递律</td><td><code>X → Y</code> 且 <code>Y → Z</code>，则 <code>X → Z</code></td><td>依赖链可以传递</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>Armstrong 公理具有有效性和完备性：按规则推出的依赖成立，所有由 F 逻辑蕴涵的函数依赖也都能推出</p></div></div>
@@ -66,10 +66,10 @@
       data-x="4500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">三条派生规则，让依赖更方便计算</h2>
-    <div class="slide-content"><p class="slide-lead">XY 表示属性集 X∪Y；右部可以合并或拆开，左部也可以沿依赖替换</p>
+    <h2 class="slide-title">合并、分解与伪传递规则</h2>
+    <div class="slide-content"><p class="slide-lead">XY 表示 X∪Y；合并与分解调整右部，伪传递连接两条依赖</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 43% 38%"><colgroup><col style="width:19%"><col style="width:43%"><col style="width:38%"></colgroup><thead><tr><th>规则</th><th>形式</th><th>小例子</th></tr></thead><tbody><tr><td>合并</td><td>X→Y、X→Z ⇒ X→YZ</td><td>A→B、A→C ⇒ A→BC</td></tr><tr><td>分解</td><td>X→YZ ⇒ X→Y、X→Z</td><td>A→BC ⇒ A→B、A→C</td></tr><tr><td>伪传递</td><td>X→Y、WY→Z ⇒ XW→Z</td><td>A→B、BC→D ⇒ AC→D</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>传递律用于推理；判断“传递依赖”还要满足上一节的附加条件</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>传递律是推理规则；传递依赖的定义见上一节</p></div></div>
     <div class="numeric-progress">4/21</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:19.0476%"></div></div>
@@ -102,7 +102,7 @@ AB+：
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.3</div>
-    <h2 class="slide-title">最小覆盖：每次删除都要给出闭包证据</h2>
+    <h2 class="slide-title">最小覆盖的闭包计算</h2>
     <div class="slide-content"><p class="slide-lead">F={A→B, AB→C, C→D, A→D}；右部已经都是单属性</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 43% 33%"><colgroup><col style="width:24%"><col style="width:43%"><col style="width:33%"></colgroup><thead><tr><th>操作</th><th>使用哪组依赖、怎样求闭包</th><th>结论</th></tr></thead><tbody><tr><td>试删 A→D</td><td>G=F−{A→D}；A→AB→ABC→ABCD</td><td>D∈A⁺，A→D 冗余</td></tr><tr><td>试删 AB→C 的 B</td><td>在当前 G 下求 A⁺，仍得到 ABCD</td><td>B 多余，改为 A→C</td></tr><tr><td>得到 H</td><td>H={A→B, A→C, C→D}</td><td>与原 F 等价</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>删整条依赖：在移除它的集合下算；删左部属性：在当前依赖集下算</p></div></div>
@@ -114,7 +114,7 @@ AB+：
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">H 已等价，还要确认它不能再简化</h2>
+    <h2 class="slide-title">H 的最小性检验</h2>
     <div class="slide-content"><p class="slide-lead">最小覆盖：单属性右部、无冗余依赖、左部无多余属性</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 36% 34%"><colgroup><col style="width:30%"><col style="width:36%"><col style="width:34%"></colgroup><thead><tr><th>暂时移除</th><th>剩余依赖下的闭包</th><th>不能删除的原因</th></tr></thead><tbody><tr><td>A→B</td><td>A⁺={A,C,D}</td><td>推不出 B</td></tr><tr><td>A→C</td><td>A⁺={A,B}</td><td>推不出 C</td></tr><tr><td>C→D</td><td>C⁺={C}</td><td>推不出 D</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>各左部只有一个属性，空集闭包为空，不能再删；最小覆盖可能不唯一</p></div></div>
@@ -126,7 +126,7 @@ AB+：
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.4</div>
-    <h2 class="slide-title">投影依赖，要从 F⁺ 求，不能只筛原清单</h2>
+    <h2 class="slide-title">F⁺ 在子关系 AC 上的投影</h2>
     <div class="slide-content"><p class="slide-lead">R(A,B,C)，F={A→B,B→C}；现在只看子关系 AC</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 42% 33%"><colgroup><col style="width:25%"><col style="width:42%"><col style="width:33%"></colgroup><thead><tr><th>步骤</th><th>计算</th><th>得到什么</th></tr></thead><tbody><tr><td>求 A⁺</td><td>A→AB→ABC</td><td>F 能推出 A→C</td></tr><tr><td>限定到 AC</td><td>保留两端都在 {A,C} 中的依赖</td><td>A→C 属于投影</td></tr><tr><td>写投影依据</td><td>A→C，加上由它推出的依赖</td><td>原 F 没有直接列出 A→C</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>一般定义：Fi={X→Y∈F⁺ 且 X∪Y⊆Ui}；各子关系属性的并集须等于 U</p></div></div>
@@ -138,10 +138,10 @@ AB+：
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.4</div>
-    <h2 class="slide-title">分开学院和院长后，原规则还能推出吗？</h2>
+    <h2 class="slide-title">分解丢失了学院—院长依赖</h2>
     <div class="slide-content"><p class="slide-lead">R(Sno,School,Mname) 分为 R1(Sno,School)、R2(Sno,Mname)</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 43% 33%"><colgroup><col style="width:24%"><col style="width:43%"><col style="width:33%"></colgroup><thead><tr><th>检查</th><th>计算结果</th><th>判断</th></tr></thead><tbody><tr><td>原依赖 F</td><td>Sno→School；School→Mname</td><td>两条规则都须保留</td></tr><tr><td>局部依赖合并</td><td>G={Sno→School, Sno→Mname}</td><td>写成等价的简洁依赖集</td></tr><tr><td>原规则</td><td>在 G 下，School⁺={School}</td><td>推不出 Mname；未保持</td></tr><tr><td>无损判据</td><td>公共 Sno 能决定 R1 全部属性</td><td>该分解仍然无损</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>判断保持依赖要比较 F⁺ 与 G⁺；不能只凭“两列分在不同表”下结论</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>F⁺=G⁺ 表示依赖保持；本例 G 无法推出 School→Mname</p></div></div>
     <div class="numeric-progress">9/21</div>
     <div class="semantic-label">DEPENDENCY PRESERVING</div>
     <div class="progress-track"><div class="progress-fill" style="width:42.8571%"></div></div>
@@ -150,10 +150,10 @@ AB+：
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.4</div>
-    <h2 class="slide-title">3NF 合成：先得到学生表和课程表</h2>
+    <h2 class="slide-title">3NF 合成：Student 与 Course</h2>
     <div class="slide-content"><p class="slide-lead">R(Sno,Sname,Cno,Cname)，F={Sno→Sname, Cno→Cname}</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 44% 34%"><colgroup><col style="width:22%"><col style="width:44%"><col style="width:34%"></colgroup><thead><tr><th>步骤</th><th>本例结果</th><th>检查</th></tr></thead><tbody><tr><td>求最小覆盖</td><td>F 已是最小覆盖</td><td>两条都不能删</td></tr><tr><td>按左部分组</td><td>Sno 一组，Cno 一组</td><td>左右属性组成子关系</td></tr><tr><td>合成关系</td><td>Student(Sno,Sname)；Course(Cno,Cname)</td><td>3NF，且保持依赖</td></tr><tr><td>检查属性覆盖</td><td>四个属性均已包含</td><td>没有额外未出现属性</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>教材算法 6.2 还须处理未出现在 F 中的属性、删除被包含关系；无损另行检查</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>算法 6.2 包括处理 F 未涉及的属性、删除被包含关系；无损性另行检验</p></div></div>
     <div class="numeric-progress">10/21</div>
     <div class="semantic-label">3NF SYNTHESIS</div>
     <div class="progress-track"><div class="progress-fill" style="width:47.6190%"></div></div>
@@ -174,10 +174,10 @@ AB+：
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">补入 SC，保存“谁选了哪门课”</h2>
+    <h2 class="slide-title">SC 保存学生与课程的选课关系</h2>
     <div class="slide-content"><p class="slide-lead">(Sno,Cno) 是原 R 的候选码；Student、Course 都未包含这个码</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 39% 35%"><colgroup><col style="width:26%"><col style="width:39%"><col style="width:35%"></colgroup><thead><tr><th>操作</th><th>数据或关系</th><th>结果</th></tr></thead><tbody><tr><td>补含码关系</td><td>SC(Sno,Cno)</td><td>存入 (S01,C01)、(S02,C02)</td></tr><tr><td>三表自然连接</td><td>Student ⋈ SC ⋈ Course</td><td>恰好恢复原来的两条记录</td></tr><tr><td>最终分解</td><td>{Student,Course,SC}</td><td>3NF、保持依赖、无损</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>算法 6.4 补的不是空表或任意组合，而是原关系在候选码上的投影</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>算法 6.4 补入原关系在候选码上的投影，保存实际选课组合</p></div></div>
     <div class="numeric-progress">12/21</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:57.1429%"></div></div>
@@ -186,10 +186,10 @@ AB+：
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">已有含码关系，就不用重复补表</h2>
+    <h2 class="slide-title">SC 已包含原关系的候选码</h2>
     <div class="slide-content"><p class="slide-lead">回到 6.1：F={Sno→School, School→Mname, (Sno,Cno)→Grade}</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="45% 55%"><colgroup><col style="width:45%"><col style="width:55%"></colgroup><thead><tr><th>算法 6.2 的合成结果</th><th>是否含原关系候选码 (Sno,Cno)</th></tr></thead><tbody><tr><td>StudentSchool(Sno,School)</td><td>否</td></tr><tr><td>SchoolDean(School,Mname)</td><td>否</td></tr><tr><td>SC(Sno,Cno,Grade)</td><td>是，已有两列候选码</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>算法 6.4 无需再保留一张重复的 (Sno,Cno) 关系；原有三张表即可</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>算法 6.4 保留这三张表，省去被 SC 包含的 (Sno,Cno) 关系</p></div></div>
     <div class="numeric-progress">13/21</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:61.9048%"></div></div>
@@ -198,10 +198,10 @@ AB+：
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">无损与依赖保持，分别证明什么？</h2>
+    <h2 class="slide-title">依赖保持与无损连接的判据</h2>
     <div class="slide-content"><p class="slide-lead">无损要对每个满足 F 的合法实例成立；当前样本碰巧还原不构成证明</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 44% 36%"><colgroup><col style="width:20%"><col style="width:44%"><col style="width:36%"></colgroup><thead><tr><th>准则</th><th>形式与判断</th><th>作用或例子</th></tr></thead><tbody><tr><td>依赖保持</td><td>F⁺=(F1∪…∪Fk)⁺</td><td>写入时必须跨表检查原规则</td></tr><tr><td>无损连接</td><td>mρ(r)=πR1(r)⋈…⋈πRk(r)=r</td><td>连接产生虚假的业务记录</td></tr><tr><td>二元无损判据</td><td>公共属性能决定至少一侧全部属性</td><td>AB 与 BC 共享 B；若 B→C，分解就无损</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>投影再连接总包含原记录；无损还要求不多出伪元组</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 44% 36%"><colgroup><col style="width:20%"><col style="width:44%"><col style="width:36%"></colgroup><thead><tr><th>准则</th><th>形式与判断</th><th>作用或例子</th></tr></thead><tbody><tr><td>依赖保持</td><td>F⁺=(F1∪…∪Fk)⁺</td><td>原依赖可由子表约束保证</td></tr><tr><td>无损连接</td><td>mρ(r)=πR1(r)⋈…⋈πRk(r)=r</td><td>连接恰好还原原关系</td></tr><tr><td>二元无损判据</td><td>公共属性能决定至少一侧全部属性</td><td>AB 与 BC 共享 B；若 B→C，分解就无损</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>无损连接保留全部原记录，且没有额外伪元组</p></div></div>
     <div class="numeric-progress">14/21</div>
     <div class="semantic-label">TWO CRITERIA</div>
     <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
@@ -210,10 +210,10 @@ AB+：
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">STJ 达到 BCNF，付出的代价是什么？</h2>
+    <h2 class="slide-title">STJ 的 BCNF 分解与依赖丢失</h2>
     <div class="slide-content"><p class="slide-lead">沿用上一节：F={(S,J)→T, T→J}；拆成 ST(S,T) 与 TJ(T,J)</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 43% 32%"><colgroup><col style="width:25%"><col style="width:43%"><col style="width:32%"></colgroup><thead><tr><th>检查</th><th>证据</th><th>结论</th></tr></thead><tbody><tr><td>无损</td><td>公共 T 能决定 TJ</td><td>可保证还原原关系</td></tr><tr><td>BCNF</td><td>ST 无非平凡依赖；TJ 的 T 是码</td><td>两表均为 BCNF</td></tr><tr><td>依赖保持</td><td>局部只有 T→J；(S,J)⁺={S,J}</td><td>推不出 T；未保持</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>取舍是保留 3NF，或拆至 BCNF 后跨表检查选课教师；不能接受虚假选课记录</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>可保留 3NF，或拆至 BCNF 并跨表检查选课教师；两种方案均须无损</p></div></div>
     <div class="numeric-progress">15/21</div>
     <div class="semantic-label">TWO CRITERIA</div>
     <div class="progress-track"><div class="progress-fill" style="width:71.4286%"></div></div>
@@ -222,7 +222,7 @@ AB+：
       data-x="0" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">追赶表把无损连接判断变成可操作步骤</h2>
+    <h2 class="slide-title">用追赶表判定无损连接</h2>
     <div class="slide-content"><p class="slide-lead">先把依赖拆成单属性右部；行对应子关系，列对应属性</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
@@ -262,8 +262,8 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="1500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2 <span>|</span> 6.5</div>
-    <h2 class="slide-title">不同分解算法保证什么、可能放弃什么</h2>
-    <div class="slide-content"><p class="slide-lead">先确保无损；再比较依赖保持、目标范式与查询代价</p>
+    <h2 class="slide-title">分解算法的性质与代价</h2>
+    <div class="slide-content"><p class="slide-lead">无损连接是正确性要求；依赖保持、范式和查询代价是设计取舍</p>
 <div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>算法</th><th>保证与适用</th><th>可能代价</th></tr></thead><tbody><tr><td>3NF 合成 6.2</td><td>3NF、保持函数依赖</td><td>不自动保证无损连接</td></tr><tr><td>补入含候选码的关系 6.4</td><td>在 6.2 结果上同时获得无损与保持依赖</td><td>关系集合可能增加</td></tr><tr><td>BCNF 分解 6.5</td><td>无损连接、达到 BCNF</td><td>不一定保持函数依赖</td></tr><tr><td>4NF 分解 6.6</td><td>保持无损连接，并使各子关系满足 4NF</td><td>不承诺保持所有函数依赖</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">18/21</div>
     <div class="semantic-label">NORMAL FORM CHOICES</div>
@@ -273,10 +273,10 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="3000" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">一个分解：回答三个问题并展示计算</h2>
-    <div class="slide-content"><p class="slide-lead">拆成多表不代表正确；需展示依赖推导、局部依赖闭包、无损判据或追赶表</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>依赖能推出吗</h3><p>逐步求 <code>AB+</code>，再检查 A、B 等真子集；最小覆盖要说明拆右部、删冗余和约简左部的依据</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>能局部检查吗</h3><p>列出各 <code>Fi</code> 的投影并比较 <code>(F1∪…∪Fk)+</code> 与 <code>F+</code>；只说“子表各有约束”不足以证明</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>能无损还原吗</h3><p>用二元判据证明无损，或展示追赶表如何得到全 a 行</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>先保证无损，再比较保持依赖的 3NF 与更高范式的检查成本</p></div></div>
+    <h2 class="slide-title">闭包、依赖保持与无损连接回顾</h2>
+    <div class="slide-content"><p class="slide-lead">核对本节示例中的属性闭包、局部依赖与连接结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>闭包与最小覆盖</h3><p><code>AB+</code> 覆盖全部属性，A、B 单独均非超码；最小覆盖保留等价依赖，删除冗余</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>依赖保持</h3><p>局部投影依赖的并集与原 F 等价</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>无损连接</h3><p>二元分解检查公共属性的决定范围；多表分解可用追赶表判定</p></article></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>3NF 可兼得无损与依赖保持；更高范式可能增加跨表约束检查</p></div></div>
     <div class="numeric-progress">19/21</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:90.4762%"></div></div>
@@ -285,8 +285,8 @@ R1             a1   a2   a3   a4    a5</code></pre></div></div></div></div>
       data-x="4500" data-y="4480" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.2</div>
-    <h2 class="slide-title">听到“这样分表没问题”时，按三问核查</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-6-2/mindmap-6-2.html" title="听到“这样分表没问题”时，按三问核查"></iframe></div></div>
+    <h2 class="slide-title">依赖推理与模式分解知识结构</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-6-2/mindmap-6-2.html" title="依赖推理与模式分解知识结构"></iframe></div></div>
     <div class="numeric-progress">20/21</div>
     <div class="semantic-label">KNOWLEDGE MAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:95.2381%"></div></div>

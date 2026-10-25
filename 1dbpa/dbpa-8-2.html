@@ -29,7 +29,7 @@
     <div class="cover-copy">
       <div class="cover-section">DBPA · 8.2</div>
       <h1>游标、存储过程与存储函数</h1>
-      <p class="cover-description">逐行读取课程成绩，算完 GPA 后关闭游标，并把计算留成可调用程序</p>
+      <p class="cover-description">游标逐行读取成绩，存储程序接收学号并返回 GPA</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
@@ -45,57 +45,74 @@
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
     <h2 class="slide-title">学习目标</h2>
     <div class="slide-content"><p class="slide-lead">写清 GPA 程序每次读哪行、何时停和关闭、学号怎样传入、结果怎样返回</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">先判断一条聚合 SQL 能否完成任务，只有确需逐行分支或累计时才使用游标</span></li><li><span class="list-marker">02</span><span class="list-text">写出 FETCH 终止判据和资源释放位置</span></li><li><span class="list-marker">03</span><span class="list-text">区分 IN、OUT 和 INOUT 参数并设计调用接口</span></li><li><span class="list-marker">04</span><span class="list-text">选择存储过程或存储函数并写出概念调用</span></li><li><span class="list-marker">05</span><span class="list-text">用调用次数、网络往返和实测时间判断数据库端程序是否有收益</span></li><li><span class="list-marker">06</span><span class="list-text">为业务任务写清输入、输出、读写内容、异常、事务和调用者</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/15</div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">判断集合 SQL 与游标各自适用的任务</span></li><li><span class="list-marker">02</span><span class="list-text">写清 FETCH 后怎样判断已经读完，以及在哪里关闭游标</span></li><li><span class="list-marker">03</span><span class="list-text">区分 IN、OUT 和 INOUT 参数并设计调用接口</span></li><li><span class="list-marker">04</span><span class="list-text">选择存储过程或存储函数并写出概念调用</span></li><li><span class="list-marker">05</span><span class="list-text">比较三种调用的请求数、返回量与影响耗时的因素</span></li><li><span class="list-marker">06</span><span class="list-text">为业务任务写清输入、输出、读写内容、异常、事务和调用者</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/17</div>
     <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:13.3333%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.7647%"></div></div>
   </section>
 <section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">只有必须逐行判断或累计时才打开游标</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>查询返回多行，就应该改用游标逐行处理吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">只有当每行处理需要状态、分支或逐行动作时才考虑游标</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="集合查询　→　结果集　→　游标位置　→　逐行处理"><span class="relation-term">集合查询</span><span class="relation-operator">→</span><span class="relation-term">结果集</span><span class="relation-operator">→</span><span class="relation-term">游标位置</span><span class="relation-operator">→</span><span class="relation-term">逐行处理</span></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>处理方式</th><th>适合任务</th><th>主要特点</th></tr></thead><tbody><tr><td>集合 SQL</td><td>聚合、连接、批量更新</td><td>通常给优化器更多整体优化空间</td></tr><tr><td>游标处理</td><td>逐行分支和状态累加</td><td>程序控制更细</td></tr><tr><td>选择原则</td><td>先判断能否集合化</td><td>避免不必要的逐行开销</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不一定。只需 <code>AVG</code>、<code>COUNT</code> 或 <code>GROUP BY</code> 时，集合 SQL 通常更合适</p></div></div>
-    <div class="numeric-progress">3/15</div>
+    <h2 class="slide-title">集合计算与游标逐行处理</h2>
+    <div class="slide-content"><p class="slide-lead">聚合和分支可用集合 SQL 表达；游标用于需要显式逐行控制的计算</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="29% 36% 35%"><colgroup><col style="width:29%"><col style="width:36%"><col style="width:35%"></colgroup><thead><tr><th>任务</th><th>集合表达</th><th>何时考虑过程控制</th></tr></thead><tbody><tr><td>按学院统计人数</td><td>GROUP BY 与 COUNT</td><td>通常不需要游标</td></tr><tr><td>按分数段计算 GPA</td><td>CASE 换算、SUM 汇总</td><td>本节用游标追踪取数</td></tr><tr><td>每步依赖上一步结果</td><td>窗口函数或递归</td><td>集合表达不清楚时，设计逐行步骤</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>游标 Cursor 从查询结果中逐次提取一行，供过程代码处理</p></div></div>
+    <div class="numeric-progress">3/17</div>
     <div class="semantic-label">SET AND ROW</div>
-    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.6471%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a2b" class="step slide-surface role-content layout-split axis-horizontal order-code-table"
       data-x="4500" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">声明、打开、提取、关闭，一步不能少</h2>
-    <div class="slide-content"><p class="slide-lead">打开后才有结果，<code>FETCH</code> 每次移一行，读完或出错都要关闭并释放资源</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-2/assets/generated/dbpa-ch08-cursor-lifecycle.svg" data-full-src="resources/decks/dbpa-8-2/assets/generated/dbpa-ch08-cursor-lifecycle.svg" alt="游标从声明、打开、提取到关闭的四步生命周期" tabindex="0" role="button" aria-label="放大图片：游标从声明、打开、提取到关闭的四步生命周期" decoding="async"></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text">声明：把游标名和 SELECT 语句关联</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text">打开：执行查询并准备结果集</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text">提取：推进指针并把当前行送入变量</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text">关闭：释放结果集缓冲区和其他资源</span></li></ol></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>FETCH</code> 之后先检查结束状态；<code>NOT FOUND</code>、SQLSTATE、状态码或异常处理是不同 DBMS 对同一语义的实现方式</p></div></div>
-    <div class="numeric-progress">4/15</div>
-    <div class="semantic-label">CURSOR LIFECYCLE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:26.6667%"></div></div>
+    <h2 class="slide-title">GPA 样例的课程、学分与成绩</h2>
+    <div class="slide-content"><p class="slide-lead">使用 8.1 的 GPA 独立样例；学号为 20180001，每课只含一条成绩</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-sql">SELECT c.Credit, sc.Grade
+FROM SC sc JOIN Course c
+  ON sc.Cno = c.Cno
+WHERE sc.Sno = '20180001'
+ORDER BY sc.Cno;</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 33% 34%"><colgroup><col style="width:33%"><col style="width:33%"><col style="width:34%"></colgroup><thead><tr><th>Cno</th><th>Credit</th><th>Grade</th></tr></thead><tbody><tr><td>81001</td><td>4</td><td>85</td></tr><tr><td>81002</td><td>4</td><td>96</td></tr><tr><td>81003</td><td>4</td><td>87</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>读出顺序为 (4,85)、(4,96)、(4,87)；本例不涉及重修取舍，不与上一节两班均分样例混用</p></div></div>
+    <div class="numeric-progress">4/17</div>
+    <div class="semantic-label">CURSOR INPUT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.5294%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">FETCH 必须和结束状态一起设计</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-frustrated" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-frustrated.f749626b83cb.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>FETCH 已经没有新行，变量里还像是有旧值——现在还能处理吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">目标列、接收变量和循环退出条件要相互匹配</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>设计点</th><th>需要保证</th><th>典型风险</th></tr></thead><tbody><tr><td>目标列</td><td>与接收变量一一对应</td><td>类型或顺序不匹配</td></tr><tr><td>指针移动</td><td>每轮恰好推进一次</td><td>漏读或重复读</td></tr><tr><td>结束状态</td><td>结果集为空时退出</td><td>无限循环</td></tr><tr><td>关闭资源</td><td>结束和异常都能执行</td><td>缓冲区泄漏</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不能。每次 <code>FETCH</code> 后先判断结束状态，确认取得有效行后才能处理接收变量</p></div></div>
-    <div class="numeric-progress">5/15</div>
-    <div class="semantic-label">FETCH STATE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+    <h2 class="slide-title">显式游标的声明、打开、取数与关闭</h2>
+    <div class="slide-content"><p class="slide-lead">声明关联查询，OPEN 准备提取，FETCH 取下一行，CLOSE 释放资源</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 43% 34%"><colgroup><col style="width:23%"><col style="width:43%"><col style="width:34%"></colgroup><thead><tr><th>操作</th><th>本例发生什么</th><th>能否处理一行？</th></tr></thead><tbody><tr><td>DECLARE</td><td>将 cur 与前页 SELECT 关联</td><td>尚未打开</td></tr><tr><td>OPEN</td><td>准备该学生的查询结果</td><td>还没有成功 FETCH</td></tr><tr><td>FETCH</td><td>将 Credit、Grade 放入变量</td><td>先确认本次取得了行</td></tr><tr><td>CLOSE</td><td>结束本次游标使用并释放资源</td><td>后续不再提取</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本节讨论显式管理的游标；某些产品或语法可自动管理部分步骤。结束状态的表示方法须按目标 DBMS 确认</p></div></div>
+    <div class="numeric-progress">5/17</div>
+    <div class="semantic-label">CURSOR LIFECYCLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.4118%"></div></div>
   </section>
-<section id="a4a" class="step slide-surface role-content layout-focus"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">先取行，再判断是否结束</h2>
-    <div class="slide-content"><p class="slide-lead">产品中立的游标循环先取行，再判断结束；只有取得有效行后才能处理变量</p>
+    <h2 class="slide-title">FETCH 结束状态与累计值</h2>
+    <div class="slide-content"><p class="slide-lead">目标列 Credit、Grade 依次对应 v_credit、v_grade</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="21% 25% 25% 29%"><colgroup><col style="width:21%"><col style="width:25%"><col style="width:25%"><col style="width:29%"></colgroup><thead><tr><th>FETCH 次数</th><th>本次取得的行</th><th>累计学分绩点</th><th>下一步</th></tr></thead><tbody><tr><td>第 1 次</td><td>(4,85)</td><td>12</td><td>再提取</td></tr><tr><td>第 2 次</td><td>(4,96)</td><td>28</td><td>再提取</td></tr><tr><td>第 3 次</td><td>(4,87)</td><td>40</td><td>再提取</td></tr><tr><td>第 4 次</td><td>没有新行</td><td>仍为 40</td><td>退出并关闭</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>无新行时，变量可能保留 (4,87)；误算旧行会把分子加到 52、分母加到 16</p></div></div>
+    <div class="numeric-progress">6/17</div>
+    <div class="semantic-label">FETCH STATE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.2941%"></div></div>
+  </section>
+<section id="a4a" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
+    <h2 class="slide-title">游标在正常与异常出口的清理</h2>
+    <div class="slide-content"><p class="slide-lead">以下是产品中立的控制流示意，TRY／FINALLY 需按 DBMS 的错误处理机制改写</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
@@ -103,138 +120,146 @@
 05
 06
 07
-08</span><code class="language-text">DECLARE cursor FOR SELECT Credit, Grade ...
-OPEN cursor
-LOOP
-    FETCH cursor INTO v_credit, v_grade
-    IF end_status = NOT FOUND THEN EXIT
-    处理 v_credit、v_grade
-END LOOP
-CLOSE cursor</code></pre></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>列与变量按顺序对应；正常或异常退出都要关闭游标，伪代码需按目标 DBMS 改写</p></div></div>
-    <div class="numeric-progress">6/15</div>
+08
+09</span><code class="language-text">声明 cur，并设 opened = false
+TRY
+  OPEN cur；opened = true
+  LOOP
+    FETCH cur INTO v_credit, v_grade
+    若没有新行：退出循环
+    校验本行，换算绩点并累加
+FINALLY
+  若 opened：CLOSE cur</code></pre></div></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>取数或计算出错时，清理已打开游标并报错；GPA 仅在完整计算成功后返回</p></div></div>
+    <div class="numeric-progress">7/17</div>
     <div class="semantic-label">FETCH LOOP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.1765%"></div></div>
   </section>
 <section id="b1" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="1120" data-z="0"
+      data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">从过程块到持久化的存储对象</h2>
-    <div class="slide-content"><p class="slide-lead">游标属于一次调用的临时状态；过程和函数由 DBMS 保存、调用和维护</p>
+    <h2 class="slide-title">存储过程定义与每次调用的状态</h2>
+    <div class="slide-content"><p class="slide-lead">存储过程 Stored Procedure 是由 DBMS 保存的可调用程序对象</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 42% 34%"><colgroup><col style="width:24%"><col style="width:42%"><col style="width:34%"></colgroup><thead><tr><th>时刻</th><th>compGPA 的程序定义</th><th>本次游标与累计变量</th></tr></thead><tbody><tr><td>创建过程</td><td>保存参数和过程体</td><td>尚未计算某个学生</td></tr><tr><td>调用 20180001</td><td>使用已有定义</td><td>新建状态，从 0 累计</td></tr><tr><td>调用结束</td><td>定义保留供下次调用</td><td>本次游标关闭</td></tr><tr><td>改查其他学号</td><td>仍可使用该定义</td><td>重新初始化累计值</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>CREATE 定义对象，CALL 发起一次调用，修改或替换需检查旧调用者，DROP 删除定义；具体语法随 DBMS 不同</p></div></div>
+    <div class="numeric-progress">8/17</div>
+    <div class="semantic-label">STORED PROCEDURE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.0588%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
+    <h2 class="slide-title">IN 传入，OUT 返回，INOUT 双向</h2>
+    <div class="slide-content"><p class="slide-lead">参数模式说明调用者与程序之间的数据流向</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 29% 28% 25%"><colgroup><col style="width:18%"><col style="width:29%"><col style="width:28%"><col style="width:25%"></colgroup><thead><tr><th>模式</th><th>调用前</th><th>程序做什么</th><th>调用者取得什么</th></tr></thead><tbody><tr><td>IN</td><td>学号 20180001</td><td>读取该学生成绩</td><td>不回传参数修改</td></tr><tr><td>OUT</td><td>提供接收变量 g</td><td>计算并赋值 3.33</td><td>g＝3.33</td></tr><tr><td>INOUT</td><td>总量变量 t＝12</td><td>将本轮 16 累加到 t</td><td>t＝28</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>INOUT 的 t 属于另一累加程序。IN 只表示单向传入；内部变量是否只读，要看产品规则</p></div></div>
+    <div class="numeric-progress">9/17</div>
+    <div class="semantic-label">PARAMETER MODES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.9412%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
+    <h2 class="slide-title">compGPA 的输入、计算与输出</h2>
+    <div class="slide-content"><p class="slide-lead">本例 compGPA 只读取 SC 与 Course，输出保留两位小数</p>
 <div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
 02
 03
 04
-05</span><code class="language-text">过程化 SQL 块
-    → CREATE PROCEDURE / FUNCTION
-    → CALL 或函数表达式调用
-    → ALTER / REPLACE
-    → DROP</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="34% 33% 33%"><colgroup><col style="width:34%"><col style="width:33%"><col style="width:33%"></colgroup><thead><tr><th>层次</th><th>保存什么</th><th>生命周期</th></tr></thead><tbody><tr><td>游标</td><td>结果集位置、当前调用的取数状态</td><td><code>OPEN → FETCH → CLOSE</code></td></tr><tr><td>过程／函数</td><td>可调用的程序定义与接口</td><td><code>CREATE → CALL → ALTER/REPLACE → DROP</code></td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">7/15</div>
-    <div class="semantic-label">STORED PROCEDURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:46.6667%"></div></div>
-  </section>
-<section id="b2" class="step slide-surface role-content layout-split axis-horizontal order-media-group"
-      data-x="0" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">IN 传入，OUT 返回，INOUT 双向</h2>
-    <div class="slide-content"><p class="slide-lead">看到参数就应知道由谁赋初值、过程能否修改、调用结束后由谁读取结果</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-8-2/assets/generated/dbpa-ch08-parameter-flow.svg" data-full-src="resources/decks/dbpa-8-2/assets/generated/dbpa-ch08-parameter-flow.svg" alt="IN、OUT 和 INOUT 参数在调用者与存储过程之间的数据流向" tabindex="0" role="button" aria-label="放大图片：IN、OUT 和 INOUT 参数在调用者与存储过程之间的数据流向" decoding="async"></figure>
-<div class="component content-group group-align-start"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>IN</h3><p>调用者传入初始值</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>OUT</h3><p>过程计算并返回结果，调用者提供接收位置</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>INOUT</h3><p>接收初值并返回修改后的值</p></article></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p><code>OUT</code>／<code>INOUT</code> 的调用者变量绑定方式随 DBMS 或调用接口变化；接口仍分别表达返回值和双向传递的数据流</p></div></div>
-    <div class="numeric-progress">8/15</div>
-    <div class="semantic-label">PARAMETER MODES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:53.3333%"></div></div>
-  </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
-      data-x="0" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">GPA 过程：输入、逐行数据、累计和结果</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="61" data-character-exposure="58" data-character-scale="0.9" style="--character-along:61%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>没有课程行或总学分为 0 时，GPA 应返回 <code>NULL</code>、错误，还是业务状态？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead"><code>p_sno</code> 传入，游标取学分和成绩，变量累计，<code>p_gpa</code> 返回；语法按产品实现</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
-02
-03
-04</span><code class="language-text">IN p_sno → SC JOIN Course → FETCH Credit, Grade
-         → point × credit 累加 → OUT p_gpa
-
-GPA = Σ(pointᵢ × creditᵢ) / Σcreditᵢ</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 39% 34%"><colgroup><col style="width:27%"><col style="width:39%"><col style="width:34%"></colgroup><thead><tr><th>过程阶段</th><th>数据库端动作</th><th>对外接口</th></tr></thead><tbody><tr><td>输入</td><td>接收学生学号</td><td><code>IN p_sno</code></td></tr><tr><td>处理</td><td>读取 <code>Credit, Grade</code>，按顺序 FETCH 到变量</td><td><code>v_credit, v_grade</code></td></tr><tr><td>判断</td><td>按分数段计算课程绩点并累计</td><td>内部状态，不直接返回</td></tr><tr><td>输出</td><td>汇总并返回 GPA</td><td><code>OUT p_gpa</code></td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>例如三门课学分均为 4，成绩 85、96、87 映射为绩点 3、4、3：<code>(3×4 + 4×4 + 3×4) / 12 = 3.33</code>。空集、零学分、<code>NULL</code>、越界成绩和精度必须写入测试契约</p></div></div>
-    <div class="numeric-progress">9/15</div>
+05</span><code class="language-text">compGPA(IN p_sno, OUT p_gpa)
+输入：学生学号，如 20180001
+取数：按 p_sno 连接 SC 与 Course，得到 Credit、Grade
+累计：分子、分母均从 0 开始；换算规则沿用 8.1
+输出：有效学分为 0 时返回 NULL，否则返回加权 GPA</code></pre></div></div>
+<div class="component component-text text-inset"><p>本例规定：Grade 为 NULL 时不计入分子和分母；非整数或超出 0—100、学分非正或缺失时报错。出错时不把部分累计值当作 GPA 返回</p></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>本例正常结果为 3.33。调用者只拿到 p_gpa，不依赖过程内部的游标名或累计变量名</p></div></div>
+    <div class="numeric-progress">10/17</div>
     <div class="semantic-label">GPA PROCEDURE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.8235%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
-      data-x="1500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">存储过程和函数的调用位置不同</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>能返回一个值，就都应该写成函数吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">多动作、多输出或明显副作用通常选过程；需要在表达式中返回单值时选函数</p>
-<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
-02</span><code class="language-text">过程：CALL compGPA(:sno, :out_gpa)
-函数：SELECT calcGPA(:sno)</code></pre></div></div>
-<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>对象</th><th>重点</th><th>调用结果</th></tr></thead><tbody><tr><td>存储过程</td><td>执行一组动作</td><td>输出参数或状态</td></tr><tr><td>存储函数</td><td>计算并返回值</td><td>必须声明返回类型</td></tr><tr><td>共同点</td><td>由 DBMS 管理的程序对象</td><td>可创建、修改和删除</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>不一定。调用形状只是概念示意；函数能否修改数据、能否出现在查询表达式中，按目标 DBMS 核对</p></div></div>
-    <div class="numeric-progress">10/15</div>
-    <div class="semantic-label">STORED FUNCTION</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
-  </section>
-<section id="c1" class="step slide-surface role-content layout-focus"
+<section id="b3a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">少往返或实测更快，才是数据库端收益</h2>
-    <div class="slide-content"><p class="slide-lead">比较封装前后请求次数、传输量和时间，不能只凭逻辑靠近数据断定更快</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>效率</h3><p>定义或计划可能被复用；是否更快要用工作负载实测</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>通信</h3><p>客户端原本需要多次往返时，封装后可能减少通信</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>管理</h3><p>规则可以集中复用，但会增加版本和权限耦合</p></article></div></div></div>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self" data-character-id="dbpa-modeler" data-character-pose="right-thinking" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-thinking.48a57f3b79cf.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>封装前后各要几次网络往返、处理多少行、耗时多少？规则集中后又由谁管理版本和权限？</p></div></div></div></aside>
-    <div class="numeric-progress">11/15</div>
-    <div class="semantic-label">SERVER SIDE BENEFITS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:73.3333%"></div></div>
+    <h2 class="slide-title">练习：缺失成绩怎样影响 GPA？</h2>
+    <div class="slide-content"><p class="slide-lead">将 96 改为 NULL 或 101；再预测无选课、学分为 0 的结果</p>
+<div class="slide-main-content"><div class="substep reveal-self component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="46% 23% 31%"><colgroup><col style="width:46%"><col style="width:23%"><col style="width:31%"></colgroup><thead><tr><th>输入变化</th><th>预期结果</th><th>判断依据</th></tr></thead><tbody><tr><td>三门课仍为 85、96、87，各 4 学分</td><td>3.33</td><td>40÷12，保留两位</td></tr><tr><td>该学号没有任何选课记录</td><td>NULL</td><td>有效学分为 0</td></tr><tr><td>将 96 改为 NULL，其余不变</td><td>3.00</td><td>跳过整条，24÷8</td></tr><tr><td>将 96 改为 101，或学分改为 0</td><td>报错</td><td>输入不符合约定</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>若第四次 FETCH 后仍误算旧行，会得到 52÷16＝3.25；错误结果看似合理，因此要同时核对读了几行和两个累计值</p></div></div>
+    <div class="numeric-progress">11/17</div>
+    <div class="semantic-label">GPA TEST CASES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:64.7059%"></div></div>
   </section>
-<section id="c2" class="step slide-surface role-content layout-focus"
+<section id="b4" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
-    <h2 class="slide-title">逐行处理可能慢，DBMS 内写入也难发现</h2>
-    <div class="slide-content"><p class="slide-lead">数据库端程序需要版本、权限、事务和测试管理</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>风险</th><th>可能后果</th><th>设计回应</th></tr></thead><tbody><tr><td>逐行成本</td><td>大结果集处理变慢</td><td>优先评估集合 SQL</td></tr><tr><td>版本／依赖</td><td>迁移、升级或对象变更失败</td><td>锁定目标版本并回归测试</td></tr><tr><td>事务／副作用</td><td>隐式写入、锁等待或提交行为难见</td><td>明确读写、事务和审计边界</td></tr><tr><td>权限／测试</td><td>调用失败，边界错误难复现</td><td>管理权限并覆盖空集、<code>NULL</code>、异常和大数据量</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">12/15</div>
-    <div class="semantic-label">DESIGN RISKS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+    <h2 class="slide-title">过程的 OUT 参数与函数返回值</h2>
+    <div class="slide-content"><p class="slide-lead">本例两个接口都只读取数据，调用语法是概念示意</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-text">过程：CALL compGPA('20180001', g)  → g = 3.33
+函数：SELECT calcGPA('20180001')   → 结果值 3.33
+函数的返回类型：DECIMAL(4,2)</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>对象</th><th>调用者怎样取结果</th><th>本例用途</th></tr></thead><tbody><tr><td>存储过程</td><td>读取 OUT 参数 g</td><td>应用发起一次调用并显示结果</td></tr><tr><td>存储函数</td><td>读取表达式结果</td><td>将 GPA 作为查询中的一个值</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>存储函数 Stored Function 需声明返回类型。函数能否写表、能出现在哪类语句中，仍须按目标 DBMS 核对</p></div></div>
+    <div class="numeric-progress">12/17</div>
+    <div class="semantic-label">STORED FUNCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.5882%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="c1" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
-    <h2 class="slide-title">检查 `compGPA`：游标、停止和调用</h2>
-    <div class="slide-content"><p class="slide-lead">先试集合 SQL；需逐行累计时，再查 <code>FETCH</code>、结束、关闭、参数和异常出口</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>机制选择</h3><p>若一个聚合查询即可得到结果，拒绝游标；若每行要依赖中间状态，说明为何集合表达不足</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>游标生命周期</h3><p>声明 GPA 查询，打开后反复 <code>FETCH</code>；每次先检查结束状态再处理，正常与异常出口都关闭资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输入与输出</h3><p><code>IN p_sno</code> 指定学生，<code>OUT p_gpa</code> 返回结果；列顺序映射到变量，并定义空集、<code>NULL</code>、零学分和精度策略</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>上线前检查</h3><p>写清读写、副作用、事务、权限、版本和大数据量测试；再决定使用过程、函数或显式应用流程</p></article></div></div></div>
-    <div class="numeric-progress">13/15</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:86.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
+    <h2 class="slide-title">三种 GPA 调用方式的通信量</h2>
+    <div class="slide-content"><p class="slide-lead">课堂假设：一次查询或调用计一次请求，不计连接和登录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="45% 20% 35%"><colgroup><col style="width:45%"><col style="width:20%"><col style="width:35%"></colgroup><thead><tr><th>应用怎样取得 GPA</th><th>请求数</th><th>返回应用的数据</th></tr></thead><tbody><tr><td>先查 3 条成绩，再逐课查学分</td><td>4</td><td>3 条成绩＋3 条学分</td></tr><tr><td>一次 JOIN 取回，再由应用计算</td><td>1</td><td>3 行成绩与学分</td></tr><tr><td>一次 CALL，由过程计算</td><td>1</td><td>1 个 GPA 值</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>JOIN 与 CALL 均为一次请求；过程内 FETCH 不产生逐行客户端请求。耗时取决于执行计划、数据量和网络</p></div></div>
+    <div class="numeric-progress">13/17</div>
+    <div class="semantic-label">SERVER SIDE BENEFITS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.4706%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="c2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
-    <h2 class="slide-title">从“为什么必须逐行”检查到调用和关闭</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-2/mindmap-8-2.html" title="从“为什么必须逐行”检查到调用和关闭"></iframe></div></div>
-    <div class="numeric-progress">14/15</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:93.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2 <span>|</span> 8.2</div>
+    <h2 class="slide-title">日志写入对权限、失败处理与事务的影响</h2>
+    <div class="slide-content"><p class="slide-lead">原 compGPA 只读两张表；假设新版另向 GPA_Audit 写一条调用记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 39% 38%"><colgroup><col style="width:23%"><col style="width:39%"><col style="width:38%"></colgroup><thead><tr><th>检查项</th><th>旧版只读计算</th><th>新版增加日志写入</th></tr></thead><tbody><tr><td>读写对象</td><td>读取 SC、Course</td><td>还写 GPA_Audit</td></tr><tr><td>调用权限</td><td>满足执行与读取要求</td><td>核对日志写入权限及执行身份</td></tr><tr><td>失败处理</td><td>非法输入就报错</td><td>日志写入失败后怎样返回？</td></tr><tr><td>事务责任</td><td>不修改业务数据</td><td>日志提交的时机与责任方（过程或应用）</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>新增写入后要重测权限、失败处理与事务，即使输出参数没有变化</p></div></div>
+    <div class="numeric-progress">14/17</div>
+    <div class="semantic-label">DESIGN RISKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.3529%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="review" class="step slide-surface role-review layout-focus"
       data-x="1500" data-y="3360" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
+    <h2 class="slide-title">复习：说明 compGPA 的取数与调用</h2>
+    <div class="slide-content"><p class="slide-lead">说明取数、结束与关闭、参数传递、异常处理，并比较集合计算方案</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>机制选择</h3><p>若一个聚合查询即可得到结果，就不用游标；GPA 也能集合计算，本节用它练习游标状态</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>游标生命周期</h3><p>声明 GPA 查询，打开后反复 <code>FETCH</code>；每次先检查结束状态再处理，正常与异常出口都关闭资源</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>输入与输出</h3><p><code>IN p_sno</code> 指定学生，<code>OUT p_gpa</code> 返回结果；列顺序映射到变量，本例缺失成绩跳过，非法输入报错，无有效课程返回 NULL</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>上线前检查</h3><p>写清读写哪些表、会触发哪些额外操作、怎样提交或回滚、谁能调用，并测试升级和大数据量情况；再决定使用过程、函数或显式应用流程</p></article></div></div></div>
+    <div class="numeric-progress">15/17</div>
+    <div class="semantic-label">RECAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.2353%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
+    <h2 class="slide-title">游标与存储程序的状态、参数及调用</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-8-2/mindmap-8-2.html" title="游标与存储程序的状态、参数及调用"></iframe></div></div>
+    <div class="numeric-progress">16/17</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:94.1176%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH08 <span>|</span> 8.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">举一个只需 <code>AVG</code>、<code>COUNT</code> 或 <code>GROUP BY</code> 的任务，并说明为什么不应默认用游标？</span></li><li><span class="question-no">02</span><span class="question-text"><code>FETCH</code> 后为何要先判断结束状态，再处理变量？正常与异常退出时如何关闭资源？</span></li><li><span class="question-no">03</span><span class="question-text">为 GPA 过程标出 <code>IN</code>、<code>OUT</code>、游标目标列、FETCH 变量和零学分策略？</span></li><li><span class="question-no">04</span><span class="question-text"><code>OUT</code> 结果由谁接收？过程与函数的调用形状有何不同？如何选择并核对函数副作用？</span></li><li><span class="question-no">05</span><span class="question-text">数据库端程序何时可能减少通信？为什么“可能更快”仍需工作负载测试？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么 GPA 能用 CASE 与 SUM 计算，仍可以用来学习游标？</span></li><li><span class="question-no">02</span><span class="question-text">三行数据为什么需要第 4 次 FETCH？若误算旧行，GPA 怎样变错？</span></li><li><span class="question-no">03</span><span class="question-text">用 12→28 解释 INOUT；它与 compGPA 的 OUT 有何不同？</span></li><li><span class="question-no">04</span><span class="question-text">按本节规则，没有选课、缺失成绩和成绩 101，分别应返回什么？</span></li><li><span class="question-no">05</span><span class="question-text">同为一次请求，为什么不能断定 CALL 比 JOIN 更快？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-8-1.html" title="上一节：8.1 SQL 扩展与过程化 SQL 基础" aria-label="上一节：8.1 SQL 扩展与过程化 SQL 基础">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -249,7 +274,7 @@ GPA = Σ(pointᵢ × creditᵢ) / Σcreditᵢ</code></pre></div></div>
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">15/15</div>
+    <div class="numeric-progress">17/17</div>
     <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>

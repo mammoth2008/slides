@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>DBPA 13.2 语言处理层与数据存取层 | HUST</title>
-  <meta name="description" content="把 HonorStudent 视图查询消解为基本表操作，再绑定 FIND、GET、NEXT，并同步维护更新后的索引">
+  <meta name="description" content="定义高分成绩视图，逐步转为候选记录读取与过滤，再核对成绩更新后的索引入口">
   <meta name="author" content="xinjiang@hrbust.edu.cn">
   <meta name="course" content="数据库原理与应用">
   <meta name="institution" content="哈尔滨理工大学经济与管理学院">
@@ -28,143 +28,243 @@
     <img class="cover-image" src="resources/decks/dbpa-13-2/assets/dbpa-13-2.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">DBPA · 13.2</div>
-      <h1>语言处理层与数据存取层</h1>
-      <p class="cover-description">视图查询怎样变成 <code>FIND → GET → NEXT</code>，更新索引键后谁同步改索引</p>
+      <h1>语言处理层<br>与数据存取层</h1>
+      <p class="cover-description">视图筛选成绩，更新维护索引</p>
       <div class="cover-meta">
         <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2608</span>
         <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
       </div>
     </div>
-<!-- speaker-notes
-本单元解释语言处理层的检查与束缚，以及数据存取层的记录、事务、日志和路径子系统。
--->
   </section>
 <section id="a1" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
     <h2 class="slide-title">学习目标</h2>
-    <div class="slide-content"><p class="slide-lead">HonorStudent：改成基本表、元组调用；更新：数据、锁、日志、索引变化</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">区分 DDL、DML 和 DCL 的处理重点</span></li><li><span class="list-marker">02</span><span class="list-text">说明数据字典如何支持名称解析、权限、约束和视图消解</span></li><li><span class="list-marker">03</span><span class="list-text">按顺序描述 DML 的分析、检查、优化和逐步束缚</span></li><li><span class="list-marker">04</span><span class="list-text">说明数据存取层向上提供元组原语、向下依赖缓冲区接口</span></li><li><span class="list-marker">05</span><span class="list-text">区分记录存取、事务、日志、控制信息、排序合并、路径维护和封锁子系统</span></li><li><span class="list-marker">06</span><span class="list-text">用更新索引的例子说明存取路径为何必须同步维护</span></li></ol></div></div></div>
-    <div class="numeric-progress">2/12</div>
-    <div class="semantic-label">LEARNING OBJECTIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+    <div class="slide-content"><p class="slide-lead">计算视图查询结果，核对记录与索引的更新状态</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">说明 DDL、DML、DCL 的处理动作</span></li><li><span class="list-marker">02</span><span class="list-text">把视图条件和用户条件合成基本表查询</span></li><li><span class="list-marker">03</span><span class="list-text">区分名称绑定、优化与教材的逐步束缚</span></li><li><span class="list-marker">04</span><span class="list-text">跟踪 FIND、GET、NEXT 的位置、值和结束状态</span></li><li><span class="list-marker">05</span><span class="list-text">根据视图条件过滤候选记录</span></li><li><span class="list-marker">06</span><span class="list-text">核对更新前后表记录与索引入口是否一致</span></li></ol></div></div></div>
+    <div class="numeric-progress">2/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.0000%"></div></div>
   </section>
-<section id="a2" class="step slide-surface role-content layout-split axis-horizontal order-media-cards"
+<section id="a2" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">DDL 登结构，DML 调记录，DCL 登权限</h2>
-    <aside class="character-intervention character-edge-right character-intent-misconception substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-misconception" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-misconception.8b14adbf20d9.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>DDL、DML、DCL 只是写法不同，内部处理应该完全一样吧？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">三类语句都先解析，但之后分别修改系统目录、读取更新记录或改变授权信息</p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-landscape"><img class="zoomable-image" src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-dbms-layers-image2.webp" data-full-src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-dbms-layers-image2.webp" alt="DDL、DML 与 DCL 经语言处理层进入内部调用" tabindex="0" role="button" aria-label="放大图片：DDL、DML 与 DCL 经语言处理层进入内部调用" decoding="async"></figure>
-<div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>DDL</h3><p><code>CREATE TABLE</code>、<code>CREATE VIEW</code>：形成内部表示并登记数据字典</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DML</h3><p><code>SELECT</code>、<code>INSERT</code>、<code>UPDATE</code>、<code>DELETE</code>：检查、消解、优化并逐步束缚</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>DCL</h3><p><code>GRANT</code>、<code>REVOKE</code>：登记权限定义，并参与执行时授权判断</p></article></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>三类语言都在语言处理层汇合，但 DDL、DML 和 DCL 的处理重点不同</p></div></div>
-    <div class="numeric-progress">3/12</div>
-    <div class="semantic-label">LANGUAGE PROCESSING</div>
-    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">三类语句产生不同的内部动作</h2>
+    <div class="slide-content"><p class="slide-lead">下列都是围绕 SC 的具体任务，执行前都要解析并检查权限</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 44% 42%"><colgroup><col style="width:14%"><col style="width:44%"><col style="width:42%"></colgroup><thead><tr><th>类别</th><th>语句示例</th><th>执行动作</th></tr></thead><tbody><tr><td>DDL</td><td>CREATE VIEW HighGrade AS …</td><td>登记视图定义</td></tr><tr><td>DDL</td><td>CREATE INDEX … ON SC(Grade)</td><td>登记并构造 Grade 索引</td></tr><tr><td>DML</td><td>SELECT … FROM HighGrade</td><td>返回满足条件的成绩记录</td></tr><tr><td>DCL</td><td>GRANT SELECT …</td><td>授权 grade_reader 读取视图</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>CREATE INDEX 会读取已有数据，为这些记录构造索引入口</p></div></div>
+    <div class="numeric-progress">3/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.0000%"></div></div>
   </section>
-<section id="a3" class="step slide-surface role-content layout-split axis-horizontal order-media-list"
+<section id="a3" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="0" data-z="0"
-      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">视图 SELECT → `FIND、GET、NEXT`</h2>
-    <div class="slide-content"><p class="slide-lead">案例：<code>SELECT Sno, Grade FROM HonorStudent WHERE Sno = &#x27;20180003&#x27;</code></p>
-<div class="slide-main-content"><figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-binding.svg" data-full-src="resources/decks/dbpa-13-2/assets/generated/dbpa-ch13-binding.svg" alt="DML 从 SQL 经过检查和优化变成记录存取原语" tabindex="0" role="button" aria-label="放大图片：DML 从 SQL 经过检查和优化变成记录存取原语" decoding="async"></figure>
-<div class="component component-list list-rows reveal-items"><ol class="content-list content-list-ordered"><li class="substep"><span class="list-marker">01</span><span class="list-text"><strong>分析与名称转换</strong>：把外部名称转换为内部名称</span></li><li class="substep"><span class="list-marker">02</span><span class="list-text"><strong>字典检查与视图消解</strong>：检查语义、权限和约束，把视图转换为基本表操作</span></li><li class="substep"><span class="list-marker">03</span><span class="list-text"><strong>选择存取方案</strong>：依据统计、索引和存储信息选择存取路径</span></li><li class="substep"><span class="list-marker">04</span><span class="list-text"><strong>绑定记录原语</strong>：把集合操作落实为 <code>FIND</code>、<code>NEXT</code>、<code>GET</code> 等元组调用</span></li></ol></div></div></div>
-    <div class="numeric-progress">4/12</div>
-    <div class="semantic-label">DML BINDING</div>
-    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">HighGrade 定义与学号查询</h2>
+    <div class="slide-content"><p class="slide-lead">HighGrade 表示单门课程成绩至少 85 分的记录</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-sql">CREATE VIEW HighGrade AS
+SELECT Sno, Cno, Grade FROM SC
+WHERE Grade &gt;= 85;</code></pre></div></div>
+<div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-sql">SELECT Sno, Cno, Grade
+FROM HighGrade WHERE Sno = '20180003';</code></pre></div></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>沿用 13.1 的简化 SC：20180003 有 88、76 两项成绩，只有 88 满足视图条件</p></div></div>
+    <div class="numeric-progress">4/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.0000%"></div></div>
   </section>
-<section id="a4" class="step slide-surface role-content layout-focus"
+<section id="a3a" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">数据字典支撑语义、权限与约束检查</h2>
-    <div class="slide-content"><p class="slide-lead">静态检查和执行时检查共同维护正确性；视图消解还要先读取视图定义</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 28% 22% 28%"><colgroup><col style="width:22%"><col style="width:28%"><col style="width:22%"><col style="width:28%"></colgroup><thead><tr><th>检查环节</th><th>依据</th><th>处理时机</th><th>典型问题</th></tr></thead><tbody><tr><td>词法／语法</td><td>SQL 语言规则</td><td>分析阶段</td><td>语句结构错误</td></tr><tr><td>名称与语义</td><td>关系、属性和类型定义</td><td>处理阶段</td><td>对象不存在或类型不符</td></tr><tr><td>权限</td><td>用户与权限定义</td><td>处理阶段，必要时运行时</td><td>无权读取或更新</td></tr><tr><td>完整性</td><td>约束和当前数据状态</td><td>静态检查与执行时检查</td><td>主码、参照或动态规则冲突</td></tr><tr><td>视图消解</td><td>视图定义</td><td>绑定前转换</td><td>把视图操作转换为基本表操作</td></tr></tbody></table></div></div></div>
-    <div class="numeric-progress">5/12</div>
-    <div class="semantic-label">DATA DICTIONARY CHECKS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">视图展开合并两个筛选条件</h2>
+    <div class="slide-content"><p class="slide-lead">本例为简单选择投影视图，展开为基本表 SC 上的两个条件</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03</span><code class="language-sql">SELECT Sno, Cno, Grade
+FROM SC
+WHERE Grade &gt;= 85 AND Sno = '20180003';</code></pre></div></div>
+<div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 19% 19% 19%"><colgroup><col style="width:43%"><col style="width:19%"><col style="width:19%"><col style="width:19%"></colgroup><thead><tr><th>候选成绩</th><th>学号条件</th><th>视图条件</th><th>输出</th></tr></thead><tbody><tr><td>20180003，81001，88</td><td>满足</td><td>88≥85</td><td>一行</td></tr><tr><td>20180003，81002，76</td><td>满足</td><td>76&lt;85</td><td>过滤</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>普通视图保存定义；修改基本表后，再查询视图可能得到不同结果</p></div></div>
+    <div class="numeric-progress">5/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
   </section>
-<section id="b1" class="step slide-surface role-content layout-focus"
+<section id="a3b" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">数据存取层按元组落实执行方案</h2>
-    <aside class="character-intervention character-edge-left character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="left-confused" data-character-edge="left" data-character-along="64" data-character-exposure="60" data-character-scale="0.9" style="--character-along:64%;--character-exposure:60;--character-hidden:40%;--character-scale:0.9;--character-bubble-x:390px;--character-bubble-y:78px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/left-confused.fbea5f37e73c.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-left"><p>数据存取层已经在直接处理物理数据页了吗？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">向上提供记录／元组接口，向下依赖系统缓冲区的页面和存储器接口</p>
-<div class="slide-main-content"><div class="component component-text text-relation"><div class="relation-expression" role="img" aria-label="语言处理层　→　数据存取层的记录／元组原语　→　系统缓冲区的页面／存储器接口"><span class="relation-term">语言处理层</span><span class="relation-operator">→</span><span class="relation-term">数据存取层的记录／元组原语</span><span class="relation-operator">→</span><span class="relation-term">系统缓冲区的页面／存储器接口</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>向上提供一次一个元组的导航式接口，逻辑存取路径可以是文件或索引；向下依赖缓冲区接口，不直接暴露物理块</p></div></div>
-    <div class="numeric-progress">6/12</div>
-    <div class="semantic-label">DATA ACCESS LAYER</div>
-    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">名称绑定确定表、视图和列</h2>
+    <div class="slide-content"><p class="slide-lead">本例用 V6、R42 和列编号说明绑定，编号均为教学设定</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 32% 40%"><colgroup><col style="width:28%"><col style="width:32%"><col style="width:40%"></colgroup><thead><tr><th>SQL 中的名称</th><th>目录查到什么</th><th>绑定后的含义</th></tr></thead><tbody><tr><td>HighGrade</td><td>视图 V6，定义引用 SC</td><td>SC 上的 Grade≥85 条件</td></tr><tr><td>SC</td><td>基本表 R42</td><td>访问这个确定的关系对象</td></tr><tr><td>Sno / Cno / Grade</td><td>R42 的列 1 / 2 / 3</td><td>区分列、类型和所属关系</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>名称绑定确定对象，优化选择执行方案；参数绑定为占位符提供值</p></div></div>
+    <div class="numeric-progress">6/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.0000%"></div></div>
   </section>
-<section id="b2" class="step slide-surface role-content layout-grid"
+<section id="a4" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">记录存取原语与事务原语组成执行接口</h2>
-    <div class="slide-content"><p class="slide-lead">记录原语面向单个元组和逻辑存取路径；事务原语负责边界，不暴露物理块</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:3"><article class="content-card emphasis-card substep" tabindex="0"><h3>定位与扫描</h3><p><code>FIND</code>、<code>FIRST</code>、<code>NEXT</code>、<code>PRIOR</code>、<code>LAST</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>读取与更新</h3><p><code>GET</code>、<code>INSERT</code>、<code>DELETE</code>、<code>REPLACE</code></p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>事务边界</h3><p><code>BEGIN TRANSACTION</code>、<code>COMMIT</code>、<code>ROLLBACK</code></p></article></div>
-<div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="查询：`FIND` → `GET` → `NEXT`　｜　事务：`BEGIN TRANSACTION` → `COMMIT`／`ROLLBACK`"><span class="relation-term">查询：<code>FIND</code></span><span class="relation-operator">→</span><span class="relation-term"><code>GET</code></span><span class="relation-operator">→</span><span class="relation-term"><code>NEXT</code>　｜　事务：<code>BEGIN TRANSACTION</code></span><span class="relation-operator">→</span><span class="relation-term"><code>COMMIT</code>／<code>ROLLBACK</code></span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>前两组负责记录访问，事务原语负责事务边界；逐步束缚把集合语句转换为有顺序的调用序列，结果取决于语义和存取路径</p></div></div>
-    <div class="numeric-progress">7/12</div>
-    <div class="semantic-label">ACCESS PRIMITIVES</div>
-    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">逐步束缚：将 SQL 转为存取动作</h2>
+    <div class="slide-content"><p class="slide-lead">教材将检查、视图展开、优化及落实存取动作统称为逐步束缚</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">分析语句，从目录把外部名称对应到内部对象</span></li><li><span class="list-marker">02</span><span class="list-text">检查语义与授权，取出并展开 HighGrade 的定义</span></li><li><span class="list-marker">03</span><span class="list-text">比较路径，选择 Sno 索引取得候选记录</span></li><li><span class="list-marker">04</span><span class="list-text">落实为记录定位、取值、过滤、输出和继续扫描</span></li></ol></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>本节用教材的记录接口模型；实际执行器可采用其他接口或成批处理</p></div></div>
+    <div class="numeric-progress">7/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
   </section>
-<section id="b3" class="step slide-surface role-content layout-focus"
+<section id="a4a" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">更新索引记录时，四个子系统同时参与</h2>
-    <div class="slide-content"><p class="slide-lead">记录改元组，封锁管并发，路径改索引，日志保存 UNDO／REDO 的旧值新值</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 34% 35%"><colgroup><col style="width:31%"><col style="width:34%"><col style="width:35%"></colgroup><thead><tr><th>子系统</th><th>核心职责</th><th>协作对象</th></tr></thead><tbody><tr><td>记录存取与事务管理</td><td>元组查找、更新和事务边界</td><td>缓冲区、日志</td></tr><tr><td>日志登记</td><td>写入日志并支持 <code>UNDO</code>／<code>REDO</code></td><td>事务管理、恢复</td></tr><tr><td>控制信息管理</td><td>读取数据字典和控制信息</td><td>语言处理层</td></tr><tr><td>排序／合并</td><td>有序输出、连接预处理和索引建立</td><td>记录与路径</td></tr><tr><td>存取路径维护</td><td>更新数据时保持索引一致</td><td>数据更新</td></tr><tr><td>封锁子系统</td><td>并发控制和锁表管理</td><td>事务管理</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>更新带索引的记录时，记录存取与事务管理、封锁、路径维护和日志登记共同协作</p></div></div>
-    <div class="numeric-progress">8/12</div>
-    <div class="semantic-label">FUNCTION SUBSYSTEMS</div>
-    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">检查依据决定错误发现时机</h2>
+    <div class="slide-content"><p class="slide-lead">名称与授权依赖目录，主键和参数范围检查依赖执行时的值</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="39% 29% 32%"><colgroup><col style="width:39%"><col style="width:29%"><col style="width:32%"></colgroup><thead><tr><th>具体问题</th><th>依赖什么</th><th>何时能判断</th></tr></thead><tbody><tr><td>把 Grade 写成 Gradex</td><td>列定义</td><td>名称解析时</td></tr><tr><td>当前角色能否读视图</td><td>视图授权规则与身份</td><td>执行前；必要时运行中</td></tr><tr><td>插入已存在的 (Sno,Cno)</td><td>当前主键内容</td><td>执行插入时检查</td></tr><tr><td>把成绩改为参数值 ?</td><td>参数值与成绩约束</td><td>参数值确定后检查</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>约束检查与并发控制配合，保护检查和写入之间的数据一致性</p></div></div>
+    <div class="numeric-progress">8/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
   </section>
-<section id="b4" class="step slide-surface role-content layout-focus"
+<section id="b1" class="step slide-surface role-content layout-focus"
       data-x="0" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
-    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2 <span>|</span> 13.2</div>
-    <h2 class="slide-title">相关索引必须与表数据保持同一状态</h2>
-    <aside class="character-intervention character-edge-right character-intent-question substep reveal-self character-dismiss-next" data-character-id="dbpa-modeler" data-character-pose="right-frustrated" data-character-edge="right" data-character-along="60" data-character-exposure="58" data-character-scale="0.9" style="--character-along:60%;--character-exposure:58;--character-hidden:42%;--character-scale:0.9;--character-bubble-x:-300px;--character-bubble-y:88px;--character-tail-at:72%" aria-label="数据建模师发言"><div class="character-stage"><div class="character-cluster"><img class="character-figure" src="resources/characters/dbpa-modeler/right-frustrated.b641f751ca49.webp" alt="" draggable="false" decoding="async"><div class="character-bubble character-tail-right"><p>表记录已经更新，为什么索引查询还找不到新值？</p></div></div></div></aside>
-    <div class="slide-content"><p class="slide-lead">更新元组时若遗漏相关索引维护，会产生错误存取路径</p>
-<div class="slide-main-content"><div class="component component-text text-relation substep reveal-self"><div class="relation-expression" role="img" aria-label="INSERT／DELETE／UPDATE（涉及相关索引时）　→　表数据与相应索引项同步维护"><span class="relation-term">INSERT／DELETE／UPDATE（涉及相关索引时）</span><span class="relation-operator">→</span><span class="relation-term">表数据与相应索引项同步维护</span></div></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>修改索引键时必须同步更新索引项；修改非索引属性时索引项可能不变。路径维护保证数据可访问，日志支持恢复，封锁支持并发，排序／合并支持有序输出和中间运算</p></div></div>
-    <div class="numeric-progress">9/12</div>
-    <div class="semantic-label">PATH MAINTENANCE</div>
-    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">记录层接位置和字段，缓冲层接页号</h2>
+    <div class="slide-content"><p class="slide-lead">沿用教学布局：(P7,2) 是 88 分，(P9,1) 是 76 分</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 40% 34%"><colgroup><col style="width:26%"><col style="width:40%"><col style="width:34%"></colgroup><thead><tr><th>调用者</th><th>向下一层请求</th><th>拿到什么</th></tr></thead><tbody><tr><td>查询执行器</td><td>按 Sno 定位候选记录</td><td>扫描状态与 RID</td></tr><tr><td>记录存取模块</td><td>取得 RID 所指的页面</td><td>P7 或 P9 的可用缓冲页</td></tr><tr><td>记录存取模块</td><td>从页内槽号取出字段</td><td>Sno、Cno、Grade 的值</td></tr><tr><td>查询执行器</td><td>检查 Grade≥85</td><td>输出 88，过滤 76</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>上层使用记录接口；页面的读入、固定和淘汰交给缓冲管理，留到 13.3 展开</p></div></div>
+    <div class="numeric-progress">9/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
   </section>
-<section id="review" class="step slide-surface role-review layout-focus"
+<section id="b2" class="step slide-surface role-content layout-focus"
       data-x="1500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
-    <h2 class="slide-title">HonorStudent 与索引键：每步由谁完成</h2>
-    <div class="slide-content"><p class="slide-lead">查询时消解视图并绑定记录原语；更新时同步表和索引，同时加锁并写日志</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>1 · 检查并消解</h3><p>将外部名转成内部名；用字典检查语义和权限；把 HonorStudent 消解为基本表操作</p></article><article class="content-card emphasis-card" tabindex="0"><h3>2 · 选择并束缚</h3><p>按统计和路径选方案，再绑定 <code>FIND → GET → NEXT</code>；束缚不是再次优化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>3 · 谁改什么</h3><p>存取模块改元组；事务模块定提交回滚；封锁模块让冲突者等待；日志保存旧值新值；缓冲区承接页面</p></article><article class="content-card emphasis-card" tabindex="0"><h3>4 · 维护更新后的路径</h3><p>更新索引键时同步表与索引；用日志和封锁保持一致</p></article></div></div></div>
-    <div class="numeric-progress">10/12</div>
-    <div class="semantic-label">RECAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+    <h2 class="slide-title">FIND 定位，GET 取值，NEXT 移动</h2>
+    <div class="slide-content"><p class="slide-lead">本例扫描范围只限制 Sno=20180003，Grade 由执行器另行检查</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 47% 34%"><colgroup><col style="width:19%"><col style="width:47%"><col style="width:34%"></colgroup><thead><tr><th>原语</th><th>本例返回什么</th><th>职责范围</th></tr></thead><tbody><tr><td>FIND</td><td>首个候选位置 (P7,2)</td><td>字段值由 GET 读取</td></tr><tr><td>GET</td><td>当前位置的记录内容，如 Grade=88</td><td>保持当前位置</td></tr><tr><td>NEXT</td><td>下个候选位置，或 END</td><td>Grade 条件由执行器检查</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>BEGIN、COMMIT、ROLLBACK 分别开始、提交和回滚事务</p></div></div>
+    <div class="numeric-progress">10/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
   </section>
-<section id="map" class="step slide-surface role-map layout-single"
+<section id="b2a" class="step slide-surface role-content layout-focus"
       data-x="3000" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
-    <h2 class="slide-title">本节知识地图</h2>
-    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-13-2/mindmap-13-2.html" title="本节知识地图"></iframe></div></div>
-    <div class="numeric-progress">11/12</div>
-    <div class="semantic-label">KNOWLEDGE MAP</div>
-    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+    <h2 class="slide-title">两条候选，只输出一条</h2>
+    <div class="slide-content"><p class="slide-lead">END 表示学号 20180003 的扫描结束；SC 中还可有其他学生的记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="31% 40% 29%"><colgroup><col style="width:31%"><col style="width:40%"><col style="width:29%"></colgroup><thead><tr><th>调用</th><th>返回</th><th>执行器动作</th></tr></thead><tbody><tr><td>FIND(Sno=20180003)</td><td>RID=(P7,2)</td><td>继续取值</td></tr><tr><td>GET</td><td>20180003，81001，88</td><td>88≥85，输出</td></tr><tr><td>NEXT</td><td>RID=(P9,1)</td><td>继续取值</td></tr><tr><td>GET</td><td>20180003，81002，76</td><td>76&lt;85，不输出</td></tr><tr><td>NEXT</td><td>END</td><td>停止；不再调用 GET</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.0000%"></div></div>
   </section>
-<section id="questions" class="step slide-surface role-questions layout-single"
+<section id="b2b" class="step slide-surface role-content layout-focus"
       data-x="4500" data-y="2240" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">扫描状态保存范围与当前位置</h2>
+    <div class="slide-content"><p class="slide-lead">GET 读到 88 后，NEXT 将继续查找同一学号的候选记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 73%"><colgroup><col style="width:27%"><col style="width:73%"></colgroup><thead><tr><th>控制信息</th><th>当前内容</th></tr></thead><tbody><tr><td>关系与路径</td><td>R42（SC），使用 idx_sc_sno</td></tr><tr><td>扫描范围</td><td>Sno=20180003</td></tr><tr><td>当前位置</td><td>RID=(P7,2)</td></tr><tr><td>后续动作</td><td>NEXT 到 (P9,1)，GET 后检查 Grade≥85</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>目录提供类型和路径说明；扫描过程中维护当前位置等运行状态</p></div></div>
+    <div class="numeric-progress">12/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-focus"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">数据存取层的六类职责</h2>
+    <div class="slide-content"><p class="slide-lead">成绩更新涉及记录、索引与事务管理；排序按操作需要调用</p>
+<div class="slide-main-content"><div class="cards-grid cards-compact" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>记录与事务</h3><p>把成绩 88 改成 90，管理提交或回滚</p></article><article class="content-card emphasis-card" tabindex="0"><h3>控制信息</h3><p>保存记录格式、路径说明和当前扫描状态</p></article><article class="content-card emphasis-card" tabindex="0"><h3>排序／合并</h3><p>按要求整理输出，或为连接、建索引准备数据</p></article><article class="content-card emphasis-card" tabindex="0"><h3>路径维护</h3><p>把相关成绩索引入口从 88 改为 90</p></article><article class="content-card emphasis-card" tabindex="0"><h3>封锁与冲突控制</h3><p>保护并发访问，必要时等待或中止</p></article><article class="content-card emphasis-card" tabindex="0"><h3>日志与恢复</h3><p>记录恢复信息，支持撤销或重做</p></article></div></div></div>
+    <div class="numeric-progress">13/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
+  </section>
+<section id="b3a" class="step slide-surface role-content layout-focus"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">有序输出可利用索引或排序</h2>
+    <div class="slide-content"><p class="slide-lead">只取非 NULL 成绩，要求降序输出：88、85、76</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 60%"><colgroup><col style="width:40%"><col style="width:60%"></colgroup><thead><tr><th>可用条件或任务</th><th>怎样得到需要的顺序</th></tr></thead><tbody><tr><td>没有可供利用的 Grade 顺序</td><td>读取后排序，再输出 88、85、76</td></tr><tr><td>已有可供利用的 Grade 索引</td><td>反向遍历可直接提供降序</td></tr><tr><td>选择归并连接</td><td>两侧须按连接键有序，可能利用现有索引</td></tr><tr><td>选择哈希连接</td><td>不要求先按连接键排序</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>现有索引可提供所需顺序；缺少合适顺序时调用排序，哈希连接另用散列处理</p></div></div>
+    <div class="numeric-progress">14/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.0000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-focus"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">成绩更新同步维护 Grade 索引</h2>
+    <div class="slide-content"><p class="slide-lead">独立更新例：另建 Grade 索引，并假定记录仍在 (P7,2)</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 37% 37%"><colgroup><col style="width:26%"><col style="width:37%"><col style="width:37%"></colgroup><thead><tr><th>对象</th><th>更新前</th><th>更新后</th></tr></thead><tbody><tr><td>SC 的该条成绩</td><td>20180003，81001，88</td><td>20180003，81001，90</td></tr><tr><td>Grade 索引入口</td><td>88 → (P7,2)</td><td>90 → (P7,2)</td></tr><tr><td>Sno 索引入口</td><td>20180003 → (P7,2)</td><td>键和位置均不变</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Sno 键与 RID 均未变，入口保持原样；记录移动时需维护位置引用</p></div></div>
+    <div class="numeric-progress">15/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="b4a" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">缺失新索引入口可能漏查记录</h2>
+    <div class="slide-content"><p class="slide-lead">故障示意：表中已是 90，Grade 索引却只保留旧入口 88→(P7,2)</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 38% 30%"><colgroup><col style="width:32%"><col style="width:38%"><col style="width:30%"></colgroup><thead><tr><th>检查方式</th><th>看到什么</th><th>结论</th></tr></thead><tbody><tr><td>直接检查表记录</td><td>Grade=90</td><td>数据值已改变</td></tr><tr><td>沿 Grade=90 的索引找</td><td>没有新入口</td><td>可能漏掉应返回的记录</td></tr><tr><td>检查旧入口 88</td><td>仍指向已改成 90 的记录</td><td>旧入口已与表值不符</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>同一事务保护表与索引的更新；执行器按计划检查候选记录</p></div></div>
+    <div class="numeric-progress">16/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.0000%"></div></div>
+  </section>
+<section id="b4b" class="step slide-surface role-content layout-focus"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">提交与回滚后的表和索引状态</h2>
+    <div class="slide-content"><p class="slide-lead">继续 88→90 更新例：事务结束后，表值与索引入口应一致</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 35% 39%"><colgroup><col style="width:26%"><col style="width:35%"><col style="width:39%"></colgroup><thead><tr><th>事务结果</th><th>表记录</th><th>Grade 索引</th></tr></thead><tbody><tr><td>提交成功</td><td>保留成绩 90</td><td>能从 90 找到该记录</td></tr><tr><td>回滚完成</td><td>恢复成绩 88</td><td>能从 88 找到，不再由 90 命中</td></tr><tr><td>系统故障后恢复</td><td>按日志和提交状态处理</td><td>相关路径也必须恢复一致</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>日志格式依实现而定；WAL 要求相关日志先于数据页持久化</p></div></div>
+    <div class="numeric-progress">17/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.0000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-focus"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">视图查询结果与索引更新状态</h2>
+    <div class="slide-content"><p class="slide-lead">查询路径检查值和结束状态，更新路径检查表与索引是否一致</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 72%"><colgroup><col style="width:28%"><col style="width:72%"></colgroup><thead><tr><th>阶段</th><th>处理结果</th></tr></thead><tbody><tr><td>展开视图</td><td>Grade≥85 与 Sno=20180003 同时保留</td></tr><tr><td>绑定与选路径</td><td>外部名对应内部对象，选择 Sno 扫描</td></tr><tr><td>执行扫描</td><td>88 输出，76 过滤，END 后停止</td></tr><tr><td>更新索引</td><td>88→90 时表值与 Grade 入口同步维护</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>13.3 接手 P7、P9：解释页面怎样进入缓冲、何时可淘汰、脏页怎样写回</p></div></div>
+    <div class="numeric-progress">18/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
+    <h2 class="slide-title">视图、记录与索引的处理过程</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/dbpa-13-2/mindmap-13-2.html" title="视图、记录与索引的处理过程"></iframe></div></div>
+    <div class="numeric-progress">19/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.0000%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> CH13 <span>|</span> 13.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">给定 HonorStudent 视图查询，如何按顺序完成分析、检查、视图消解、优化和束缚？</span></li><li><span class="question-no">02</span><span class="question-text">数据字典怎样支持名称、权限、完整性检查和视图消解？</span></li><li><span class="question-no">03</span><span class="question-text"><code>FIND</code>、<code>GET</code>、<code>NEXT</code> 如何把集合请求变成记录访问？</span></li><li><span class="question-no">04</span><span class="question-text">数据存取层的上下层接口连接什么？逻辑存取路径有何作用？</span></li><li><span class="question-no">05</span><span class="question-text"><code>ORDER BY</code> 或连接何时需要排序／合并？</span></li><li><span class="question-no">06</span><span class="question-text">更新索引键时，记录、事务、封锁、日志和路径维护如何协作？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">HighGrade 的定义是什么，展开查询时为何要保留两个条件？</span></li><li><span class="question-no">02</span><span class="question-text">名称绑定、查询优化与教材的逐步束缚有什么区别？</span></li><li><span class="question-no">03</span><span class="question-text">两次 GET 分别得到 88、76，为什么只输出一行？</span></li><li><span class="question-no">04</span><span class="question-text">NEXT 返回 END 后，为什么不能继续 GET？</span></li><li><span class="question-no">05</span><span class="question-text">已有 Grade 索引时，ORDER BY 是否一定还要排序？</span></li><li><span class="question-no">06</span><span class="question-text">成绩 88 改成 90 后提交或回滚，索引应分别是什么状态？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-13-1.html" title="上一节：13.1 DBMS 功能、层次结构与运行过程" aria-label="上一节：13.1 DBMS 功能、层次结构与运行过程">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
@@ -179,8 +279,8 @@
         <span class="arrow-safety" aria-hidden="true"></span>
       </a>
     </nav></div>
-    <div class="numeric-progress">12/12</div>
-    <div class="semantic-label">CHECK YOUR UNDERSTANDING</div>
+    <div class="numeric-progress">20/20</div>
+    <div class="semantic-label">FROM SQL TO RECORD OPERATIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
   </section>
   </main>
