@@ -77,7 +77,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">联系两端的最大基数</h2>
     <div class="slide-content"><p class="slide-lead">本页各例均有明确业务约定；先修联系的两端都是课程</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>联系</th><th>从左端询问</th><th>从右端询问</th></tr></thead><tbody><tr><td>学院—院长 1:1</td><td>一个学院至多有一名院长</td><td>一位院长只负责一个学院</td></tr><tr><td>课程—教学班 1:n</td><td>一门课程可开多个教学班</td><td>一个教学班属于一门课程</td></tr><tr><td>学生—教学班 m:n</td><td>一个学生可选多个班</td><td>一个教学班可有多个学生</td></tr><tr><td>先修（递归 m:n）</td><td>一门课可有多门先修课</td><td>多门课可共用一门先修课</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>联系</th><th>从左端询问</th><th>从右端询问</th></tr></thead><tbody><tr><td>学院—院长 \(1:1\)</td><td>一个学院至多有一名院长</td><td>一位院长只负责一个学院</td></tr><tr><td>课程—教学班 \(1:n\)</td><td>一门课程可开多个教学班</td><td>一个教学班属于一门课程</td></tr><tr><td>学生—教学班 \(m:n\)</td><td>一个学生可选多个班</td><td>一个教学班可有多个学生</td></tr><tr><td>先修（递归 \(m:n\)）</td><td>一门课可有多门先修课</td><td>多门课可共用一门先修课</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">5/20</div>
     <div class="semantic-label">CARDINALITY</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
@@ -87,7 +87,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">成绩属于“这个学生选这个班”的事实</h2>
-    <div class="slide-content"><p class="slide-lead">学生换一个班，成绩就可能不同；因此 Grade 连接到选课菱形</p>
+    <div class="slide-content"><p class="slide-lead">学生换一个班，成绩就可能不同；因此 <code>Grade</code> 连接到选课菱形</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/selection-er.svg" data-full-src="resources/decks/dbpa-7-2/assets/selection-er.svg" alt="学生与教学班通过选课建立多对多联系，成绩和选课时间属于选课联系" tabindex="0" role="button" aria-label="放大图片：学生与教学班通过选课建立多对多联系，成绩和选课时间属于选课联系" decoding="async"></figure></div></div>
     <div class="numeric-progress">6/20</div>
     <div class="semantic-label">E-R NOTATION</div>
@@ -99,8 +99,8 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">选课记录中的属性归属</h2>
     <div class="slide-content"><p class="slide-lead">姓名由学生决定，容量由教学班决定，成绩和选课时间由这次选课决定</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 33% 18% 30%"><colgroup><col style="width:19%"><col style="width:33%"><col style="width:18%"><col style="width:30%"></colgroup><thead><tr><th>学生 Sno</th><th>教学班身份</th><th>Grade</th><th>AppliedAt</th></tr></thead><tbody><tr><td>20260001</td><td>C001／2026-1／01</td><td>80</td><td>2026-09-01 09:00:00</td></tr><tr><td>20260001</td><td>C002／2026-1／01</td><td>95</td><td>2026-09-01 09:02:00</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>Grade 由学生与教学班的组合决定；单独的学生或教学班都不足以确定成绩</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 33% 18% 30%"><colgroup><col style="width:19%"><col style="width:33%"><col style="width:18%"><col style="width:30%"></colgroup><thead><tr><th>学生 <code>Sno</code></th><th>教学班身份</th><th><code>Grade</code></th><th><code>AppliedAt</code></th></tr></thead><tbody><tr><td><code>20260001</code></td><td><code>C001</code>／<code>2026-1</code>／<code>01</code></td><td>80</td><td><code>2026-09-01 09:00:00</code></td></tr><tr><td><code>20260001</code></td><td><code>C002</code>／<code>2026-1</code>／<code>01</code></td><td>95</td><td><code>2026-09-01 09:02:00</code></td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><code>Grade</code> 由学生与教学班的组合决定；单独的学生或教学班都不足以确定成绩</p></div></div>
     <div class="numeric-progress">7/20</div>
     <div class="semantic-label">RELATION ATTRIBUTES</div>
     <div class="progress-track"><div class="progress-fill" style="width:35.0000%"></div></div>
@@ -109,10 +109,10 @@
       data-x="0" data-y="1120" data-z="0"
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
-    <h2 class="slide-title">min..max 的对端标注法</h2>
+    <h2 class="slide-title">\(\mathrm{min}\mathinner{..}\mathrm{max}\) 的对端标注法</h2>
     <div class="slide-content"><p class="slide-lead">按教材约定，学院对应的系数目标在系端，系对应的学院数目标在学院端</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/minmax.svg" data-full-src="resources/decks/dbpa-7-2/assets/minmax.svg" alt="学院一端标 1..1，系一端标 0..*，表示每系属于一个学院而每学院可有零到多个系" tabindex="0" role="button" aria-label="放大图片：学院一端标 1..1，系一端标 0..*，表示每系属于一个学院而每学院可有零到多个系" decoding="async"></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>min 表示最少次数，max 表示最多次数；0 允许没有，星号表示多个</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>\(\mathrm{min}\) 表示最少次数，\(\mathrm{max}\) 表示最多次数；\(0\) 允许没有，星号表示多个</p></div></div>
     <div class="numeric-progress">8/20</div>
     <div class="semantic-label">CONSTRAINTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:40.0000%"></div></div>
@@ -123,8 +123,8 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">教学班的组合身份与弱实体</h2>
     <div class="slide-content"><p class="slide-lead">7.1 约定班号只在某门课、某个学期内唯一，因此教学班依赖课程标识</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 24% 20% 34%"><colgroup><col style="width:22%"><col style="width:24%"><col style="width:20%"><col style="width:34%"></colgroup><thead><tr><th>课程 Cno</th><th>学期 Term</th><th>班号 ClassNo</th><th>是否同一个教学班</th></tr></thead><tbody><tr><td>C001</td><td>2026-1</td><td>01</td><td>第一个班</td></tr><tr><td>C002</td><td>2026-1</td><td>01</td><td>课程不同，是另一个班</td></tr><tr><td>C001</td><td>2026-2</td><td>01</td><td>学期不同，也是另一个班</td></tr></tbody></table></div>
-<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>所有者与部分码</h3><p>课程是所有者；Term＋ClassNo 是教学班在课程范围内的部分码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完整身份</h3><p>Cno＋Term＋ClassNo；图中用双框画教学班、双菱形画识别联系</p></article></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 24% 20% 34%"><colgroup><col style="width:22%"><col style="width:24%"><col style="width:20%"><col style="width:34%"></colgroup><thead><tr><th>课程 <code>Cno</code></th><th>学期 <code>Term</code></th><th>班号 <code>ClassNo</code></th><th>是否同一个教学班</th></tr></thead><tbody><tr><td><code>C001</code></td><td><code>2026-1</code></td><td><code>01</code></td><td>第一个班</td></tr><tr><td><code>C002</code></td><td><code>2026-1</code></td><td><code>01</code></td><td>课程不同，是另一个班</td></tr><tr><td><code>C001</code></td><td><code>2026-2</code></td><td><code>01</code></td><td>学期不同，也是另一个班</td></tr></tbody></table></div>
+<div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>所有者与部分码</h3><p>课程是所有者；<code>(Term, ClassNo)</code> 是教学班在课程范围内的部分码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完整身份</h3><p><code>(Cno, Term, ClassNo)</code>；图中用双框画教学班、双菱形画识别联系</p></article></div></div></div>
     <div class="numeric-progress">9/20</div>
     <div class="semantic-label">EXTENDED E-R</div>
     <div class="progress-track"><div class="progress-fill" style="width:45.0000%"></div></div>
@@ -136,7 +136,7 @@
     <h2 class="slide-title">ISA 的完全特化与不相交约束</h2>
     <div class="slide-content"><p class="slide-lead">扩展示例只讨论本科生与研究生，并约定每人恰属其中一类</p>
 <div class="slide-main-content"><figure class="media-block image-block media-fit-contain media-position-center media-frame-wide"><img class="zoomable-image" src="resources/decks/dbpa-7-2/assets/isa.svg" data-full-src="resources/decks/dbpa-7-2/assets/isa.svg" alt="学生通过双线连接带叉号的 ISA 三角形，下接本科生与研究生，表示完全且不相交特化" tabindex="0" role="button" aria-label="放大图片：学生通过双线连接带叉号的 ISA 三角形，下接本科生与研究生，表示完全且不相交特化" decoding="async"></figure></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>子类继承 Sno 和姓名；若还有其他学生类型，这两个子类就不再是完全特化</p></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>子类继承 <code>Sno</code> 和姓名；若还有其他学生类型，这两个子类就不再是完全特化</p></div></div>
     <div class="numeric-progress">10/20</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
@@ -170,9 +170,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
     <h2 class="slide-title">三对关系连接产生虚假排课</h2>
-    <div class="slide-content"><p class="slide-lead">A、B 代表两个不同教学班；以下三条原始排课记录都符合约束</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 22% 34% 30%"><colgroup><col style="width:14%"><col style="width:22%"><col style="width:34%"><col style="width:30%"></colgroup><thead><tr><th>行号</th><th>教学班</th><th>时间片</th><th>教室</th></tr></thead><tbody><tr><td>①</td><td>A</td><td>周一 1–2 节</td><td>R101</td></tr><tr><td>②</td><td>A</td><td>周三 1–2 节</td><td>R102</td></tr><tr><td>③</td><td>B</td><td>周一 1–2 节</td><td>R102</td></tr></tbody></table></div>
-<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">只保留三对关系后：A—周一来自①，A—R102 来自②，周一—R102 来自③</span></li><li><span class="list-marker">02</span><span class="list-text">三者重新连接，会多出（A，周一 1–2 节，R102），原表没有这条安排</span></li><li><span class="list-marker">03</span><span class="list-text">新记录与③争用教室；原三元联系保存了三方共同参与的事实</span></li></ol></div></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>A</code>、<code>B</code> 代表两个不同教学班；以下三条原始排课记录都符合约束</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 22% 34% 30%"><colgroup><col style="width:14%"><col style="width:22%"><col style="width:34%"><col style="width:30%"></colgroup><thead><tr><th>行号</th><th>教学班</th><th>时间片</th><th>教室</th></tr></thead><tbody><tr><td>①</td><td><code>A</code></td><td>周一 1–2 节</td><td><code>R101</code></td></tr><tr><td>②</td><td><code>A</code></td><td>周三 1–2 节</td><td><code>R102</code></td></tr><tr><td>③</td><td><code>B</code></td><td>周一 1–2 节</td><td><code>R102</code></td></tr></tbody></table></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">只保留三对关系后：<code>A</code>—周一来自①，<code>A</code>—<code>R102</code> 来自②，周一—<code>R102</code> 来自③</span></li><li><span class="list-marker">02</span><span class="list-text">三者重新连接，会多出（<code>A</code>，周一 1–2 节，<code>R102</code>），原表没有这条安排</span></li><li><span class="list-marker">03</span><span class="list-text">新记录与③争用教室；原三元联系保存了三方共同参与的事实</span></li></ol></div></div></div>
     <div class="numeric-progress">13/20</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
@@ -195,8 +195,8 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">属性、命名与结构冲突的处理</h2>
     <div class="slide-content"><p class="slide-lead">课堂 v1 采用 7.1 样本约定；真实学校的规则仍待用户确认</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 39% 45%"><colgroup><col style="width:16%"><col style="width:39%"><col style="width:45%"></colgroup><thead><tr><th>冲突</th><th>两份局部材料的差异</th><th>本案例的统一决定</th></tr></thead><tbody><tr><td>属性</td><td>班号用整数 1，或文本 01</td><td>用两位文本 01–99，保留前导零</td></tr><tr><td>命名</td><td>行政班、教学班都叫“班级”</td><td>分开命名；选课只引用教学班</td></tr><tr><td>结构</td><td>一位教师授课，或多人授课</td><td>v1 每班一位教师；多人授课为扩展</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多人授课时，讲授改为 m:n；“是否主讲”可作为新增的联系属性</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 39% 45%"><colgroup><col style="width:16%"><col style="width:39%"><col style="width:45%"></colgroup><thead><tr><th>冲突</th><th>两份局部材料的差异</th><th>本案例的统一决定</th></tr></thead><tbody><tr><td>属性</td><td>班号用整数 <code>1</code>，或文本 <code>01</code></td><td>用两位文本 <code>01</code>–<code>99</code>，保留前导零</td></tr><tr><td>命名</td><td>行政班、教学班都叫“班级”</td><td>分开命名；选课只引用教学班</td></tr><tr><td>结构</td><td>一位教师授课，或多人授课</td><td>v1 每班一位教师；多人授课为扩展</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>多人授课时，讲授改为 \(m:n\)；“是否主讲”可作为新增的联系属性</p></div></div>
     <div class="numeric-progress">15/20</div>
     <div class="semantic-label">INTEGRATION CONFLICTS</div>
     <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
@@ -218,7 +218,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2 <span>|</span> 7.3</div>
     <h2 class="slide-title">已修学分的计算口径与更新</h2>
     <div class="slide-content"><p class="slide-lead">扩展统计约定：同一课程及格一次就计学分，重复修读不重复计入</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 36% 38%"><colgroup><col style="width:26%"><col style="width:36%"><col style="width:38%"></colgroup><thead><tr><th>原始事实变化</th><th>应有的统计结果</th><th>只改原记录的后果</th></tr></thead><tbody><tr><td>C001 为 3 学分，成绩 59→60</td><td>首次通过，已修学分加 3</td><td>缓存仍少 3 学分</td></tr><tr><td>再次通过 C001</td><td>这门课仍只计 3 学分</td><td>按通过次数累加会重复计分</td></tr><tr><td>C001 学分 3→4</td><td>按本例现行学分口径重算</td><td>缓存仍保留旧学分</td></tr></tbody></table></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="26% 36% 38%"><colgroup><col style="width:26%"><col style="width:36%"><col style="width:38%"></colgroup><thead><tr><th>原始事实变化</th><th>应有的统计结果</th><th>只改原记录的后果</th></tr></thead><tbody><tr><td><code>C001</code> 为 3 学分，成绩 59→60</td><td>首次通过，已修学分加 3</td><td>缓存仍少 3 学分</td></tr><tr><td>再次通过 <code>C001</code></td><td>这门课仍只计 3 学分</td><td>按通过次数累加会重复计分</td></tr><tr><td><code>C001</code> 学分 3→4</td><td>按本例现行学分口径重算</td><td>缓存仍保留旧学分</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>成绩、学分或选课记录变化后，按约定口径重算并核对派生学分</p></div></div>
     <div class="numeric-progress">17/20</div>
     <div class="semantic-label">REDUNDANCY</div>
@@ -230,7 +230,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
     <h2 class="slide-title">选课 v1 的模型与业务约束回顾</h2>
     <div class="slide-content"><p class="slide-lead">最终产物是完整 E-R 图，加上图中无法写全的业务约束</p>
-<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">实体有稳定身份，教学班使用 Cno＋Term＋ClassNo</span></li><li><span class="list-marker">02</span><span class="list-text">学生与班为 m:n，课程与班、教师与班均为 1:n</span></li><li><span class="list-marker">03</span><span class="list-text">Grade 和 AppliedAt 放在选课联系上，两端次数按同一记法标注</span></li><li><span class="list-marker">04</span><span class="list-text">多教师、排课和学分统计属于 v1 之外的扩展需求</span></li><li><span class="list-marker">05</span><span class="list-text">全局图保留教师与讲授联系；容量与并发名额由后续实现保证</span></li></ol></div></div></div>
+<div class="slide-main-content"><div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">实体有稳定身份，教学班使用 <code>(Cno, Term, ClassNo)</code></span></li><li><span class="list-marker">02</span><span class="list-text">学生与班为 \(m:n\)，课程与班、教师与班均为 \(1:n\)</span></li><li><span class="list-marker">03</span><span class="list-text"><code>Grade</code> 和 <code>AppliedAt</code> 放在选课联系上，两端次数按同一记法标注</span></li><li><span class="list-marker">04</span><span class="list-text">多教师、排课和学分统计属于 v1 之外的扩展需求</span></li><li><span class="list-marker">05</span><span class="list-text">全局图保留教师与讲授联系；容量与并发名额由后续实现保证</span></li></ol></div></div></div>
     <div class="numeric-progress">18/20</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:90.0000%"></div></div>
@@ -250,7 +250,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.2</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么同为 01 的三个教学班不能合并成一个？</span></li><li><span class="question-no">02</span><span class="question-text">图上靠近“系”的 0..* 应怎样读？</span></li><li><span class="question-no">03</span><span class="question-text">为什么 80 和 95 不能作为同一学生的单一成绩属性？</span></li><li><span class="question-no">04</span><span class="question-text">怎样用三条排课记录证明拆成三对关系会丢失信息？</span></li><li><span class="question-no">05</span><span class="question-text">ISA 的双线和叉号分别表达什么约束？</span></li><li><span class="question-no">06</span><span class="question-text">如果把每班一位教师改成多人授课，需要改动模型的哪些部分？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么同为 <code>01</code> 的三个教学班不能合并成一个？</span></li><li><span class="question-no">02</span><span class="question-text">图上靠近“系”的 \(0\mathinner{..}*\) 应怎样读？</span></li><li><span class="question-no">03</span><span class="question-text">为什么 80 和 95 不能作为同一学生的单一成绩属性？</span></li><li><span class="question-no">04</span><span class="question-text">怎样用三条排课记录证明拆成三对关系会丢失信息？</span></li><li><span class="question-no">05</span><span class="question-text">ISA 的双线和叉号分别表达什么约束？</span></li><li><span class="question-no">06</span><span class="question-text">如果把每班一位教师改成多人授课，需要改动模型的哪些部分？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-7-1.html" title="上一节：7.1 数据库设计总览与需求分析" aria-label="上一节：7.1 数据库设计总览与需求分析">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

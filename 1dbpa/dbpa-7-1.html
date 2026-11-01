@@ -160,7 +160,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1 <span>|</span> 7.2</div>
     <h2 class="slide-title">课堂样本 v1：系统自动决定选课结果</h2>
     <div class="slide-content"><p class="slide-lead">以下规则和数量均为教学假设，不是学校现行制度或实测数据</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 76%"><colgroup><col style="width:24%"><col style="width:76%"></colgroup><thead><tr><th>需求编号</th><th>已固定的课堂规则</th></tr></thead><tbody><tr><td>R01 身份</td><td>课程号 Cno＋学期 Term＋局部班号 ClassNo</td></tr><tr><td>R02 申请</td><td>在籍学生在开放期申请；重复与容量检查通过后，保存选课</td></tr><tr><td>R03 权限</td><td>学生只为本人申请；任课教师可读取所教班级名单和登记成绩</td></tr><tr><td>R04 失败</td><td>不在开放期、无资格、重复、满员均拒绝；拒绝不新增选课行</td></tr><tr><td>R05 边界</td><td>本版无教师审批；退课、缴费、时间冲突与匿名评价另列扩展</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 76%"><colgroup><col style="width:24%"><col style="width:76%"></colgroup><thead><tr><th>需求编号</th><th>已固定的课堂规则</th></tr></thead><tbody><tr><td><code>R01</code> 身份</td><td>课程号 <code>Cno</code>＋学期 <code>Term</code>＋局部班号 <code>ClassNo</code></td></tr><tr><td><code>R02</code> 申请</td><td>在籍学生在开放期申请；重复与容量检查通过后，保存选课</td></tr><tr><td><code>R03</code> 权限</td><td>学生只为本人申请；任课教师可读取所教班级名单和登记成绩</td></tr><tr><td><code>R04</code> 失败</td><td>不在开放期、无资格、重复、满员均拒绝；拒绝不新增选课行</td></tr><tr><td><code>R05</code> 边界</td><td>本版无教师审批；退课、缴费、时间冲突与匿名评价另列扩展</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">12/20</div>
     <div class="semantic-label">DICTIONARY EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:60.0000%"></div></div>
@@ -170,9 +170,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">选课申请的数据项与结构</h2>
-    <div class="slide-content"><p class="slide-lead">教学样本：学生 20260001 申请 C001 课程在 2026-1 学期的 01 班</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 28% 48%"><colgroup><col style="width:24%"><col style="width:28%"><col style="width:48%"></colgroup><thead><tr><th>数据项</th><th>类型与长度</th><th>值域、含义或关系</th></tr></thead><tbody><tr><td>Sno（学号）</td><td>8 位字符</td><td>八位数字；引用在籍学生身份</td></tr><tr><td>班的三项身份</td><td>4／6／2 位字符</td><td>C001／2026-1／01，共同识别教学班</td></tr><tr><td>AppliedAt</td><td>日期时间，精确到秒</td><td>服务器接收时间，用于开放期判断</td></tr><tr><td>ResultCode</td><td>1 位整数</td><td>0 成功；1 非开放期；2 无资格；3 重复；4 满员</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>申请＝Sno＋Cno＋Term＋ClassNo＋AppliedAt；结果另加 ResultCode</p></div></div>
+    <div class="slide-content"><p class="slide-lead">教学样本：学生 <code>20260001</code> 申请 <code>C001</code> 课程在 <code>2026-1</code> 学期的 <code>01</code> 班</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 28% 48%"><colgroup><col style="width:24%"><col style="width:28%"><col style="width:48%"></colgroup><thead><tr><th>数据项</th><th>类型与长度</th><th>值域、含义或关系</th></tr></thead><tbody><tr><td><code>Sno</code>（学号）</td><td>8 位字符</td><td>八位数字；引用在籍学生身份</td></tr><tr><td>班的三项身份</td><td>4／6／2 位字符</td><td><code>C001</code>／<code>2026-1</code>／<code>01</code>，共同识别教学班</td></tr><tr><td><code>AppliedAt</code></td><td>日期时间，精确到秒</td><td>服务器接收时间，用于开放期判断</td></tr><tr><td><code>ResultCode</code></td><td>1 位整数</td><td><code>0</code> 成功；<code>1</code> 非开放期；<code>2</code> 无资格；<code>3</code> 重复；<code>4</code> 满员</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>申请包含 <code>Sno</code>、<code>Cno</code>、<code>Term</code>、<code>ClassNo</code>、<code>AppliedAt</code>；结果另加 <code>ResultCode</code></p></div></div>
     <div class="numeric-progress">13/20</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:65.0000%"></div></div>
@@ -182,8 +182,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">申请流、结果流与选课存储</h2>
-    <div class="slide-content"><p class="slide-lead">R06 规模假设：3 万学生，每学期 20 万条选课记录；编号与字段见下载样本</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 43% 38%"><colgroup><col style="width:19%"><col style="width:43%"><col style="width:38%"></colgroup><thead><tr><th>条目</th><th>来源、去向与内容</th><th>流量或读写要求</th></tr></thead><tbody><tr><td>D01 申请流</td><td>学生端 → P01；传送申请结构</td><td>开放期平均 5 次/秒，高峰 100 次/秒</td></tr><tr><td>D02 结果流</td><td>P01 → 学生端；返回处理结果</td><td>每个申请返回一个结果，同步于申请流</td></tr><tr><td>S01 存储</td><td>P01 写入成功申请；向名单与成绩查询供数</td><td>联机读写，成功则新增一行</td></tr></tbody></table></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>R06</code> 规模假设：3 万学生，每学期 20 万条选课记录；编号与字段见下载样本</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 43% 38%"><colgroup><col style="width:19%"><col style="width:43%"><col style="width:38%"></colgroup><thead><tr><th>条目</th><th>来源、去向与内容</th><th>流量或读写要求</th></tr></thead><tbody><tr><td><code>D01</code> 申请流</td><td>学生端 → <code>P01</code>；传送申请结构</td><td>开放期平均 5 次/秒，高峰 100 次/秒</td></tr><tr><td><code>D02</code> 结果流</td><td><code>P01</code> → 学生端；返回处理结果</td><td>每个申请返回一个结果，同步于申请流</td></tr><tr><td><code>S01</code> 存储</td><td><code>P01</code> 写入成功申请；向名单与成绩查询供数</td><td>联机读写，成功则新增一行</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>假设负载：查成绩 40 次/秒、查名单 10 次/秒；真实流量须实测</p></div></div>
     <div class="numeric-progress">14/20</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
@@ -194,8 +194,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">P01 的处理规则与验收案例</h2>
-    <div class="slide-content"><p class="slide-lead">P01 接收 D01、返回 D02；在高峰 100 次/秒下，95% 申请须在 2 秒内返回</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 30% 33%"><colgroup><col style="width:37%"><col style="width:30%"><col style="width:33%"></colgroup><thead><tr><th>输入与初始状态</th><th>预期结果</th><th>存储变化</th></tr></thead><tbody><tr><td>在籍、开放期、未重复；39/40 人</td><td>ResultCode=0</td><td>新增 1 行，变为 40 人</td></tr><tr><td>同一学生重复申请同一班</td><td>ResultCode=3</td><td>不新增记录</td></tr><tr><td>另一学生申请已满的 40 人班</td><td>ResultCode=4</td><td>仍为 40 人</td></tr><tr><td>两人同时争最后 1 个名额</td><td>至多 1 人成功</td><td>总人数不得超过 40</td></tr></tbody></table></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>P01</code> 接收 <code>D01</code>、返回 <code>D02</code>；在高峰 100 次/秒下，95% 申请须在 2 秒内返回</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 30% 33%"><colgroup><col style="width:37%"><col style="width:30%"><col style="width:33%"></colgroup><thead><tr><th>输入与初始状态</th><th>预期结果</th><th>存储变化</th></tr></thead><tbody><tr><td>在籍、开放期、未重复；39/40 人</td><td><code>ResultCode=0</code></td><td>新增 1 行，变为 40 人</td></tr><tr><td>同一学生重复申请同一班</td><td><code>ResultCode=3</code></td><td>不新增记录</td></tr><tr><td>另一学生申请已满的 40 人班</td><td><code>ResultCode=4</code></td><td>仍为 40 人</td></tr><tr><td>两人同时争最后 1 个名额</td><td>至多 1 人成功</td><td>总人数不得超过 40</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>检查顺序：开放期→资格→重复→容量；拒绝不写入，本版无教师审批</p></div></div>
     <div class="numeric-progress">15/20</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
@@ -219,7 +219,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">需求材料在后续设计中的用途</h2>
     <div class="slide-content"><p class="slide-lead">下载材料包含完整条目、示例取值、边界与验收记录栏</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>概念设计输入</h3><p>由 R01 识别课程与教学班身份；由 R02、R03 找到学生、选课、教师与讲授联系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>约束与性能要求</h3><p>用 P01 的四种输入检查约束；R06 的规模和性能要求用于物理设计</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>概念设计输入</h3><p>由 <code>R01</code> 识别课程与教学班身份；由 <code>R02</code>、<code>R03</code> 找到学生、选课、教师与讲授联系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>约束与性能要求</h3><p>用 <code>P01</code> 的四种输入检查约束；<code>R06</code> 的规模和性能要求用于物理设计</p></article></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p><a href="resources/decks/dbpa-7-1/assets/practice/requirements-sample.md" download>下载课堂需求与数据字典样本</a></p></div></div>
     <div class="numeric-progress">17/20</div>
     <div class="semantic-label">HANDOFF</div>
@@ -251,7 +251,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH07 <span>|</span> 7.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">导入 Excel 还缺少哪些设计工作？试运行太慢时应回查什么？</span></li><li><span class="question-no">02</span><span class="question-text">六阶段分别交出哪份材料，谁负责确认？</span></li><li><span class="question-no">03</span><span class="question-text">R02、R03、R04 分别包含哪些处理、安全与完整性要求？</span></li><li><span class="question-no">04</span><span class="question-text">两门课都叫“01 班”，怎样才能唯一指向目标教学班？</span></li><li><span class="question-no">05</span><span class="question-text">用 D01、D02、S01、P01 说明申请如何流动、保存和返回</span></li><li><span class="question-no">06</span><span class="question-text">哪些数量是课堂假设？要用什么调查证据替换它们？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">导入 Excel 还缺少哪些设计工作？试运行太慢时应回查什么？</span></li><li><span class="question-no">02</span><span class="question-text">六阶段分别交出哪份材料，谁负责确认？</span></li><li><span class="question-no">03</span><span class="question-text"><code>R02</code>、<code>R03</code>、<code>R04</code> 分别包含哪些处理、安全与完整性要求？</span></li><li><span class="question-no">04</span><span class="question-text">两门课都叫“01 班”，怎样才能唯一指向目标教学班？</span></li><li><span class="question-no">05</span><span class="question-text">用 <code>D01</code>、<code>D02</code>、<code>S01</code>、<code>P01</code> 说明申请如何流动、保存和返回</span></li><li><span class="question-no">06</span><span class="question-text">哪些数量是课堂假设？要用什么调查证据替换它们？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-6-2.html" title="上一节：6.2 依赖推理与模式分解" aria-label="上一节：6.2 依赖推理与模式分解">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

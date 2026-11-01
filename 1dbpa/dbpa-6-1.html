@@ -56,8 +56,8 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.1</div>
     <h2 class="slide-title">选课记录中的院长信息重复</h2>
     <div class="slide-content"><p class="slide-lead">本例假设：学生只属一个学院；学院只有一位现任院长；每生每课只记一个成绩</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 24% 25% 17% 17%"><colgroup><col style="width:17%"><col style="width:24%"><col style="width:25%"><col style="width:17%"><col style="width:17%"></colgroup><thead><tr><th>Sno</th><th>School</th><th>Mname</th><th>Cno</th><th>Grade</th></tr></thead><tbody><tr><td>S01</td><td>计算机</td><td>王明</td><td>C01</td><td>80</td></tr><tr><td>S01</td><td>计算机</td><td>王明</td><td>C02</td><td>90</td></tr><tr><td>S02</td><td>计算机</td><td>王明</td><td>C01</td><td>75</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>这张 Enroll 表混合了学生归属、学院院长和选课成绩</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 24% 25% 17% 17%"><colgroup><col style="width:17%"><col style="width:24%"><col style="width:25%"><col style="width:17%"><col style="width:17%"></colgroup><thead><tr><th><code>Sno</code></th><th><code>School</code></th><th><code>Mname</code></th><th><code>Cno</code></th><th><code>Grade</code></th></tr></thead><tbody><tr><td><code>S01</code></td><td>计算机</td><td>王明</td><td><code>C01</code></td><td>80</td></tr><tr><td><code>S01</code></td><td>计算机</td><td>王明</td><td><code>C02</code></td><td>90</td></tr><tr><td><code>S02</code></td><td>计算机</td><td>王明</td><td><code>C01</code></td><td>75</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>这张 <code>Enroll</code> 表混合了学生归属、学院院长和选课成绩</p></div></div>
     <div class="numeric-progress">3/19</div>
     <div class="semantic-label">DESIGN PROBLEM</div>
     <div class="progress-track"><div class="progress-fill" style="width:15.7895%"></div></div>
@@ -68,7 +68,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">Enroll 的更新、插入与删除异常</h2>
     <div class="slide-content"><p class="slide-lead">上一页的三行数据同时保存选课、学生和学院信息</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 39% 37%"><colgroup><col style="width:24%"><col style="width:39%"><col style="width:37%"></colgroup><thead><tr><th>操作</th><th>在 Enroll 中的结果</th><th>本应独立保存的事实</th></tr></thead><tbody><tr><td>王明换为李华</td><td>三行都要改；漏改会矛盾</td><td>计算机学院的现任院长</td></tr><tr><td>新建物理学院</td><td>尚无学生、课程，无法形成完整选课行</td><td>新学院及其院长</td></tr><tr><td>删掉三行选课</td><td>学院与院长信息也随之消失</td><td>即使没有选课，学院仍存在</td></tr></tbody></table></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 39% 37%"><colgroup><col style="width:24%"><col style="width:39%"><col style="width:37%"></colgroup><thead><tr><th>操作</th><th>在 <code>Enroll</code> 中的结果</th><th>本应独立保存的事实</th></tr></thead><tbody><tr><td>王明换为李华</td><td>三行都要改；漏改会矛盾</td><td>计算机学院的现任院长</td></tr><tr><td>新建物理学院</td><td>尚无学生、课程，无法形成完整选课行</td><td>新学院及其院长</td></tr><tr><td>删掉三行选课</td><td>学院与院长信息也随之消失</td><td>即使没有选课，学院仍存在</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>学院及其院长信息可以独立于选课记录存在</p></div></div>
     <div class="numeric-progress">4/19</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
@@ -79,9 +79,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.1</div>
     <h2 class="slide-title">相同 Sno 必须对应相同 School</h2>
-    <div class="slide-content"><p class="slide-lead">函数依赖 X→Y：每个合法实例中，只要两行 X 相同，Y 就必须相同</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 64%"><colgroup><col style="width:36%"><col style="width:64%"></colgroup><thead><tr><th>业务规则</th><th>本例依赖集 F</th></tr></thead><tbody><tr><td>学生只属一个学院</td><td>Sno→School</td></tr><tr><td>学院只有一位现任院长</td><td>School→Mname</td></tr><tr><td>每生每课只记一个成绩</td><td>(Sno,Cno)→Grade</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>X 是决定因素；Y⊆X 为平凡依赖。当前样本无冲突，不能证明依赖成立</p></div></div>
+    <div class="slide-content"><p class="slide-lead">函数依赖 \(X\to Y\)：每个合法实例中，只要两行 \(X\) 相同，\(Y\) 就必须相同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="36% 64%"><colgroup><col style="width:36%"><col style="width:64%"></colgroup><thead><tr><th>业务规则</th><th>本例依赖集 \(F\)</th></tr></thead><tbody><tr><td>学生只属一个学院</td><td>\(\mathrm{Sno}\to\mathrm{School}\)</td></tr><tr><td>学院只有一位现任院长</td><td>\(\mathrm{School}\to\mathrm{Mname}\)</td></tr><tr><td>每生每课只记一个成绩</td><td>\((\mathrm{Sno},\mathrm{Cno})\to\mathrm{Grade}\)</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>\(X\) 是决定因素；\(Y\subseteq X\) 为平凡依赖。当前样本无冲突，不能证明依赖成立</p></div></div>
     <div class="numeric-progress">5/19</div>
     <div class="semantic-label">FUNCTIONAL DEPENDENCY</div>
     <div class="progress-track"><div class="progress-fill" style="width:26.3158%"></div></div>
@@ -92,7 +92,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.1</div>
     <h2 class="slide-title">Enroll 的码、主属性与依赖类型</h2>
     <div class="slide-content"><p class="slide-lead">仅按给定业务规则推理，不增加其他函数依赖</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>候选码与超码</h3><p>(Sno,Cno) 决定全部列，且两列都不能省；再加 School 仍是超码，但不再是候选码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>主属性与非主属性</h3><p>主属性：Sno、Cno；其余 School、Mname、Grade 都是非主属性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完全依赖</h3><p>成绩需要学号和课号共同确定；单独 Sno 或 Cno 都不能决定 Grade</p></article><article class="content-card emphasis-card" tabindex="0"><h3>部分依赖</h3><p>Sno 即可决定 School、Mname；它们对 (Sno,Cno) 都是部分依赖</p></article></div></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>候选码与超码</h3><p><code>(Sno, Cno)</code> 决定全部列，且两列都不能省；再加 <code>School</code> 仍是超码，但不再是候选码</p></article><article class="content-card emphasis-card" tabindex="0"><h3>主属性与非主属性</h3><p>主属性：<code>Sno</code>、<code>Cno</code>；其余 <code>School</code>、<code>Mname</code>、<code>Grade</code> 都是非主属性</p></article><article class="content-card emphasis-card" tabindex="0"><h3>完全依赖</h3><p>成绩需要学号和课号共同确定；单独 <code>Sno</code> 或 <code>Cno</code> 都不能决定 <code>Grade</code></p></article><article class="content-card emphasis-card" tabindex="0"><h3>部分依赖</h3><p><code>Sno</code> 即可决定 <code>School</code>、<code>Mname</code>；它们对 <code>(Sno, Cno)</code> 都是部分依赖</p></article></div></div></div>
     <div class="numeric-progress">6/19</div>
     <div class="semantic-label">KEYS AND DEPENDENCIES</div>
     <div class="progress-track"><div class="progress-fill" style="width:31.5789%"></div></div>
@@ -102,8 +102,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">传递依赖的条件与反例</h2>
-    <div class="slide-content"><p class="slide-lead">教材定义：X→Y、Y→Z，且 Y⊄X、Z⊄Y、Y↛X</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 28% 32%"><colgroup><col style="width:40%"><col style="width:28%"><col style="width:32%"></colgroup><thead><tr><th>检查对象</th><th>是否满足条件</th><th>判断依据</th></tr></thead><tbody><tr><td>Sno→School→Mname</td><td>满足</td><td>学院不能决定某一学生；两步均非平凡</td></tr><tr><td>A→B→B</td><td>不满足</td><td>第二步 B→B 是平凡依赖，Z⊆Y</td></tr><tr><td>A→B→C，且 B→A</td><td>不满足</td><td>B 可以反向决定 A</td></tr></tbody></table></div></div>
+    <div class="slide-content"><p class="slide-lead">教材定义：\(X\to Y\)、\(Y\to Z\)，且 \(Y\nsubseteq X\)、\(Z\nsubseteq Y\)、\(Y\nrightarrow X\)</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="40% 28% 32%"><colgroup><col style="width:40%"><col style="width:28%"><col style="width:32%"></colgroup><thead><tr><th>检查对象</th><th>是否满足条件</th><th>判断依据</th></tr></thead><tbody><tr><td>\(\mathrm{Sno}\to\mathrm{School}\to\mathrm{Mname}\)</td><td>满足</td><td>学院不能决定某一学生；两步均非平凡</td></tr><tr><td>\(A\to B\to B\)</td><td>不满足</td><td>第二步 \(B\to B\) 是平凡依赖，\(Z\subseteq Y\)</td></tr><tr><td>\(A\to B\to C\)，且 \(B\to A\)</td><td>不满足</td><td>\(B\) 可以反向决定 \(A\)</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>传递依赖是通用定义；“非主属性传递依赖码”是判断 3NF 时的应用</p></div></div>
     <div class="numeric-progress">7/19</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
@@ -115,8 +115,8 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">Enroll 的 2NF 与 3NF 分解</h2>
     <div class="slide-content"><p class="slide-lead">选课成绩、学生归属与学院院长分别存入三张表</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="21% 48% 31%"><colgroup><col style="width:21%"><col style="width:48%"><col style="width:31%"></colgroup><thead><tr><th>阶段</th><th>关系模式</th><th>保存的事实</th></tr></thead><tbody><tr><td>原表</td><td>Enroll 的五列（见前页）</td><td>三类事实混在一起</td></tr><tr><td>达到 2NF</td><td>SC(Sno,Cno,Grade)；Student(Sno,School,Mname)</td><td>分开选课和学生信息</td></tr><tr><td>达到 3NF</td><td>SC；StudentSchool(Sno,School)；SchoolDean(School,Mname)</td><td>学院院长单独维护</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>4NF ⊂ BCNF ⊂ 3NF ⊂ 2NF ⊂ 1NF；本节解释依据，6.2 验证分解</p></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="21% 48% 31%"><colgroup><col style="width:21%"><col style="width:48%"><col style="width:31%"></colgroup><thead><tr><th>阶段</th><th>关系模式</th><th>保存的事实</th></tr></thead><tbody><tr><td>原表</td><td><code>Enroll</code> 的五列（见前页）</td><td>三类事实混在一起</td></tr><tr><td>达到 2NF</td><td><code>SC(Sno, Cno, Grade)</code>；<code>Student(Sno, School, Mname)</code></td><td>分开选课和学生信息</td></tr><tr><td>达到 3NF</td><td><code>SC</code>；<code>StudentSchool(Sno, School)</code>；<code>SchoolDean(School, Mname)</code></td><td>学院院长单独维护</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>\(\mathrm{4NF}\subset\mathrm{BCNF}\subset\mathrm{3NF}\subset\mathrm{2NF}\subset\mathrm{1NF}\)；本节解释依据，6.2 验证分解</p></div></div>
     <div class="numeric-progress">8/19</div>
     <div class="semantic-label">NORMAL FORMS</div>
     <div class="progress-track"><div class="progress-fill" style="width:42.1053%"></div></div>
@@ -127,7 +127,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">1NF 到 4NF，判断条件逐步收紧</h2>
     <div class="slide-content"><p class="slide-lead">候选码和依赖决定范式；高范式同时满足较低范式的条件</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 83%"><colgroup><col style="width:17%"><col style="width:83%"></colgroup><thead><tr><th>范式</th><th>判断条件</th></tr></thead><tbody><tr><td>1NF</td><td>每个分量是原子值</td></tr><tr><td>2NF</td><td>满足 1NF，且每个非主属性完全依赖每个候选码</td></tr><tr><td>3NF</td><td>在 1NF 上，每个非平凡 X→A 均满足：X 是超码或 A 是主属性</td></tr><tr><td>BCNF</td><td>在 1NF 上，每个非平凡函数依赖的左部都是超码</td></tr><tr><td>4NF</td><td>在 1NF 上，每个非平凡多值依赖的左部都是超码</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 83%"><colgroup><col style="width:17%"><col style="width:83%"></colgroup><thead><tr><th>范式</th><th>判断条件</th></tr></thead><tbody><tr><td>1NF</td><td>每个分量是原子值</td></tr><tr><td>2NF</td><td>满足 1NF，且每个非主属性完全依赖每个候选码</td></tr><tr><td>3NF</td><td>在 1NF 上，每个非平凡 \(X\to A\) 均满足：\(X\) 是超码或 \(A\) 是主属性</td></tr><tr><td>BCNF</td><td>在 1NF 上，每个非平凡函数依赖的左部都是超码</td></tr><tr><td>4NF</td><td>在 1NF 上，每个非平凡多值依赖的左部都是超码</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">9/19</div>
     <div class="semantic-label">NORMAL FORMS</div>
     <div class="progress-track"><div class="progress-fill" style="width:47.3684%"></div></div>
@@ -137,9 +137,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">2NF 消除非主属性对码的部分依赖</h2>
-    <div class="slide-content"><p class="slide-lead">候选码是 <code>(Sno,Cno)</code>；<code>School</code>、<code>Mname</code>、<code>Grade</code> 是非主属性</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 33% 34%"><colgroup><col style="width:33%"><col style="width:33%"><col style="width:34%"></colgroup><thead><tr><th>依赖</th><th>判断</th><th>原因／分解方向</th></tr></thead><tbody><tr><td><code>(Sno, Cno) → Grade</code></td><td>完全依赖</td><td>Sno、Cno 都不能单独决定 Grade；留在 SC</td></tr><tr><td><code>(Sno,Cno)</code> 对 School</td><td>部分依赖</td><td>因为 Sno→School；移到 Student</td></tr><tr><td><code>(Sno,Cno)</code> 对 Mname</td><td>部分依赖</td><td>因为 Sno→Mname；移到 Student</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>2NF 分解为 SC(Sno,Cno,Grade) 与 Student(Sno,School,Mname)；Student 的候选码是 Sno</p></div></div>
+    <div class="slide-content"><p class="slide-lead">候选码是 <code>(Sno, Cno)</code>；<code>School</code>、<code>Mname</code>、<code>Grade</code> 是非主属性</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="33% 33% 34%"><colgroup><col style="width:33%"><col style="width:33%"><col style="width:34%"></colgroup><thead><tr><th>依赖</th><th>判断</th><th>原因／分解方向</th></tr></thead><tbody><tr><td>\((\mathrm{Sno},\mathrm{Cno})\to\mathrm{Grade}\)</td><td>完全依赖</td><td><code>Sno</code>、<code>Cno</code> 都不能单独决定 <code>Grade</code>；留在 <code>SC</code></td></tr><tr><td><code>(Sno, Cno)</code> 对 <code>School</code></td><td>部分依赖</td><td>因为 \(\mathrm{Sno}\to\mathrm{School}\)；移到 <code>Student</code></td></tr><tr><td><code>(Sno, Cno)</code> 对 <code>Mname</code></td><td>部分依赖</td><td>因为 \(\mathrm{Sno}\to\mathrm{Mname}\)；移到 <code>Student</code></td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>2NF 分解为 <code>SC(Sno, Cno, Grade)</code> 与 <code>Student(Sno, School, Mname)</code>；<code>Student</code> 的候选码是 <code>Sno</code></p></div></div>
     <div class="numeric-progress">10/19</div>
     <div class="semantic-label">SECOND NORMAL FORM</div>
     <div class="progress-track"><div class="progress-fill" style="width:52.6316%"></div></div>
@@ -149,9 +149,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">Student 中的传递依赖与 3NF 分解</h2>
-    <div class="slide-content"><p class="slide-lead">Student(Sno,School,Mname) 的候选码是 Sno；Mname 是非主属性</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 42% 41%"><colgroup><col style="width:17%"><col style="width:42%"><col style="width:41%"></colgroup><thead><tr><th>检查</th><th>当前 Student</th><th>判断与处理</th></tr></thead><tbody><tr><td>依赖</td><td>Sno→School→Mname；School↛Sno</td><td>Mname 传递依赖 Sno</td></tr><tr><td>重复</td><td>S01、S02 都存“计算机—王明”</td><td>SchoolDean 只存一次</td></tr><tr><td>更新</td><td>换院长要改两名学生的行</td><td>只更新一条院长记录</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>得到 StudentSchool(Sno,School) 和 SchoolDean(School,Mname)</p></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>Student(Sno, School, Mname)</code> 的候选码是 <code>Sno</code>；<code>Mname</code> 是非主属性</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 42% 41%"><colgroup><col style="width:17%"><col style="width:42%"><col style="width:41%"></colgroup><thead><tr><th>检查</th><th>当前 <code>Student</code></th><th>判断与处理</th></tr></thead><tbody><tr><td>依赖</td><td>\(\mathrm{Sno}\to\mathrm{School}\to\mathrm{Mname}\)；\(\mathrm{School}\nrightarrow\mathrm{Sno}\)</td><td><code>Mname</code> 传递依赖 <code>Sno</code></td></tr><tr><td>重复</td><td><code>S01</code>、<code>S02</code> 都存“计算机—王明”</td><td><code>SchoolDean</code> 只存一次</td></tr><tr><td>更新</td><td>换院长要改两名学生的行</td><td>只更新一条院长记录</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>得到 <code>StudentSchool(Sno, School)</code> 和 <code>SchoolDean(School, Mname)</code></p></div></div>
     <div class="numeric-progress">11/19</div>
     <div class="semantic-label">THIRD NORMAL FORM</div>
     <div class="progress-track"><div class="progress-fill" style="width:57.8947%"></div></div>
@@ -161,9 +161,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">STJ 满足 3NF，不满足 BCNF</h2>
-    <div class="slide-content"><p class="slide-lead">STJ 记录学生 S、教师 T、课程 J；教师只教一门课，学生选定课程即确定教师</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 38% 39%"><colgroup><col style="width:23%"><col style="width:38%"><col style="width:39%"></colgroup><thead><tr><th>检查</th><th>已知依赖与候选码</th><th>判断</th></tr></thead><tbody><tr><td>业务依赖</td><td>(S,J)→T；T→J</td><td>可推出 (S,T)→J</td></tr><tr><td>候选码</td><td>(S,J)、(S,T)</td><td>三列均为主属性；T 不是超码</td></tr><tr><td>3NF</td><td>T→J 的右部 J 是主属性</td><td>满足 3NF</td></tr><tr><td>BCNF</td><td>T→J 的左部 T 不是超码</td><td>不满足 BCNF</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>拆为 ST(S,T) 与 TJ(T,J)，教师所教课程只记一次；6.2 再验证分解</p></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>STJ</code> 记录学生 \(S\)、教师 \(T\)、课程 \(J\)；教师只教一门课，学生选定课程即确定教师</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 38% 39%"><colgroup><col style="width:23%"><col style="width:38%"><col style="width:39%"></colgroup><thead><tr><th>检查</th><th>已知依赖与候选码</th><th>判断</th></tr></thead><tbody><tr><td>业务依赖</td><td>\((S,J)\to T\)；\(T\to J\)</td><td>可推出 \((S,T)\to J\)</td></tr><tr><td>候选码</td><td>\((S,J)\)、\((S,T)\)</td><td>三列均为主属性；\(T\) 不是超码</td></tr><tr><td>3NF</td><td>\(T\to J\) 的右部 \(J\) 是主属性</td><td>满足 3NF</td></tr><tr><td>BCNF</td><td>\(T\to J\) 的左部 \(T\) 不是超码</td><td>不满足 BCNF</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>拆为 <code>ST(S, T)</code> 与 <code>TJ(T, J)</code>，教师所教课程只记一次；6.2 再验证分解</p></div></div>
     <div class="numeric-progress">12/19</div>
     <div class="semantic-label">BCNF</div>
     <div class="progress-track"><div class="progress-fill" style="width:63.1579%"></div></div>
@@ -173,8 +173,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">两名教师、两本书，需要四种组合</h2>
-    <div class="slide-content"><p class="slide-lead">Teaching(Course,Teacher,Book)：同一课程的每位教师都使用同一套参考书</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th>Course</th><th>Teacher</th><th>Book</th></tr></thead><tbody><tr><td>数据库</td><td>张老师</td><td>书 A</td></tr><tr><td>数据库</td><td>张老师</td><td>书 B</td></tr><tr><td>数据库</td><td>李老师</td><td>书 A</td></tr><tr><td>数据库</td><td>李老师</td><td>书 B</td></tr></tbody></table></div></div>
+    <div class="slide-content"><p class="slide-lead"><code>Teaching(Course, Teacher, Book)</code>：同一课程的每位教师都使用同一套参考书</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 35% 35%"><colgroup><col style="width:30%"><col style="width:35%"><col style="width:35%"></colgroup><thead><tr><th><code>Course</code></th><th><code>Teacher</code></th><th><code>Book</code></th></tr></thead><tbody><tr><td>数据库</td><td>张老师</td><td>书 A</td></tr><tr><td>数据库</td><td>张老师</td><td>书 B</td></tr><tr><td>数据库</td><td>李老师</td><td>书 A</td></tr><tr><td>数据库</td><td>李老师</td><td>书 B</td></tr></tbody></table></div></div>
 <div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>若缺少“李老师—书 B”，两人的书籍集合就不同，当前数据不满足独立性</p></div></div>
     <div class="numeric-progress">13/19</div>
     <div class="semantic-label">MULTIVALUED DEPENDENCY</div>
@@ -185,9 +185,9 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">多值依赖与关系的属性范围</h2>
-    <div class="slide-content"><p class="slide-lead">X→→Y：固定 X 后，Y 的取值集合与剩余属性 Z=U−X−Y 无关</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 25% 32%"><colgroup><col style="width:43%"><col style="width:25%"><col style="width:32%"></colgroup><thead><tr><th>完整关系</th><th>独立性检查</th><th>平凡性</th></tr></thead><tbody><tr><td>Teaching：课程、教师、书籍</td><td>教师与书籍独立</td><td>非平凡：右部不含于左部，且仍剩 Book</td></tr><tr><td>CourseTeacher：课程、教师</td><td>不再有剩余属性组</td><td>平凡：X∪Y=U</td></tr></tbody></table></div></div>
-<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非平凡要求 Y⊄X 且 X∪Y≠U；“一门课有多名教师”本身不足以判断独立性</p></div></div>
+    <div class="slide-content"><p class="slide-lead">\(X\twoheadrightarrow Y\)：固定 \(X\) 后，\(Y\) 的取值集合与剩余属性 \(Z=U-X-Y\) 无关</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 25% 32%"><colgroup><col style="width:43%"><col style="width:25%"><col style="width:32%"></colgroup><thead><tr><th>完整关系</th><th>独立性检查</th><th>平凡性</th></tr></thead><tbody><tr><td><code>Teaching</code>：课程、教师、书籍</td><td>教师与书籍独立</td><td>非平凡：右部不含于左部，且仍剩 <code>Book</code></td></tr><tr><td><code>CourseTeacher</code>：课程、教师</td><td>不再有剩余属性组</td><td>平凡：\(X\cup Y=U\)</td></tr></tbody></table></div></div>
+<div class="component component-text text-takeaway"><span class="text-component-label">Takeaway</span><p>非平凡要求 \(Y\nsubseteq X\) 且 \(X\cup Y\ne U\)；“一门课有多名教师”本身不足以判断独立性</p></div></div>
     <div class="numeric-progress">14/19</div>
     <div class="semantic-label">WORKED EXAMPLE</div>
     <div class="progress-track"><div class="progress-fill" style="width:73.6842%"></div></div>
@@ -197,8 +197,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1 <span>|</span> 6.2</div>
     <h2 class="slide-title">Teaching 的 4NF 分解</h2>
-    <div class="slide-content"><p class="slide-lead">本例无额外非平凡函数依赖；Teaching 的全码是 (Course,Teacher,Book)</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 39% 41%"><colgroup><col style="width:20%"><col style="width:39%"><col style="width:41%"></colgroup><thead><tr><th>检查</th><th>Teaching 三列</th><th>拆为两个二列关系</th></tr></thead><tbody><tr><td>函数依赖</td><td>只有平凡依赖，满足 BCNF</td><td>同样满足 BCNF</td></tr><tr><td>多值依赖</td><td>非平凡；Course 非超码</td><td>同名依赖变为平凡，不违反 4NF</td></tr><tr><td>增加赵老师</td><td>与两本书各插入一行</td><td>CourseTeacher 只加一行</td></tr><tr><td>删除书 B</td><td>删除两位教师对应的行</td><td>CourseBook 只删一行</td></tr></tbody></table></div></div></div>
+    <div class="slide-content"><p class="slide-lead">本例无额外非平凡函数依赖；<code>Teaching</code> 的全码是 <code>(Course, Teacher, Book)</code></p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 39% 41%"><colgroup><col style="width:20%"><col style="width:39%"><col style="width:41%"></colgroup><thead><tr><th>检查</th><th><code>Teaching</code> 三列</th><th>拆为两个二列关系</th></tr></thead><tbody><tr><td>函数依赖</td><td>只有平凡依赖，满足 BCNF</td><td>同样满足 BCNF</td></tr><tr><td>多值依赖</td><td>非平凡；<code>Course</code> 非超码</td><td>同名依赖变为平凡，不违反 4NF</td></tr><tr><td>增加赵老师</td><td>与两本书各插入一行</td><td><code>CourseTeacher</code> 只加一行</td></tr><tr><td>删除书 B</td><td>删除两位教师对应的行</td><td><code>CourseBook</code> 只删一行</td></tr></tbody></table></div></div></div>
     <div class="numeric-progress">15/19</div>
     <div class="semantic-label">FOURTH NORMAL FORM</div>
     <div class="progress-track"><div class="progress-fill" style="width:78.9474%"></div></div>
@@ -209,7 +209,7 @@
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">分表的维护收益与查询成本</h2>
     <div class="slide-content"><p class="slide-lead">分解需满足无损连接；设计评估包括约束检查与查询成本</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>收益</h3><p>每类事实集中维护，减少数据重复与更新异常</p></article><article class="content-card emphasis-card" tabindex="0"><h3>代价</h3><p>常用查询可能要连接更多表，因此需要重新评估和优化查询</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询示例</h3><p>查 S01 的成绩只读 SC；连同院长一起查，需要连接三张表</p></article></div></div>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>收益</h3><p>每类事实集中维护，减少数据重复与更新异常</p></article><article class="content-card emphasis-card" tabindex="0"><h3>代价</h3><p>常用查询可能要连接更多表，因此需要重新评估和优化查询</p></article><article class="content-card emphasis-card" tabindex="0"><h3>查询示例</h3><p>查 <code>S01</code> 的成绩只读 <code>SC</code>；连同院长一起查，需要连接三张表</p></article></div></div>
 <div class="component component-text text-takeaway substep reveal-self"><span class="text-component-label">Takeaway</span><p>6.2 用属性闭包分析依赖，验证分解的依赖保持与无损连接</p></div></div>
     <div class="numeric-progress">16/19</div>
     <div class="semantic-label">NORMALIZATION TRADEOFF</div>
@@ -220,8 +220,8 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">依赖类型与分解结果回顾</h2>
-    <div class="slide-content"><p class="slide-lead">回顾 Enroll、STJ 与 Teaching 的依赖、候选码和分解结果</p>
-<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>Enroll 的依赖与码</h3><p>写出 <code>Sno→School</code>、<code>School→Mname</code>、<code>(Sno,Cno)→Grade</code>；由此判断 <code>(Sno,Cno)</code> 是候选码</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2NF 与 3NF 分解</h3><p>2NF 分开选课与学生信息；3NF 将学院院长单独存表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>STJ 中的 T→J</h3><p>T 不是超码，J 是主属性：满足 3NF 的条件，违反 BCNF 的条件</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Teaching 的独立多值事实</h3><p>Teaching 的教师和书籍彼此独立，拆成 CourseTeacher 与 CourseBook，连接可恢复原组合</p></article></div></div></div>
+    <div class="slide-content"><p class="slide-lead">回顾 <code>Enroll</code>、<code>STJ</code> 与 <code>Teaching</code> 的依赖、候选码和分解结果</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory reveal-items" style="--card-columns:2"><article class="content-card emphasis-card substep" tabindex="0"><h3>Enroll 的依赖与码</h3><p>写出 \(\mathrm{Sno}\to\mathrm{School}\)、\(\mathrm{School}\to\mathrm{Mname}\)、\((\mathrm{Sno},\mathrm{Cno})\to\mathrm{Grade}\)；由此判断 <code>(Sno, Cno)</code> 是候选码</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>2NF 与 3NF 分解</h3><p>2NF 分开选课与学生信息；3NF 将学院院长单独存表</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>STJ 中的 \(T\to J\)</h3><p>\(T\) 不是超码，\(J\) 是主属性：满足 3NF 的条件，违反 BCNF 的条件</p></article><article class="content-card emphasis-card substep" tabindex="0"><h3>Teaching 的独立多值事实</h3><p><code>Teaching</code> 的教师和书籍彼此独立，拆成 <code>CourseTeacher</code> 与 <code>CourseBook</code>，连接可恢复原组合</p></article></div></div></div>
     <div class="numeric-progress">17/19</div>
     <div class="semantic-label">RECAP</div>
     <div class="progress-track"><div class="progress-fill" style="width:89.4737%"></div></div>
@@ -241,7 +241,7 @@
       data-rotate="0" data-scale="1" style="">
     <div class="breadcrumb">DBPA <span>|</span> CH06 <span>|</span> 6.1</div>
     <h2 class="slide-title">本节问题</h2>
-    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">Enroll 的候选码是什么？Grade 与 School 分别形成哪类依赖？</span></li><li><span class="question-no">02</span><span class="question-text"><code>Sno→School→Mname</code> 为何是传递依赖，Student 为何不满足 3NF？</span></li><li><span class="question-no">03</span><span class="question-text">STJ 的两个候选码是什么？为何 3NF 接受而 BCNF 拒绝 <code>T→J</code>？</span></li><li><span class="question-no">04</span><span class="question-text">教师共用两本参考书时，两名教师为何对应 4 条组合元组？</span></li><li><span class="question-no">05</span><span class="question-text">Teaching 为何满足 BCNF 却不满足 4NF？写出两个分解关系</span></li><li><span class="question-no">06</span><span class="question-text">依赖保持和无损连接分别验证分解的什么性质？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text"><code>Enroll</code> 的候选码是什么？<code>Grade</code> 与 <code>School</code> 分别形成哪类依赖？</span></li><li><span class="question-no">02</span><span class="question-text">\(\mathrm{Sno}\to\mathrm{School}\to\mathrm{Mname}\) 为何是传递依赖，<code>Student</code> 为何不满足 3NF？</span></li><li><span class="question-no">03</span><span class="question-text"><code>STJ</code> 的两个候选码是什么？为何 3NF 接受而 BCNF 拒绝 \(T\to J\)？</span></li><li><span class="question-no">04</span><span class="question-text">教师共用两本参考书时，两名教师为何对应 4 条组合元组？</span></li><li><span class="question-no">05</span><span class="question-text"><code>Teaching</code> 为何满足 BCNF 却不满足 4NF？写出两个分解关系</span></li><li><span class="question-no">06</span><span class="question-text">依赖保持和无损连接分别验证分解的什么性质？</span></li></ol><nav class="nav-row" aria-label="课程导航">
       <a class="side-nav nav-previous" href="dbpa-5-2.html" title="上一节：5.2 触发器" aria-label="上一节：5.2 触发器">
         <span class="arrow-safety" aria-hidden="true"></span>
         <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>

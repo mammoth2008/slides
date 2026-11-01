@@ -5,6 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>概念结构设计与 E-R 模型 · Mind Map</title>
   <link rel="stylesheet" href="../../theme/fonts.css">
+  <script>
+    window.__MINDMAP_MATHJAX__ = null;
+    window.MathJax = {
+      startup: {
+        typeset: false,
+        ready: () => {
+          MathJax.startup.defaultReady();
+          window.__MINDMAP_MATHJAX__ = MathJax;
+        }
+      },
+      tex: {inlineMath: [['\\(', '\\)']], displayMath: []}
+    };
+  </script>
+  <script defer src="../../../../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; }
     html, body, #mindmap { width: 100%; height: 100%; background: #fff; }
@@ -23,10 +37,46 @@
   <script src="../../../../resources/impress/vendor/markmap/browser-index.js"></script>
   <script src="../../../../resources/impress/vendor/markmap/index.js"></script>
   <script>
-    const tree = {"content":"概念结构设计与 E-R 模型","children":[{"content":"7.3 · 概念设计","children":[{"content":"实体身份、属性与联系","children":[]},{"content":"二元、递归与三元联系","children":[]},{"content":"min..max 与对端标注法","children":[]},{"content":"弱实体、ISA 与 Part-of","children":[]},{"content":"局部图集成与冲突处理","children":[]},{"content":"选课 v1 全局图与派生值维护","children":[]}]}]};
+    const tree = {"content":"概念结构设计与 E-R 模型","children":[{"content":"7.3 · 概念设计","children":[{"content":"实体身份、属性与联系","children":[]},{"content":"二元、递归与三元联系","children":[]},{"content":"\\(\\mathrm{min}\\mathinner{..}\\mathrm{max}\\) 与对端标注法","children":[]},{"content":"弱实体、ISA 与 Part-of","children":[]},{"content":"局部图集成与冲突处理","children":[]},{"content":"选课 v1 全局图与派生值维护","children":[]}]}]};
     const options = {"color":"#a8542b","maxWidth":600,"spacingHorizontal":88,"spacingVertical":12,"initialExpandLevel":2,"duration":0,"autoFit":false,"fitRatio":0.9,"maxInitialScale":1};
     const api = window.markmap;
-    window.mm = api.Markmap.create("svg#mindmap", {...options, color: () => options.color}, tree);
+    const svg = document.querySelector("svg#mindmap");
+    const mm = new api.Markmap(svg, {...options, color: () => options.color});
+    window.mm = mm;
+    const markmapReady = mm.setData(tree);
+
+    const typesetPendingMath = async () => {
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (!mathJax?.typesetPromise) return;
+      const nodes = Array.from(document.querySelectorAll(".markmap-foreign > div > div"))
+        .filter((node) => !node.dataset.mathTypeset && node.textContent.includes("\\("));
+      if (!nodes.length) return;
+      await mathJax.typesetPromise(nodes);
+      nodes.forEach((node) => { node.dataset.mathTypeset = "true"; });
+      await mm.renderData();
+    };
+
+    const originalToggleNode = mm.toggleNode.bind(mm);
+    mm.toggleNode = async (...args) => {
+      await originalToggleNode(...args);
+      await typesetPendingMath();
+    };
+
+    const initializeMindmapMath = async () => {
+      await markmapReady;
+      const mathJax = window.__MINDMAP_MATHJAX__;
+      if (mathJax?.startup?.promise) {
+        await mathJax.startup.promise;
+        await typesetPendingMath();
+      }
+      await mm.fit();
+    };
+
+    const startMindmapMath = () => {
+      window.__MINDMAP_MATH_READY__ = initializeMindmapMath();
+    };
+    if (document.readyState === "complete") startMindmapMath();
+    else window.addEventListener("load", startMindmapMath, {once: true});
   </script>
 </body>
 </html>
