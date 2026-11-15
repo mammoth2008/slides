@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 3.2 组织上下文并保留字段来源 | HUST</title>
+  <meta name="description" content="从两条固定通知提取三字段，保留缺失与逐字段出处，分开检查JSON语法、字段约定、业务条件和原文支持">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="3-2">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 3.2</div>
+      <h1>组织上下文<br>并保留字段来源</h1>
+      <p class="cover-description">把通知整理成记录，<br>让每个值都能回到原文</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 输入与字段约定</div>
+    <h2 class="slide-title">两条记录都写满了，哪些还需核对？</h2>
+    <div class="slide-content"><p class="slide-lead">先留下初判，再按固定原文与字段约定检查</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-json">[
+  {"title":"讲座报名", "deadline":"2026-11-09",
+   "sourceId":"D1"},
+  {"title":"实践报名", "deadline":20261109,
+   "sourceId":"D2", "checked":true}
+]</code></pre></div></div>
+<div class="component component-text text-inset"><p>这是原任务提供的错误草稿，全部通知与记录均为教学构造。当前没有真实模型调用或模型输出记录</p></div></div></div>
+    <div class="numeric-progress">2/27</div>
+    <div class="semantic-label">A RECORD THAT LOOKS COMPLETE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:7.4074%"></div></div>
+<!-- speaker-notes
+原U06 input.json /draft逐字保留字段与类型，重新排版JSON空白。初判进入原证据单，不增加交付。不要把原固定draft叫本次实测模型返回。
+-->
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 输入与字段约定</div>
+    <h2 class="slide-title">先把原文、身份和行号放在手边</h2>
+    <div class="slide-content"><p class="slide-lead">两项活动各有自己的记录，日期不能跨活动移用</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="16% 14% 70%"><colgroup><col style="width:16%"><col style="width:14%"><col style="width:70%"></colgroup><thead><tr><th>文档</th><th>行号</th><th>固定原文</th></tr></thead><tbody><tr><td><code>D1</code></td><td>1</td><td><code>标题：讲座报名。未给截止日期。</code></td></tr><tr><td><code>D2</code></td><td>1</td><td><code>标题：实践报名。截止2026-11-09。</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本轮只按指定原文提取。另附来源定位，来源表独立于三字段记录，不能把行号或核查状态塞进记录</p></div></div></div>
+    <div class="numeric-progress">3/27</div>
+    <div class="semantic-label">THE TWO SOURCE LINES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.1111%"></div></div>
+<!-- speaker-notes
+原文处按精确来源保留中文-数字无空格和句末标点的忠实性例外。这里无需联网或OCR，源材料可直接打印。本页不把D1“未给”改成“活动没有截止日期”。
+-->
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 输入与字段约定</div>
+    <h2 class="slide-title">三个字段各自有类型和用途</h2>
+    <div class="slide-content"><p class="slide-lead">结构化输出 Structured Output 让后续接手者按约定读取字段</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>精确键名</th><th>本题值的约定</th><th>用来记录什么</th></tr></thead><tbody><tr><td><code>title</code></td><td>字符串，本题两条均须提供</td><td>活动标题</td></tr><tr><td><code>deadline</code></td><td><code>YYYY-MM-DD</code> 字符串或 <code>null</code>，本题须提供</td><td>原文日期或原文未给</td></tr><tr><td><code>sourceId</code></td><td>字符串，本题两条均须提供</td><td>对应文档身份</td></tr><tr><td>额外字段</td><td><code>additionalProperties: false</code></td><td>记录内只保留上述三键</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/27</div>
+    <div class="semantic-label">THE FIELD CONTRACT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:14.8148%"></div></div>
+<!-- speaker-notes
+原schema是课堂字段约定的简写，不是可直接交给标准JSON Schema验证器的完整schema。三个字段均交付来自requiredOperation“三字段提取”，不是把原deadline未标required的文字误读为标准required数组。本页用code标精确键名与类型字面值。
+-->
+  </section>
+<section id="a4" class="step slide-surface role-content layout-grid"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 输入与字段约定</div>
+    <h2 class="slide-title">给这次提取整理一份可使用的上下文</h2>
+    <div class="slide-content"><p class="slide-lead">上下文 Context 是这次处理实际可以利用的输入信息</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>指令</h3><p>只按两份原文提取，缺失保留 <code>null</code>，不拿另一活动的日期补齐</p></article><article class="content-card emphasis-card" tabindex="0"><h3>原文</h3><p>把两条全文连同 <code>D1</code>、<code>D2</code> 身份和第 1 行一起提供，保留文档对应关系</p></article><article class="content-card emphasis-card" tabindex="0"><h3>输出</h3><p>交两条三字段记录、独立的两条出处表，另分开说明草稿的格式与事实错误</p></article></div></div></div>
+    <div class="numeric-progress">5/27</div>
+    <div class="semantic-label">ORGANIZE THE ACTUAL CONTEXT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:18.5185%"></div></div>
+<!-- speaker-notes
+K268/A14局部。本节承接U05三区方法，新增精确字段记录、缺失语义及逐字段回溯，避免重新讲同一品牌冲突。硬盘上有文档或聊天里有链接不证明正文已进入某模型请求，此处只做可见纸面上下文设计。
+-->
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 输入与字段约定</div>
+    <h2 class="slide-title">原文未给日期，就保留本题约定的空值</h2>
+    <div class="slide-content"><p class="slide-lead"><code>null</code> 表示当前指定原文未提供该字段的值</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>写法</th><th>表示上的差别</th><th>本题怎样处理</th></tr></thead><tbody><tr><td><code>&quot;deadline&quot;: null</code></td><td>值为 JSON 空值</td><td>用于 <code>D1</code> 的缺失日期</td></tr><tr><td><code>&quot;deadline&quot;: &quot;null&quot;</code></td><td>值为字符串</td><td>不符合本题日期或空值约定</td></tr><tr><td><code>&quot;deadline&quot;: &quot;&quot;</code></td><td>值为空字符串</td><td>不符合本题缺失表示</td></tr><tr><td>省略 <code>deadline</code></td><td>字段没有交出</td><td>缺少本题要求的三字段之一</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>原文未给截止日期，仍可能在其他材料中存在日期。当前提取只报告本次材料的缺失状态</p></div></div></div>
+    <div class="numeric-progress">6/27</div>
+    <div class="semantic-label">WHAT NULL MEANS HERE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:22.2222%"></div></div>
+<!-- speaker-notes
+K275/A19。null并不通用地等于“没有截止日期”，本页的含义来自原任务的明确约定。准确区分JSON字面null、字符串null、空字符串、字段缺失，不宣称所有业务系统采用同一语义。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
+    <h2 class="slide-title">第一条的三个值分别从哪里来？</h2>
+    <div class="slide-content"><p class="slide-lead">标题取自正文，缺失状态取自原文说明，文档身份取自输入标识</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 27% 48%"><colgroup><col style="width:25%"><col style="width:27%"><col style="width:48%"></colgroup><thead><tr><th>字段</th><th>修订值</th><th>定位与支持</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>&quot;讲座报名&quot;</code></td><td><code>D1</code> 第 1 行的 <code>标题：讲座报名</code></td></tr><tr><td><code>deadline</code></td><td><code>null</code></td><td><code>D1</code> 第 1 行明确 <code>未给截止日期</code></td></tr><tr><td><code>sourceId</code></td><td><code>&quot;D1&quot;</code></td><td>输入文档的 <code>id</code> 为 <code>D1</code>，该正文定位在第 1 行</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">7/27</div>
+    <div class="semantic-label">TRACE EACH FIELD IN THE FIRST RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.9259%"></div></div>
+<!-- speaker-notes
+sourceId来自输入元数据而非假称正文中写着D1。缺失判断是对指定原文的支持，不拿D2日期做常识补全。完整原文已在a2并在b4独立出处表保留。
+-->
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
+    <h2 class="slide-title">第二条保留日期，同时修正类型</h2>
+    <div class="slide-content"><p class="slide-lead">日期值有原文支持，记录仍需使用约定的字符串表示</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 27% 48%"><colgroup><col style="width:25%"><col style="width:27%"><col style="width:48%"></colgroup><thead><tr><th>字段</th><th>修订值</th><th>定位与支持</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>&quot;实践报名&quot;</code></td><td><code>D2</code> 第 1 行的 <code>标题：实践报名</code></td></tr><tr><td><code>deadline</code></td><td><code>&quot;2026-11-09&quot;</code></td><td><code>D2</code> 第 1 行的 <code>截止2026-11-09</code></td></tr><tr><td><code>sourceId</code></td><td><code>&quot;D2&quot;</code></td><td>输入文档的 <code>id</code> 为 <code>D2</code>，该正文定位在第 1 行</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/27</div>
+    <div class="semantic-label">TRACE EACH FIELD IN THE SECOND RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.6296%"></div></div>
+<!-- speaker-notes
+不能把数字20261109称为JSON语法非法，它是合法JSON数值，只是不符本题deadline类型/表示约定。已知日期不能为图省事改成null。
+-->
+  </section>
+<section id="b3" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
+    <h2 class="slide-title">完整修订记录保留六个字段值</h2>
+    <div class="slide-content"><p class="slide-lead">每条只有三键，空值与日期字符串分别按对应原文填写</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07
+08
+09
+10
+11
+12</span><code class="language-json">[
+  {
+    "title": "讲座报名",
+    "deadline": null,
+    "sourceId": "D1"
+  },
+  {
+    "title": "实践报名",
+    "deadline": "2026-11-09",
+    "sourceId": "D2"
+  }
+]</code></pre></div></div></div></div>
+    <div class="numeric-progress">9/27</div>
+    <div class="semantic-label">THE TWO CORRECTED RECORDS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+<!-- speaker-notes
+本页是原任务两条修订记录的完整可复制JSON，不把来源行号、checked或原因加进限制额外键的对象。纸笔等价字段记录可以支持原任务的局部证据，程序实际解析另记实际执行状态。
+-->
+  </section>
+<section id="b4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
+    <h2 class="slide-title">两条出处表让别人能重新核查</h2>
+    <div class="slide-content"><p class="slide-lead">来源定位 Source Locator 连接字段值、文档身份和可回读的原文位置</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 15% 67%"><colgroup><col style="width:18%"><col style="width:15%"><col style="width:67%"></colgroup><thead><tr><th><code>sourceId</code></th><th>行号</th><th>完整原文</th></tr></thead><tbody><tr><td><code>D1</code></td><td>1</td><td><code>标题：讲座报名。未给截止日期。</code></td></tr><tr><td><code>D2</code></td><td>1</td><td><code>标题：实践报名。截止2026-11-09。</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>据前两页逐字段对应，核标题是否属于这份文档，日期是否得到同一行支持。仅写了真实来源身份，还不足以保证字段引用正确</p></div></div></div>
+    <div class="numeric-progress">10/27</div>
+    <div class="semantic-label">KEEP PROVENANCE OUTSIDE THE RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.0370%"></div></div>
+<!-- speaker-notes
+K294。两行出处表是原requiredOperation明确要求，b1/b2字段对应说明为教学支架，可写在同一证据单不增交付。sourceId字段本身指元数据，表将其连到正文行。没有建立外部链接可达或真实网页当前有效的证明。
+-->
+  </section>
+<section id="b5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
+    <h2 class="slide-title">三处修改各自回答一个具体问题</h2>
+    <div class="slide-content"><p class="slide-lead">保留原草稿和修订理由，避免只交一份看似正确的新记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 34% 38%"><colgroup><col style="width:28%"><col style="width:34%"><col style="width:38%"></colgroup><thead><tr><th>草稿中的位置</th><th>当前修订</th><th>修改依据</th></tr></thead><tbody><tr><td><code>D1.deadline</code> 借用另一活动日期</td><td>改为 <code>null</code></td><td><code>D1</code> 原文未给日期，且指令禁止跨活动补值</td></tr><tr><td><code>D2.deadline</code> 为数值</td><td>改为 <code>&quot;2026-11-09&quot;</code></td><td>原文支持日期，字段要求字符串</td></tr><tr><td><code>D2.checked</code> 多出一键</td><td>从三字段对象移除</td><td>字段约定不允许额外属性</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/27</div>
+    <div class="semantic-label">THE COMPLETE REPAIR TRACE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:40.7407%"></div></div>
+<!-- speaker-notes
+这是完整修订链。字段位置写成code方便精确讨论，不表示实际JSON存在D1对象键。checked在草稿中的布尔值是合法JSON，但本题记录没有该字段。不要把删checked解释成已核验或未核验的真实过程结论。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">一条记录需要经过哪些不同检查？</h2>
+    <div class="slide-content"><p class="slide-lead">前一层通过后，后面的条件仍要分别核对</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 40% 40%"><colgroup><col style="width:20%"><col style="width:40%"><col style="width:40%"></colgroup><thead><tr><th>检查层</th><th>本题检查什么</th><th>能发现的例子</th></tr></thead><tbody><tr><td>JSON 语法</td><td>文本能否按 JSON 解析</td><td>漏引号、逗号或括号</td></tr><tr><td>字段约定</td><td>键、类型和日期表示是否符合要求</td><td>数值日期、多出 <code>checked</code></td></tr><tr><td>业务约束</td><td>值是否来自对应活动，缺失怎样处理</td><td>禁止拿 <code>D2</code> 日期补 <code>D1</code></td></tr><tr><td>原文支持</td><td>这份原文是否支持这个具体值</td><td><code>D1</code> 没有给出草稿日期</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/27</div>
+    <div class="semantic-label">FOUR DIFFERENT CHECKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.4444%"></div></div>
+<!-- speaker-notes
+K275明确的四层。业务约束与原文支持可能同时抓同一错误，但判断问题不同。本题没有实际标准JSON Schema、服务端或约束解码执行，不把课堂字段表当已部署验证系统。
+-->
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">日期格式合法，仍可能属于另一项活动</h2>
+    <div class="slide-content"><p class="slide-lead">字段约定能接受一个日期字符串，原文核对才能识别错配</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-json">{"title":"讲座报名", "deadline":"2026-11-09",
+ "sourceId":"D1"}</code></pre></div></div>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">这段是合法 JSON，三个键与值类型也符合本题字段约定</span></li><li><span class="list-marker">■</span><span class="list-text"><code>D1</code> 第 1 行未给日期，不能支持这项日期主张</span></li><li><span class="list-marker">■</span><span class="list-text">原指令禁止跨活动补值，当前应改为 <code>null</code> 并保留缺失依据</span></li></ul></div></div></div>
+    <div class="numeric-progress">13/27</div>
+    <div class="semantic-label">THE SCHEMA CAN ACCEPT A FALSE VALUE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.1481%"></div></div>
+<!-- speaker-notes
+本页是原draft第一条，不是新增模型结果。合法schema不等于内容真，本例不需要任何实际模型才能展示这一区分。
+-->
+  </section>
+<section id="c3" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">第二条能解析，也还需要两处格式修订</h2>
+    <div class="slide-content"><p class="slide-lead">数值日期与多出的键分别违反本题的字段约定</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-json">{"title":"实践报名", "deadline":20261109,
+ "sourceId":"D2", "checked":true}</code></pre></div></div>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text"><code>20261109</code> 是合法 JSON 数值，但本题日期须写成 <code>&quot;2026-11-09&quot;</code></span></li><li><span class="list-marker">■</span><span class="list-text"><code>true</code> 是合法 JSON 布尔值，但 <code>checked</code> 不是本题允许的键</span></li><li><span class="list-marker">■</span><span class="list-text">日期本身可回到 <code>D2</code> 第 1 行，修表示时保留这个事实与来源</span></li></ul></div></div></div>
+    <div class="numeric-progress">14/27</div>
+    <div class="semantic-label">THE SECOND RECORD HAS TWO FORMAT PROBLEMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:51.8519%"></div></div>
+<!-- speaker-notes
+两处都不是JSON语法错。程序解析成功只能支持语法层。将日期字符串更正不代表程序已经检查所有未来非法日期，本节只检查给定的固定日期与类型。
+-->
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">字段有来源键，还要检查它指向谁</h2>
+    <div class="slide-content"><p class="slide-lead">身份存在、位置存在和原文支持，需要沿同一条记录核对</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-json">{"title":"实践报名", "deadline":"2026-11-09",
+ "sourceId":"D1"}</code></pre></div></div>
+<div class="component component-text text-inset"><p>这份作者构造的反例满足三键与类型，但标题和日期属于 <code>D2</code>，标为 <code>D1</code> 就无法逐字段回读</p>
+<p>合理修订是按对应原文恢复 <code>sourceId</code>，同时核标题和日期，不能只找任意一份含日期的文档</p></div></div></div>
+    <div class="numeric-progress">15/27</div>
+    <div class="semantic-label">A STRING SOURCE ID IS NOT ENOUGH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.5556%"></div></div>
+<!-- speaker-notes
+此反例由原材料重组，明确标为作者构造，未声称模型输出。schema目前仅约定sourceId字符串，无法替代活动对应关系检查。不存在的D9也会过字符串类型，但本页以真实D1更能检验定位存在却错配的情况。
+-->
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">缺日期时，继续提取还是澄清？</h2>
+    <div class="slide-content"><p class="slide-lead">当前提取任务有明确空值规则，后续业务用途可能提出新的条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 39% 38%"><colgroup><col style="width:23%"><col style="width:39%"><col style="width:38%"></colgroup><thead><tr><th>当前用途</th><th>可以形成的产物</th><th>还需什么决定</th></tr></thead><tbody><tr><td>按原文建记录</td><td><code>D1.deadline</code> 保留 <code>null</code>，附原行</td><td>原任务已规定，无需为凑齐日期暂停提取</td></tr><tr><td>需要具体日期的后续通知</td><td>交带缺失说明的草稿</td><td>需求人查明资料责任人，请其提供获准日期依据</td></tr><tr><td>新旧材料日期冲突</td><td>保留两版本、对象及未决项</td><td>由有权资料所有者确认适用版本，随后重提取</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">16/27</div>
+    <div class="semantic-label">MISSING DATA AND HUMAN DECISIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:59.2593%"></div></div>
+<!-- speaker-notes
+后两行是有条件的迁移路径，原U06没有授权发送或指定真实资料责任人。不能把“缺日期”自动变成“全任务都不可做”，也不能把填写null当作真实活动没有日期。有权者的实际返回尚未取得。
+-->
+  </section>
+<section id="c6" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">练习　先判断失败在哪一层</h2>
+    <div class="slide-content"><p class="slide-lead">以下为作者构造片段，先判断失败在哪一层，再说明后续核查</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="25% 75%" style="--key-value-columns:minmax(0,25fr) minmax(0,75fr)"><div class="key-value-item"><h3 class="key-value-key">片段甲</h3><div class="key-value-value"><p><code>{&quot;deadline&quot;: &quot;2026-11-09&quot;,}</code>，其余字段尚未提供</p></div></div><div class="key-value-item"><h3 class="key-value-key">片段乙</h3><div class="key-value-value"><p>两条修订记录照前文写，但把 <code>D1.deadline</code> 改成字符串 <code>&quot;null&quot;</code></p></div></div><div class="key-value-item"><h3 class="key-value-key">片段丙</h3><div class="key-value-value"><p>把 <code>D1.deadline</code> 写为 <code>&quot;2026-11-09&quot;</code>，理由是同一批活动可以共享日期</p></div></div></div></div></div>
+    <div class="numeric-progress">17/27</div>
+    <div class="semantic-label">TRY TO CLASSIFY THE ERRORS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.9630%"></div></div>
+<!-- speaker-notes
+甲故意有尾随逗号，还缺字段。乙只改一个字段，学生须辨认字符串null不符合日期/空值约定且未保留缺失语义。丙与原错误草稿一致，语法/字段可通过但事实/业务失败。问题让学生说首先失败层并补后续问题，不能认为找出语法错后就已保证事实。
+-->
+  </section>
+<section id="c7" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
+    <h2 class="slide-title">先修到能检查，再继续核字段与原文</h2>
+    <div class="slide-content"><p class="slide-lead">找出较早一层错误，仍需继续处理后面尚未核查的条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 38% 47%"><colgroup><col style="width:15%"><col style="width:38%"><col style="width:47%"></colgroup><thead><tr><th>片段</th><th>首先失败的检查</th><th>修订及仍需核对</th></tr></thead><tbody><tr><td>甲</td><td>JSON 语法，尾随逗号</td><td>去尾逗号，补本题三字段，再逐项核对应原文</td></tr><tr><td>乙</td><td>字段约定，<code>&quot;null&quot;</code> 是字符串</td><td>改为 <code>null</code>，据 <code>D1</code> 第 1 行保留缺失</td></tr><tr><td>丙</td><td>业务条件与原文支持</td><td>两活动日期不可互填，改为 <code>null</code> 并引用 <code>D1</code></td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">18/27</div>
+    <div class="semantic-label">FEEDBACK ON LAYERED CHECKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+<!-- speaker-notes
+错误优先用于诊断次序，不是把全部内容评价压成单一错误标签。乙的错误可同时讨论错误表示与缺失含义，合理等价文字与表格同判。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">先按对象与版本区分制度</h2>
+    <div class="slide-content"><p class="slide-lead">虚构制度，2026-11-05，实习生申请 60 元且未获导师确认</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 24% 30% 32%"><colgroup><col style="width:14%"><col style="width:24%"><col style="width:30%"><col style="width:32%"></colgroup><thead><tr><th>文档</th><th>适用对象</th><th>版本与有效条件</th><th>原文限额及限制</th></tr></thead><tbody><tr><td><code>D01</code></td><td>正式员工</td><td>旧版，已由 <code>D02</code> 替代</td><td>80 元，须事前审批</td></tr><tr><td><code>D02</code></td><td>正式员工</td><td>11 月 1 日起生效，仅替代 <code>D01</code></td><td>100 元，未修改实习生制度</td></tr><tr><td><code>D03</code></td><td>实习生</td><td>10 月 1 日起生效，当前有效</td><td>50 元，须导师确认</td></tr><tr><td><code>D04</code></td><td>草稿拟面向所有人员</td><td>尚未批准</td><td>提议 80 元，不构成现行依据</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">19/27</div>
+    <div class="semantic-label">READ VERSION AND SCOPE TOGETHER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.3704%"></div></div>
+<!-- speaker-notes
+CASE-016 /studentTask/inputs内fixture.task与D01—D04准确摘录，完整原字节及派生摘录见source-snapshots/CASE-016.json和inputs/CASE-016-context-excerpt.json。DOC ID D01区别原通知D1。没有使用企业公告数字、性能或真实制度规则。
+-->
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">先核适用条件，再由有权者决定</h2>
+    <div class="slide-content"><p class="slide-lead">新版本替代的范围与当前个案的确认状态，需要分别保留</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text"><code>D02</code> 虽较新，只替代正式员工旧规，当前实习生仍按 <code>D03</code> 核查</span></li><li><span class="list-marker">■</span><span class="list-text"><code>D03</code> 要求导师确认，不能据此填写“这笔申请已经确认”</span></li><li><span class="list-marker">■</span><span class="list-text">当前 60 元超过 50 元，且尚未确认，应交实习管理办公室处理，保留未知批准结果</span></li><li><span class="list-marker">■</span><span class="list-text"><code>D01</code> 的旧数值与 <code>D04</code> 的草稿提议留作来源背景，不能覆盖当前适用规则</span></li></ul></div>
+<div class="component component-text text-inset"><p>本例的制度文档 <code>D01</code>—<code>D04</code> 与原通知 <code>D1</code>、<code>D2</code> 分别编号，不能混作一组资料</p></div></div></div>
+    <div class="numeric-progress">20/27</div>
+    <div class="semantic-label">APPLY THE RULE AND KEEP THE FACT SEPARATE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:74.0741%"></div></div>
+<!-- speaker-notes
+CASE-016严格范围内的规则/个案分离。这里不运行原型、SQL或实际审批，未继承60分钟整题。存在多值不一定是真冲突，先判断对象、时间、状态和显式替代链；仍无法确定同一对象/时期的适用规则时，保留版本并请求规则所有者确认。该方法不把任一“最新”文档自动当权威。
+-->
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">变式　只更新讲座那一行原文</h2>
+    <div class="slide-content"><p class="slide-lead">教师指定本轮采用变式 V2，仅替换 <code>D1</code> 的第 1 行，其他条件保持</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">TEXT</span><pre tabindex="0" aria-label="TEXT code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05</span><code class="language-text">原卡 V1 / D1 第1行
+标题：讲座报名。未给截止日期。
+
+变式 V2 / D1 第1行
+标题：讲座报名。截止2026-11-10。</code></pre></div></div>
+<div class="component component-list list-plain"><ul><li>哪个字段必须更新，哪条活动记录保持原值？</li><li>来源身份与行号都相同，出处表还需要更新什么？</li><li>如果上下文只写“讲座日期原来未知”，下一位会遗漏什么？</li></ul></div></div></div>
+    <div class="numeric-progress">21/27</div>
+    <div class="semantic-label">CHANGE ONE SOURCE LINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:77.7778%"></div></div>
+<!-- speaker-notes
+这是新公开教学构造，不是原U06事实或未见独立输入，也不是模型返回。只改变D1.text，教师当前采用V2的说明是本变式适用条件。D2正文、schema、contextInstruction不变。版本标记留在独立出处/上下文说明中，不作为三字段记录新键。
+-->
+  </section>
+<section id="d4" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">空值的依据改变后，记录与出处一起更新</h2>
+    <div class="slide-content"><p class="slide-lead">当前采用 V2，讲座日期改取新原文，实践日期保持原值</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02</span><code class="language-json">{"title":"讲座报名", "deadline":"2026-11-10",
+ "sourceId":"D1"}</code></pre></div></div>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">出处更新为变式 V2 的 <code>D1</code> 第 1 行，保留新原文，旧卡注明已被本轮替换</span></li><li><span class="list-marker">■</span><span class="list-text"><code>D2.deadline</code> 继续为 <code>&quot;2026-11-09&quot;</code>，两项活动仍分别取值</span></li><li><span class="list-marker">■</span><span class="list-text">若只记录“原来未知”，会丢失当前已给日期及采用版本条件</span></li></ul></div></div></div>
+    <div class="numeric-progress">22/27</div>
+    <div class="semantic-label">FEEDBACK ON THE UPDATED SOURCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:81.4815%"></div></div>
+<!-- speaker-notes
+sourceId/行号相同但正文变了，不能只核定位而不核版本和支持关系。教师已明确本变式采用V2，所以此处不应继续把已给日期写null，也不需凭空再等待现实主办方批准；本页只是给定文本提取。新日期不是变更原任务要求去替旧错误补证，原任务答案仍在b3。
+-->
+  </section>
+<section id="d5" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">回到原卡，完成原证据单的三项动作</h2>
+    <div class="slide-content"><p class="slide-lead">原任务采用 V1，两条通知仍按开头给定原文处理</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>独立提取</h3><p>交两条 <code>title</code>、<code>deadline</code>、<code>sourceId</code>，原卡 <code>D1</code> 缺失保留 <code>null</code></p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>保留出处</h3><p>另交两条来源表，列文档身份、行号和原文，能逐字段回读</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>分区并诊断</h3><p>把指令、原文、输出要求分开，逐一指出原草稿的格式与事实问题</p></div></div></div>
+<div class="component component-text text-inset"><p>原建议 30 分钟。证据单保留初判、分析位置、修订后产物、实际方法、本人/AI 贡献及未测范围，四项自查合计 4 分</p></div></div></div>
+    <div class="numeric-progress">23/27</div>
+    <div class="semantic-label">COMPLETE THE ORIGINAL MICROTASK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:85.1852%"></div></div>
+<!-- speaker-notes
+原requiredOperation、deliverable四部分及30min完整保留。公开V2和制度迁移只是指导，不新增必交、分数或课外任务。两条原文与字段约定纸笔即可完成，没有软件运行必需项。
+-->
+  </section>
+<section id="d6" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 版本条件与原任务</div>
+    <h2 class="slide-title">过程记录写清自己实际检查到了哪一层</h2>
+    <div class="slide-content"><p class="slide-lead">以下为本课件作者的示范，学生替换成自己的真实过程</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="24% 76%" style="--key-value-columns:minmax(0,24fr) minmax(0,76fr)"><div class="key-value-item"><h3 class="key-value-key">初判与分析</h3><div class="key-value-value"><p>保留固定错误草稿，逐字段对照两条原文，分开记录错配、类型与额外键</p></div></div><div class="key-value-item"><h3 class="key-value-key">产物与方法</h3><div class="key-value-value"><p>作者用 AI 编写示范，程序解析本包 JSON 并核固定字段与反例，另人工核原行支持和规则范围</p></div></div><div class="key-value-item"><h3 class="key-value-key">实际贡献</h3><div class="key-value-value"><p>程序只检查明示条件，教师组织、解释、修订与未决事项由示范文字写明</p></div></div><div class="key-value-item"><h3 class="key-value-key">尚未取得</h3><div class="key-value-value"><p>真实模型返回及效果、业务采用、学生实际用时、教师校准和课堂学习效果</p></div></div></div></div></div>
+    <div class="numeric-progress">24/27</div>
+    <div class="semantic-label">A CONSTRUCTED METHOD RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.8889%"></div></div>
+<!-- speaker-notes
+作者实际程序检查见verify.py/verification.json。它是本地固定夹具的验证，不是实际模型能力评测、标准schema产品认证或真实业务系统运行。学生纸笔路径可如实写人工检查，未做程序解析就不能声称程序通过。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2</div>
+    <h2 class="slide-title">用原四项逐项复核最终产物</h2>
+    <div class="slide-content"><p class="slide-lead">每项满足才记 1，缺证或仍有该项错误记 0 并标待补</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">三字段格式符合 schema，两条都保留允许的键和正确类型</span></li><li><span class="list-marker">■</span><span class="list-text">缺失 <code>null</code> 不臆造，原卡未知保留未知，已知日期有对应原文</span></li><li><span class="list-marker">■</span><span class="list-text">字段可回原行，来源表能支持本条标题、日期或缺失判断</span></li><li><span class="list-marker">■</span><span class="list-text">格式与事实两类错误分开，能指出原草稿的错配、数值日期和额外键</span></li></ul></div>
+<div class="component component-text text-inset"><p>四项各 0/1，合计 4 分为本微任务形成性自查，正式成绩按课程公布安排。等价文字与表格按同样证据判断，真实 JSON 解析须另有实际文本或运行记录</p></div></div></div>
+    <div class="numeric-progress">25/27</div>
+    <div class="semantic-label">FOUR CHECKS WITH ACTUAL RECORDS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.5926%"></div></div>
+<!-- speaker-notes
+schema为原题字段约定而非完整标准schema。无半分，合计体现不同检查项的局部证据，无总分合格阈值。纸面等价字段记录若明示精确键、字符串/空值及两文档值可取得同等原任务证据，不要求付费工具。原文支持或格式失败优先使对应项为0，自报全部通过不能抵消实际错误。详见teaching.md与answer-tests.md。
+-->
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-3-2/mindmap-3-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">26/27</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.2963%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="3000" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">本题的 <code>null</code>、字符串 <code>&quot;null&quot;</code> 和省略字段分别表示什么？</span></li><li><span class="question-no">02</span><span class="question-text">两份原文中的标题、日期与来源身份分别从哪里取得？</span></li><li><span class="question-no">03</span><span class="question-text">原草稿哪些错误仍可通过 JSON 语法解析，哪项还符合字段约定？</span></li><li><span class="question-no">04</span><span class="question-text">较新制度为何不能直接覆盖实习生规则，谁处理当前未确认申请？</span></li><li><span class="question-no">05</span><span class="question-text">只更新讲座原文后，哪些值与出处应变化，原任务答案又应采用哪版？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-3-1.html" title="上一节：3.1 目标与约束进入文本简报" aria-label="上一节：3.1 目标与约束进入文本简报">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">3.1</span>
+        <span class="nav-title">目标、约束与文本简报</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-3-3.html" title="下一节：3.3 逐条核验文本主张" aria-label="下一节：3.3 逐条核验文本主张">
+        <span class="nav-title">主张、支持与修订</span>
+        <span class="nav-number">3.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">27/27</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

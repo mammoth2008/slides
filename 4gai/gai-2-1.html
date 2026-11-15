@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 2.1 词元与生成条件 | HUST</title>
+  <meta name="description" content="用固定短序列解释词元表示、输入目标与可见信息，并修订偷看答案的构造">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="2-1">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 2.1</div>
+      <h1>词元与生成条件</h1>
+      <p class="cover-description">沿着一个短序列，检查模型每一步可以读什么</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">已经看见“乙”，还能怎样评价预测？</h2>
+    <div class="slide-content"><p class="slide-lead">先保留自己的判断，随后用给定规则检查输入是否合适</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>一份课堂记录把 <code>[&lt;BOS&gt;, 甲, 乙]</code> 作为当前输入，要求模型预测“乙”，并声称“分数高就算合法评价”</p>
+<p>你希望先知道预测任务的哪项规则，才能判断这份记录？</p></div>
+<div class="component component-text text-inset"><p>本节使用给定的纸面序列。<code>&lt;BOS&gt;</code> 表示开始，<code>&lt;EOS&gt;</code> 表示结束，<code>&lt;MASK&gt;</code> 表示本题遮盖位置，具体规则随后逐项给出</p></div></div></div>
+    <div class="numeric-progress">2/26</div>
+    <div class="semantic-label">A PREDICTION TO CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:7.6923%"></div></div>
+<!-- speaker-notes
+初判承接U02按条件检查任务的习惯，但不继承S17业务数据。情境来自U03 input.json/badExample，暂不先公布i=1与AR规则，让学生提出所需条件。此页只收口头或原证据单的初判，不追加评分项。不给真实模型或真实运行身份。
+-->
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">用一张证据单检查输入、目标与修订</h2>
+    <div class="slide-content"><p class="slide-lead">本节的个人产物沿用原微任务的三项操作和四项自查</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>列出三个位置</h3><p>按给定短序列写前缀输入、下一项目标和不可见的未来词元</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>修订错误记录</h3><p>改正开头的例子，再写指定位置的简化遮盖输入与目标</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>限定自己的结论</h3><p>写清本次纸面分析不能说明的现实模型能力</p></div></div></div>
+<div class="component component-text text-inset"><p>纸笔与给定材料即可完成。保留原判断、修订、本人/AI 贡献及未测范围，四项自查各 0/1，正式成绩归属按课程安排确定</p></div></div></div>
+    <div class="numeric-progress">3/26</div>
+    <div class="semantic-label">THE OBSERVABLE TASK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.5385%"></div></div>
+<!-- speaker-notes
+U03 task.md及contract.json拥有必交范围。原建议微任务30分钟，实际学生耗时待试测。本节总计2课内学时，学习信号入门、示范、讨论及个人操作均在原学时内组织，不增加必交或课外任务。
+-->
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">词元是按编码规则确定的处理单位</h2>
+    <div class="slide-content"><p class="slide-lead">词元 Token 的边界由特定词表和编码规则确定</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">词元可以覆盖整词、词的一部分或特殊符号</span></li><li><span class="list-marker">■</span><span class="list-text">读到“客户”时，先查编码规则怎样把它切成单位，再报告单位数量</span></li><li><span class="list-marker">■</span><span class="list-text">同一可见文字采用不同词表与规则，可以得到不同序列</span></li><li><span class="list-marker">■</span><span class="list-text">一个汉字、一个词和一个词元之间的对应关系，需要具体编码来确认</span></li></ul></div>
+<div class="component component-text text-inset"><p>本节先用人工规则观察单位怎样产生。实际模型的数量与 ID 需绑定其词元化工具、版本和特殊符号政策</p></div></div></div>
+    <div class="numeric-progress">4/26</div>
+    <div class="semantic-label">TOKENS AS MODEL UNITS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.3846%"></div></div>
+<!-- speaker-notes
+依据K202、K203。BPE论文§1及§3.2 pp1717–18支持子词与可变长单位；本课不把BPE概括成全部tokenizer。Token首次实质引入。课堂人工规则下一页给出，尚未调用实际tokenizer，不用本页计算产品容量或费用。
+-->
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">同一文本为什么会得到 3 个或 6 个单位？</h2>
+    <div class="slide-content"><p class="slide-lead">词元化 Tokenization 按切分规则和词表，把文字转成单位与 ID</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 44% 37%"><colgroup><col style="width:19%"><col style="width:44%"><col style="width:37%"></colgroup><thead><tr><th>人工规则</th><th>对“客户 申请 退货”的处理</th><th>得到的单位</th></tr></thead><tbody><tr><td>A</td><td>按空格切分，空格只作分隔</td><td>客户、申请、退货，共 3 个</td></tr><tr><td>B</td><td>先去空格，再逐汉字切分</td><td>客、户、申、请、退、货，共 6 个</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>两规则均不添加特殊符号。结果来自这里规定的人工规则，真实模型的切分、ID 和计量仍需查实际编码器</p></div></div></div>
+    <div class="numeric-progress">5/26</div>
+    <div class="semantic-label">TOKENIZATION RULES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.2308%"></div></div>
+<!-- speaker-notes
+复用K202的构造两规则，保留其空格与特殊符号条件。K203/B134说明分词规则可从资料学习再应用，本页只演示已经给定的两规则，不执行完整BPE，也不新增分词必交项。
+-->
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">模型怎样使用离散的词元？</h2>
+    <div class="slide-content"><p class="slide-lead">嵌入 Embedding 把词表项映射成供网络计算的向量</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 27% 48%"><colgroup><col style="width:25%"><col style="width:27%"><col style="width:48%"></colgroup><thead><tr><th>人工演示项</th><th>演示词表 ID</th><th>人工给定向量</th></tr></thead><tbody><tr><td>甲</td><td>10</td><td><code>(1, 0)</code></td></tr><tr><td>乙</td><td>11</td><td><code>(0, 1)</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>词元 ID 标识词表项，输入 ID 可查向量表，再与位置等信息一起进入后续计算。可学习的向量表能在训练中更新。本表由人给定，只展示查表关系，固定微任务没有提供真实 ID 或权重</p></div></div></div>
+    <div class="numeric-progress">6/26</div>
+    <div class="semantic-label">FROM IDS TO VECTORS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.0769%"></div></div>
+<!-- speaker-notes
+依据K204、B136 §2 pp1141–42及Transformer §3.4/§3.5。10/11与两向量为本候选新构造，不是input.json字段，也不是实际模型编码。ID数值不表示语义远近，向量单坐标没有本页规定的固定语义。原Transformer采用词元嵌入与位置编码；其他架构如何处理位置须核其实现。本节不展开向量运算或Transformer实现。
+-->
+  </section>
+<section id="a6" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
+    <h2 class="slide-title">先给四个位置编号，再读预测规则</h2>
+    <div class="slide-content"><p class="slide-lead">固定输入已经给出词元，位置从 0 开始计数，本题无需再对它们分词</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 30% 52%"><colgroup><col style="width:18%"><col style="width:30%"><col style="width:52%"></colgroup><thead><tr><th>位置</th><th>固定词元</th><th>在本题中的角色</th></tr></thead><tbody><tr><td>0</td><td><code>&lt;BOS&gt;</code></td><td>序列开始</td></tr><tr><td>1</td><td>甲</td><td>给定内容单位</td></tr><tr><td>2</td><td>乙</td><td>给定内容单位</td></tr><tr><td>3</td><td><code>&lt;EOS&gt;</code></td><td>序列结束</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>位置是序列中的次序，词表 ID 是词表中的标识。这里的 0—3 是位置编号，全部词元及特殊符号均按给定教学构造使用</p></div></div></div>
+    <div class="numeric-progress">7/26</div>
+    <div class="semantic-label">THE FIXED SEQUENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.9231%"></div></div>
+<!-- speaker-notes
+精确来源U03 input.json/tokens。<BOS>/<EOS>/<MASK>是本题符号，不能等同任何模型实际特殊token编码。后续所有索引沿本页零起点。保留目标EOS在AR位置2的作用。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 学习信号与阶段</div>
+    <h2 class="slide-title">学习设置怎样取得用于改进的信号？</h2>
+    <div class="slide-content"><p class="slide-lead">输入、目标或奖励的来源，帮助我们说明一次学习设置</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 40% 32%"><colgroup><col style="width:28%"><col style="width:40%"><col style="width:32%"></colgroup><thead><tr><th>设置</th><th>纸面构造</th><th>信号的角色</th></tr></thead><tbody><tr><td>监督学习 Supervised Learning</td><td>延误小时对应结单投诉目标</td><td>用给定目标比较预测</td></tr><tr><td>无监督学习 Unsupervised Learning</td><td>无类别标签的特征按距离分组</td><td>观察结构，分组规则仍需给定</td></tr><tr><td>强化学习 Reinforcement Learning</td><td>分拣动作之后收到奖惩</td><td>行动影响后续经验，奖励评价行为</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/26</div>
+    <div class="semantic-label">LEARNING SIGNALS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.7692%"></div></div>
+<!-- speaker-notes
+改编基础桥接r1 b1及A2§1–2，换为实际U03页序。依据K186/K187和基础模型报告§4.9.1。三例各自独立，是信号角色的入门对照，当前无实际聚类、RL或策略优化。监督目标也可由程序自动取得，不能只以“人工标签”定义。具体阈值、分组和奖励推演已在配套讲义，本页不重开另一套必交。
+-->
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 学习信号与阶段</div>
+    <h2 class="slide-title">原序列可以同时提供输入和训练目标</h2>
+    <div class="slide-content"><p class="slide-lead">自监督学习 Self-supervised Learning 从资料自身构造预测目标</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 49% 28%"><colgroup><col style="width:23%"><col style="width:49%"><col style="width:28%"></colgroup><thead><tr><th>本题方式</th><th>当前提供的输入</th><th>目标的来源</th></tr></thead><tbody><tr><td>前缀预测</td><td><code>[&lt;BOS&gt;, 甲]</code></td><td>原位置 2 的乙</td></tr><tr><td>遮盖预测</td><td><code>[&lt;BOS&gt;, 甲, &lt;MASK&gt;, &lt;EOS&gt;]</code></td><td>原位置 2 的乙</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>两行目标都来自给定原序列，输入可见范围却不同。目标如何取得与模型处于什么训练阶段，需要分别说明</p></div></div></div>
+    <div class="numeric-progress">9/26</div>
+    <div class="semantic-label">TARGETS FROM THE SEQUENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.6154%"></div></div>
+<!-- speaker-notes
+改编基础桥接r1 b2及A2§3，改用本U03固定序列，不混用[客户,申请,退货]。依据K188、foundation report§1.1以及BERT§3.1。先建立问题，再由后续逐位置展开。原BERT使用unsupervised历史称谓；本题采用自监督说明目标来源，两者按原文语境记录。
+-->
+  </section>
+<section id="b3" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 学习信号与阶段</div>
+    <h2 class="slide-title">有了输入和目标，还要说明模型在做什么</h2>
+    <div class="slide-content"><p class="slide-lead">训练用目标与算法调整参数，本节的推理沿固定参数计算输出</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 45% 31%"><colgroup><col style="width:24%"><col style="width:45%"><col style="width:31%"></colgroup><thead><tr><th>过程</th><th>怎样使用当前资料</th><th>需要核对的产物</th></tr></thead><tbody><tr><td>训练</td><td>比较预测与目标，按算法更新参数</td><td>更新记录和模型权重</td></tr><tr><td>推理</td><td>输入当前可见内容，计算输出</td><td>当前输入、模型版本和输出</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>预训练 Pre-training 指后续适配前形成基础模型的训练阶段，自监督描述目标的构造方式。本短序列只给任务条件，模型是否实际训练及处于何阶段仍需记录</p></div></div></div>
+    <div class="numeric-progress">10/26</div>
+    <div class="semantic-label">TRAINING AND USE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.4615%"></div></div>
+<!-- speaker-notes
+依据K188/K213/K195与foundation report§1.1，Deep Learning学习算法与前馈参数范围。固定参数推理为本页设定，不概括所有在线学习或有外部状态的系统。未报告真实预训练、参数更新、模型调用或阶段判定。
+-->
+  </section>
+<section id="b4" class="step slide-surface role-content layout-grid"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 学习信号与阶段</div>
+    <h2 class="slide-title">新资料是否参与模型参数更新？</h2>
+    <div class="slide-content"><p class="slide-lead">把资料放入当前输入与用资料优化参数，留下的记录不同</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>提供当前输入</h3><p>沿既有模型处理新政策文字，记录输入版本、输出及核查。资料进入上下文这一事实，可以从请求记录中检查</p></article><article class="content-card emphasis-card" tabindex="0"><h3>优化模型参数</h3><p>用训练资料和目标运行更新过程，记录算法、训练日志及权重版本。参数是否改变需要这些对应资料</p></article></div></div></div>
+    <div class="numeric-progress">11/26</div>
+    <div class="semantic-label">INPUTS AND PARAMETER UPDATES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.3077%"></div></div>
+<!-- speaker-notes
+独立构造的过程对照，依据K213及A3已有训练/推理边界。仅为阶段与信号的理解练习，不新增上传、训练、API调用或个人必交。输出文字变化本身不足以确认权重更新。
+-->
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">自回归预测把已知前缀作为当前条件</h2>
+    <div class="slide-content"><p class="slide-lead">自回归 Autoregressive 记作 AR，逐步依据前缀预测下一单位</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>本题位置从 0 开始，选定位置记为 \(i\)，只检查 \(i=0,1,2\)</p><p>允许输入为 <code>tokens[0..i]</code>，其中两端都包含；目标为 <code>tokens[i+1]</code></p><p>例如位置 0 只可见 <code>[&lt;BOS&gt;]</code>，目标取原位置 1 的甲，位置 1—3 的内容均属于当前不能读取的未来</p></div></div></div></div>
+    <div class="numeric-progress">12/26</div>
+    <div class="semantic-label">AUTOREGRESSIVE CONDITIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.1538%"></div></div>
+<!-- speaker-notes
+原规则逐字沿input.json/rules[0]，tokens[0..i]为题面区间记法，不是可执行Python切片。依据K211和Bengio p1138条件概率。目标的训练来源与生成时实际选词下一页后再分开。此处未来含当前待预测目标本身。
+-->
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">三个位置怎样组成输入与目标？</h2>
+    <div class="slide-content"><p class="slide-lead">每行只读取到当前位置，下一位置的原词元用作训练目标</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="12% 35% 22% 31%"><colgroup><col style="width:12%"><col style="width:35%"><col style="width:22%"><col style="width:31%"></colgroup><thead><tr><th>位置 \(i\)</th><th>允许输入</th><th>目标</th><th>不可见未来</th></tr></thead><tbody><tr><td>0</td><td><code>[&lt;BOS&gt;]</code></td><td>甲，位置 1</td><td>甲、乙、<code>&lt;EOS&gt;</code></td></tr><tr><td>1</td><td><code>[&lt;BOS&gt;, 甲]</code></td><td>乙，位置 2</td><td>乙、<code>&lt;EOS&gt;</code></td></tr><tr><td>2</td><td><code>[&lt;BOS&gt;, 甲, 乙]</code></td><td><code>&lt;EOS&gt;</code>，位置 3</td><td><code>&lt;EOS&gt;</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>这里列出的是给定资料构成的三组预测任务。表中目标已经可知，当前预测的输入仍按每行规则限制</p></div></div></div>
+    <div class="numeric-progress">13/26</div>
+    <div class="semantic-label">THREE PREFIX PAIRS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+<!-- speaker-notes
+完整worked example，由固定tokens与arPositions独立索引产生。逐行指认目标在原串中的位置。EOS为原位置3，位置2行仍是有效预测任务。没有提供概率或实际输出，不补造模型分数。
+-->
+  </section>
+<section id="c3" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">训练资料有整串，预测位置仍要限制读取</h2>
+    <div class="slide-content"><p class="slide-lead">因果掩码 Causal Mask 在序列计算中阻止当前位置读取后续位置的信息</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 40% 41%"><colgroup><col style="width:19%"><col style="width:40%"><col style="width:41%"></colgroup><thead><tr><th>本题预测行</th><th>可读取的原位置</th><th>必须挡住的原位置</th></tr></thead><tbody><tr><td>位置 0</td><td>0</td><td>1、2、3</td></tr><tr><td>位置 1</td><td>0、1</td><td>2、3</td></tr><tr><td>位置 2</td><td>0、1、2</td><td>3</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>Transformer 原论文的解码器结合目标右移与掩码限制后续信息。本题用逐行表检查同类可见性条件，具体架构与实现仍需对应说明</p></div></div></div>
+    <div class="numeric-progress">14/26</div>
+    <div class="semantic-label">THE VISIBILITY CONSTRAINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.8462%"></div></div>
+<!-- speaker-notes
+依据K177与Transformer§3.1 Decoder正文，原架构是encoder-decoder，不能概括全部Transformer。目标在资料中可供构造各行监督，但不能在预测该目标时直接成为允许输入。本课不实现掩码，也不由并行训练推断整串能同时自回归生成。
+-->
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">一次选择怎样成为下一步的前缀？</h2>
+    <div class="slide-content"><p class="slide-lead">生成时先选出后续词元，再用更新的前缀继续计算</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="43% 22% 35%"><colgroup><col style="width:43%"><col style="width:22%"><col style="width:35%"></colgroup><thead><tr><th>当前前缀</th><th>本页假设的选择</th><th>下一步</th></tr></thead><tbody><tr><td><code>[&lt;BOS&gt;]</code></td><td>甲</td><td>前缀接入甲</td></tr><tr><td><code>[&lt;BOS&gt;, 甲]</code></td><td>乙</td><td>前缀接入乙</td></tr><tr><td><code>[&lt;BOS&gt;, 甲, 乙]</code></td><td><code>&lt;EOS&gt;</code></td><td>按本题结束符停止</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>三次选择是纸面假设，未调用模型。训练表的目标来自给定原串，生成前缀来自此前已经选出的内容，实际生成可能走向其他序列</p></div></div></div>
+    <div class="numeric-progress">15/26</div>
+    <div class="semantic-label">ONE GENERATION TRACE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.6923%"></div></div>
+<!-- speaker-notes
+依据K211的逐步选择与停止条件。这里只作机制轨迹，不引入其有限概率树或整题量规。没有概率、贪婪或采样策略参数，不假定真实模型必然给甲/乙/EOS。为理解训练目标和推理选择的区别而设。
+-->
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">练习　检查开头记录中多给了什么</h2>
+    <div class="slide-content"><p class="slide-lead">现在固定为自回归位置 1，按原规则逐项核对这份输入</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>给定记录的输入为 <code>[&lt;BOS&gt;, 甲, 乙]</code>，目标为乙，声称“分数高就算合法评价”</p>
+<p>请圈出超出 <code>tokens[0..1]</code> 的内容，写出合法输入，并说明高分主张怎样受到当前可见信息的影响</p></div></div></div>
+    <div class="numeric-progress">16/26</div>
+    <div class="semantic-label">INSPECT THE BAD EXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.5385%"></div></div>
+<!-- speaker-notes
+完整引用input.json/badExample的i、visible、target及claim。学生在现有证据单记录或口头讨论，下一页提供修订。先核条件再解释分数，当前并无真实分数，不能把构造claim当作运行事实。
+-->
+  </section>
+<section id="c6" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
+    <h2 class="slide-title">修订输入时，目标和位置也要一起核对</h2>
+    <div class="slide-content"><p class="slide-lead">位置 1 的合法输入保留开始符与甲，把作为目标的乙移出当前可见范围</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 46% 34%"><colgroup><col style="width:20%"><col style="width:46%"><col style="width:34%"></colgroup><thead><tr><th>规定位置</th><th>合法输入</th><th>对应目标</th></tr></thead><tbody><tr><td>1，修订原记录</td><td><code>[&lt;BOS&gt;, 甲]</code></td><td>乙</td></tr><tr><td>2，改变条件</td><td><code>[&lt;BOS&gt;, 甲, 乙]</code></td><td><code>&lt;EOS&gt;</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>同一串可见输入在位置 1 会泄露目标，在位置 2 则可作为前缀。原例直接提供了待预测的乙，预测表现需要按规定条件另测</p></div></div></div>
+    <div class="numeric-progress">17/26</div>
+    <div class="semantic-label">REPAIR THE CONDITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.3846%"></div></div>
+<!-- speaker-notes
+反馈与变式只改变规定位置，沿同一原序列重算目标。说明“目标已进入输入”是相对具体任务判断，不给所有出现目标字样的训练策略下统一结论。这里仍为原AR任务，MLM原论文的保留策略下一分支单独限定。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">遮盖位置 2 后，输入与目标怎样形成？</h2>
+    <div class="slide-content"><p class="slide-lead">原位置 2 被遮盖后，乙保留为训练目标，其他位置按题面规则可见</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 77%"><colgroup><col style="width:23%"><col style="width:77%"></colgroup><thead><tr><th>项目</th><th>固定结果</th></tr></thead><tbody><tr><td>任务名称</td><td>掩码语言建模 Masked Language Modeling，记作 MLM</td></tr><tr><td>保留原串</td><td><code>[&lt;BOS&gt;, 甲, 乙, &lt;EOS&gt;]</code></td></tr><tr><td>遮盖位置 2</td><td><code>[&lt;BOS&gt;, 甲, &lt;MASK&gt;, &lt;EOS&gt;]</code></td></tr><tr><td>保存目标</td><td>乙，取自遮盖前的原位置 2</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本题为简化全 MASK 例。BERT 原策略还包含随机替换及保留等处理，本题只演示指定位置的输入与目标构造</p></div></div></div>
+    <div class="numeric-progress">18/26</div>
+    <div class="semantic-label">THE FIXED MASKED TASK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.2308%"></div></div>
+<!-- speaker-notes
+精确沿input.json/maskPositions=[2]与rules[1]。MLM首次实质展开，缩写可在后文使用。K188及BERT §3.1 p4174，原论文从15%位置选取且80/10/10处理，本页不把固定全MASK等同完整BERT训练。EOS保留在本题输入，未另加BERT的CLS/SEP等符号。
+-->
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">同样预测乙，两项任务允许的信息不同</h2>
+    <div class="slide-content"><p class="slide-lead">前缀任务限制后续位置，简化 MLM 则保留被遮位置两侧的给定上下文</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 51% 27%"><colgroup><col style="width:22%"><col style="width:51%"><col style="width:27%"></colgroup><thead><tr><th>当前任务</th><th>允许输入</th><th>目标</th></tr></thead><tbody><tr><td>AR 位置 1</td><td><code>[&lt;BOS&gt;, 甲]</code></td><td>乙</td></tr><tr><td>MLM 位置 2</td><td><code>[&lt;BOS&gt;, 甲, &lt;MASK&gt;, &lt;EOS&gt;]</code></td><td>乙</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>两行都有来自原串的目标，任务条件却不同。比较预测结果时，要同时交代目标位置、可见信息和评价规则</p></div></div></div>
+    <div class="numeric-progress">19/26</div>
+    <div class="semantic-label">SAME TARGET DIFFERENT CONTEXT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.0769%"></div></div>
+<!-- speaker-notes
+固定同一目标乙，只比较任务允许信息，不比较真实分数或模型性能。EOS是MLM右侧可见上下文，也属于AR位置1的不可见未来。AR/MLM用语在本节有明确指向，不将所有自监督等同MLM。
+-->
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">练习　只把遮盖位置从 2 改成 1</h2>
+    <div class="slide-content"><p class="slide-lead">原序列和全 MASK 规则保持相同，重新定位被遮内容与保留的上下文</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>仍使用 <code>[&lt;BOS&gt;, 甲, 乙, &lt;EOS&gt;]</code>，只将位置 1 换成 <code>&lt;MASK&gt;</code></p>
+<p>写出新输入、新目标和目标在原串中的位置。输入中出现乙，会不会直接暴露这次的目标？</p></div>
+<div class="component component-text text-inset"><p>这是一项课堂条件变式，原微任务的固定遮盖位置仍为 2</p></div></div></div>
+    <div class="numeric-progress">20/26</div>
+    <div class="semantic-label">CHANGE ONLY THE MASK POSITION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.9231%"></div></div>
+<!-- speaker-notes
+只改变maskPositions，不改变tokens或全MASK构造政策。学习迁移由下一页反馈核对，不增设必交项或分值。
+-->
+  </section>
+<section id="d4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">按新的遮盖位置取得原序列目标</h2>
+    <div class="slide-content"><p class="slide-lead">位置 1 原来是甲，因此新目标为甲，乙作为右侧上下文继续保留</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 53% 27%"><colgroup><col style="width:20%"><col style="width:53%"><col style="width:27%"></colgroup><thead><tr><th>遮盖位置</th><th>简化 MLM 输入</th><th>原位置目标</th></tr></thead><tbody><tr><td>2，原任务</td><td><code>[&lt;BOS&gt;, 甲, &lt;MASK&gt;, &lt;EOS&gt;]</code></td><td>乙</td></tr><tr><td>1，课堂变式</td><td><code>[&lt;BOS&gt;, &lt;MASK&gt;, 乙, &lt;EOS&gt;]</code></td><td>甲</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>判断直接泄露时，先恢复当前任务的目标。只看“乙出现在输入中”这一现象，还需要对应它是否为本次待预测目标</p></div></div></div>
+    <div class="numeric-progress">21/26</div>
+    <div class="semantic-label">REBUILD INPUT AND TARGET</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.7692%"></div></div>
+<!-- speaker-notes
+保留语境性判断，避免把AR位置1的泄漏判据机械应用到所有MLM位置。两例均为全MASK纸面任务，无真实分数或训练结果。
+-->
+  </section>
+<section id="d5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">练习　用原固定输入完成证据单</h2>
+    <div class="slide-content"><p class="slide-lead">独立使用原序列、三个 AR 位置与 MLM 位置 2，保留初判与实际修订</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>列输入和目标</h3><p>写 AR 位置 0、1、2 的允许输入、目标及未来词元</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>修正并对照</h3><p>修订给定的 AR 位置 1 错误例，再列原位置 2 的简化 MLM 输入与目标</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>写范围说明</h3><p>用一句话说明此构造不能证明的现实模型能力</p></div></div></div>
+<div class="component component-text text-inset"><p>沿原证据单保留执行前判断、分析或操作位置、修订后产物、实际方法与本人/AI 贡献。固定材料缺失时先报教师，保持未执行与待补</p></div></div></div>
+    <div class="numeric-progress">22/26</div>
+    <div class="semantic-label">YOUR INDIVIDUAL RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.6154%"></div></div>
+<!-- speaker-notes
+严格沿U03 task.md/contract.json三项requiredOperation及deliverable四部分。给定词元、不实际分词、不实现Transformer。人工规则、查表演示、学习信号讨论和mask位置1变式均为教学支持，未加入正式必交。建议30分钟属原任务规划，实际用时与学习效果待试测。
+-->
+  </section>
+<section id="d6" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 遮盖与任务检验</div>
+    <h2 class="slide-title">怎样把结论接到自己实际完成的工作？</h2>
+    <div class="slide-content"><p class="slide-lead">记录可以确认给定构造中的输入和目标关系，现实模型能力需要对应测试</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="48% 52%"><colgroup><col style="width:48%"><col style="width:52%"></colgroup><thead><tr><th>当前可核的记录</th><th>若要继续判断，还需什么</th></tr></thead><tbody><tr><td>我按原规则列出三组 AR 配对并修订泄漏输入</td><td>核对表格、目标位置与修订前后文本</td></tr><tr><td>我写出位置 2 的全 MASK 输入与目标</td><td>核对原串与被遮位置，注明构造简化</td></tr><tr><td>我想判断某模型实际分词、训练或中文表现</td><td>该模型/编码器版本、运行记录与相应测试</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">23/26</div>
+    <div class="semantic-label">CLAIMS THE WORK CAN SUPPORT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.4615%"></div></div>
+<!-- speaker-notes
+第三行承接原requiredOperation“此构造不能说明的现实模型能力”。学生可写“本次没有调用真实编码器或模型，不能据此确认其真实ID、训练阶段或普遍中文能力”等具体限定。示范内容属于作者构造，学生需记录自身实际过程，不能复制为自己的实测。A13只记条件边界局部行为。
+-->
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1</div>
+    <h2 class="slide-title">用原四项自查复核自己的解释</h2>
+    <div class="slide-content"><p class="slide-lead">先遮住示范，重建输入与目标，再按已有产物逐项记 0 或 1</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">AR 输入目标及可见范围正确</span></li><li><span class="list-marker">■</span><span class="list-text">泄漏例有明确修正</span></li><li><span class="list-marker">■</span><span class="list-text">简化 MLM 不混同全部训练</span></li><li><span class="list-marker">■</span><span class="list-text">结论限定于给定构造</span></li></ul></div>
+<div class="component component-text text-inset"><p>四项合计 4 分为本微任务形成性自查，缺证项标待补。课程正式成绩归属由教师另行公布，实际学生用时待试测</p></div></div></div>
+    <div class="numeric-progress">24/26</div>
+    <div class="semantic-label">RETRIEVE AND CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.3077%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-2-1/mindmap-2-1.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">25/26</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.1538%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">同一文本按两个人工规则得到 3 或 6 个单位，需要同时记录哪些条件？</span></li><li><span class="question-no">02</span><span class="question-text">位置编号、词表 ID 与嵌入向量分别在说明什么？</span></li><li><span class="question-no">03</span><span class="question-text">自回归位置 1 的目标和允许输入是什么，原错误例多提供了什么？</span></li><li><span class="question-no">04</span><span class="question-text">都以乙为目标时，前缀预测与简化 MLM 的可见信息怎样不同？</span></li><li><span class="question-no">05</span><span class="question-text">本次短序列能支持哪些分析，真实分词、预训练与模型能力还需要哪些记录？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-1-2.html" title="上一节：1.2 把业务请求改成可检查的问题" aria-label="上一节：1.2 把业务请求改成可检查的问题">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.2</span>
+        <span class="nav-title">目标、澄清与决定</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-2-2.html" title="下一节：2.2 按任务比较模型和能力边界" aria-label="下一节：2.2 按任务比较模型和能力边界">
+        <span class="nav-title">比较条件与能力边界</span>
+        <span class="nav-number">2.2</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">26/26</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

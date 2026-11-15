@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 1.2 把业务请求改成可检查的问题 | HUST</title>
+  <meta name="description" content="依据固定订单卡写任务目标、成功条件、关键澄清与人工决定">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="1-2">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 1.2</div>
+      <h1>把业务请求改成<br>可检查的问题</h1>
+      <p class="cover-description">为客服草稿写清目标、资料缺口<br>和需要人决定的步骤</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">先拆开这句话中的三个要求</h2>
+    <div class="slide-content"><p class="slide-lead">保留自己的初判，随后逐项找材料核对</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>青禾书店要给顾客回复开票和发货进度。需求人提出“回复热情，保证明天到并替顾客改地址”</p>
+<p>请分别圈出表达要求、需要资料支持的承诺和会改变业务状态的动作</p></div>
+<div class="component component-text text-inset"><p>青禾、订单 S17、全部请求及本节变式均为教学构造，当前任务限于起草</p></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">READ THE REQUEST</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">四项材料给出了什么？</h2>
+    <div class="slide-content"><p class="slide-lead">用 B1—B4 定位每一条事实和约束</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="12% 88%"><colgroup><col style="width:12%"><col style="width:88%"></colgroup><thead><tr><th>位置</th><th>固定材料</th></tr></thead><tbody><tr><td>B1</td><td>青禾向已购买书签的顾客回复开票和发货问题，仅起草不发送</td></tr><tr><td>B2</td><td>S17 已付款，普通配送预计 3—5 个工作日，发票是否开出未知</td></tr><tr><td>B3</td><td>需求人要求热情、保证明天到、替顾客改地址，物流承诺与改址授权缺失</td></tr><tr><td>B4</td><td>顾客询问进度，客服负责人审文案，仓储可核发货，财务可核发票</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">FIXED INPUTS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">任务目标连接对象、输入、产物和用途</h2>
+    <div class="slide-content"><p class="slide-lead">任务目标 Task Goal 说明希望为谁完成什么具体工作</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="22% 78%" style="--key-value-columns:minmax(0,22fr) minmax(0,78fr)"><div class="key-value-item"><h3 class="key-value-key">为谁</h3><div class="key-value-value"><p>面向询问订单 S17 进度的书签顾客</p></div></div><div class="key-value-item"><h3 class="key-value-key">依据什么</h3><div class="key-value-value"><p>使用给定 B1—B4，保留尚未确认的状态</p></div></div><div class="key-value-item"><h3 class="key-value-key">交付什么</h3><div class="key-value-value"><p>形成开票与发货回复草稿，另附资料和权限待办</p></div></div><div class="key-value-item"><h3 class="key-value-key">用来做什么</h3><div class="key-value-value"><p>供客服负责人审核，并决定后续回复与交接</p></div></div></div></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">TASK GOAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">把本次目标写成一段完整说明</h2>
+    <div class="slide-content"><p class="slide-lead">读者应能从说明中找到当前交付及下一位使用者</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>面向询问订单 S17 进度的书签顾客，依据 B1—B4 形成开票与发货回复草稿，供客服负责人审核</p><p>草稿保留已付款事实、普通配送预计范围和待核开票信息，另附资料与权限待办，帮助负责人决定后续回复及交接</p></div></div>
+<div class="component component-text text-inset"><p>目标句式为课程组织方法。目标经确认发生变化时，记录原因并更新对应检查条件</p></div></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">A WORKED TASK STATEMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">三个动作分别需要什么条件？</h2>
+    <div class="slide-content"><p class="slide-lead">当前起草范围与后续业务动作分开登记</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 43% 39%"><colgroup><col style="width:18%"><col style="width:43%"><col style="width:39%"></colgroup><thead><tr><th>动作</th><th>目前可做</th><th>继续所需条件</th></tr></thead><tbody><tr><td>起草</td><td>据 B1—B4 写有依据的文稿</td><td>客服负责人审核</td></tr><tr><td>发送</td><td>保留为后续待办</td><td>确认发送权限及采用决定</td></tr><tr><td>改地址</td><td>登记请求并提出澄清</td><td>顾客授权、订单条件和有权岗位</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">ACTION BOUNDARIES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="a6" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 目标与条件</div>
+    <h2 class="slide-title">成功条件要让另一位同学能检查</h2>
+    <div class="slide-content"><p class="slide-lead">按固定材料检查草稿中的事实和交接安排</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>事实可追溯</h3><p>已付款、配送及开票表述逐项对应 B2 或新核验记录。当前保持预计 3—5 个工作日，开票状态待核</p></article><article class="content-card emphasis-card" tabindex="0"><h3>交接有边界</h3><p>产物标明草稿，附客服审核、仓储和财务核验待办。改址保留授权与有权岗位待确认状态</p></article></div>
+<div class="component component-text text-inset"><p>本节检查当前草稿与交接记录。顾客体验和业务效果需要后续实际观察</p></div></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">CHECKABLE CONDITIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">练习　先问哪两件事？</h2>
+    <div class="slide-content"><p class="slide-lead">用 B1—B4 区分已有答案与会改变下一步的缺口</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">S17 是否已经付款？</span></li><li><span class="list-marker">■</span><span class="list-text">当前发货与开票状态，各有哪份可引用记录？</span></li><li><span class="list-marker">■</span><span class="list-text">我们准备给谁回复？</span></li><li><span class="list-marker">■</span><span class="list-text">改址由哪个有权岗位核验顾客授权和订单条件？</span></li></ul></div></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">CHOOSE WHAT TO CLARIFY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">澄清问题要指向会改变行动的信息</h2>
+    <div class="slide-content"><p class="slide-lead">澄清问题 Clarifying Question 说明已知内容、缺口及答案的用途</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="22% 78%" style="--key-value-columns:minmax(0,22fr) minmax(0,78fr)"><div class="key-value-item"><h3 class="key-value-key">已有答案</h3><div class="key-value-value"><p>B2 给出已付款，B4 给出收件人，可直接定位使用</p></div></div><div class="key-value-item"><h3 class="key-value-key">资料缺口</h3><div class="key-value-value"><p>发货、开票记录决定草稿能写入哪些当前状态</p></div></div><div class="key-value-item"><h3 class="key-value-key">权限缺口</h3><div class="key-value-value"><p>改址授权与有权岗位决定后续动作可以交给谁</p></div></div></div></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">CLARIFYING QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">把两句关键澄清交到相应环节</h2>
+    <div class="slide-content"><p class="slide-lead">核查事实与确认动作权限各自留下待办</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>核订单事实</h3><p>请仓储、财务分别提供 S17 当前发货和开票的可引用记录，并标出仍待确认的部分</p></article><article class="content-card emphasis-card" tabindex="0"><h3>核改址流程</h3><p>拟请客服负责人协助查明哪个有权岗位核验顾客授权和订单条件，并确认流程确定前如何登记、交接</p></article></div>
+<div class="component component-text text-inset"><p>第一问影响草稿事实，第二问影响动作交接。实际返回、受理安排和有权岗位仍需对应确认</p></div></div></div>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">TWO WORKED QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">给每项人工动作写清处理角色</h2>
+    <div class="slide-content"><p class="slide-lead">表中的安排为本次纸面设计，实际执行另留记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="17% 35% 48%"><colgroup><col style="width:17%"><col style="width:35%"><col style="width:48%"></colgroup><thead><tr><th>事项</th><th>已知或拟交角色</th><th>当前动作与继续依据</th></tr></thead><tbody><tr><td>发货</td><td>B4 的仓储角色</td><td>核本次记录，返回可引用位置</td></tr><tr><td>开票</td><td>B4 的财务角色</td><td>核开票状态，返回来源</td></tr><tr><td>文案</td><td>B4 的客服负责人</td><td>审草稿与待核项，保留审核意见</td></tr><tr><td>改址</td><td>有权岗位待确认</td><td>拟请客服负责人协助查流程，取得授权和岗位信息后再安排</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">RESPONSIBILITY AND EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">按目前资料写一份有边界的草稿</h2>
+    <div class="slide-content"><p class="slide-lead">客户正文和内部交接说明分别承担工作</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>您好，订单 S17 已付款，普通配送预计为 3—5 个工作日。当前发货及开票状态仍待进一步核对</p></div></div>
+<div class="component component-text text-inset"><p>内部交接示范。供客服负责人审核，请仓储核发货、财务核开票并返回记录。确定到达日的依据尚缺。改址授权和有权岗位待确认，实际发送和订单操作另行确认后记录</p></div></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">DRAFT AND INTERNAL HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="b6" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">练习　逐句核对另一份初稿</h2>
+    <div class="slide-content"><p class="slide-lead">为每处待修订内容标出依据与处理动作</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>故意有问题的课堂初稿</p>
+<p>“您好，S17 明天一定送达。发票已经开好，我们也已替您修改地址”</p></div>
+<div class="component component-list list-plain"><ul><li>哪些主张在当前 B1—B4 中缺少支持？</li><li>哪些是文字修改，哪些还涉及业务状态与权限？</li><li>修订后应把待办交给谁，保留什么记录？</li></ul></div></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">CHECK THE REVISED DRAFT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="b7" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 澄清与交接</div>
+    <h2 class="slide-title">每项修订各自对应一项依据</h2>
+    <div class="slide-content"><p class="slide-lead">一条资料支持的范围决定能更新哪句话</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 36% 42%"><colgroup><col style="width:22%"><col style="width:36%"><col style="width:42%"></colgroup><thead><tr><th>原主张</th><th>当前处理</th><th>下一项记录</th></tr></thead><tbody><tr><td>明天一定送达</td><td>保留 B2 预计配送范围</td><td>另核可支持到达日的物流资料</td></tr><tr><td>发票已开好</td><td>写为开票状态待核</td><td>财务返回本次开票记录</td></tr><tr><td>已修改地址</td><td>保留改址未执行状态</td><td>授权、订单条件、有权岗位及实际动作</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">REPAIR WITH SOURCE LOCATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 比较与复查</div>
+    <h2 class="slide-title">决策支持还要比较怎样推进</h2>
+    <div class="slide-content"><p class="slide-lead">决策支持 Decision Support 为责任人组织证据、方案、约束与未知</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="25% 75%" style="--key-value-columns:minmax(0,25fr) minmax(0,75fr)"><div class="key-value-item"><h3 class="key-value-key">共同条件</h3><div class="key-value-value"><p>同一 B1—B4、同一 S17，仅起草，发货和开票待核，改址授权待确认</p></div></div><div class="key-value-item"><h3 class="key-value-key">可以比较</h3><div class="key-value-value"><p>先交有边界草稿并补查，或先取得核查记录再形成交审稿</p></div></div><div class="key-value-item"><h3 class="key-value-key">尚缺依据</h3><div class="key-value-value"><p>交稿时限、角色是否可用、记录何时可得，以及实际质量和耗时</p></div></div><div class="key-value-item"><h3 class="key-value-key">谁作选择</h3><div class="key-value-value"><p>拟由客服负责人确认文稿审核需要，并按组织安排协调待办</p></div></div></div></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">DECISION SUPPORT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 比较与复查</div>
+    <h2 class="slide-title">在同一权限下比较两条处理路径</h2>
+    <div class="slide-content"><p class="slide-lead">两方案均保留未知，当前交付范围仍限于起草和交接</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="18% 41% 41%"><colgroup><col style="width:18%"><col style="width:41%"><col style="width:41%"></colgroup><thead><tr><th>比较项</th><th>A　先交有边界草稿并补查</th><th>B　先核查再形成交审稿</th></tr></thead><tbody><tr><td>先交什么</td><td>标明待核的阶段性草稿与待办</td><td>核查请求与任务分工卡</td></tr><tr><td>依赖什么</td><td>后续更新与再次审核责任</td><td>拟写入状态的可引用记录</td></tr><tr><td>要管理什么</td><td>阶段性草稿保持待复核</td><td>缺记录时由负责人决定等待或调整</td></tr><tr><td>如何选择</td><td>负责人需先看阶段产物时可考虑</td><td>负责人需核验后稿件且资料可得时可考虑</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">COMPARE TWO FEASIBLE PATHS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 比较与复查</div>
+    <h2 class="slide-title">练习　只增加一条开票记录会改变什么？</h2>
+    <div class="slide-content"><p class="slide-lead">其余条件保持 B1—B4，仅加入下面的教学构造材料</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>财务补发与 S17 对应的已开票记录，来源标识为 FIN-17</p>
+<p>请写可更新的表述、仍待核的事项，以及这是否已满足方案 B 的全部资料前提</p></div></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">NEW EVIDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-grid"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 比较与复查</div>
+    <h2 class="slide-title">将新记录接到对应表述</h2>
+    <div class="slide-content"><p class="slide-lead">开票、物流和改址分别依赖各自的材料</p>
+<div class="slide-main-content"><div class="cards-grid cards-explanatory" style="--card-columns:3"><article class="content-card emphasis-card" tabindex="0"><h3>开票可以更新</h3><p>核订单对应后，开票表述引用 FIN-17，保留文稿版本变化</p></article><article class="content-card emphasis-card" tabindex="0"><h3>其他事项待核</h3><p>当前发货、确定到达日及改址权限继续按各自资料处理</p></article><article class="content-card emphasis-card" tabindex="0"><h3>方案仍需复查</h3><p>B 还依赖拟写入的发货记录。交审次序由负责人按当前需要与可得资料确认</p></article></div></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">UPDATE ONLY WHAT CHANGED</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2 <span>|</span> 比较与复查</div>
+    <h2 class="slide-title">哪项新要求会改变交审次序？</h2>
+    <div class="slide-content"><p class="slide-lead">选择随服务要求和资料可得性变化，实际效果继续待观察</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="48% 52%"><colgroup><col style="width:48%"><col style="width:52%"></colgroup><thead><tr><th>新增教学条件</th><th>有条件的处理建议</th></tr></thead><tbody><tr><td>负责人明确先看待办与阶段性草稿</td><td>可按 A 先提交，保留补查和再次审核责任</td></tr><tr><td>负责人要求核验后稿件，所需记录均已可得</td><td>可按 B 形成交审稿，逐项引用记录</td></tr><tr><td>只取得 FIN-17，其余要求仍未知</td><td>先更新开票字段，保留两方案与缺口</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">CONDITIONS FOR A CHOICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2</div>
+    <h2 class="slide-title">练习　提交自己的任务与分工卡</h2>
+    <div class="slide-content"><p class="slide-lead">依据原始 B1—B4 修订初判，保留输入位置及实际过程</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>写清目标</h3><p>交代受众、输入、产物、用途和当前边界</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>写两条成功条件</h3><p>让他人能核事实表述、未知和动作交接</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>写两句关键澄清</h3><p>指出真正缺口，说明答案改变哪一步</p></div></div><div class="process-item"><span class="process-marker">04</span><div class="process-content"><h3>列分工并保留过程</h3><p>把发货、发票、改址逐项交接，附初判、修订、方法、贡献和未测项</p></div></div></div></div></div>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">INDIVIDUAL TASK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2</div>
+    <h2 class="slide-title">一份过程记录示范怎样写？</h2>
+    <div class="slide-content"><p class="slide-lead">以下记录由作者构造，供学习字段与范围</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="23% 77%" style="--key-value-columns:minmax(0,23fr) minmax(0,77fr)"><div class="key-value-item"><h3 class="key-value-key">设置的初判</h3><div class="key-value-value"><p>虚构执行者起初拟照需求人说法写确定到达日</p></div></div><div class="key-value-item"><h3 class="key-value-key">采用的方法</h3><div class="key-value-value"><p>纸面对照 B1—B4，修订目标、事实和交接，未取得新的业务记录</p></div></div><div class="key-value-item"><h3 class="key-value-key">方法与贡献</h3><div class="key-value-value"><p>作者使用 AI 编写此示范，虚构执行者按纸笔分析。学生填写自己实际使用的方法与贡献</p></div></div><div class="key-value-item"><h3 class="key-value-key">执行与未测</h3><div class="key-value-value"><p>示范无真实模型运行、发送或改址。业务结果、响应速度与学习效果仍待实际记录</p></div></div></div></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">A CONSTRUCTED PROCESS RECORD</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2</div>
+    <h2 class="slide-title">用四项检查复核自己的产物</h2>
+    <div class="slide-content"><p class="slide-lead">每项按已有证据记 0 或 1，缺项标明待补</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">受众与目标明确</span></li><li><span class="list-marker">■</span><span class="list-text">两条标准可以检查</span></li><li><span class="list-marker">■</span><span class="list-text">缺失资料与越权动作有澄清</span></li><li><span class="list-marker">■</span><span class="list-text">每个人工动作有责任角色</span></li></ul></div>
+<div class="component component-text text-inset"><p>合计 4 分为本微任务形成性自查，正式成绩按课程评价安排确定。纸笔即可完成，学生耗时待试测</p></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">RETRIEVE AND CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-1-2/mindmap-1-2.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">KNOWLEDGE MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M1 <span>|</span> 1.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">S17 的任务目标中，受众、输入、产物和用途分别是什么？</span></li><li><span class="question-no">02</span><span class="question-text">两条成功条件怎样让另一位同学检查草稿？</span></li><li><span class="question-no">03</span><span class="question-text">为什么已付款与改址授权应采用不同处理方式？</span></li><li><span class="question-no">04</span><span class="question-text">先交阶段性草稿和先核查再交审，各自依赖什么条件？</span></li><li><span class="question-no">05</span><span class="question-text">FIN-17 能改变哪些表述，哪些决定仍需其他依据？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-1-1.html" title="上一节：1.1 生成式 AI 在管理任务中的位置" aria-label="上一节：1.1 生成式 AI 在管理任务中的位置">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">1.1</span>
+        <span class="nav-title">AI 与管理任务</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-2-1.html" title="下一节：2.1 词元与生成条件" aria-label="下一节：2.1 词元与生成条件">
+        <span class="nav-title">词元、目标与可见信息</span>
+        <span class="nav-number">2.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">SECTION QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

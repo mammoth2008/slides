@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 3.4 文档问答与检索失败定位 | HUST</title>
+  <meta name="description" content="沿固定问题、候选、生成上下文与答复定位两次失败，依据现行学生制度修订答复并选择下一核查">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="3-4">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 3.4</div>
+      <h1>文档问答<br>与检索失败定位</h1>
+      <p class="cover-description">把同一句错误答复拆回中间过程，<br>找到下一步应该检查的材料</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">两次都答错，下一步检查会相同吗？</h2>
+    <div class="slide-content"><p class="slide-lead">先保留初判，再用两份中间记录判断资料在哪一步缺失</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>原问题为“当前学生制度的借用上限是什么？”</p>
+<p>运行 A 与运行 B 的原答复相同，都是“所有人上限14天。”</p></div>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">在证据单先写下你会查候选资料、生成上下文还是最终答复，以及当前理由</span></li><li><span class="list-marker">■</span><span class="list-text">原卡已经给出两次运行的记录，接下来逐项阅读。输入均为课堂构造</span></li><li><span class="list-marker">■</span><span class="list-text">本节沿给定记录分析，不需要账号、模型调用或联网检索，纸笔即可完成</span></li></ul></div></div></div>
+    <div class="numeric-progress">2/29</div>
+    <div class="semantic-label">ONE ANSWER TWO TRACES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:6.8966%"></div></div>
+<!-- speaker-notes
+问题和原答复逐字来自原input。初判在看示范前保存，不按初判对错给形成性分。runs是给定教学轨迹，不是作者或学生实际模型运行。
+-->
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">先把 D7 的身份和两行原文放在手边</h2>
+    <div class="slide-content"><p class="slide-lead">D7 是本题给定的现行学生制度，答复必须保留它的对象和条件</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>位置</th><th>原卡内容</th></tr></thead><tbody><tr><td>文档身份</td><td><code>D7</code>，版本 <code>现行-1</code>，范围 <code>公开学生制度</code></td></tr><tr><td>第 1 行</td><td>学生借用须导师确认。</td></tr><tr><td>第 2 行</td><td>学生借用上限7天。</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>D1/D2/D3具体原文未提供，本任务只用给定轨迹定位D7缺失环节，不自行推断它们内容。</p></div></div></div>
+    <div class="numeric-progress">3/29</div>
+    <div class="semantic-label">THE EXPECTED DOCUMENT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:10.3448%"></div></div>
+<!-- speaker-notes
+原文和reminder保持原字面，属精确对照例外。版本和scope来自元数据，不能将“须导师确认”写成个案“已确认”。未知D1/D2/D3不能贴旧版、教师版、无关或恶意资料等自造标签。
+-->
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">答复超出原文后，继续查资料走到了哪里</h2>
+    <div class="slide-content"><p class="slide-lead">前课的原文比较继续有效，本节增加对中间材料的逐段检查</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 37% 40%"><colgroup><col style="width:23%"><col style="width:37%"><col style="width:40%"></colgroup><thead><tr><th>已有方法</th><th>本节继续使用</th><th>本节新增观察</th></tr></thead><tbody><tr><td>U06 字段出处</td><td>保存文档身份、版本和原行</td><td>检查 D7 是否进入两个中间集合</td></tr><tr><td>U07 主张核查</td><td>比较学生与所有人、7 天与 14 天</td><td>同样的错误答复可能来自不同环节</td></tr><tr><td>本节轨迹诊断</td><td>用 D7 修订答复</td><td>为 A/B 分别选择下一核查</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>本题 D7 与前课通知 D1/D2、制度 D01—D04 各有自己的身份。方法可以继承，数据按本题重新读取</p></div></div></div>
+    <div class="numeric-progress">4/29</div>
+    <div class="semantic-label">FROM ANSWER CHECK TO PROCESS CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.7931%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">检索增强生成把外部材料接入回答过程</h2>
+    <div class="slide-content"><p class="slide-lead">检索增强生成把检索所得资料提供给生成过程</p>
+<div class="slide-main-content"><div class="component component-text text-inset"><p>检索增强生成 Retrieval-Augmented Generation 将检索所得资料提供给生成过程，简称 RAG</p></div>
+<div class="component component-list list-rows"><ol class="content-list content-list-ordered"><li><span class="list-marker">01</span><span class="list-text">接收问题。确认问题对象为当前学生，以及要查的借用上限</span></li><li><span class="list-marker">02</span><span class="list-text">检索候选。检索 Retrieval 根据问题查找可能相关的材料，留下候选资料 Candidate documents</span></li><li><span class="list-marker">03</span><span class="list-text">组装上下文。从候选中选择实际提供给生成过程的材料，形成生成上下文 Generation context</span></li><li><span class="list-marker">04</span><span class="list-text">生成答复。根据当前输入起草答复，再回读适用原文核对对象、数值和条件</span></li></ol></div></div></div>
+    <div class="numeric-progress">5/29</div>
+    <div class="semantic-label">RETRIEVAL AUGMENTED GENERATION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.2414%"></div></div>
+<!-- speaker-notes
+K14维护定义与A18诊断操作化。本页是课程通用工作流，不冒称Lewis论文具体模型包含这一工程图全部细节。资料准备在检索前也可能存在，本题没有该阶段日志，不声称已完成。原论文只沿E02既有摘要范围使用，不引其效应量。
+-->
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">片段中的数值要连着对象和条件阅读</h2>
+    <div class="slide-content"><p class="slide-lead">本节只对照原卡 D7 两行理解片段语境，未执行解析、分块或建索引</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 38% 38%"><colgroup><col style="width:24%"><col style="width:38%"><col style="width:38%"></colgroup><thead><tr><th>阅读方式</th><th>手边保留的内容</th><th>当前可以说明什么</th></tr></thead><tbody><tr><td>只摘数值</td><td>7 天</td><td>缺少适用对象与确认条件</td></tr><tr><td>按 D7 两行阅读</td><td>学生、导师确认、上限 7 天</td><td>能说明学生借用规则，个案是否确认仍未知</td></tr><tr><td>保存出处</td><td>D7、现行-1、第 1—2 行</td><td>他人可回读同一份固定原文</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>文本分块 Chunking 将长材料拆成可检索和使用的片段，同时保留回原文的位置</p>
+<p>不能把这次阅读记成资料准备完成</p></div></div></div>
+    <div class="numeric-progress">6/29</div>
+    <div class="semantic-label">KEEP THE CLAUSE WITH ITS CONTEXT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.6897%"></div></div>
+<!-- speaker-notes
+K287 supporting。比较是对给定D7的阅读构造，没有改变原input，没有运行分块方案比较，也没有把两行当成真实检索器返回的chunk。不给A17实际操作分或能力掌握标签。
+-->
+  </section>
+<section id="a6" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 问答链中的材料</div>
+    <h2 class="slide-title">候选身份不能说明采用了哪种检索方法</h2>
+    <div class="slide-content"><p class="slide-lead">同一份候选记录可能来自不同检索配置，判断方法还需读取相应配置和日志</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>关键词检索 Keyword search</h3><p>按词项匹配寻找材料，适合检查制度名称和明确编号。匹配到关键词后，仍需回读对象与内容</p></article><article class="content-card emphasis-card" tabindex="0"><h3>向量检索 Vector search</h3><p>把查询与材料表示为向量，按相近程度找候选。同主题材料也可能属于其他对象或版本</p></article></div>
+<div class="component component-text text-inset"><p>本卡没有查询配置、分数或索引记录，不能把 A 的缺失归为某种检索算法效果差。两种方法在这里仅作背景，不要求实际运行</p></div></div></div>
+    <div class="numeric-progress">7/29</div>
+    <div class="semantic-label">RETRIEVAL APPROACHES AND THEIR LIMITS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:24.1379%"></div></div>
+<!-- speaker-notes
+K289/K290为原contract backgroundOnly。沿维护节点及E31既有阅读范围概述，不给当前产品设置，不作方法优劣或性能结论。技术词首处中文English，无候选英文别名注册或名册写入。
+-->
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">A 在候选记录中已经缺少 D7</h2>
+    <div class="slide-content"><p class="slide-lead">只按原日志看，A 最早可观察到的缺失位于候选阶段</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>A 的短链</th><th>原卡记录</th></tr></thead><tbody><tr><td>问题</td><td>当前学生制度的借用上限是什么？</td></tr><tr><td>候选</td><td><code>D1</code>、<code>D2</code>、<code>D3</code></td></tr><tr><td>生成上下文</td><td><code>D1</code></td></tr><tr><td>答复</td><td>所有人上限14天。</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>D7 不在候选中，后面这份上下文也没有 D7。当前可以定位“候选缺 D7”，尚不能确认它为什么没有出现</p></div></div></div>
+    <div class="numeric-progress">8/29</div>
+    <div class="semantic-label">TRACE A BEFORE THE CANDIDATES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:27.5862%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">A 先检查 D7 能否被当前检索访问和找到</h2>
+    <div class="slide-content"><p class="slide-lead">下一核查从候选之前查起，先获取能够区分原因的记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">先请维护者核对 D7 是否在当前资料集合中，以及当前请求是否允许检索到它</span></li><li><span class="list-marker">■</span><span class="list-text">若 D7 已可检索，再保留原问题，检查实际查询、过滤条件与候选日志中它为何缺失</span></li><li><span class="list-marker">■</span><span class="list-text">核查后用同一问题再看候选是否包含适用 D7，并继续检查上下文与最终答复</span></li></ul></div>
+<div class="component component-text text-inset"><p>以上是下一步计划。原卡没有索引、权限或查询日志，本次没有执行这些检查，也没有证明 D7 未入库</p></div></div></div>
+    <div class="numeric-progress">9/29</div>
+    <div class="semantic-label">NEXT CHECK FOR A</div>
+    <div class="progress-track"><div class="progress-fill" style="width:31.0345%"></div></div>
+<!-- speaker-notes
+接受其他针对候选之前的合理核查，如先核实际查询和过滤，并说明下一步如何查资料集合。C3要求针对环节，不强制先权限后查询的一种次序。D7 scope公开不证明具体系统已收录或当前索引可见。
+-->
+  </section>
+<section id="b3" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">B 找到了 D7，却没有把它放入生成上下文</h2>
+    <div class="slide-content"><p class="slide-lead">B 最早可观察到的缺失发生在候选到上下文的选择环节</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>B 的短链</th><th>原卡记录</th></tr></thead><tbody><tr><td>问题</td><td>当前学生制度的借用上限是什么？</td></tr><tr><td>候选</td><td><code>D2</code>、<code>D7</code>、<code>D1</code></td></tr><tr><td>生成上下文</td><td><code>D2</code></td></tr><tr><td>答复</td><td>所有人上限14天。</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>D7 已经出现在候选中，实际上下文只有 D2。不能把 B 写成 D7 未被召回，也不能写成模型已经读过 D7</p></div></div></div>
+    <div class="numeric-progress">10/29</div>
+    <div class="semantic-label">TRACE B FROM CANDIDATES TO CONTEXT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.4828%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">B 先查候选怎样被选成了上下文</h2>
+    <div class="slide-content"><p class="slide-lead">保存 D7 候选位置与实际上下文，再查选择规则或上下文组装记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">读取该次候选到上下文的选择日志，核对为何只有 D2 被放入</span></li><li><span class="list-marker">■</span><span class="list-text">检查是否按顺序只取首项、按某种规则筛选或因长度截断，这些当前都只是待核原因</span></li><li><span class="list-marker">■</span><span class="list-text">调整后先看 D7 是否真正进入上下文，再比较答复能否按 D7 保留学生、7 天与导师确认</span></li></ul></div>
+<div class="component component-text text-inset"><p>原卡给出结果列表，没有给出选择程序。只能提针对性核查，不能把某一种待核原因写成已经证实</p></div></div></div>
+    <div class="numeric-progress">11/29</div>
+    <div class="semantic-label">NEXT CHECK FOR B</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.9310%"></div></div>
+<!-- speaker-notes
+Q106背景描述曾“进入生成上下文仅第一项”，但U08输入只是给定A/B结果，不足以证明存在通用first-item程序。按当前U08范围诊断，不将背景算法条件偷偷回填原卡。
+-->
+  </section>
+<section id="b5" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">人工修订同时恢复对象、天数和确认条件</h2>
+    <div class="slide-content"><p class="slide-lead">给定 D7 可以支持学生借用规则，个案是否获确认仍需单独记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="20% 80%"><colgroup><col style="width:20%"><col style="width:80%"></colgroup><thead><tr><th>记录</th><th>完整文字</th></tr></thead><tbody><tr><td>A/B 原答复</td><td>所有人上限14天。</td></tr><tr><td>修订答复</td><td>依据本题 D7 现行-1，学生借用上限为 7 天，须导师确认，见第 2 行与第 1 行</td></tr><tr><td>保留未知</td><td>D1/D2/D3 原文未提供，不能核定其内容，也未取得某次借用已获导师确认的记录</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/29</div>
+    <div class="semantic-label">REVISE THE ANSWER WITH D7</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.3793%"></div></div>
+<!-- speaker-notes
+新句是作者人工示范。给定D7支持规则，不能宣称修订已由真实模型生成、系统修复成功或申请已获批准。原问题问上限，原任务也要求用给定D7纠正，保留第1行确认条件可避免错误采用。
+-->
+  </section>
+<section id="b6" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 两次失败分别定位</div>
+    <h2 class="slide-title">两条诊断记录连接各自下一核查</h2>
+    <div class="slide-content"><p class="slide-lead">答复相同只说明末端文字相同，中间记录决定先查哪一步</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 28% 28% 30%"><colgroup><col style="width:14%"><col style="width:28%"><col style="width:28%"><col style="width:30%"></colgroup><thead><tr><th>运行</th><th>可观察缺失</th><th>下一核查</th><th>后续要看什么</th></tr></thead><tbody><tr><td>A</td><td>候选没有 D7</td><td>核资料可检索性、查询与过滤</td><td>D7 是否进候选，再查上下文和答复</td></tr><tr><td>B</td><td>候选有 D7，上下文没有</td><td>核候选选择与上下文组装</td><td>D7 是否进上下文，再查答复</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>原卡分析到这里可以提出计划并修订答复。没有真实复测记录时，在两行下一核查旁都标“未执行”</p></div></div></div>
+    <div class="numeric-progress">13/29</div>
+    <div class="semantic-label">TWO DIAGNOSES TWO FOLLOW UPS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:44.8276%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 反例与核查反馈</div>
+    <h2 class="slide-title">只把 14 天改对，还没有定位两次失败</h2>
+    <div class="slide-content"><p class="slide-lead">正确复述 D7 能完成答复修订，仍需用 A/B 中间记录解释两个缺失环节</p>
+<div class="slide-main-content"><div class="component component-text text-case-prompt"><p>构造答卷写“学生借用上限 7 天，须导师确认，依据 D7 第 1—2 行。两个运行都改成这句就结束”</p>
+<p>这份答卷回读了原文，却没有说明 A 缺在候选、B 缺在上下文，也没有为两次运行选择下一核查</p></div>
+<div class="component component-text text-inset"><p>原文核查与过程定位分别保留。修订句正确，不能替代短链和针对环节的检查计划</p></div></div></div>
+    <div class="numeric-progress">14/29</div>
+    <div class="semantic-label">A CORRECT ANSWER CAN HIDE A MISSING DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:48.2759%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 反例与核查反馈</div>
+    <h2 class="slide-title">缺失位置已知，具体原因还可能未知</h2>
+    <div class="slide-content"><p class="slide-lead">诊断先引用可见记录，原因需要能区分不同解释的新材料</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 36% 37%"><colgroup><col style="width:27%"><col style="width:36%"><col style="width:37%"></colgroup><thead><tr><th>说法</th><th>当前可否支持</th><th>下一步如何处理</th></tr></thead><tbody><tr><td>A 候选没有 D7</td><td>可由候选列表支持</td><td>核资料集合与查询过程</td></tr><tr><td>A 一定没给 D7 建索引</td><td>缺索引记录</td><td>先索取收录与索引信息</td></tr><tr><td>B 上下文没有 D7</td><td>可由上下文列表支持</td><td>核选择或组装日志</td></tr><tr><td>B 一定只取第一项</td><td>缺选择规则记录</td><td>核实际规则，不能按列表猜程序</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">15/29</div>
+    <div class="semantic-label">OBSERVED GAP AND POSSIBLE CAUSE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:51.7241%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 反例与核查反馈</div>
+    <h2 class="slide-title">试做　这两句诊断需要怎样修改？</h2>
+    <div class="slide-content"><p class="slide-lead">先用原 A/B 的候选和上下文逐项指出错误，再写各自下一核查</p>
+<div class="slide-main-content"><div class="cards-grid cards-comparison" style="--card-columns:2"><article class="content-card emphasis-card" tabindex="0"><h3>判断甲</h3><p>B 的候选里有 D7，所以模型已经看过学生制度。应先重写生成提示</p></article><article class="content-card emphasis-card" tabindex="0"><h3>判断乙</h3><p>A 没有 D7，说明 D1 是过期制度。把 D1 删掉就修好了</p></article></div>
+<div class="component component-text text-inset"><p>把修订直接补进同一张证据单，或先口头说明。保留原判断，下一页再对照反馈，不新增提交物</p></div></div></div>
+    <div class="numeric-progress">16/29</div>
+    <div class="semantic-label">TRY THE DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:55.1724%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 反例与核查反馈</div>
+    <h2 class="slide-title">甲混淆候选与上下文，乙补造了未知内容</h2>
+    <div class="slide-content"><p class="slide-lead">两句都要回到原记录，再缩小到有日志支持的判断</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">甲的 B 上下文只有 D2，当前先查 D7 为何未被选入，不能按候选列表断言模型已经看过它</span></li><li><span class="list-marker">■</span><span class="list-text">乙的 A 确实候选缺 D7，但 D1 原文未知，不能给它贴过期标签或直接建议删除</span></li><li><span class="list-marker">■</span><span class="list-text">A 可核 D7 是否可检索及当前查询/过滤，B 可核候选选择/上下文组装，均记为待执行计划</span></li></ul></div>
+<div class="component component-text text-inset"><p>即使以后把 D7 放进上下文，也要回读新答复。材料送达只是后续核对的起点</p></div></div></div>
+    <div class="numeric-progress">17/29</div>
+    <div class="semantic-label">FEEDBACK ON THE TWO CLAIMS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.6207%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 反例与核查反馈</div>
+    <h2 class="slide-title">有 D7 时据它作答，缺适用资料先停承诺</h2>
+    <div class="slide-content"><p class="slide-lead">答复采用哪条规则，取决于实际可用且适用的材料</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 36% 36%"><colgroup><col style="width:28%"><col style="width:36%"><col style="width:36%"></colgroup><thead><tr><th>当前条件</th><th>可给出的答复</th><th>暂不能作的判断</th></tr></thead><tbody><tr><td>原卡给定 D7 两行</td><td>学生上限 7 天，须导师确认，并留出处</td><td>所有人均适用、个案已确认</td></tr><tr><td>只有 D1/D2/D3 编号且无原文</td><td>当前缺可核对的适用规则，请补原文</td><td>凭编号猜上限为 14 天或其他天数</td></tr><tr><td>要查某次借用是否已批准</td><td>引用规则并索取个案确认记录</td><td>用“须确认”补写“已确认”</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">18/29</div>
+    <div class="semantic-label">ANSWER WITHIN THE AVAILABLE MATERIAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.0690%"></div></div>
+<!-- speaker-notes
+第二行是明确条件对比，没有删除或篡改原U08给定D7。原任务仍能按D7作答，不能把全部任务误改为必须拒答。停止针对缺证承诺，不阻止记录当前可知内容。
+-->
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">公开变式只把 B 的上下文改为 D7</h2>
+    <div class="slide-content"><p class="slide-lead">公开 V2 用于比较条件变化，问题、D7、候选和错误答复均保持</p>
+<div class="slide-main-content"><div class="component component-code"><div class="code-frame"><span class="code-language">JSON</span><pre tabindex="0" aria-label="JSON code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06</span><code class="language-json">{
+  "id": "B",
+  "candidates": ["D2", "D7", "D1"],
+  "generationContext": ["D7"],
+  "answer": "所有人上限14天。"
+}</code></pre></div></div>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">V2 只替换 <code>runs[1].generationContext</code>，原卡该字段是 <code>[&quot;D2&quot;]</code>，现在是 <code>[&quot;D7&quot;]</code></span></li><li><span class="list-marker">■</span><span class="list-text">A 的记录与 D7 两行保持原样。V2 是公开构造，未真实重跑，也不是教师后发未见测验</span></li></ul></div></div></div>
+    <div class="numeric-progress">19/29</div>
+    <div class="semantic-label">ONE PUBLIC CHANGE TO RUN B</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.5172%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">V2 的 B 还缺在候选到上下文吗？</h2>
+    <div class="slide-content"><p class="slide-lead">先对照改变后的字段，再判断原来的核查计划哪些需要调整</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">在 V2 中，D7 是否已经出现在 B 的候选和生成上下文中？分别指出位置</span></li><li><span class="list-marker">■</span><span class="list-text">原答复仍为“所有人上限14天。”，它与 D7 的对象、天数和确认条件有哪些差异？</span></li><li><span class="list-marker">■</span><span class="list-text">下一核查应该继续追问 D7 为何没入上下文，还是核对上下文实际内容与答复使用？说明理由</span></li></ul></div>
+<div class="component component-text text-inset"><p>先写预测再看反馈。V2 的判断留在变式栏，原微任务仍按原卡 V1 提交</p></div></div></div>
+    <div class="numeric-progress">20/29</div>
+    <div class="semantic-label">PREDICT THE NEW DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:68.9655%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">V2 的 B 已获 D7，答复仍未正确使用规则</h2>
+    <div class="slide-content"><p class="slide-lead">同一错误答复在新条件下，需要按上下文到答复继续核查</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="22% 39% 39%"><colgroup><col style="width:22%"><col style="width:39%"><col style="width:39%"></colgroup><thead><tr><th>对照</th><th>原卡 B</th><th>V2 的 B</th></tr></thead><tbody><tr><td>候选</td><td>有 D7</td><td>有 D7</td></tr><tr><td>上下文</td><td>无 D7，只有 D2</td><td>有 D7</td></tr><tr><td>最早可见问题</td><td>D7 未被选入上下文</td><td>已给 D7 仍答成所有人 14 天</td></tr><tr><td>下一核查</td><td>选择与组装日志</td><td>核实际送入的 D7 内容、指令与答复使用</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>V2 仍需修为学生上限 7 天且须导师确认。不能仅凭这次构造记录认定某模型不具备阅读能力或量出错误率</p></div></div></div>
+    <div class="numeric-progress">21/29</div>
+    <div class="semantic-label">THE GAP HAS MOVED</div>
+    <div class="progress-track"><div class="progress-fill" style="width:72.4138%"></div></div>
+<!-- speaker-notes
+generationContext在本固定卡按给出的文档ID理解，V2有D7，最早可见缺失已不在候选→上下文。真实系统仍需核发送内容/截断/模板等，本页不把ID日志假定为完整token级运行记录。
+-->
+  </section>
+<section id="d4" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">回到原 V1，完成原任务的三项动作</h2>
+    <div class="slide-content"><p class="slide-lead">建议 30 分钟完成同一张证据单，实际学生用时仍待试测</p>
+<div class="slide-main-content"><div class="component component-list list-process"><div class="process-item"><span class="process-marker">01</span><div class="process-content"><h3>分别画短链</h3><p>A/B 各保留问题、候选、生成上下文与原答复，不能把两次记录合并</p></div></div><div class="process-item"><span class="process-marker">02</span><div class="process-content"><h3>定位并提下一核查</h3><p>标出 D7 在哪一步缺失，每次选择针对该环节的核查并标明未执行</p></div></div><div class="process-item"><span class="process-marker">03</span><div class="process-content"><h3>用 D7 修订</h3><p>给出有原行出处的修订答复，明确 D1/D2/D3 内容未知、资料准备未执行</p></div></div></div>
+<div class="component component-text text-inset"><p>只交本微任务范围。整题的独立阶段、全部交付与量规保持各自资源库范围，公开 V2 也不增加必交项或分值</p></div></div></div>
+    <div class="numeric-progress">22/29</div>
+    <div class="semantic-label">RETURN TO THE ORIGINAL THREE OPERATIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.8621%"></div></div>
+  </section>
+<section id="d5" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">完整示范先保留初判，再记两次定位</h2>
+    <div class="slide-content"><p class="slide-lead">以下为作者构造答卷示范，初判和行为不能照抄为本人的实际经历</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="25% 75%" style="--key-value-columns:minmax(0,25fr) minmax(0,75fr)"><div class="key-value-item"><h3 class="key-value-key">执行前判断/范围</h3><div class="key-value-value"><p>我起初以为两次都先改提示。当前只分析原 V1 的 A/B 给定轨迹与 D7，尚未真实检索</p></div></div><div class="key-value-item"><h3 class="key-value-key">A 的分析记录</h3><div class="key-value-value"><p>问题见原卡。候选 D1/D2/D3，上下文 D1，原答复所有人上限 14 天。候选即缺 D7，先查其可检索性和查询/过滤，计划未执行</p></div></div><div class="key-value-item"><h3 class="key-value-key">B 的分析记录</h3><div class="key-value-value"><p>同一问题。候选 D2/D7/D1，上下文 D2，同一原答复。D7 缺在候选到上下文，先查选择和组装日志，计划未执行</p></div></div></div></div></div>
+    <div class="numeric-progress">23/29</div>
+    <div class="semantic-label">A FULL EVIDENCE SHEET FIRST HALF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.3103%"></div></div>
+<!-- speaker-notes
+本页与下一页组成一张四部分示范。“问题见原卡”对应a1/b1/b3完整输入，在answer-tests的完整答卷再次全文保留。示范为作者构造的个人口吻，实际学生必须保存自己真实初判和过程。
+-->
+  </section>
+<section id="d6" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">修订产物与实际方法分别写清</h2>
+    <div class="slide-content"><p class="slide-lead">同一份示范继续交代采用句、具体处理与尚未取得的结果</p>
+<div class="slide-main-content"><div class="component component-list list-key-value has-column-widths" data-column-widths="25% 75%" style="--key-value-columns:minmax(0,25fr) minmax(0,75fr)"><div class="key-value-item"><h3 class="key-value-key">修订后产物/决定</h3><div class="key-value-value"><p>A/B 均改为“依据本题 D7 现行-1，学生借用上限为 7 天，须导师确认，见第 2 行与第 1 行”。不扩为所有人，不认定个案已确认</p></div></div><div class="key-value-item"><h3 class="key-value-key">实际方法与本人贡献</h3><div class="key-value-value"><p>示范采用纸笔路径，逐项对照候选、上下文和 D7 两行，修正初判并写出两项核查计划。原卡没有固定 AI 建议</p></div></div><div class="key-value-item"><h3 class="key-value-key">AI 与未测项</h3><div class="key-value-value"><p>此答卷角色未调用 AI。D1/D2/D3 原文未知，解析、分块和建索引未执行，下一核查与模型重跑未执行，真实效果未测</p></div></div></div></div></div>
+    <div class="numeric-progress">24/29</div>
+    <div class="semantic-label">A FULL EVIDENCE SHEET SECOND HALF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.7586%"></div></div>
+<!-- speaker-notes
+“答卷角色未调用”只描述构造示范内的角色。课件作者实际使用AI助手组织文本与程序检查，已在teaching/source-record单独披露。不得把课件制作方法当作学生真实AI历史。
+-->
+  </section>
+<section id="d7" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">原四项各按实际可核信息记 0 或 1</h2>
+    <div class="slide-content"><p class="slide-lead">四项共 4 分，仅作形成性自查，缺证项记待补</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="14% 37% 49%"><colgroup><col style="width:14%"><col style="width:37%"><col style="width:49%"></colgroup><thead><tr><th>原项</th><th>原检查内容</th><th>可核为 1 的最低信息</th></tr></thead><tbody><tr><td>C1</td><td>两次失败环节分开</td><td>A 候选缺 D7，B 候选有而上下文缺，均有原轨迹位置</td></tr><tr><td>C2</td><td>D7 证据可回原文</td><td>修订为学生上限 7 天、须导师确认，接回 D7 现行-1 第 2 行和第 1 行</td></tr><tr><td>C3</td><td>下一核查针对相应环节</td><td>A 针对资料可检索性/查询，B 针对选择/组装，写明要查什么</td></tr><tr><td>C4</td><td>未提供材料和未执行资料准备不补造</td><td>明确 D1/D2/D3 未知，资料准备未执行，计划/给定轨迹与真实运行分开</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">25/29</div>
+    <div class="semantic-label">THE ORIGINAL FOUR CRITERIA</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.2069%"></div></div>
+<!-- speaker-notes
+C2将requiredOperation第三项和D7完整条件连到公开自查，不能让最终明确采用14天、所有人或已确认的答卷仅凭真行号拿该项。C1/C3/C4则按各自已有证据独立评分。C4本项不覆盖全部四部分方法/贡献记录。
+-->
+  </section>
+<section id="d8" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4 <span>|</span> 条件变式与原任务</div>
+    <h2 class="slide-title">四项分数与四部分交齐分别登记</h2>
+    <div class="slide-content"><p class="slide-lead">缺初判仍可能在四项中取得 4 分，但第一部分待补</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 73%"><colgroup><col style="width:27%"><col style="width:73%"></colgroup><thead><tr><th>原四部分</th><th>交齐时应能找到</th></tr></thead><tbody><tr><td>执行前判断/范围</td><td>本人原判断及分析原 V1 的范围</td></tr><tr><td>对应输入位置的操作或分析记录</td><td>两条完整短链、D7 缺失位置、分别提出的核查</td></tr><tr><td>修订后产物/决定</td><td>原答复与修订句的对应，D7 原行与采用条件</td></tr><tr><td>实际方法、未测项、本人/AI 贡献</td><td>本人实际对照/修改，真实 AI 用途或未使用，未知与未执行</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>纸笔等价文字可同分，不能据此填报已执行检索、资料准备或模型测试</p></div></div></div>
+    <div class="numeric-progress">26/29</div>
+    <div class="semantic-label">SCORE AND COMPLETENESS ARE SEPARATE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:89.6552%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="3000" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4</div>
+    <h2 class="slide-title">遮住示范，沿两个中间集合重建判断</h2>
+    <div class="slide-content"><p class="slide-lead">先独立重建，再回原卡核对每个判断的依据</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">D7 不在候选时，当前已知什么，哪些原因仍需新增日志？</span></li><li><span class="list-marker">■</span><span class="list-text">D7 在候选却不在上下文时，为什么先查选择与组装？</span></li><li><span class="list-marker">■</span><span class="list-text">D7 已入上下文仍答错时，下一核查怎样改变？</span></li><li><span class="list-marker">■</span><span class="list-text">用 D7 修订答复时，怎样保留学生、7 天与导师确认，以及当前未知？</span></li></ul></div></div></div>
+    <div class="numeric-progress">27/29</div>
+    <div class="semantic-label">RECONSTRUCT THE DIAGNOSIS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:93.1034%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="4500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4</div>
+    <h2 class="slide-title">本节知识地图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-3-4/mindmap-3-4.html" title="本节知识地图"></iframe></div></div>
+    <div class="numeric-progress">28/29</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.5517%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="4500" data-y="7840" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.4</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">A/B 的答复相同，为什么不能给出相同的失败定位？</span></li><li><span class="question-no">02</span><span class="question-text">候选包含 D7，怎样检查它是否真正进入生成上下文？</span></li><li><span class="question-no">03</span><span class="question-text">只有给定列表时，哪些原因可以提出核查但仍不能认定？</span></li><li><span class="question-no">04</span><span class="question-text">D7 已进入上下文，原答复仍错，下一步核查什么？</span></li><li><span class="question-no">05</span><span class="question-text">四项取得 4 分，怎样继续检查原四部分是否交齐？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-3-3.html" title="上一节：3.3 逐条核验文本主张" aria-label="上一节：3.3 逐条核验文本主张">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">3.3</span>
+        <span class="nav-title">主张、支持与修订</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-4-1.html" title="下一节：4.1 把视觉要求变成简报" aria-label="下一节：4.1 把视觉要求变成简报">
+        <span class="nav-title">用途、规则与视觉简报</span>
+        <span class="nav-number">4.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">29/29</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>
