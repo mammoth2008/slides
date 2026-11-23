@@ -25,6 +25,7 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/gai-2-1/assets/cover-tokens-and-conditions.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">GAI · 2.1</div>
       <h1>词元与生成条件</h1>
@@ -81,14 +82,15 @@ U03 task.md及contract.json拥有必交范围。原建议微任务30分钟，实
 依据K202、K203。BPE论文§1及§3.2 pp1717–18支持子词与可变长单位；本课不把BPE概括成全部tokenizer。Token首次实质引入。课堂人工规则下一页给出，尚未调用实际tokenizer，不用本页计算产品容量或费用。
 -->
   </section>
-<section id="a4" class="step slide-surface role-content layout-single"
+<section id="a4" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
       data-x="4500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
     <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 词元与表示</div>
     <h2 class="slide-title">同一文本为什么会得到 3 个或 6 个单位？</h2>
     <div class="slide-content"><p class="slide-lead">词元化 Tokenization 按切分规则和词表，把文字转成单位与 ID</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="19% 44% 37%"><colgroup><col style="width:19%"><col style="width:44%"><col style="width:37%"></colgroup><thead><tr><th>人工规则</th><th>对“客户 申请 退货”的处理</th><th>得到的单位</th></tr></thead><tbody><tr><td>A</td><td>按空格切分，空格只作分隔</td><td>客户、申请、退货，共 3 个</td></tr><tr><td>B</td><td>先去空格，再逐汉字切分</td><td>客、户、申、请、退、货，共 6 个</td></tr></tbody></table></div>
-<div class="component component-text text-inset"><p>两规则均不添加特殊符号。结果来自这里规定的人工规则，真实模型的切分、ID 和计量仍需查实际编码器</p></div></div></div>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="24% 40% 36%"><colgroup><col style="width:24%"><col style="width:40%"><col style="width:36%"></colgroup><thead><tr><th>人工规则</th><th>对“客户 申请 退货”的处理</th><th>得到的单位</th></tr></thead><tbody><tr><td>A</td><td>按空格切分，空格只作分隔</td><td>客户、申请、退货，共 3 个</td></tr><tr><td>B</td><td>先去空格，再逐汉字切分</td><td>客、户、申、请、退、货，共 6 个</td></tr></tbody></table></div>
+<div class="component component-text text-inset"><p>两规则均不添加特殊符号。结果来自这里规定的人工规则，真实模型的切分、ID 和计量仍需查实际编码器</p></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-2-1/assets/previews/three-and-six-token-segments.webp" data-full-src="resources/decks/gai-2-1/assets/three-and-six-token-segments.webp" data-full-width="941" data-full-height="1672" alt="上排三块纸，下排六块纸，每个上排色块对应同色下排两块" tabindex="0" role="button" aria-label="放大图片：上排三块纸，下排六块纸，每个上排色块对应同色下排两块" decoding="async"><figcaption>同一文本切成 3 或 6 个词元</figcaption></figure></div></div>
     <div class="numeric-progress">5/26</div>
     <div class="semantic-label">TOKENIZATION RULES</div>
     <div class="progress-track"><div class="progress-fill" style="width:19.2308%"></div></div>
@@ -184,13 +186,14 @@ U03 task.md及contract.json拥有必交范围。原建议微任务30分钟，实
 独立构造的过程对照，依据K213及A3已有训练/推理边界。仅为阶段与信号的理解练习，不新增上传、训练、API调用或个人必交。输出文字变化本身不足以确认权重更新。
 -->
   </section>
-<section id="c1" class="step slide-surface role-content layout-single"
+<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
       data-x="4500" data-y="2240" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
     <div class="breadcrumb">GAI <span>|</span> M2 <span>|</span> 2.1 <span>|</span> 前缀与可见信息</div>
     <h2 class="slide-title">自回归预测把已知前缀作为当前条件</h2>
     <div class="slide-content"><p class="slide-lead">自回归 Autoregressive 记作 AR，逐步依据前缀预测下一单位</p>
-<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>本题位置从 0 开始，选定位置记为 \(i\)，只检查 \(i=0,1,2\)</p><p>允许输入为 <code>tokens[0..i]</code>，其中两端都包含；目标为 <code>tokens[i+1]</code></p><p>例如位置 0 只可见 <code>[&lt;BOS&gt;]</code>，目标取原位置 1 的甲，位置 1—3 的内容均属于当前不能读取的未来</p></div></div></div></div>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>本题位置从 0 开始，选定位置记为 \(i\)，只检查 \(i=0,1,2\)</p><p>允许输入为 <code>tokens[0..i]</code>，其中两端都包含；目标为 <code>tokens[i+1]</code></p><p>例如位置 0 只可见 <code>[&lt;BOS&gt;]</code>，目标取原位置 1 的甲，位置 1—3 的内容均属于当前不能读取的未来</p></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-2-1/assets/previews/prefix-window.webp" data-full-src="resources/decks/gai-2-1/assets/prefix-window.webp" data-full-width="941" data-full-height="1255" alt="纸槽中只有最左端纸片露出，右侧的后续位置都在不透明挡片下" tabindex="0" role="button" aria-label="放大图片：纸槽中只有最左端纸片露出，右侧的后续位置都在不透明挡片下" decoding="async"></figure></div></div>
     <div class="numeric-progress">12/26</div>
     <div class="semantic-label">AUTOREGRESSIVE CONDITIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:46.1538%"></div></div>

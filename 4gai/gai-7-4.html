@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 7.4 用Harness控制失败恢复与接管 | HUST</title>
+  <meta name="description" content="在同一离线快照复现恢复，启用缺字段停止规则，用轨迹和测试证明接管边界">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="7-4">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/gai-7-4/assets/cover-harness-recovery.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 7.4</div>
+      <h1>用 Harness 控制<br>失败恢复与接管</h1>
+      <p class="cover-description">从产物、完成位和未决项判断该恢复还是交人</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从中断快照读真实状态</div>
+    <h2 class="slide-title">产物存在，完成位没写，怎么接着做？</h2>
+    <div class="slide-content"><p class="slide-lead">构造批次在 J12 写产物后中断，J13 仍缺地点</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先写你会检查产物、完成位还是来源。有些事已经做了，有些只在记录上显示未完成，恢复前要把两类证据核对。</p></div></div></div></div>
+    <div class="numeric-progress">2/23</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.6957%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从中断快照读真实状态</div>
+    <h2 class="slide-title">本节提交基线、停止与复跑</h2>
+    <div class="slide-content"><p class="slide-lead">用同一份中断快照对比两个策略</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">复现原恢复并保留轨迹及产物</span></li><li><span class="list-marker">■</span><span class="list-text">复制配置，只启用缺字段停止</span></li><li><span class="list-marker">■</span><span class="list-text">比较外层状态、未决项与原快照，执行检查脚本</span></li></ul></div></div></div>
+    <div class="numeric-progress">3/23</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:13.0435%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从中断快照读真实状态</div>
+    <h2 class="slide-title">Harness 组织执行支撑与退出方式</h2>
+    <div class="slide-content"><p class="slide-lead">把启动、状态检查、工具动作和停止条件写成可查过程</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>组成</th><th>本课离线装置</th></tr></thead><tbody><tr><td>起点</td><td>interrupted.json 的中断快照</td></tr><tr><td>控制</td><td>controller.cjs 读策略，并选择停止或恢复</td></tr><tr><td>检查</td><td>产物身份、完成位、轨迹、未决项及重复执行</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/23</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:17.3913%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从中断快照读真实状态</div>
+    <h2 class="slide-title">检查点要有后续可判断的状态</h2>
+    <div class="slide-content"><p class="slide-lead">单个 running 标签不能说明有没有产物</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>作业</th><th>原快照状态</th><th>原产物</th></tr></thead><tbody><tr><td>J11</td><td>completed</td><td>J11.json</td></tr><tr><td>J12</td><td>running，完成位未写</td><td>J12.json 已在内存快照</td></tr><tr><td>J13</td><td>pending，place 为空</td><td>无</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/23</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:21.7391%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从中断快照读真实状态</div>
+    <h2 class="slide-title">根据证据选择恢复、停止或接管</h2>
+    <div class="slide-content"><p class="slide-lead">恢复要复核产物身份与内容，停止要保留必要状态</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>核对批次、作业、规则、来源和产物摘要。可复用时补齐完成位。条件不足时保留缺口，由人决定下一步。</p><p>这三项条件在本课内存模拟中可用字段和轨迹核查。</p></div></div></div></div>
+    <div class="numeric-progress">6/23</div>
+    <div class="semantic-label">CHECKPOINT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.0870%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从同一快照复现原恢复</div>
+    <h2 class="slide-title">准备原始文件和可写副本</h2>
+    <div class="slide-content"><p class="slide-lead">在新目录完整解包，留原快照与原策略</p>
+<div class="slide-main-content"><p><a href="resources/decks/gai-7-4/assets/u23-student.zip" download>下载 U23 原任务与离线控制器</a></p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">确认 runtime/u23 下有控制器、中断快照和原策略</span></li><li><span class="list-marker">■</span><span class="list-text">原策略 stopOnMissing 为 false，owner 为课堂值班经理</span></li><li><span class="list-marker">■</span><span class="list-text">已有 Node.js 时在解包根运行。原件留作比较</span></li></ul></div></div></div>
+    <div class="numeric-progress">7/23</div>
+    <div class="semantic-label">BASELINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.4348%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从同一快照复现原恢复</div>
+    <h2 class="slide-title">原策略运行后看到恢复轨迹</h2>
+    <div class="slide-content"><p class="slide-lead">讲义提供原命令，输出可另存 baseline-output.json</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>输出位置</th><th>基线运行结果</th></tr></thead><tbody><tr><td>controllerStatus</td><td>needs_review</td></tr><tr><td>trace</td><td>recover 返回 needs_review</td></tr><tr><td>snapshot.checkpoint</td><td>J11、J12 completed，J13 blocked，未决 place</td></tr><tr><td>snapshot.artifacts</td><td>仍有 J11.json、J12.json 两项</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/23</div>
+    <div class="semantic-label">BASELINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.7826%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从同一快照复现原恢复</div>
+    <h2 class="slide-title">恢复复用 J12 已有产物</h2>
+    <div class="slide-content"><p class="slide-lead">检查事件中的 verify_and_reuse，而不仅数文件</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>J12 在原快照已具备有效产物。基线对它做校验和复用，补齐对应完成位，无需重写一份同名结果。</p><p>查 snapshot.attempts 里的具体作业事件。J13 因缺 place 从 pending 转为 blocked，无新增 J13 产物。</p></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-7-4/assets/previews/verify-reuse-update-status.webp" data-full-src="resources/decks/gai-7-4/assets/verify-reuse-update-status.webp" data-full-width="941" data-full-height="1672" alt="唯一的蓝色产物留在核对槽内，手将橙色状态片放入旁边独立槽" tabindex="0" role="button" aria-label="放大图片：唯一的蓝色产物留在核对槽内，手将橙色状态片放入旁边独立槽" decoding="async"><figcaption>复用原产物，补记完成状态</figcaption></figure></div></div>
+    <div class="numeric-progress">9/23</div>
+    <div class="semantic-label">BASELINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:39.1304%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 从同一快照复现原恢复</div>
+    <h2 class="slide-title">基线仍有一个待人工补齐的字段</h2>
+    <div class="slide-content"><p class="slide-lead">未决记录指出作业、字段和拟接手者</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>字段</th><th>本次记录</th></tr></thead><tbody><tr><td>jobId</td><td>J13</td></tr><tr><td>field</td><td>place</td></tr><tr><td>owner</td><td>课堂值班经理</td></tr><tr><td>待办</td><td>核可信来源并补充地点，留记录供后续重查</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">10/23</div>
+    <div class="semantic-label">BASELINE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:43.4783%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">在配置副本中打开缺字段停止</h2>
+    <div class="slide-content"><p class="slide-lead">保留原 policy.json，建立 learner-policy.json</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">只把 stopOnMissing 由 false 改为 true</span></li><li><span class="list-marker">■</span><span class="list-text">用原 interrupted.json 和新策略实际运行</span></li><li><span class="list-marker">■</span><span class="list-text">保存 guarded-output.json 并与基线逐项比较</span></li></ul></div></div></div>
+    <div class="numeric-progress">11/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:47.8261%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">外层停止状态和内层快照分开</h2>
+    <div class="slide-content"><p class="slide-lead">合法快照中发现已列出的源字段缺失时，先交接</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>位置</th><th>启用规则后的结果</th></tr></thead><tbody><tr><td>controllerStatus</td><td>takeover_pending</td></tr><tr><td>trace</td><td>request_takeover／no_recover_called</td></tr><tr><td>pending</td><td>J13／place／课堂值班经理</td></tr><tr><td>snapshot.status</td><td>仍为 interrupted，内层快照与原件一致</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:52.1739%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:2fr;">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">停止规则留下接管所需信息</h2>
+    <div class="slide-content"><p class="slide-lead">没有新恢复动作、没有新产物，J12 的旧产物仍保留</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>本例整个恢复步骤先暂停。交接人要知道 J13 缺地点、缺口来源在哪、要由谁补证；不要临时捏造地点来使状态显示完成。</p><p>这个返回记录在内存里，未向现实中的值班经理发送通知。</p></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-7-4/assets/previews/retain-artifacts-pending-field.webp" data-full-src="resources/decks/gai-7-4/assets/retain-artifacts-pending-field.webp" data-full-width="1051" data-full-height="1401" alt="两份已有材料保存在上方托盘，下方的空白槽和橙色标签提示待接管的缺项" tabindex="0" role="button" aria-label="放大图片：两份已有材料保存在上方托盘，下方的空白槽和橙色标签提示待接管的缺项" decoding="async"><figcaption>暂停恢复，保留已有产物和待补位置</figcaption></figure></div></div>
+    <div class="numeric-progress">13/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:56.5217%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">对比两次运行中的产物和状态</h2>
+    <div class="slide-content"><p class="slide-lead">两份输出都含已有 J11/J12，意义不同</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>观察</th><th>原策略</th><th>停止策略</th></tr></thead><tbody><tr><td>外层结果</td><td>needs_review</td><td>takeover_pending</td></tr><tr><td>尝试与完成位</td><td>有本次恢复，J12 补齐</td><td>无本次恢复，J12 保持 running</td></tr><tr><td>产物</td><td>验证复用两项</td><td>保留原两项，未新增</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:60.8696%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">运行给定检查脚本验证边界</h2>
+    <div class="slide-content"><p class="slide-lead">从工作副本根执行 node runtime/u23/test.cjs</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">缺 place 时停止，原快照及产物不变</span></li><li><span class="list-marker">■</span><span class="list-text">独立构造的完整输入可完成，重复恢复保留相同三项产物</span></li><li><span class="list-marker">■</span><span class="list-text">缺必要策略字段被拒绝，原输入不变</span></li></ul></div></div></div>
+    <div class="numeric-progress">15/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.2174%"></div></div>
+  </section>
+<section id="c6" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">公开变式换成完整输入</h2>
+    <div class="slide-content"><p class="slide-lead">使用检查脚本单独构造的输入，地点字段都有值</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先预测停止策略是否仍会拦住。若第一次得到三份产物，再用新的尝试 ID 恢复一次，应查哪组内容？</p></div></div></div></div>
+    <div class="numeric-progress">16/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.5652%"></div></div>
+  </section>
+<section id="c7" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 启用停止条件并复跑</div>
+    <h2 class="slide-title">完整输入会进入正常恢复</h2>
+    <div class="slide-content"><p class="slide-lead">用首次完整恢复返回的快照和新尝试 ID 复跑</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>没有缺项时应走 recover。检查三份产物的键与内容相同、数目未增加。独立正常构造与原 J13 缺字段快照分别留证。</p><p>这个结论仅覆盖离线夹具。</p></div></div></div></div>
+    <div class="numeric-progress">17/23</div>
+    <div class="semantic-label">TAKEOVER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.9130%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 交付真实轨迹和责任</div>
+    <h2 class="slide-title">按原卡完成三项实际动作</h2>
+    <div class="slide-content"><p class="slide-lead">建议 30 分钟，已有 Node.js 即可离线操作</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">保存原中断快照与基线运行结果</span></li><li><span class="list-marker">■</span><span class="list-text">复制策略、修改一处并在同一原快照运行</span></li><li><span class="list-marker">■</span><span class="list-text">比较产物和待办，运行检查并写具体接手人</span></li></ul></div></div></div>
+    <div class="numeric-progress">18/23</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:78.2609%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 交付真实轨迹和责任</div>
+    <h2 class="slide-title">证据单能追踪一次停止和恢复</h2>
+    <div class="slide-content"><p class="slide-lead">输出文件只是一层证据，还需要对应范围与状态</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>部分</th><th>交付中的可查内容</th></tr></thead><tbody><tr><td>原判断与范围</td><td>原快照、两策略版本、J12/J13 情况</td></tr><tr><td>输入和操作</td><td>两次命令、实际 JSON 输出、测试结果</td></tr><tr><td>修订后产物</td><td>策略差异及接管记录</td></tr><tr><td>本人和 AI 贡献</td><td>实际已做、停止时未做、其他未测</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">19/23</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:82.6087%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 交付真实轨迹和责任</div>
+    <h2 class="slide-title">原四项每项 0 或 1 分</h2>
+    <div class="slide-content"><p class="slide-lead">4 分用于形成性自查，证据不足标待补</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>项目</th><th>可查依据</th></tr></thead><tbody><tr><td>C1 配置和轨迹</td><td>仅改布尔值，实际输出指向同一快照</td></tr><tr><td>C2 恢复证据</td><td>J12 已有产物被核并复用，J13 缺地点可查</td></tr><tr><td>C3 停止证据</td><td>无 recover 调用，内层原快照和产物保持</td></tr><tr><td>C4 正常重复及交接</td><td>实际测试与地点责任可回溯</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">20/23</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:86.9565%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4 <span>|</span> 核对关键判断</div>
+    <h2 class="slide-title">用一次停止记录说明下步归属</h2>
+    <div class="slide-content"><p class="slide-lead">给负责同伴讲清已做、欠缺及不可自动继续的条件</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">说出 J12 为什么可以复用已有产物</span></li><li><span class="list-marker">■</span><span class="list-text">说明为什么 takeover_pending 和 interrupted 同时出现</span></li><li><span class="list-marker">■</span><span class="list-text">列出 J13 的字段、负责人和待核条件</span></li></ul></div></div></div>
+    <div class="numeric-progress">21/23</div>
+    <div class="semantic-label">RETRIEVAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.3043%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-7-4/mindmap-7-4.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">22/23</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.6522%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M7 <span>|</span> 7.4</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么恢复前要核 J12 的产物摘要和来源？</span></li><li><span class="question-no">02</span><span class="question-text">停步返回与原快照为何可以有两个不同状态值？</span></li><li><span class="question-no">03</span><span class="question-text">重复恢复时应怎样证明没有新增一份产物？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-7-3.html" title="上一节：7.3 把经验写成可复用Skill" aria-label="上一节：7.3 把经验写成可复用Skill">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">7.3</span>
+        <span class="nav-title">Skill 提炼与迁移</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-8-1.html" title="下一节：8.1 综合治理判断与个人解释" aria-label="下一节：8.1 综合治理判断与个人解释">
+        <span class="nav-title">治理决定与个人解释</span>
+        <span class="nav-number">8.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">23/23</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

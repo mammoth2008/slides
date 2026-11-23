@@ -25,6 +25,7 @@
   <section id="cover" class="step slide-surface role-cover layout-single"
       data-x="0" data-y="0" data-z="0"
       data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/gai-3-2/assets/cover-source-trace.webp" alt="">
     <div class="cover-copy">
       <div class="cover-section">GAI · 3.2</div>
       <h1>组织上下文<br>并保留字段来源</h1>
@@ -118,13 +119,14 @@ K268/A14局部。本节承接U05三区方法，新增精确字段记录、缺失
 K275/A19。null并不通用地等于“没有截止日期”，本页的含义来自原任务的明确约定。准确区分JSON字面null、字符串null、空字符串、字段缺失，不宣称所有业务系统采用同一语义。
 -->
   </section>
-<section id="b1" class="step slide-surface role-content layout-single"
+<section id="b1" class="step slide-surface role-content layout-split axis-horizontal order-table-media"
       data-x="1500" data-y="1120" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
     <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 提取与逐字段回溯</div>
     <h2 class="slide-title">第一条的三个值分别从哪里来？</h2>
     <div class="slide-content"><p class="slide-lead">标题取自正文，缺失状态取自原文说明，文档身份取自输入标识</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 27% 48%"><colgroup><col style="width:25%"><col style="width:27%"><col style="width:48%"></colgroup><thead><tr><th>字段</th><th>修订值</th><th>定位与支持</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>&quot;讲座报名&quot;</code></td><td><code>D1</code> 第 1 行的 <code>标题：讲座报名</code></td></tr><tr><td><code>deadline</code></td><td><code>null</code></td><td><code>D1</code> 第 1 行明确 <code>未给截止日期</code></td></tr><tr><td><code>sourceId</code></td><td><code>&quot;D1&quot;</code></td><td>输入文档的 <code>id</code> 为 <code>D1</code>，该正文定位在第 1 行</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 27% 48%"><colgroup><col style="width:25%"><col style="width:27%"><col style="width:48%"></colgroup><thead><tr><th>字段</th><th>修订值</th><th>定位与支持</th></tr></thead><tbody><tr><td><code>title</code></td><td><code>&quot;讲座报名&quot;</code></td><td><code>D1</code> 第 1 行的 <code>标题：讲座报名</code></td></tr><tr><td><code>deadline</code></td><td><code>null</code></td><td><code>D1</code> 第 1 行明确 <code>未给截止日期</code></td></tr><tr><td><code>sourceId</code></td><td><code>&quot;D1&quot;</code></td><td>输入文档的 <code>id</code> 为 <code>D1</code>，该正文定位在第 1 行</td></tr></tbody></table></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-3-2/assets/previews/field-back-to-source.webp" data-full-src="resources/decks/gai-3-2/assets/field-back-to-source.webp" data-full-width="1086" data-full-height="1448" alt="木架上的原文和桌面的字段记录用页签定位，记录卡留出一个空白字段" tabindex="0" role="button" aria-label="放大图片：木架上的原文和桌面的字段记录用页签定位，记录卡留出一个空白字段" decoding="async"></figure></div></div>
     <div class="numeric-progress">7/27</div>
     <div class="semantic-label">TRACE EACH FIELD IN THE FIRST RECORD</div>
     <div class="progress-track"><div class="progress-fill" style="width:25.9259%"></div></div>
@@ -277,13 +279,14 @@ K275明确的四层。业务约束与原文支持可能同时抓同一错误，�
 此反例由原材料重组，明确标为作者构造，未声称模型输出。schema目前仅约定sourceId字符串，无法替代活动对应关系检查。不存在的D9也会过字符串类型，但本页以真实D1更能检验定位存在却错配的情况。
 -->
   </section>
-<section id="c5" class="step slide-surface role-content layout-single"
+<section id="c5" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
       data-x="0" data-y="3360" data-z="0"
-      data-rotate="0" data-scale="1" style="">
+      data-rotate="0" data-scale="1" style="--split-a:7fr;--split-b:3fr;">
     <div class="breadcrumb">GAI <span>|</span> M3 <span>|</span> 3.2 <span>|</span> 分层检查与责任</div>
     <h2 class="slide-title">缺日期时，继续提取还是澄清？</h2>
     <div class="slide-content"><p class="slide-lead">当前提取任务有明确空值规则，后续业务用途可能提出新的条件</p>
-<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="23% 39% 38%"><colgroup><col style="width:23%"><col style="width:39%"><col style="width:38%"></colgroup><thead><tr><th>当前用途</th><th>可以形成的产物</th><th>还需什么决定</th></tr></thead><tbody><tr><td>按原文建记录</td><td><code>D1.deadline</code> 保留 <code>null</code>，附原行</td><td>原任务已规定，无需为凑齐日期暂停提取</td></tr><tr><td>需要具体日期的后续通知</td><td>交带缺失说明的草稿</td><td>需求人查明资料责任人，请其提供获准日期依据</td></tr><tr><td>新旧材料日期冲突</td><td>保留两版本、对象及未决项</td><td>由有权资料所有者确认适用版本，随后重提取</td></tr></tbody></table></div></div></div>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="30% 34% 36%"><colgroup><col style="width:30%"><col style="width:34%"><col style="width:36%"></colgroup><thead><tr><th>当前用途</th><th>可以形成的产物</th><th>还需什么决定</th></tr></thead><tbody><tr><td>按原文建记录</td><td><code>D1.deadline</code> 保留 <code>null</code>，附原行</td><td>原任务已规定，无需为凑齐日期暂停提取</td></tr><tr><td>需要具体日期的后续通知</td><td>交带缺失说明的草稿</td><td>需求人查明资料责任人，请其提供获准日期依据</td></tr><tr><td>新旧材料日期冲突</td><td>保留两版本、对象及未决项</td><td>由有权资料所有者确认适用版本，随后重提取</td></tr></tbody></table></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-3-2/assets/previews/one-gap-two-purposes.webp" data-full-src="resources/decks/gai-3-2/assets/one-gap-two-purposes.webp" data-full-width="1053" data-full-height="1494" alt="上方档案记录留下日期空位，下方通知草稿保留空位并另附待询纸条" tabindex="0" role="button" aria-label="放大图片：上方档案记录留下日期空位，下方通知草稿保留空位并另附待询纸条" decoding="async"><figcaption>同一缺件，按用途处理</figcaption></figure></div></div>
     <div class="numeric-progress">16/27</div>
     <div class="semantic-label">MISSING DATA AND HUMAN DECISIONS</div>
     <div class="progress-track"><div class="progress-fill" style="width:59.2593%"></div></div>

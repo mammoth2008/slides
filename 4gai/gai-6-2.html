@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 6.2 有依据地实现与审查补丁 | HUST</title>
+  <meta name="description" content="复现结束日遗漏，只修改副本，使用密集与缺日反例比较两个候选补丁">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="6-2">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/gai-6-2/assets/cover-evidence-led-patch.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 6.2</div>
+      <h1>有依据地实现<br>与审查补丁</h1>
+      <p class="cover-description">从失败样本找到一行变更，再用反例审查采用决定</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 先复现，再界定改动范围</div>
+    <h2 class="slide-title">统计少了 15 分钟，先查哪条记录？</h2>
+    <div class="slide-content"><p class="slide-lead">同一夹具的基线总量为 75，参考总量为 90</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先写下你会从选中 ID、日期边界还是日均公式开始核查。复现时固定输入与运行版本，再用输出排除不相关的猜测。</p></div></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">REPRODUCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 先复现，再界定改动范围</div>
+    <h2 class="slide-title">这一节交实际修改和采用理由</h2>
+    <div class="slide-content"><p class="slide-lead">结果可从原失败、单处差异和补丁对比重做</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">在完整学生副本复现原基线失败</span></li><li><span class="list-marker">■</span><span class="list-text">复制故障文件，只修结束日条件，运行检查</span></li><li><span class="list-marker">■</span><span class="list-text">用 dense 和 gap 比较两个候选补丁并说明决定</span></li></ul></div></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">REPRODUCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 先复现，再界定改动范围</div>
+    <h2 class="slide-title">代码审查看变更是否兑现原规格</h2>
+    <div class="slide-content"><p class="slide-lead">先明确必须改的行为，再检查其他口径是否受影响</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>检查面</th><th>本任务要守的边界</th></tr></thead><tbody><tr><td>要修</td><td>日期等于结束日的有效记录必须选中</td></tr><tr><td>要保留</td><td>按不同有记录日计算日均，保留无效行处理</td></tr><tr><td>要取证</td><td>版本、命令、选中 ID、结果及与原文件的差异</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">REPRODUCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 先复现，再界定改动范围</div>
+    <h2 class="slide-title">版本记录保留可重复的原失败</h2>
+    <div class="slide-content"><p class="slide-lead">旧文件与修订副本分别保留，才有共同可查的比较基线</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>用旧文件重现失败、用副本复跑新输出。一次文本差异说明发生了什么，运行结果说明这次行为如何变化。</p><p>Git 可以管理这些版本。本微任务保留文件副本及差异就能提交。</p></div></div></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">REPRODUCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 先复现，再界定改动范围</div>
+    <h2 class="slide-title">本练习使用课程构造的两个补丁</h2>
+    <div class="slide-content"><p class="slide-lead">对话式编程可以用自然语言解释、生成和修订代码</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>当前补丁和异常为课程构造。你要实际执行和解释变更，并据实际使用情况记录工具或 AI。</p><p>给出补丁的来源有助于追溯；采用决定仍要核查原规格和测试。</p></div></div></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">REPRODUCTION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">从完整学生副本运行基线</h2>
+    <div class="slide-content"><p class="slide-lead">在含 units 与 runtime 的解包根运行 node runtime/b06/run.cjs</p>
+<div class="slide-main-content"><p><a href="resources/decks/gai-6-2/assets/u18-student.zip" download>下载 U18 原任务、共享代码及所需原输入</a></p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">保留 specExample、baseline 和 reference 的原输出</span></li><li><span class="list-marker">■</span><span class="list-text">此命令先读取附带的 U17 原输入，再对比同一 statistics 夹具</span></li><li><span class="list-marker">■</span><span class="list-text">故障原件在 runtime/b06/boundary-candidate.js</span></li></ul></div></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">结束日 r3 未进入原基线</h2>
+    <div class="slide-content"><p class="slide-lead">statistics 范围为 10 月 1 日至 10 月 3 日，闭区间包含两端</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>同一夹具</th><th>选中 ID</th><th>累计与日均</th></tr></thead><tbody><tr><td>基线</td><td>r1、r2</td><td>75／37.5</td></tr><tr><td>参考</td><td>r1、r2、r3</td><td>90／30</td></tr><tr><td>差异</td><td>r3 为结束日，15 分钟</td><td>参考增加 15 分钟和 1 个有记录日</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:7fr;--split-b:3fr;">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">在新副本上改一个比较符</h2>
+    <div class="slide-content"><p class="slide-lead">将 boundary-candidate.js 复制为 learner-candidate.cjs</p>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="25% 75%"><colgroup><col style="width:25%"><col style="width:75%"></colgroup><thead><tr><th>版本</th><th>结束日条件</th></tr></thead><tbody><tr><td>原失败</td><td>row.date &lt; payload.range.end</td></tr><tr><td>副本修订</td><td>row.date &lt;= payload.range.end</td></tr></tbody></table></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-6-2/assets/previews/include-existing-range-end.webp" data-full-src="resources/decks/gai-6-2/assets/include-existing-range-end.webp" data-full-width="941" data-full-height="1672" alt="两个等长范围槽中，上槽结束位空缺，下槽同一结束位纳入一张橙色记录" tabindex="0" role="button" aria-label="放大图片：两个等长范围槽中，上槽结束位空缺，下槽同一结束位纳入一张橙色记录" decoding="async"><figcaption>修订后纳入结束日记录</figcaption></figure></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">保留代码差异和检查输出</h2>
+    <div class="slide-content"><p class="slide-lead">以个人副本为参数执行原卡的检查命令</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">在学生根运行 <code>node runtime/b06/check.cjs runtime/b06/learner-candidate.cjs</code></span></li><li><span class="list-marker">■</span><span class="list-text">比较旧文件与副本，核对只有结束日比较符有改动</span></li><li><span class="list-marker">■</span><span class="list-text">保存检查输出和实际执行路径，确认测的是副本</span></li><li><span class="list-marker">■</span><span class="list-text">若检查失败，核文件名、工作目录和比较式后再重跑</span></li></ul></div></div></div>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">检查报告验证指定用例的判据</h2>
+    <div class="slide-content"><p class="slide-lead">原包覆盖 normal、single-zero 与 invalid-outside</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>用例</th><th>主要核查点</th></tr></thead><tbody><tr><td>normal</td><td>指定输入总分钟与无效记录码</td></tr><tr><td>single-zero</td><td>起止同日，选中 1 条零分钟记录，日均为数值 0</td></tr><tr><td>invalid-outside</td><td>日期错误有记录，无选中时日均为 null</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+  </section>
+<section id="b6" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 从原失败到最小修复</div>
+    <h2 class="slide-title">用同一原夹具直接复核 r3</h2>
+    <div class="slide-content"><p class="slide-lead">对副本再读取 statistics 时，期待 r3 回到选中结果</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>原失败的 75 和副本预期的 90 要对应同一 statistics 夹具。使用固定检查脚本的 normal 用例通过，也应说明它与原夹具用途不同。</p><p>讲义给出直接读取副本并输出 r3 结果的可选复核命令。</p></div></div></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">PATCH</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">两个候选在 dense 给出相同日均</h2>
+    <div class="slide-content"><p class="slide-lead">运行 node runtime/b06/compare.cjs 取得 dense 和 gap 的真实返回</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>候选</th><th>做法</th></tr></thead><tbody><tr><td>A</td><td>复用 core 的原日均计算</td></tr><tr><td>B</td><td>复用 core 的筛选，再用范围内所有日历日重算日均</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">连续三天都有记录时，两种分母相同</h2>
+    <div class="slide-content"><p class="slide-lead">dense 中选中 3 条，分别分布于 3 个连续日期</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>输入</th><th>A 日均</th><th>B 日均</th></tr></thead><tbody><tr><td>总 90、3 个有记录日、3 个日历日</td><td>30</td><td>30</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">有缺日时，两个补丁给出不同答案</h2>
+    <div class="slide-content"><p class="slide-lead">gap 中 10 月 1 日和 4 日各 30 分钟，中间两天无记录</p>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="64% 18% 18%"><colgroup><col style="width:64%"><col style="width:18%"><col style="width:18%"></colgroup><thead><tr><th>输入</th><th>A 日均</th><th>B 日均</th></tr></thead><tbody><tr><td>60 分钟，有记录 2 天，共 4 天</td><td>30</td><td>15</td></tr></tbody></table></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-6-2/assets/previews/first-and-last-days.webp" data-full-src="resources/decks/gai-6-2/assets/first-and-last-days.webp" data-full-width="941" data-full-height="1255" alt="四个等距日期栏自上而下排列，第一和第四栏各有一条等长纸片，中间两栏为空" tabindex="0" role="button" aria-label="放大图片：四个等距日期栏自上而下排列，第一和第四栏各有一条等长纸片，中间两栏为空" decoding="async"><figcaption>共四天，只有首尾有记录</figcaption></figure></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">保留原口径，选择能解释反例的补丁</h2>
+    <div class="slide-content"><p class="slide-lead">本例建议 A。B 另外改变了日均的业务口径</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>A 依据 60÷2。B 的 60÷4 也能算通，但对应另一个业务定义。把 gap 的输入和期望写进采用记录。</p><p>选择一个候选并不等于运行了所有用例，记录未测范围。</p></div></div></div></div>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">公开变式给 gap 新增一个零分钟日</h2>
+    <div class="slide-content"><p class="slide-lead">只新增 10 月 2 日的有效零分钟记录，其他日期与范围不动</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先算两种分母和新日均。候选 A 与 B 的差异还在吗？</p></div></div></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+  </section>
+<section id="c6" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 用反例比较补丁</div>
+    <h2 class="slide-title">零分钟也会扩大有记录日期集合</h2>
+    <div class="slide-content"><p class="slide-lead">总量仍为 60。有记录日变 3 个，日历日仍为 4 个</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>A 变成 20，B 仍为 15。零分钟记录增加 A 的分母。原 gap 仍用原件实跑，这一变式只用于复算。</p></div></div></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">REVIEW</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 提交可回查的证据</div>
+    <h2 class="slide-title">把一次补丁说明写成可复查记录</h2>
+    <div class="slide-content"><p class="slide-lead">同伴要能用你的证据再现原失败与修订</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>部分</th><th>可查内容</th></tr></thead><tbody><tr><td>初判与范围</td><td>闭区间结束日、原失败版本</td></tr><tr><td>操作与结果</td><td>原输出、文件差异、check 和 compare 输出</td></tr><tr><td>修订与决定</td><td>只改比较符，按 gap 说明取 A 舍 B</td></tr><tr><td>方法与未测</td><td>本人/AI 贡献、实际命令、哪些仍待测</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 提交可回查的证据</div>
+    <h2 class="slide-title">原四项自查各 0 或 1 分</h2>
+    <div class="slide-content"><p class="slide-lead">总 4 分用于形成性自查，证据不足标待补</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>项目</th><th>可查证据</th></tr></thead><tbody><tr><td>C1 真实复现</td><td>保存原 75 和遗漏结束日的依据</td></tr><tr><td>C2 副本修复</td><td>副本差异及实际检查结果</td></tr><tr><td>C3 比较</td><td>取得 gap 的两种日均并据原口径判断</td></tr><tr><td>C4 回查</td><td>保留路径、原失败、差异与解释</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 提交可回查的证据</div>
+    <h2 class="slide-title">把原失败和副本一起交接</h2>
+    <div class="slide-content"><p class="slide-lead">建议 30 分钟。保留自己实际完成的工作</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">提交一张证据单及实际修订文件或差异</span></li><li><span class="list-marker">■</span><span class="list-text">保留基线与候选两个输出，不覆盖原失败</span></li><li><span class="list-marker">■</span><span class="list-text">缺 Node 或未运行时记录实际提示，操作分项待补</span></li></ul></div></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2 <span>|</span> 核对关键判断</div>
+    <h2 class="slide-title">向同伴解释为什么只改一个符号</h2>
+    <div class="slide-content"><p class="slide-lead">从原规则、实际差异和反例复述理由</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">指出原输出漏了哪条记录以及日均怎样变化</span></li><li><span class="list-marker">■</span><span class="list-text">说出 dense 无法区分两候选的原因</span></li><li><span class="list-marker">■</span><span class="list-text">用原 gap 的结果留下一条采用说明</span></li></ul></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">RETRIEVAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-6-2/mindmap-6-2.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.2</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">为什么片面的正确输出不能代替用例规定的业务行为？</span></li><li><span class="question-no">02</span><span class="question-text">如果只跑 dense，哪种错误口径会逃过检查？</span></li><li><span class="question-no">03</span><span class="question-text">怎样证明你只修了结束日比较，同时保留了按记录日计算日均？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-6-1.html" title="上一节：6.1 从需求到可运行起点" aria-label="上一节：6.1 从需求到可运行起点">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">6.1</span>
+        <span class="nav-title">字段、规格与验收</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-6-3.html" title="下一节：6.3 测试回归和独立交接" aria-label="下一节：6.3 测试回归和独立交接">
+        <span class="nav-title">用例、回归与复跑</span>
+        <span class="nav-number">6.3</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

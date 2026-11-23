@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GAI 6.3 测试回归和独立交接 | HUST</title>
+  <meta name="description" content="复跑正常、边界、非法用例，加入上限测试，在第二目录按固定文件和版本独立验证">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="生成式人工智能与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="6-3">
+  <meta name="version" content="2611">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/gai-6-3/assets/cover-reproducible-handoff.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">GAI · 6.3</div>
+      <h1>测试回归与<br>独立交接</h1>
+      <p class="cover-description">把一次补丁的通过证据交给另一台执行环境</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+  </section>
+<section id="a1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 先说清用例测什么</div>
+    <h2 class="slide-title">屏幕显示总分钟 0，结果就正确吗？</h2>
+    <div class="slide-content"><p class="slide-lead">两个输入都可能得到 0 分钟，日均和错误记录却不同</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先预测只有一条合法的零分钟记录、没有一条合法记录这两种情况下的日均。写出一项能区分它们的字段。</p></div></div></div></div>
+    <div class="numeric-progress">2/24</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:8.3333%"></div></div>
+  </section>
+<section id="a2" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 先说清用例测什么</div>
+    <h2 class="slide-title">交接者要能按同一份证据复跑</h2>
+    <div class="slide-content"><p class="slide-lead">这次交三条原测试、自加一条测试和第二目录回执</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">标明个人修订来自哪一版</span></li><li><span class="list-marker">■</span><span class="list-text">每个用例写预期、实际结果和未测范围</span></li><li><span class="list-marker">■</span><span class="list-text">按四个文件及 Node 版本在新目录复跑</span></li></ul></div></div></div>
+    <div class="numeric-progress">3/24</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:12.5000%"></div></div>
+  </section>
+<section id="a3" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 先说清用例测什么</div>
+    <h2 class="slide-title">单元测试指向一个较小的被测行为</h2>
+    <div class="slide-content"><p class="slide-lead">指定函数的输入和期望输出，再逐项比较</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>观测点</th><th>本节例子</th></tr></thead><tbody><tr><td>输入</td><td>记录包、查询范围和明细行</td></tr><tr><td>期望</td><td>应选条数、分钟、日均或无效码</td></tr><tr><td>实际</td><td>同一修订模块运行 check 后逐项返回</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">4/24</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:16.6667%"></div></div>
+  </section>
+<section id="a4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 先说清用例测什么</div>
+    <h2 class="slide-title">回归测试把已有约定重新跑一遍</h2>
+    <div class="slide-content"><p class="slide-lead">修了结束日条件后，原先正常、边界、非法行为都需要保留</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>原基线漏掉结束日。修订后同时核查正常输入、起止同日和非法日期，以便发现修改引出的新问题。</p><p>集成测试会再核组件交互，例如页面筛选器是否正确调用模块。当前运行的是小型统计模块。</p></div></div></div></div>
+    <div class="numeric-progress">5/24</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:20.8333%"></div></div>
+  </section>
+<section id="a5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 先说清用例测什么</div>
+    <h2 class="slide-title">可复现性需要留输入和版本</h2>
+    <div class="slide-content"><p class="slide-lead">同一批输入和模块要能在第二目录重新执行</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>只给一张 PASS 截图时，接手者不知道用了哪个函数、用例或文件。交接时给版本、命令、文件摘要、依赖及逐项返回。</p></div></div></div></div>
+    <div class="numeric-progress">6/24</div>
+    <div class="semantic-label">REGRESSION</div>
+    <div class="progress-track"><div class="progress-fill" style="width:25.0000%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第一目录复验原三例</div>
+    <h2 class="slide-title">使用实际 U18 修订副本</h2>
+    <div class="slide-content"><p class="slide-lead">在已解包的工作目录中保存原失败与修订版本</p>
+<div class="slide-main-content"><p><a href="resources/decks/gai-6-3/assets/u19-student.zip" download>下载 U19 原任务和可运行起点</a></p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">从 U18 带回 learner-candidate.cjs 并标来源</span></li><li><span class="list-marker">■</span><span class="list-text">无副本就复制原故障文件并按 U18 公开步骤只改结束日为包含</span></li><li><span class="list-marker">■</span><span class="list-text">保留 boundary-candidate.js，使用已安装的 Node.js</span></li></ul></div></div></div>
+    <div class="numeric-progress">7/24</div>
+    <div class="semantic-label">FIXTURES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:29.1667%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第一目录复验原三例</div>
+    <h2 class="slide-title">传入个人副本，避免测错模块</h2>
+    <div class="slide-content"><p class="slide-lead">check 不传文件参数时默认读取 core.js</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>在含 units 和 runtime 的解包根运行 <code>node runtime/b06/check.cjs runtime/b06/learner-candidate.cjs</code>。</p><p>先保留三个原用例和结果，再改副本的测试文件。</p></div></div></div></div>
+    <div class="numeric-progress">8/24</div>
+    <div class="semantic-label">FIXTURES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:33.3333%"></div></div>
+  </section>
+<section id="b3" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第一目录复验原三例</div>
+    <h2 class="slide-title">normal 检查正常明细的汇总</h2>
+    <div class="slide-content"><p class="slide-lead">固定输入包含查询范围内 1 条 10 分钟记录</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>用例</th><th>脚本实际断言</th></tr></thead><tbody><tr><td>normal</td><td>总分钟 10、无效码列表为空</td></tr><tr><td>限定</td><td>输出同时包含日均等字段，原用例未断言所有字段</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">9/24</div>
+    <div class="semantic-label">FIXTURES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:37.5000%"></div></div>
+  </section>
+<section id="b4" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:3fr;--split-b:1fr;">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第一目录复验原三例</div>
+    <h2 class="slide-title">零分钟日和非法明细的结果不同</h2>
+    <div class="slide-content"><p class="slide-lead">同样的总分钟 0，可由截然不同的输入状态产生</p>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="37% 20% 13% 30%"><colgroup><col style="width:37%"><col style="width:20%"><col style="width:13%"><col style="width:30%"></colgroup><thead><tr><th>用例</th><th>选中条数</th><th>日均</th><th>无效码</th></tr></thead><tbody><tr><td>single-zero，起止同日</td><td>1</td><td>0</td><td>无</td></tr><tr><td>invalid-outside，无效明细</td><td>0</td><td>null</td><td>INVALID_DATE</td></tr></tbody></table></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-6-3/assets/previews/one-legal-zero-versus-empty.webp" data-full-src="resources/decks/gai-6-3/assets/one-legal-zero-versus-empty.webp" data-full-width="998" data-full-height="1576" alt="上方保留一张完整记录，下方选中槽为空，橙边无效记录另存" tabindex="0" role="button" aria-label="放大图片：上方保留一张完整记录，下方选中槽为空，橙边无效记录另存" decoding="async"><figcaption>一条合法记录与空集</figcaption></figure></div></div>
+    <div class="numeric-progress">10/24</div>
+    <div class="semantic-label">FIXTURES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:41.6667%"></div></div>
+  </section>
+<section id="b5" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第一目录复验原三例</div>
+    <h2 class="slide-title">先观察逐项结果，再看退出状态</h2>
+    <div class="slide-content"><p class="slide-lead">看清 stdout 每行的用例名称、通过状态和字段</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>失败返回可能列断言差异。保留原始记录，先核当前目录、传入模块和 tests.json，再决定修改位置。</p><p>总退出码提供整轮结果，原始行帮助定位和解释。</p></div></div></div></div>
+    <div class="numeric-progress">11/24</div>
+    <div class="semantic-label">FIXTURES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:45.8333%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 增加一个边界用例</div>
+    <h2 class="slide-title">设计用例时先写预期</h2>
+    <div class="slide-content"><p class="slide-lead">分钟规则允许 0–1440 的整数，边界外应记无效</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>待测分支</th><th>用例的输入重点</th></tr></thead><tbody><tr><td>上限有效</td><td>一条正好 1440 分钟的记录，日期在范围内</td></tr><tr><td>上限之外</td><td>一条 1441 分钟的输入行，其他字段仍合法</td></tr><tr><td>准备</td><td>在运行之前写选中数、累计、日均和无效列表</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">12/24</div>
+    <div class="semantic-label">BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 增加一个边界用例</div>
+    <h2 class="slide-title">先看一条完整的新用例形状</h2>
+    <div class="slide-content"><p class="slide-lead">演示选择 1439 分钟。你需另选 1440 或 1441 执行</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>字段</th><th>构造的示例条件</th></tr></thead><tbody><tr><td>name</td><td>near-upper-1439</td></tr><tr><td>input</td><td>版本 1，范围同日，一条 id/date/minutes 合法明细</td></tr><tr><td>expectedTotal 与 expectedAverage</td><td>1439 和 1439</td></tr><tr><td>expectedCount 与 expectedInvalid</td><td>1 和 []</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">13/24</div>
+    <div class="semantic-label">BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:54.1667%"></div></div>
+  </section>
+<section id="c3" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 增加一个边界用例</div>
+    <h2 class="slide-title">新增用例在工作副本内执行</h2>
+    <div class="slide-content"><p class="slide-lead">先保存 tests.json 原字节，再在副本工作目录的当前数组追加</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">给新增对象明确的输入、预期和唯一名称</span></li><li><span class="list-marker">■</span><span class="list-text">保留原三个对象，用标准 JSON 写法</span></li><li><span class="list-marker">■</span><span class="list-text">用同一条 check 命令得到第四行以及原三行</span></li></ul></div></div></div>
+    <div class="numeric-progress">14/24</div>
+    <div class="semantic-label">BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:58.3333%"></div></div>
+  </section>
+<section id="c4" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 增加一个边界用例</div>
+    <h2 class="slide-title">用单条件变化核验错误路线</h2>
+    <div class="slide-content"><p class="slide-lead">公开变式把示范的 1439 改为 1442，保持有效日期和 ID</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>先从规则预测合法性、选中条数、总分钟、日均和无效码。把这个练习与自己的第四条执行记录分开。</p></div></div></div></div>
+    <div class="numeric-progress">15/24</div>
+    <div class="semantic-label">BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:62.5000%"></div></div>
+  </section>
+<section id="c5" class="step slide-surface role-content layout-single"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 增加一个边界用例</div>
+    <h2 class="slide-title">超出 1440 的记录在校验时剔除</h2>
+    <div class="slide-content"><p class="slide-lead">1442 不进入筛选，只有这一行时后续选中集为空</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>预计 invalidRecords 有该行的 INVALID_MINUTES，选中 0、总 0、日均 null。若输出为 0 日均，检查是否把错误记录当零分钟保留。</p><p>这页给出的是纸面预期。学生的运行结果独立记录。</p></div></div></div></div>
+    <div class="numeric-progress">16/24</div>
+    <div class="semantic-label">BOUNDARY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:66.6667%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-group-media"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:1fr;">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第二目录独立复跑</div>
+    <h2 class="slide-title">真正的交接使用另一目录</h2>
+    <div class="slide-content"><p class="slide-lead">把修订模块、依赖、用例和运行入口一起复制</p>
+<div class="slide-main-content"><div class="component content-group group-align-center"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="48% 52%"><colgroup><col style="width:48%"><col style="width:52%"></colgroup><thead><tr><th>文件</th><th>在复跑中的作用</th></tr></thead><tbody><tr><td>learner-candidate.cjs</td><td>实际被测修订模块</td></tr><tr><td>core.js</td><td>模块引用的原规则与校验</td></tr><tr><td>tests.json</td><td>原三例与个人新增的用例</td></tr><tr><td>check.cjs</td><td>逐项断言并输出状态</td></tr></tbody></table></div></div>
+<figure class="media-block image-block media-fit-cover media-position-center media-frame-portrait"><img class="zoomable-image" src="resources/decks/gai-6-3/assets/previews/two-clean-execution-folders.webp" data-full-src="resources/decks/gai-6-3/assets/two-clean-execution-folders.webp" data-full-width="941" data-full-height="1672" alt="两处独立材料盒各放一套相同顺序和颜色的文件标签" tabindex="0" role="button" aria-label="放大图片：两处独立材料盒各放一套相同顺序和颜色的文件标签" decoding="async"><figcaption>同一套材料，在另一目录复跑</figcaption></figure></div></div>
+    <div class="numeric-progress">17/24</div>
+    <div class="semantic-label">HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:70.8333%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-single"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第二目录独立复跑</div>
+    <h2 class="slide-title">在新目录直接运行四文件副本</h2>
+    <div class="slide-content"><p class="slide-lead">先确认当前目录，记录 Node 版本和四个文件摘要</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">运行 <code>node --version</code> 并记版本号</span></li><li><span class="list-marker">■</span><span class="list-text">运行 <code>node check.cjs ./learner-candidate.cjs</code></span></li><li><span class="list-marker">■</span><span class="list-text">对照两次用例名称、状态和关键输出，记录差别</span></li></ul></div></div></div>
+    <div class="numeric-progress">18/24</div>
+    <div class="semantic-label">HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:75.0000%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-single"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第二目录独立复跑</div>
+    <h2 class="slide-title">写明复跑证据的范围</h2>
+    <div class="slide-content"><p class="slide-lead">目录独立，文件与 Node 环境仍需明确记录</p>
+<div class="slide-main-content"><div class="component component-text text-panel"><div class="reading-panel"><p>用 SHA-256 检查四个文件一致。在 macOS 可使用 shasum -a 256，其他系统也可用等效工具。</p><p>两次一致支持这组案例可重复。缺少浏览器、其他 Node 版本或更大数据测试时照实注明。</p></div></div></div></div>
+    <div class="numeric-progress">19/24</div>
+    <div class="semantic-label">HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:79.1667%"></div></div>
+  </section>
+<section id="d4" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第二目录独立复跑</div>
+    <h2 class="slide-title">原四项自查各 0 或 1 分</h2>
+    <div class="slide-content"><p class="slide-lead">总 4 分供形成性自查，证据不足标待补</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>项目</th><th>相应可查证据</th></tr></thead><tbody><tr><td>C1 实际结果</td><td>正常、边界、非法三例逐项有实际返回</td></tr><tr><td>C2 新增例</td><td>录入完整预期后实际运行，保留结果</td></tr><tr><td>C3 重新执行</td><td>第二目录四个文件、摘要、Node 版本与输出</td></tr><tr><td>C4 范围</td><td>失败、未执行或未测项如实记录</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">20/24</div>
+    <div class="semantic-label">HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:83.3333%"></div></div>
+  </section>
+<section id="d5" class="step slide-surface role-content layout-single"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 在第二目录独立复跑</div>
+    <h2 class="slide-title">用四部分交代本次实际完成了什么</h2>
+    <div class="slide-content"><p class="slide-lead">建议 30 分钟，缺必要运行工具时保留规格及未执行记录</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">原先预期、修订身份和核查范围</span></li><li><span class="list-marker">■</span><span class="list-text">两次实际命令、文件摘要及逐项返回</span></li><li><span class="list-marker">■</span><span class="list-text">新增用例和按实际结果做的决定</span></li><li><span class="list-marker">■</span><span class="list-text">本人和 AI 贡献、失败及仍待试验的问题</span></li></ul></div></div></div>
+    <div class="numeric-progress">21/24</div>
+    <div class="semantic-label">HANDOFF</div>
+    <div class="progress-track"><div class="progress-fill" style="width:87.5000%"></div></div>
+  </section>
+<section id="review" class="step slide-surface role-review layout-single"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3 <span>|</span> 核对关键判断</div>
+    <h2 class="slide-title">把这次复跑交给另一位同伴</h2>
+    <div class="slide-content"><p class="slide-lead">先闭卷说出依赖，再拿实际证据复核</p>
+<div class="slide-main-content"><div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">说出 normal、single-zero 与 invalid-outside 各支持什么</span></li><li><span class="list-marker">■</span><span class="list-text">指出新增边界用例的预期与实际在哪里</span></li><li><span class="list-marker">■</span><span class="list-text">列出第二目录必须带的四个文件和验证方法</span></li></ul></div></div></div>
+    <div class="numeric-progress">22/24</div>
+    <div class="semantic-label">RETRIEVAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:91.6667%"></div></div>
+  </section>
+<section id="map" class="step slide-surface role-map layout-single"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3</div>
+    <h2 class="slide-title">本节思维导图</h2>
+    <div class="slide-content"><div class="mindmap-shell"><iframe src="resources/decks/gai-6-3/mindmap-6-3.html" title="本节思维导图"></iframe></div></div>
+    <div class="numeric-progress">23/24</div>
+    <div class="semantic-label">MIND MAP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:95.8333%"></div></div>
+  </section>
+<section id="questions" class="step slide-surface role-questions layout-single"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">GAI <span>|</span> M6 <span>|</span> 6.3</div>
+    <h2 class="slide-title">本节问题</h2>
+    <div class="slide-content"><ol class="question-list"><li><span class="question-no">01</span><span class="question-text">只断言总分钟时，哪种零值行为可能没有被测试发现？</span></li><li><span class="question-no">02</span><span class="question-text">为什么第二目录要复制 core.js 并给出摘要？</span></li><li><span class="question-no">03</span><span class="question-text">若两目录使用不同的 Node 版本且返回不同，下一步怎样定位？</span></li></ol><nav class="nav-row" aria-label="课程导航">
+      <a class="side-nav nav-previous" href="gai-6-2.html" title="上一节：6.2 有依据地实现与审查补丁" aria-label="上一节：6.2 有依据地实现与审查补丁">
+        <span class="arrow-safety" aria-hidden="true"></span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">←</span></span>
+        <span class="nav-number">6.2</span>
+        <span class="nav-title">修复、反例与采用</span>
+      </a>
+      <a class="exercise-link" href="#review">本节练习</a>
+      <a class="side-nav nav-next" href="gai-7-1.html" title="下一节：7.1 选择工作流或Agent并限定工具" aria-label="下一节：7.1 选择工作流或Agent并限定工具">
+        <span class="nav-title">流程选择与工具权限</span>
+        <span class="nav-number">7.1</span>
+        <span class="arrow-slot" aria-hidden="true"><span class="arrow">→</span></span>
+        <span class="arrow-safety" aria-hidden="true"></span>
+      </a>
+    </nav></div>
+    <div class="numeric-progress">24/24</div>
+    <div class="semantic-label">QUESTIONS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>
