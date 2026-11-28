@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DBPA 数据库原理与应用 期末习题课 | HUST</title>
+  <meta name="description" content="八道入门单选和六组综合练习，练习数据库结构、查询、关系设计、恢复与并发控制">
+  <meta name="author" content="xinjiang@hrbust.edu.cn">
+  <meta name="course" content="数据库原理与应用">
+  <meta name="institution" content="哈尔滨理工大学经济与管理学院">
+  <meta name="generator" content="impress.js">
+  <meta name="deck" content="2026-fall-review">
+  <meta name="version" content="2611.4">
+  <link rel="icon" type="image/svg+xml" href="../resources/impress/branding/mengma-tusk.svg">
+  <link rel="stylesheet" href="resources/theme/fonts.css">
+  <link rel="stylesheet" href="../resources/impress/theme/common.css">
+  <link rel="stylesheet" href="resources/theme/course.css">
+  <script>window.MathJax = {tex: {inlineMath: [['\\(', '\\)']], displayMath: [['$$','$$']]}};</script>
+  <script defer src="../resources/impress/vendor/mathjax/tex-chtml-full.js"></script>
+</head>
+<body class="impress-not-supported">
+  <div class="fallback-message">请使用支持现代 CSS 与 JavaScript 的浏览器播放课件</div>
+  
+  <main id="impress" data-width="1280" data-height="960" data-transition-duration="700">
+  <section id="cover" class="step slide-surface role-cover layout-single"
+      data-x="0" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <img class="cover-image" src="resources/decks/dbpa-2026-fall-review/assets/database-system-cover.webp" alt="">
+    <div class="cover-copy">
+      <div class="cover-section">DBPA · 数据库原理与应用</div>
+      <h1>期末习题课</h1>
+      <p class="cover-description">关系代数、查询、设计、恢复、并发</p>
+      <div class="cover-meta">
+        <span class="cover-version"><img src="../resources/impress/branding/mengma-tusk.svg" alt="">VER. 2611.4</span>
+        <span class="cover-built">Built with impress.js<img src="../resources/impress/branding/impress-favicon.png" alt=""></span>
+      </div>
+    </div>
+<!-- speaker-notes
+封面背景沿用本课程《数据库系统概述》的 database-system-cover.webp，字节一致，素材说明见该节 teaching.md。
+-->
+  </section>
+<section id="a1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课</div>
+    <h2 class="slide-title">目录</h2>
+    <div class="slide-content"><p class="slide-lead">每个类型都包括单选和综合练习</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="32% 68%"><colgroup><col style="width:32%"><col style="width:68%"></colgroup><thead><tr><th>练习分类</th><th>综合练习</th></tr></thead><tbody><tr><td><a href="#a1a">模式与数据</a></td><td>三项变化的归类、数据独立性和两级映像</td></tr><tr><td><a href="#c1">连接与投影</a></td><td>连接的中间结果、投影和 SQL 的行数</td></tr><tr><td><a href="#c2a">SQL 统计</a></td><td>一条反例、修正后的查询和结果</td></tr><tr><td><a href="#d3a">约束与分解</a></td><td>冲突的业务规则、分解后的主码与外码</td></tr><tr><td><a href="#e2a">数据库设计</a></td><td>分工表、索引和试运行用例</td></tr><tr><td><a href="#f3a">恢复与并发</a></td><td>恢复后的数据值、锁等待和两次读数</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">2/26</div>
+    <div class="semantic-label">CLASSROOM PRACTICE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:7.6923%"></div></div>
+<!-- speaker-notes
+开场约 5 分钟。课堂 1 至 6 依次约 8、15、15、15、15、22 分钟，最后约 5 分钟收集退出练习并布置课后题。每道入门单选用 30–60 秒，计入所在组的时间。先请学生选答案，再向前播放核对依据。
+-->
+  </section>
+<section id="a1a" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 模式与数据</div>
+    <h2 class="slide-title">单选：三级模式</h2>
+    <div class="slide-content"><p class="slide-lead">某博物馆给展品登记表增加了「保管部门」字段</p>
+<div class="slide-main-content"><p>这项修改直接改变了哪一层定义？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 外模式</span></li><li><span class="list-marker">■</span><span class="list-text">B. 内模式</span></li><li><span class="list-marker">■</span><span class="list-text">C. 数据库实例</span></li><li><span class="list-marker">■</span><span class="list-text">D. 模式</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>D．模式。新增字段修改了表的全局逻辑结构</p></div></div></div>
+    <div class="numeric-progress">3/26</div>
+    <div class="semantic-label">SCHEMA WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:11.5385%"></div></div>
+  </section>
+<section id="b1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="0" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 模式与数据</div>
+    <h2 class="slide-title">练习：模式和实例</h2>
+    <div class="slide-content"><p class="slide-lead">在图书管理系统中，读者能看到书名和应还日期，管理员能看到读者编号</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="10% 90%"><colgroup><col style="width:10%"><col style="width:90%"></colgroup><thead><tr><th>事件</th><th>变化</th></tr></thead><tbody><tr><td>甲</td><td>按读者编号重新组织磁盘上的数据，应用沿用原表和字段</td></tr><tr><td>乙</td><td>读者端增加续借次数，对应数据表中已有该字段</td></tr><tr><td>丙</td><td>管理员补录一笔借阅，不修改表结构</td></tr></tbody></table></div>
+<p>从外模式、模式、内模式和数据库实例中分别选一项，再引用题干中的描述说明理由</p>
+<div class="component component-text text-inset substep reveal-self"><p>甲是<strong>内模式</strong>，磁盘存放方式变了。乙是读者端的<strong>外模式</strong>，应用可见字段变了。丙是<strong>数据库实例</strong>，在原表结构中新增了一笔数据</p></div></div></div>
+    <div class="numeric-progress">4/26</div>
+    <div class="semantic-label">SCHEMA AND INSTANCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:15.3846%"></div></div>
+  </section>
+<section id="b2" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 模式与数据</div>
+    <h2 class="slide-title">练习：二级映像和独立性</h2>
+    <div class="slide-content"><p class="slide-lead">两次改造都保留了原有应用接口。分别写出对应的数据独立性和映像</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="27% 73%"><colgroup><col style="width:27%"><col style="width:73%"></colgroup><thead><tr><th>改造</th><th>已知条件</th></tr></thead><tbody><tr><td>重组磁盘存放</td><td>按读者编号重组磁盘数据，应用沿用原表和字段</td></tr><tr><td>拆出历史表</td><td>当前状态改存历史表，读者端仍从原接口查询当前状态</td></tr></tbody></table></div>
+<div class="substep reveal-self component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="28% 29% 43%"><colgroup><col style="width:28%"><col style="width:29%"><col style="width:43%"></colgroup><thead><tr><th>改造</th><th>数据独立性</th><th>调整的映像</th></tr></thead><tbody><tr><td>重组磁盘存放</td><td>物理数据独立性</td><td>模式／内模式映像</td></tr><tr><td>拆出历史表</td><td>逻辑数据独立性</td><td>外模式／模式映像</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">5/26</div>
+    <div class="semantic-label">DATA INDEPENDENCE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:19.2308%"></div></div>
+  </section>
+<section id="c1" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
+      data-x="3000" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 连接与投影</div>
+    <h2 class="slide-title">练习：关系代数和查询</h2>
+    <div class="slide-content"><p class="slide-lead">按场地编号连接两表，只留下状态为「通过」的预约。写出预约编号和区域</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><p>场地 <code>Venue</code></p>
+<div class="component component-table table-comparison"><table class="content-table"><thead><tr><th><code>venue_id</code></th><th><code>area</code></th></tr></thead><tbody><tr><td>V1</td><td>东区</td></tr><tr><td>V2</td><td>东区</td></tr><tr><td>V3</td><td>西区</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>B1、B2、B3 均在东区</p></div></div>
+<div class="component content-group group-align-start"><p>预约 <code>Booking</code></p>
+<div class="component component-table table-comparison"><table class="content-table"><thead><tr><th><code>booking_id</code></th><th><code>venue_id</code></th><th><code>status</code></th></tr></thead><tbody><tr><td>B1</td><td>V1</td><td>通过</td></tr><tr><td>B2</td><td>V1</td><td>通过</td></tr><tr><td>B3</td><td>V2</td><td>通过</td></tr><tr><td>B4</td><td>V3</td><td>待审</td></tr></tbody></table></div></div></div></div>
+    <div class="numeric-progress">6/26</div>
+    <div class="semantic-label">JOIN AND FILTER</div>
+    <div class="progress-track"><div class="progress-fill" style="width:23.0769%"></div></div>
+  </section>
+<section id="c2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 连接与投影</div>
+    <h2 class="slide-title">练习：投影操作与 SQL 查询</h2>
+    <div class="slide-content"><p class="slide-lead">关系代数式 \(\Pi_{\mathrm{area}}\bigl(\mathrm{Venue}\Join\sigma_{\mathrm{status}=\text{“通过”}}(\mathrm{Booking})\bigr)\)</p>
+<div class="slide-main-content"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-sql">SELECT v.area
+FROM Venue AS v
+JOIN Booking AS b ON b.venue_id = v.venue_id
+WHERE b.status = '通过';</code></pre></div>
+<p>写出关系代数式和 SQL 查询的结果与行数；再修改 SQL，让每个区域只出现一次</p>
+<div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">投影结果是元组的集合，三个相同的「东区」元组只保留一次</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">这条 SQL 保留三行「东区」。改为 <code>SELECT DISTINCT v.area</code> 后只返回一行</span></li></ul></div></div></div>
+    <div class="numeric-progress">7/26</div>
+    <div class="semantic-label">PROJECTION AND DISTINCT</div>
+    <div class="progress-track"><div class="progress-fill" style="width:26.9231%"></div></div>
+<!-- speaker-notes
+两表唯一同名属性是 venue_id，所以自然连接与 SQL 在该列上的匹配一致。按教材第 2.4.2 节的投影定义和例 2.7 说明去重。可盖住预约编号一列，或把 B3 改为指向 V3，追问两种结果的行数。
+-->
+  </section>
+<section id="c2a" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="1120" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> SQL 统计</div>
+    <h2 class="slide-title">单选：筛选分组</h2>
+    <div class="slide-content"><p class="slide-lead">现在已经按仓库分组，每组对应一个仓库</p>
+<div class="slide-main-content"><p>只保留盘点次数至少为 3 的仓库。用哪个子句检查每组的盘点总数？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. <code>WHERE</code></span></li><li><span class="list-marker">■</span><span class="list-text">B. <code>GROUP BY</code></span></li><li><span class="list-marker">■</span><span class="list-text">C. <code>HAVING</code></span></li><li><span class="list-marker">■</span><span class="list-text">D. <code>ORDER BY</code></span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>C．<code>HAVING</code>。盘点总数要在分组后计算，因此用 <code>HAVING</code> 筛选这些组</p></div></div></div>
+    <div class="numeric-progress">8/26</div>
+    <div class="semantic-label">GROUP FILTER WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:30.7692%"></div></div>
+  </section>
+<section id="d1" class="step slide-surface role-content layout-split axis-horizontal order-text-media"
+      data-x="0" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="--split-a:2fr;--split-b:3fr;">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> SQL 统计</div>
+    <h2 class="slide-title">练习：COUNT 的不同类型</h2>
+    <div class="slide-content"><p class="slide-lead">找出至少处理 2 单的窗口，列出总单数和登记过用时的单数</p>
+<div class="slide-main-content"><div class="component content-group group-align-start"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th><code>ticket_id</code></th><th><code>desk</code></th><th><code>minutes</code></th></tr></thead><tbody><tr><td>1</td><td>A</td><td>12</td></tr><tr><td>2</td><td>A</td><td><code>NULL</code></td></tr><tr><td>3</td><td>B</td><td>8</td></tr><tr><td>4</td><td>B</td><td><code>NULL</code></td></tr><tr><td>5</td><td>B</td><td>4</td></tr><tr><td>6</td><td>C</td><td>7</td></tr></tbody></table></div></div>
+<div class="component content-group group-align-start"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04
+05
+06
+07</span><code class="language-sql">SELECT desk,
+       COUNT(*) AS total,
+       COUNT(minutes) AS recorded
+FROM ServiceLog
+WHERE minutes IS NOT NULL
+GROUP BY desk
+HAVING COUNT(*) &gt;= 2;</code></pre></div>
+<p>未登记用时记为 <code>NULL</code>。选一个窗口，对比预期与查询结果。若窗口被排除，指出原因</p></div></div></div>
+    <div class="numeric-progress">9/26</div>
+    <div class="semantic-label">AGGREGATION COUNTEREXAMPLE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:34.6154%"></div></div>
+  </section>
+<section id="d2" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> SQL 统计</div>
+    <h2 class="slide-title">查询结果不正确的原因</h2>
+    <div class="slide-content"><p class="slide-lead">A 有一单用时为 12，另一单的用时未登记</p>
+<div class="slide-main-content"><div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">依照业务要求，A 有 2 单，登记用时的有 1 单，应输出 <code>(A, 2, 1)</code></span></li><li class="substep"><span class="list-marker">■</span><span class="list-text"><code>WHERE minutes IS NOT NULL</code> 在分组前过滤掉 A 的第二单。A 组只剩 1 行，随后被 <code>HAVING</code> 排除</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>B 的类似表现：原查询给出 <code>(B, 2, 2)</code>，实际总单数为 3，应输出 <code>(B, 3, 2)</code></p></div>
+<div class="component component-text text-open substep reveal-self"><p>写出修改方法和修改后的查询结果，指出分组后检查的条件。补上排序子句，按登记单数降序，同数时按窗口名升序</p></div></div></div>
+    <div class="numeric-progress">10/26</div>
+    <div class="semantic-label">FILTER BEFORE GROUPING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:38.4615%"></div></div>
+  </section>
+<section id="d3" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> SQL 统计</div>
+    <h2 class="slide-title">分别计数</h2>
+    <div class="slide-content"><p class="slide-lead">删去 <code>WHERE</code> 后，<code>COUNT(*)</code> 统计总单数，<code>COUNT(minutes)</code> 统计已登记单数</p>
+<div class="slide-main-content"><div class="code-frame"><span class="code-language">SQL</span><pre tabindex="0" aria-label="SQL code"><span class="code-line-numbers" aria-hidden="true">01
+02
+03
+04</span><code class="language-sql">SELECT desk, COUNT(*) AS total, COUNT(minutes) AS recorded
+FROM ServiceLog
+GROUP BY desk
+HAVING COUNT(*) &gt;= 2;</code></pre></div>
+<div class="substep reveal-self component component-table table-comparison"><table class="content-table"><thead><tr><th><code>desk</code></th><th><code>total</code></th><th><code>recorded</code></th></tr></thead><tbody><tr><td>A</td><td>2</td><td>1</td></tr><tr><td>B</td><td>3</td><td>2</td></tr></tbody></table></div>
+<div class="component component-text text-open substep reveal-self"><p>加上 <code>ORDER BY recorded DESC, desk ASC</code>，结果依次为 B、A</p></div></div></div>
+    <div class="numeric-progress">11/26</div>
+    <div class="semantic-label">GROUP COUNTS AND SORTING</div>
+    <div class="progress-track"><div class="progress-fill" style="width:42.3077%"></div></div>
+<!-- speaker-notes
+上一页结束后，先让学生在讲义中修改查询，再进入本页对照。最小改动是删除原查询的 WHERE 行。HAVING 依旧在分组后检查组内总单数。时间紧时，排序小问可留给课后。
+-->
+  </section>
+<section id="d3a" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="2240" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 约束与分解</div>
+    <h2 class="slide-title">单选：完整性约束</h2>
+    <div class="slide-content"><p class="slide-lead">作品登记表用外码引用作者表中的作者编号</p>
+<div class="slide-main-content"><p>新登记引用了作者 A17，但作者表里没有这个编号。其他字段均合法。选出阻止规则</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 参照完整性</span></li><li><span class="list-marker">■</span><span class="list-text">B. 实体完整性</span></li><li><span class="list-marker">■</span><span class="list-text">C. 取值范围规则</span></li><li><span class="list-marker">■</span><span class="list-text">D. 业务唯一性规则</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>A．参照完整性。新记录引用的作者编号必须在作者表中存在</p></div></div></div>
+    <div class="numeric-progress">12/26</div>
+    <div class="semantic-label">FOREIGN KEY WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:46.1538%"></div></div>
+  </section>
+<section id="e1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 约束与分解</div>
+    <h2 class="slide-title">练习：完整性约束</h2>
+    <div class="slide-content"><p class="slide-lead">志愿者和班次表中，每人每班次只报一次，判断候选码</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th><code>volunteer_id</code></th><th><code>shift_id</code></th><th><code>shift_day</code></th><th><code>signed_at</code></th></tr></thead><tbody><tr><td>V1</td><td>S5</td><td>12-02</td><td>09:00</td></tr><tr><td>V2</td><td>S5</td><td>12-03</td><td>09:10</td></tr></tbody></table></div>
+<p>依赖有：1. 组合码决定报名时间；2. 班次编号决定日期。第二条报名是否违反主码或业务规则？是否存在部分函数依赖？这个关系符合 2NF 吗？</p>
+<div class="component component-text text-open substep reveal-self"><p>主码值唯一，但 S5 有两个日期，违反班次编号决定日期的规则。非主属性 <code>shift_day</code> 依赖候选码的真子集 <code>shift_id</code>，因此未达到 2NF</p></div></div></div>
+    <div class="numeric-progress">13/26</div>
+    <div class="semantic-label">KEY AND DEPENDENCY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:50.0000%"></div></div>
+  </section>
+<section id="e2" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 约束与分解</div>
+    <h2 class="slide-title">练习：规范化</h2>
+    <div class="slide-content"><p class="slide-lead">原表的依赖是班次编号决定班次日期</p>
+<div class="slide-main-content"><p>把原表拆成「班次」和「报名」，写出各表的字段、主码、外码及引用目标。已知 <code>Volunteer(volunteer_id)</code> 中只有 V1 和 V2，哪条约束能拒绝 V9 的报名？</p>
+<div class="substep reveal-self component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="39% 30% 31%"><colgroup><col style="width:39%"><col style="width:30%"><col style="width:31%"></colgroup><thead><tr><th>关系</th><th>主码</th><th>外码</th></tr></thead><tbody><tr><td><code>Shift</code>（<code>shift_id</code>、<code>shift_day</code>）</td><td><code>shift_id</code></td><td>—</td></tr><tr><td><code>ShiftSignup</code>（<code>volunteer_id</code>、<code>shift_id</code>、<code>signed_at</code>）</td><td><code>(volunteer_id, shift_id)</code></td><td>志愿者编号引用 <code>Volunteer</code>，班次编号引用 <code>Shift</code></td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>V9 在志愿者表中找不到，指向 <code>Volunteer</code> 的外码约束会拒绝该报名</p></div></div></div>
+    <div class="numeric-progress">14/26</div>
+    <div class="semantic-label">DECOMPOSITION AND FOREIGN KEYS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:53.8462%"></div></div>
+  </section>
+<section id="e2a" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 数据库设计</div>
+    <h2 class="slide-title">单选：联系基数</h2>
+    <div class="slide-content"><p class="slide-lead">一个展馆可以有多个储藏室，每个储藏室只属于一个展馆</p>
+<div class="slide-main-content"><p>从展馆到储藏室，联系的基数是什么？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 一对一</span></li><li><span class="list-marker">■</span><span class="list-text">B. 一对多</span></li><li><span class="list-marker">■</span><span class="list-text">C. 多对一</span></li><li><span class="list-marker">■</span><span class="list-text">D. 多对多</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>B．一对多。一个展馆可对应多个储藏室，每个储藏室只对应一个展馆</p></div></div></div>
+    <div class="numeric-progress">15/26</div>
+    <div class="semantic-label">CARDINALITY WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:57.6923%"></div></div>
+  </section>
+<section id="f1" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="3360" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 数据库设计</div>
+    <h2 class="slide-title">练习：E-R 图</h2>
+    <div class="slide-content"><p class="slide-lead">一位志愿者可参与多场导览，一场导览也可由多位志愿者协助</p>
+<div class="slide-main-content"><p>同一人在同一场导览只有一条分工记录，记录职责和到岗时间</p>
+<ol><li>写出两个实体型、各自的标识属性以及联系的基数</li><li>说明职责和到岗时间应当记录在哪个实体型或联系上</li><li>写出保存分工的关系模式，标明主码、外码及引用目标</li></ol>
+<div class="component component-list list-rows reveal-items"><ul class="content-list content-list-unordered"><li class="substep"><span class="list-marker">■</span><span class="list-text">志愿者以 <code>volunteer_id</code> 标识，导览场次以 <code>tour_id</code> 标识，两者为多对多联系</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text">职责和到岗时间由志愿者与导览场次共同决定，记录在分工联系上</span></li><li class="substep"><span class="list-marker">■</span><span class="list-text"><code>Assignment(volunteer_id, tour_id, duty, arrival_at)</code> 的主码为 <code>(volunteer_id, tour_id)</code>，两个编号分别引用志愿者和导览场次的主码</span></li></ul></div></div></div>
+    <div class="numeric-progress">16/26</div>
+    <div class="semantic-label">ENTITY RELATIONSHIP DESIGN</div>
+    <div class="progress-track"><div class="progress-fill" style="width:61.5385%"></div></div>
+  </section>
+<section id="f2" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 数据库设计</div>
+    <h2 class="slide-title">练习：索引和试运行用例</h2>
+    <div class="slide-content"><p class="slide-lead">馆方常按导览编号查询参与名单，名单按到岗时间升序排列</p>
+<div class="slide-main-content"><p>列出一个索引和字段顺序。再设计一条用例，写清输入记录、查询条件与预期结果</p>
+<div class="component component-text text-inset substep reveal-self"><p>可以在分工表上建立 <code>(tour_id, arrival_at)</code> 索引，先按导览编号定位，再利用同一场次内的到岗时间顺序</p></div>
+<div class="substep reveal-self component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="60% 40%"><colgroup><col style="width:60%"><col style="width:40%"></colgroup><thead><tr><th>输入和查询</th><th>预期结果</th></tr></thead><tbody><tr><td>T3 的 V1、V2 分别于 09:20、09:10 到岗，另有 T4 的一条分工。查询 T3 名单，按到岗时间升序排列</td><td>只返回 T3 的两位志愿者，顺序为 V2、V1</td></tr></tbody></table></div></div></div>
+    <div class="numeric-progress">17/26</div>
+    <div class="semantic-label">INDEX CHOICE AND CHECK</div>
+    <div class="progress-track"><div class="progress-fill" style="width:65.3846%"></div></div>
+  </section>
+<section id="f3" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 数据库设计</div>
+    <h2 class="slide-title">练习：数据库设计</h2>
+    <div class="slide-content"><p class="slide-lead">从概念设计、逻辑设计、物理设计、实施与试运行中为每项工作选一个阶段</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table"><thead><tr><th>编号</th><th>工作</th></tr></thead><tbody><tr><td>甲</td><td>选择分工表的索引</td></tr><tr><td>乙</td><td>画出志愿者与导览场次的实体联系图</td></tr><tr><td>丙</td><td>用验收用例运行查询并核对名单</td></tr><tr><td>丁</td><td>确定分工表结构及主码、外码</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>甲是<strong>物理设计</strong>，乙是<strong>概念设计</strong>，丙是<strong>实施与试运行</strong>，丁是<strong>逻辑设计</strong></p></div></div></div>
+    <div class="numeric-progress">18/26</div>
+    <div class="semantic-label">DESIGN STAGES</div>
+    <div class="progress-track"><div class="progress-fill" style="width:69.2308%"></div></div>
+  </section>
+<section id="f3a" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 事务与恢复</div>
+    <h2 class="slide-title">单选：事务</h2>
+    <div class="slide-content"><p class="slide-lead">预约事务先扣减一个可用名额，再写入一条预约记录</p>
+<div class="slide-main-content"><p>名额扣减后，预约记录写入失败，事务终止。按原子性要求，最终应看到什么状态？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 名额少了一个，预约未建立</span></li><li><span class="list-marker">■</span><span class="list-text">B. 名额少了一个，预约已建立</span></li><li><span class="list-marker">■</span><span class="list-text">C. 名额恢复，预约已建立</span></li><li><span class="list-marker">■</span><span class="list-text">D. 名额恢复，预约未建立</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>D．名额恢复，预约未建立。两项操作属于同一事务，失败时要撤销已完成的扣减</p></div></div></div>
+    <div class="numeric-progress">19/26</div>
+    <div class="semantic-label">ATOMICITY WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:73.0769%"></div></div>
+  </section>
+<section id="f3a1" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="4480" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 事务与恢复</div>
+    <h2 class="slide-title">单选：恢复</h2>
+    <div class="slide-content"><p class="slide-lead">某事务将维修费用从 500 元改为 420 元</p>
+<div class="slide-main-content"><p>更新日志和提交记录都已持久化，故障时数据页仍是 500 元。恢复后的费用是多少？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 420 元</span></li><li><span class="list-marker">■</span><span class="list-text">B. 500 元</span></li><li><span class="list-marker">■</span><span class="list-text">C. 80 元</span></li><li><span class="list-marker">■</span><span class="list-text">D. 0 元</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>A．420 元。事务已有提交记录，按持久日志重做更新后得到新值</p></div></div></div>
+    <div class="numeric-progress">20/26</div>
+    <div class="semantic-label">REDO WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:76.9231%"></div></div>
+  </section>
+<section id="f3a1a" class="step slide-surface role-content layout-stack"
+      data-x="4500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 事务与恢复</div>
+    <h2 class="slide-title">单选：撤销</h2>
+    <div class="slide-content"><p class="slide-lead">故障前的日志完整，事务 T 的部分更新已写回数据页</p>
+<div class="slide-main-content"><p>日志中有 T 的 <code>BEGIN</code> 和更新记录，但没有 <code>COMMIT</code>，也没有 <code>ROLLBACK</code>。基于以下哪个选项，决定应该撤销 T？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 部分更新已写回数据页</span></li><li><span class="list-marker">■</span><span class="list-text">B. 日志中没有 <code>COMMIT</code> 或 <code>ROLLBACK</code></span></li><li><span class="list-marker">■</span><span class="list-text">C. 日志中有 <code>BEGIN</code></span></li><li><span class="list-marker">■</span><span class="list-text">D. 日志中有更新记录</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>B．日志中没有 <code>COMMIT</code> 或 <code>ROLLBACK</code>。T 在故障前尚未提交或回滚，按日志撤销它的更新</p></div></div></div>
+    <div class="numeric-progress">21/26</div>
+    <div class="semantic-label">UNDO WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:80.7692%"></div></div>
+  </section>
+<section id="f3a1a1" class="step slide-surface role-content layout-stack"
+      data-x="3000" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 事务与恢复</div>
+    <h2 class="slide-title">单选：转储</h2>
+    <div class="slide-content"><p class="slide-lead">资料库暂停业务事务后，开始转储</p>
+<div class="slide-main-content"><p>这次只复制上次转储后有变化的数据。按教材的两个分类维度，这是什么方式？</p>
+<div class="component component-list list-rows"><ul class="content-list content-list-unordered"><li><span class="list-marker">■</span><span class="list-text">A. 动态增量转储</span></li><li><span class="list-marker">■</span><span class="list-text">B. 静态海量转储</span></li><li><span class="list-marker">■</span><span class="list-text">C. 静态增量转储</span></li><li><span class="list-marker">■</span><span class="list-text">D. 动态海量转储</span></li></ul></div>
+<div class="component component-text text-inset substep reveal-self"><p>C．静态增量转储。转储时暂停事务属于静态，只复制变化数据属于增量</p></div></div></div>
+    <div class="numeric-progress">22/26</div>
+    <div class="semantic-label">BACKUP WARM-UP</div>
+    <div class="progress-track"><div class="progress-fill" style="width:84.6154%"></div></div>
+  </section>
+<section id="g1" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 日志恢复</div>
+    <h2 class="slide-title">练习：故障后处理</h2>
+    <div class="slide-content"><p class="slide-lead">故障时 A=35、B=20、C=9。表中日志均已持久化，提交记录完整</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 85%"><colgroup><col style="width:15%"><col style="width:85%"></colgroup><thead><tr><th>顺序</th><th>事件</th></tr></thead><tbody><tr><td>1</td><td>T1 开始，将 A 从 40 改为 35</td></tr><tr><td>2</td><td>T1 将 B 从 20 改为 25</td></tr><tr><td>3</td><td>T1 提交</td></tr><tr><td>4</td><td>T2 开始，将 C 从 12 改为 9</td></tr><tr><td>5</td><td>系统故障</td></tr></tbody></table></div>
+<p>写出各事务的恢复方向、日志依据及需补写或撤销的值</p></div></div>
+    <div class="numeric-progress">23/26</div>
+    <div class="semantic-label">LOG RECOVERY</div>
+    <div class="progress-track"><div class="progress-fill" style="width:88.4615%"></div></div>
+  </section>
+<section id="g2" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="5600" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 日志恢复</div>
+    <h2 class="slide-title">练习：恢复</h2>
+    <div class="slide-content"><p class="slide-lead">故障时数据页为 A=35、B=20、C=9。先用事务的提交状态决定恢复方向</p>
+<div class="slide-main-content"><ol><li>写出恢复后的 A、B、C</li><li>写出 C 的更新日志持久化和修改后的数据页写盘，哪件事应当先完成</li><li>如果 A、B 的修改共同组成一次调拨，解释为什么要放在同一个事务中</li></ol>
+<div class="substep reveal-self component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="15% 34% 51%"><colgroup><col style="width:15%"><col style="width:34%"><col style="width:51%"></colgroup><thead><tr><th>事务</th><th>日志依据</th><th>恢复结果</th></tr></thead><tbody><tr><td>T1</td><td>有提交记录，重做</td><td>A 已是 35，补写 B=25</td></tr><tr><td>T2</td><td>无提交记录，撤销</td><td>C 从 9 恢复为 12</td></tr></tbody></table></div>
+<div class="component component-text text-inset substep reveal-self"><p>C 的更新日志应先于 C 的修改页持久化，故障后才能按日志撤销。调拨的两次修改要按<strong>原子性</strong>要求一起成功，失败时一起撤销</p></div></div></div>
+    <div class="numeric-progress">24/26</div>
+    <div class="semantic-label">REDO UNDO AND WAL</div>
+    <div class="progress-track"><div class="progress-fill" style="width:92.3077%"></div></div>
+<!-- speaker-notes
+先收上一页的作答，再让学生填写本页三问。请一位同学完整读出恢复结果 A=35、B=25、C=12。按教材模型重做 T1 的全部更新，最终值也相同。
+-->
+  </section>
+<section id="g3" class="step slide-surface role-content layout-stack"
+      data-x="0" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 并发控制</div>
+    <h2 class="slide-title">练习：并行和锁</h2>
+    <div class="slide-content"><p class="slide-lead">同一行的剩余座位数初始为 6。按下表的锁轨迹推演，每次读取取当时的值</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="11% 89%"><colgroup><col style="width:11%"><col style="width:89%"></colgroup><thead><tr><th>顺序</th><th>操作</th></tr></thead><tbody><tr><td>1</td><td>T3 取得 S 锁，读完立即释放</td></tr><tr><td>2</td><td>T4 取得 X 锁，将座位数改为 5，提交并释放锁</td></tr><tr><td>3</td><td>T3 再取得 S 锁，读取同一行</td></tr></tbody></table></div>
+<p>写出两次读数和并发异常的名称。哪一条信息足以排除脏读？</p>
+<div class="component component-text text-inset substep reveal-self"><p>T3 先读到 6，再读到 5，发生<strong>不可重复读</strong>。T4 在第二次读取前已提交，所以第二次读到的是提交后的值</p></div></div></div>
+    <div class="numeric-progress">25/26</div>
+    <div class="semantic-label">READS AND LOCK RELEASE</div>
+    <div class="progress-track"><div class="progress-fill" style="width:96.1538%"></div></div>
+  </section>
+<section id="g4" class="step slide-surface role-content layout-stack"
+      data-x="1500" data-y="6720" data-z="0"
+      data-rotate="0" data-scale="1" style="">
+    <div class="breadcrumb">DBPA <span>|</span> 期末习题课 <span>|</span> 并发控制</div>
+    <h2 class="slide-title">练习：S 锁和 X 锁</h2>
+    <div class="slide-content"><p class="slide-lead">把同一行的座位数恢复到初始值 6，这次 T3 第一次读完后继续持有 S 锁</p>
+<div class="slide-main-content"><div class="component component-table table-comparison"><table class="content-table has-column-widths" data-column-widths="12% 88%"><colgroup><col style="width:12%"><col style="width:88%"></colgroup><thead><tr><th>顺序</th><th>操作</th></tr></thead><tbody><tr><td>1</td><td>T3 取得 S 锁，读到 6，继续持锁</td></tr><tr><td>2</td><td>T4 请求同一行的 X 锁</td></tr><tr><td>3</td><td>T3 在事务结束前再次读取同一行</td></tr></tbody></table></div>
+<p>写出 T4 请求的结果、T3 的第二次读数，以及 T4 最早何时有机会更新</p>
+<div class="component component-text text-inset substep reveal-self"><p>同一行上的 S 锁与 X 锁冲突，T4 等待。T3 第二次仍读到 <strong>6</strong>。T3 结束并释放 S 锁后，T4 才有机会获得 X 锁并更新</p></div></div></div>
+    <div class="numeric-progress">26/26</div>
+    <div class="semantic-label">SHARED AND EXCLUSIVE LOCKS</div>
+    <div class="progress-track"><div class="progress-fill" style="width:100.0000%"></div></div>
+  </section>
+  </main>
+  <script src="../resources/impress/vendor/highlight.min.js"></script>
+  <script src="../resources/impress/vendor/impress.js"></script>
+  <script src="../resources/impress/runtime/interactions.js"></script>
+  
+  
+</body>
+</html>

@@ -2097,11 +2097,7 @@
  * element. This is to prevent the focus from being left in a form element that is no longer visible
  * in the window, and user therefore typing garbage into the form.
  *
- * TODO: Currently it is not possible to use TAB to navigate between form elements. Impress.js, and
- * in particular the navigation plugin, unfortunately must fully take control of the tab key,
- * otherwise a user could cause the browser to scroll to a link or button that's not on the current
- * step. However, it could be possible to allow tab navigation between form elements, as long as
- * they are on the active step. This is a topic for further study.
+ * The course runtime makes inactive steps inert so Tab can reach controls on the active step.
  *
  * Copyright 2016 Henrik Ingo
  * MIT License
@@ -3716,30 +3712,16 @@
         // [space] - quite common in presentation software to move forward
         // [up] [right] / [down] [left] - again common and natural addition,
         // [pgdown] / [pgup] - often triggered by remote controllers,
-        // [tab] - this one is quite controversial, but the reason it ended up on
-        //   this list is quite an interesting story... Remember that strange part
-        //   in the impress.js code where window is scrolled to 0,0 on every presentation
-        //   step, because sometimes browser scrolls viewport because of the focused element?
-        //   Well, the [tab] key by default navigates around focusable elements, so clicking
-        //   it very often caused scrolling to focused element and breaking impress.js
-        //   positioning. I didn't want to just prevent this default action, so I used [tab]
-        //   as another way to moving to next step... And yes, I know that for the sake of
-        //   consistency I should add [shift+tab] as opposite action...
+        // Courses: leave Tab and Shift+Tab to the browser's focus order.
         var isNavigationEvent = function( event ) {
-
-            // Don't trigger navigation for example when user returns to browser window with ALT+TAB
-            if ( event.altKey || event.ctrlKey || event.metaKey ) {
+            if ( event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey ) {
                 return false;
             }
 
-            // In the case of TAB, we force step navigation always, overriding the browser
-            // navigation between input elements, buttons and links.
-            if ( event.keyCode === 9 ) {
-                return true;
-            }
-
-            // With the sole exception of TAB, we also ignore keys pressed if shift is down.
-            if ( event.shiftKey ) {
+            var target = event.target;
+            if ( target && target.closest && target.closest(
+                "dialog[open], a[href], button, [role=button], input, textarea, select, [contenteditable=true], audio[controls], video[controls]"
+            ) ) {
                 return false;
             }
 
@@ -3761,27 +3743,18 @@
         // Trigger impress action (next or prev) on keyup.
         gc.addEventListener( document, "keyup", function( event ) {
             if ( isNavigationEvent( event ) ) {
-                if ( event.shiftKey ) {
-                    switch ( event.keyCode ) {
-                        case 9: // Shift+tab
-                            api.prev();
-                            break;
-                    }
-                } else {
-                    switch ( event.keyCode ) {
-                        case 33: // Pg up
-                        case 37: // Left
-                        case 38: // Up
-                                 api.prev( event );
-                                 break;
-                        case 9:  // Tab
-                        case 32: // Space
-                        case 34: // Pg down
-                        case 39: // Right
-                        case 40: // Down
-                                 api.next( event );
-                                 break;
-                    }
+                switch ( event.keyCode ) {
+                    case 33: // Pg up
+                    case 37: // Left
+                    case 38: // Up
+                        api.prev( event );
+                        break;
+                    case 32: // Space
+                    case 34: // Pg down
+                    case 39: // Right
+                    case 40: // Down
+                        api.next( event );
+                        break;
                 }
                 event.preventDefault();
             }

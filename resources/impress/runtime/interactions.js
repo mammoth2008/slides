@@ -290,10 +290,83 @@
     window.hljs.highlightAll();
   }
 
-  if (window.impress) {
+  function initializeSpatialNavigation(root) {
+    const toolbar = document.getElementById("spatial-tools");
+    const back = document.getElementById("spatial-return");
+    if (!toolbar || !back) return;
+
+    const overviewId = "spatial-overview";
+    let focusDestination = "";
+    let resume = null;
+    root.addEventListener("click", (event) => {
+      const entry = event.target.closest(".spatial-entry");
+      if (!entry) return;
+      back.setAttribute("href", `#${entry.closest(".step").id}`);
+      focusDestination = overviewId;
+    });
+    toolbar.addEventListener("click", (event) => {
+      const link = event.target.closest('a[href^="#"]');
+      if (link) focusDestination = link.getAttribute("href").slice(1);
+    });
+    root.addEventListener("impress:stepleave", (event) => {
+      if (event.detail.next.id === overviewId) {
+        back.setAttribute("href", `#${event.target.id}`);
+        resume = {
+          step: event.target,
+          revealed: Array.from(event.target.querySelectorAll(".substep-visible")),
+          active: event.target.querySelector(".substep-active"),
+        };
+      }
+    });
+    document.addEventListener("impress:stepenter", (event) => {
+      if (!resume || event.target.id === overviewId) return;
+      if (event.target === resume.step) {
+        resume.revealed.forEach((element) => element.classList.add("substep-visible"));
+        resume.active?.classList.add("substep-active");
+      }
+      resume = null;
+    });
+    root.addEventListener("impress:stepenter", (event) => {
+      const step = event.target;
+      const moveFocus = step.id === focusDestination;
+      focusDestination = "";
+      if (!moveFocus) return;
+      if (step.id === overviewId) {
+        back.focus({ preventScroll: true });
+      } else {
+        step.tabIndex = -1;
+        step.focus({ preventScroll: true });
+      }
+    });
+  }
+
+  function initializePresentation() {
+    const root = document.getElementById("impress");
+    if (!window.impress || !root) return;
+
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    window.impress.addPreStepLeavePlugin((event) => {
+      if (reducedMotion.matches) event.detail.transitionDuration = 0;
+    });
+
+    const syncFocus = (active) => {
+      if (!active) return;
+      root.querySelectorAll(".step").forEach((step) => {
+        const inactive = step !== active;
+        if (inactive && step.contains(document.activeElement)) document.activeElement.blur();
+        step.toggleAttribute("inert", inactive);
+        if (inactive) step.setAttribute("aria-hidden", "true");
+        else step.removeAttribute("aria-hidden");
+      });
+    };
+    root.addEventListener("impress:init", () => syncFocus(root.querySelector(".step.active")));
+    root.addEventListener("impress:stepleave", (event) => syncFocus(event.detail.next));
+    root.addEventListener("impress:stepenter", (event) => syncFocus(event.target));
+    initializeSpatialNavigation(root);
     window.impress().init();
   }
 
+  initializePresentation();
   initializeImageZoom();
   initializeCodeLineFocus();
   initializeMathFit();
